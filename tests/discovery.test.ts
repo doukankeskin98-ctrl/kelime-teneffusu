@@ -30,6 +30,11 @@ describe('permanent discovery map and collection rewards',()=>{
  it('only grants each opening once, even when several rewards arrive on the same completion',()=>{
   const p=finish(emptyProgress(),'uzay',4),before=loadProgress(JSON.stringify(p));complete(p,'uzay-5');const rewards=discoveryRewards(before,p);assert.equal(rewards.filter(r=>r.kind==='piece').length,1);assert.equal(rewards.filter(r=>r.kind==='bonus').length,1);assert.equal(new Set(rewards.map(r=>r.id)).size,rewards.length);assert.deepEqual(discoveryRewards(p,p),[]);
  });
+ it('keeps earned worlds, bonus access and all six pieces when later content adds more chapters to a theme',()=>{
+  const p=finish(emptyProgress(),'uzay',5);complete(p,JOURNEY_BONUSES.find(j=>j.themeId==='uzay')!.id);
+  const before=discoveryState(p),extra={...JOURNEYS.find(j=>j.themeId==='uzay')!,id:'uzay-future-content'};JOURNEYS.push(extra);
+  try{const after=discoveryState(p);assert.equal(after[0]!.chapters.length,5);assert.equal(after[0]!.pieces,6);assert.equal(after[0]!.complete,true);assert.equal(after[0]!.bonusUnlocked,true);assert.equal(after[1]!.unlocked,true);assert.deepEqual(after,before);}finally{JOURNEYS.splice(JOURNEYS.indexOf(extra),1);}
+ });
  it('preserves a better completed result on a replay and can improve it without inventing another collection item',()=>{
   const p=complete(emptyProgress(),'uzay-1',0,40),best=p.saves['route:uzay-1']!,b=journeyBoard(journeyById('uzay-1')!);const partial=cleanSave(undefined,b),slower={...best,elapsed:80},worse={...best,stars:1,hints:2,elapsed:3};assert.equal(keepBestSave(best,partial),best);assert.equal(keepBestSave(best,slower),best);assert.equal(keepBestSave(best,worse),best);assert.equal(keepBestSave(best,{...best,elapsed:20}).elapsed,20);assert.equal(discoveryState(p)[0]!.pieces,1);
  });

@@ -7,6 +7,7 @@ Her rota bölümünün belirli bir koleksiyon parçası vardır. Beş ana bölü
 ## Uyumluluk
 
 - Eski 96 standart bölüm, 15 rota bölümü, altı Gizli Tema ve klasik Hababam oyunu korunur. Mevcut tema seçicisinde bölüm kilidi eklenmez.
+- Haritanın beşli bölüm kümeleri sabit kimliklerle tanımlıdır. Aynı temaya daha sonra eklenen içerik bu kümeleri büyütmez; kazanılmış dünya ve bonus açılışlarını geri kilitlemez.
 - Eski bir rotaya daha önce başlamış oyuncu o dünyaya haritadan da erişebilir. Eski tamamlamalar parçalarını otomatik verir. Beş bölümün rota hatırası korunur; yeni altıncı parça ek bir bonus hedeftir.
 - Yeni bonuslar `JOURNEY_BONUSES` içindedir. Kimlikleri `uzay-gozlemevi`, `turkiye-kartpostal`, `hababam-yillik`; kayıt anahtarları `route:<id>` olarak kalır. Kaynakta bu kimlikleri veya yayımlanmış bulmacaların kelimelerini/tohumlarını değiştirmeyin.
 - `ALL_JOURNEYS` kayıt doğrulamasına bonusları da dahil eder. Eski `Progress.v = 2` biçimi, yerel anahtarlar ve bulut birleştirme sürer. Veritabanı göçü gerekmez.
