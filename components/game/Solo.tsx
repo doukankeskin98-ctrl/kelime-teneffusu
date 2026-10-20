@@ -1,11 +1,13 @@
 'use client';
 import {useEffect,useMemo,useRef,useState,type Dispatch,type SetStateAction} from 'react';
-import {ArrowRight,Check,Clock,Flag,RefreshCw,Star,Trophy} from 'lucide-react';
+import {ArrowRight,Check,Clock,Compass,Flag,RefreshCw,Star,Trophy} from 'lucide-react';
 import {findTheme,LEVEL_NAMES} from '@/lib/game/catalog';
 import {JOURNEYS,journeyById,journeyBoard,TUTORIAL} from '@/lib/game/content';
 import {hash,makePuzzle,match,timeLabel,type Cell,type Puzzle,type Stroke} from '@/lib/game/engine';
 import {cleanSave,type Progress,type SavedLevel} from '@/lib/game/progress';
 import {track} from '@/lib/game/telemetry';
+import {discoveryState,discoveryRewards,keepBestSave} from '@/lib/game/discovery';
+import {DiscoveryResult} from './Discovery';
 import * as legacy from '@/lib/game/legacy';
 import type {DailyView} from '@/lib/game/server';
 import {api,Help,Modal,PlayControls,PlayLayout,useChime,WordList} from './common';
@@ -15,8 +17,8 @@ function classicBoard(round:number,seed:number):Puzzle {
  const targets=def.words.flatMap((w,g)=>w.parts.map((text,i)=>({id:`${g}.${i}`,label:w.label,text,group:g})));
  return {version:2,size:b.size,grid:b.grid,targets,placements:b.placements.map(p=>({...targets.find(t=>t.id===p.id)!,a:[p.r,p.c],b:[p.r+p.dr*(p.len-1),p.c+p.dc*(p.len-1)]}))};
 }
-export function Solo({config,progress,onProgress,onBack,onNext,daily:initialDaily}:{config:SoloConfig;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void;onNext:(config:SoloConfig)=>void;daily?:DailyView}){
- const journey=journeyById(config.journey??'');
+export function Solo({config,progress,onProgress,onBack,onMap,onNext,daily:initialDaily}:{config:SoloConfig;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void;onMap:()=>void;onNext:(config:SoloConfig)=>void;daily?:DailyView}){
+ const journey=journeyById(config.journey??''),progressAtStart=useRef(progress);
  const legacyState=useMemo(()=>{if(!config.classic)return null;try{return legacy.validateSave(JSON.parse(localStorage.getItem(legacy.SAVE_KEY)??'null'))??legacy.freshState(hash('classic-first-game'));}catch{return legacy.freshState(hash('classic-first-game'));}},[config.classic]);
  const [daily,setDaily]=useState(initialDaily),[dailyNow,setDailyNow]=useState(Date.now()),dailyOffset=useRef(initialDaily?initialDaily.serverNow-Date.now():0);
  const board=useMemo(()=>daily?.board??(config.tutorial?TUTORIAL:journey?journeyBoard(journey):config.classic?classicBoard(config.level,legacyState!.seed):makePuzzle(config.themeId,config.level,hash(`campaign-v2:${config.themeId}:${config.level}`))),[config.themeId,config.level,config.classic,config.tutorial,journey?.id,legacyState,daily?.id]);
@@ -39,7 +41,7 @@ export function Solo({config,progress,onProgress,onBack,onNext,daily:initialDail
   if(config.tutorial){if(save.complete)onProgress(p=>({...p,tutorialDone:true}));return;}
   if(config.classic&&legacyState){if(config.practice)return;legacyState.round=config.level;legacyState.strokes[config.level]=save.strokes;legacyState.found[config.level]=save.strokes.map(s=>s.id);legacyState.hints[config.level]=save.hints;legacyState.elapsed[config.level]=save.elapsed;legacyState.sound=progress.sound;legacyState.zoom=progress.zoom;try{localStorage.setItem(legacy.SAVE_KEY,JSON.stringify(legacyState));}catch{}}
   else if(!config.practice||save.complete)onProgress(p=>{
-   const old=p.saves[key],best=old?.complete&&(!save.complete||old.stars>save.stars||(old.stars===save.stars&&old.elapsed<save.elapsed))?old:save;
+   const best=keepBestSave(p.saves[key],save);
    return {...p,saves:{...p.saves,[key]:best},last:{themeId:config.themeId,level:config.level,...(journey?{journey:journey.id}:{})}};
   });
  },[save,daily?.finished]);
@@ -63,14 +65,17 @@ export function Solo({config,progress,onProgress,onBack,onNext,daily:initialDail
  const seconds=daily?(daily.finished!==null?daily.duration/1000:Math.max(0,(dailyNow+dailyOffset.current-daily.starts)/1000)):save.elapsed;
  const controls=<PlayControls paused={paused||completed} onPause={()=>{setHint(null);setPreview('');setPaused(p=>!p);}} zoom={progress.zoom} onZoom={()=>onProgress(p=>({...p,zoom:!p.zoom}))} sound={progress.sound} onSound={()=>onProgress(p=>({...p,sound:!p.sound}))} hints={Math.max(0,3-save.hints)} onHint={()=>void useHint()} onHelp={()=>setHelp(true)} canPause={!daily}/>;
  const tutorialHint=config.tutorial&&!save.strokes.some(s=>s.id===TUTORIAL.targets[0]!.id)?TUTORIAL.placements.find(p=>p.id===TUTORIAL.targets[0]!.id)!.a:null;
- const nextJourney=journey?JOURNEYS[JOURNEYS.findIndex(j=>j.id===journey.id)+1]:undefined;
- const next=()=>{if(config.tutorial){onBack();return;}if(journey){if(nextJourney?.themeId===journey.themeId)onNext({themeId:journey.themeId,level:0,journey:nextJourney.id});else onBack();return;}if(config.level<(config.classic?3:5))onNext({...config,practice:false,level:config.level+1});else onBack();};
+ const resultProgress=journey?{...progress,saves:{...progress.saves,[key]:keepBestSave(progress.saves[key],save)}}:progress;
+ const expedition=journey?discoveryState(resultProgress).find(s=>s.expedition.id===journey.themeId):undefined;
+ const rewards=journey&&completed?discoveryRewards(progressAtStart.current,resultProgress):[];
+ const nextJourney=journey?(()=>{const chapters=JOURNEYS.filter(j=>j.themeId===journey.themeId),index=chapters.findIndex(j=>j.id===journey.id);return index<0?undefined:chapters[index+1]??(expedition?.bonusUnlocked&&!expedition.earned[5]?expedition.bonus:undefined);})():undefined;
+ const next=()=>{if(config.tutorial){onBack();return;}if(journey){if(nextJourney?.themeId===journey.themeId)onNext({themeId:journey.themeId,level:0,journey:nextJourney.id});else onMap();return;}if(config.level<(config.classic?3:5))onNext({...config,practice:false,level:config.level+1});else onBack();};
  return <><PlayLayout kicker={daily?'Günün bulmacası':config.tutorial?'KÜÇÜK BİR BAŞLANGIÇ':config.classic?'Hababam • Fotoğraftaki 20 isim':`${theme.title} • ${journey?'Keşif rotası':'Bölüm '+(config.level+1)}`} title={title} onBack={()=>daily&&!completed?setExit(true):onBack()} board={board} strokes={pending&&!save.strokes.some(s=>s.id===pending.id)?[...save.strokes,pending]:save.strokes} paused={paused||(!daily&&(help||exit))} zoom={progress.zoom} hint={hint??tutorialHint} onCommit={(a,b)=>void commit(a,b)} preview={preview} onPreview={setPreview} footer={controls} aside={<><div className="panel-heading"><span className="eyebrow">KELİMELERİN İZİNDE</span><b>{save.strokes.length}<small> / {board.targets.length}</small></b></div><WordList board={board} strokes={save.strokes}/><div className="game-note"><Flag size={18}/><p>{config.tutorial?'KELİME’nin ilk harfini işaretledik. Son harfine kaydır veya iki ucuna dokun. Sonra MERAK ve KEŞİF’i bul.':daily?'Süre ara verdiğinde de devam eder. İpuçları sürene 15 saniye ekler.':journey?.note??'Acele yok. Yanlış seçim ceza getirmez. Çaprazlara da bak.'}</p></div>{completed&&<button className="button primary full" onClick={()=>setReview(false)}>Sonucu göster <Trophy size={18}/></button>}</>}>
   <div className="game-status"><span><Clock size={17}/><b>{config.tutorial?'Acele yok':timeLabel(seconds)}</b>{daily&&save.hints>0&&<small>+{save.hints*15} sn</small>}</span><div className="progress-track" role="progressbar" aria-label="Bulunan kelimeler" aria-valuenow={save.strokes.length} aria-valuemin={0} aria-valuemax={board.targets.length}><i style={{width:`${save.strokes.length/board.targets.length*100}%`}}/></div><span><Star size={17}/>{3-Math.min(2,save.hints)}</span></div>
   <p className="game-message" role="status">{message||journey?.subtitle||(config.tutorial?'KELİME’yi bul. İşaretli ilk harften son harfe kaydır.':'Her kelime küçük bir keşif.')}{busy&&<span className="sync-indicator"> Eşitleniyor…</span>}</p>
  </PlayLayout>
  {help&&<Help daily={!!daily} onClose={()=>setHelp(false)}/>}
  {exit&&<Modal title="Kısa bir ara mı?" onClose={()=>setExit(false)}><p>Günlük yarış süren sen dönene kadar devam eder. Aynı gün içinde kaldığın yerden açabilirsin.</p><div className="button-row"><button className="button secondary" onClick={()=>setExit(false)}>Oyuna dön</button><button className="button primary" onClick={onBack}>Keşfe dön</button></div></Modal>}
- {completed&&!review&&<Modal title={config.tutorial?'İşte ilk keşfin!':daily?'Günün keşfi tamam!':'Merakına sağlık!'} onClose={()=>setReview(true)}><div className="result-celebration"><span className="result-leaf leaf-one"/><span className="result-leaf leaf-two"/><div className="result-icon"><Trophy size={46}/></div></div><div className="stars">{[0,1,2].map(i=><Star key={i} fill={i<3-Math.min(2,save.hints)?'currentColor':'none'}/>)}</div><p className="center">{config.tutorial?'Kelimelerle aranız iyi olacak.':<>Bütün kelimeleri buldun. <b>{timeLabel(seconds)}</b></>}</p><p className="center muted">{config.tutorial?'Şimdi kendi dünyanı seç.':daily?'Sonucun günlük sıralamaya kaydedildi.':journey?'Keşif albümüne bir sayfa daha ekledin.':'Bir sonraki keşfe hazırsın.'}</p><button className="button primary full" onClick={daily?onBack:next}>{config.tutorial?'Dünyaları keşfet':daily?'Günlük sayfasına dön':journey&&nextJourney?.themeId!==journey.themeId?'Rota tamam, keşfe dön':'Sonraki keşif'}<ArrowRight size={18}/></button>{!daily&&!config.tutorial&&<button className="button secondary full" onClick={()=>onNext({...config,practice:true})}><RefreshCw size={17}/>Bir daha oyna</button>}<button className="text-button full" onClick={()=>setReview(true)}>Tahtaya bir daha bak</button></Modal>}
+ {completed&&!review&&<Modal title={config.tutorial?'İşte ilk keşfin!':daily?'Günün keşfi tamam!':'Merakına sağlık!'} onClose={()=>setReview(true)}><div className="result-celebration"><span className="result-leaf leaf-one"/><span className="result-leaf leaf-two"/><div className="result-icon"><Trophy size={46}/></div></div><div className="stars">{[0,1,2].map(i=><Star key={i} fill={i<3-Math.min(2,save.hints)?'currentColor':'none'}/>)}</div><p className="center">{config.tutorial?'Kelimelerle aranız iyi olacak.':<>Bütün kelimeleri buldun. <b>{timeLabel(seconds)}</b></>}</p><p className="center muted">{config.tutorial?'Şimdi kendi dünyanı seç.':daily?'Sonucun günlük sıralamaya kaydedildi.':journey?'Keşfin ve en iyi sonucun kaydedildi.':'Bir sonraki keşfe hazırsın.'}</p>{journey&&<DiscoveryResult progress={resultProgress} themeId={journey.themeId} rewards={rewards}/>}<button className="button primary full" onClick={daily?onBack:next}>{config.tutorial?'Dünyaları keşfet':daily?'Günlük sayfasına dön':journey&&nextJourney?.themeId!==journey.themeId?'Keşif haritasına dön':'Sonraki keşif'}<ArrowRight size={18}/></button>{journey&&nextJourney&&<button className="text-button full" onClick={onMap}>Haritayı ve ödülleri gör <Compass size={15}/></button>}{!daily&&!config.tutorial&&<button className="button secondary full" onClick={()=>onNext({...config,practice:true})}><RefreshCw size={17}/>Bir daha oyna</button>}<button className="text-button full" onClick={()=>setReview(true)}>Tahtaya bir daha bak</button></Modal>}
  </>;
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./game.css";
 import "./auth.css";
 import "./studio.css";
+import "./discovery.css";
 
 export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',themeColor:'#f7f7ef'};
 
