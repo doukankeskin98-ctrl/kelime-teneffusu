@@ -1,0 +1,167 @@
+import { dailySpec, goldenId, hash, istanbulDay, makePuzzle, match, pointsFor, type Cell, type Puzzle, type Stroke } from './engine.ts';
+import { THEMES } from './catalog.ts';
+
+export interface Statement { bind(...values: unknown[]): Statement; first<T=Record<string,unknown>>(): Promise<T|null>; all<T=Record<string,unknown>>(): Promise<{results:T[]}>; run():Promise<{meta:{changes:number}}> }
+export interface Database {prepare(sql:string):Statement;batch(statements:Statement[]):Promise<{meta:{changes:number}}[]>}
+export class GameError extends Error {constructor(message:string,public status=400){super(message);}}
+export interface DuelPlayer { id:string; name:string; ready:boolean; strokes:Stroke[]; score:number; seen:number; lastFind:number; rematch:boolean }
+export interface Room {id:string;code:string;kind:'quick'|'friend';phase:'waiting'|'ready'|'active'|'finished'|'cancelled';themeId:string;level:number;seed:number;starts:number|null;ends:number|null;winner:string|null;reason:string;players:DuelPlayer[];round:number}
+interface RoomRow {id:string;data:string;revision:number;expires:number}
+interface Daily {id:string;day:string;starts:number;strokes:Stroke[];hints:number;finished:number|null;duration:number}
+interface DailyRow {id:string;data:string;revision:number}
+export interface RoomView {id:string;code:string;kind:string;phase:Room['phase'];themeId:string;starts:number|null;ends:number|null;winner:string|null;reason:string;round:number;serverNow:number;board:Omit<Puzzle,'placements'>|null;golden:string|null;you:{id:string;name:string;ready:boolean;strokes:Stroke[];score:number;rematch:boolean};opponent:{name:string;ready:boolean;count:number;score:number;online:boolean;rematch:boolean}|null}
+export interface DailyView extends Daily {serverNow:number;board:Omit<Puzzle,'placements'>}
+export const publicBoard=({placements:_placements,...board}:Puzzle)=>board;
+const clampName=(name:unknown)=>typeof name==='string'?name.normalize('NFC').replace(/[^\p{L}\p{N} _.-]/gu,'').trim().slice(0,20):'';
+const player=(id:string,name:string,now:number):DuelPlayer=>({id,name,ready:false,strokes:[],score:0,seen:now,lastFind:0,rematch:false});
+const code=()=>[...crypto.getRandomValues(new Uint8Array(8))].map(n=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[n%32]).join('');
+export class GameService {
+ constructor(private db:Database,private clock:()=>number=Date.now){}
+ private q(sql:string,...values:unknown[]){return this.db.prepare(sql).bind(...values);}
+ async profile(userId:string){
+   await this.q('INSERT OR IGNORE INTO players(id,nickname,created) VALUES(?,?,?)',userId,'Kelimeci '+hash(userId).toString(36).slice(0,4).toUpperCase(),this.clock()).run();
+   const p=await this.q('SELECT id,nickname FROM players WHERE id=?',userId).first<{id:string;nickname:string}>();
+   if(!p)throw new GameError('Profil hazırlanamadı',503);return p;
+ }
+ async rename(userId:string,name:unknown){const nickname=clampName(name);if(nickname.length<2)throw new GameError('Takma ad en az 2 karakter olsun.');await this.profile(userId);await this.q('UPDATE players SET nickname=? WHERE id=?',nickname,userId).run();return this.profile(userId);}
+ private async row(id:string){const row=await this.q('SELECT id,data,revision,expires FROM rooms WHERE id=?',id).first<RoomRow>();if(!row)throw new GameError('Oda bulunamadı.',404);return row;}
+ private parse(row:RoomRow){return JSON.parse(row.data) as Room;}
+ private async active(userId:string){
+   // Expired leases are released without exposing other players' information.
+   await this.q('UPDATE members SET active=0 WHERE user_id=? AND active=1 AND room_id IN (SELECT id FROM rooms WHERE expires<?)',userId,this.clock()).run();
+   const found=await this.q('SELECT r.id,r.data,r.revision,r.expires FROM rooms r JOIN members m ON m.room_id=r.id WHERE m.user_id=? AND m.active=1',userId).first<RoomRow>();return found;
+ }
+ private async save(row:RoomRow,room:Room){
+   const now=this.clock();const next=row.revision+1;
+   const statements=[this.q('UPDATE rooms SET data=?,phase=?,revision=?,updated=?,expires=MAX(expires,?) WHERE id=? AND revision=?',JSON.stringify(room),room.phase,next,now,now+30*60000,room.id,row.revision)];
+   if(room.phase==='finished')for(const p of room.players)statements.push(this.q("INSERT OR IGNORE INTO results(room_id,user_id,nickname,score,win,created) SELECT ?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='finished')",room.id+':'+room.round,p.id,p.name,p.score,room.winner===p.id?1:0,now,room.id,next));
+   const result=await this.db.batch(statements);return result[0]?.meta.changes===1;
+ }
+ private settle(room:Room,now:number){if(room.phase==='active'&&room.ends!==null&&now>=room.ends){room.phase='finished';room.reason='Süre doldu';const [a,b]=room.players;if(a&&b)room.winner=a.score===b.score?null:(a.score>b.score?a.id:b.id);}}
+ private view(room:Room,userId:string):RoomView {
+   const you=room.players.find(p=>p.id===userId);if(!you)throw new GameError('Bu odada değilsin.',403);
+   const other=room.players.find(p=>p.id!==userId);const now=this.clock();
+   const puzzle=room.phase==='active'||room.phase==='finished'?makePuzzle(room.themeId,room.level,room.seed):null;
+   return {id:room.id,code:room.code,kind:room.kind,phase:room.phase,themeId:room.themeId,starts:room.starts,ends:room.ends,winner:room.winner,reason:room.reason,round:room.round,serverNow:now,board:puzzle?publicBoard(puzzle):null,golden:puzzle&&room.starts!==null?goldenId(puzzle.targets,room.starts,now):null,you:{id:you.id,name:you.name,ready:you.ready,strokes:you.strokes,score:you.score,rematch:you.rematch},opponent:other?{name:other.name,ready:other.ready,count:other.strokes.length,score:other.score,online:now-other.seen<15000,rematch:other.rematch}:null};
+ }
+ private async pairWaiting(row:RoomRow):Promise<string>{
+   const current=this.parse(row);if(current.kind!=='quick'||current.phase!=='waiting')return row.id;
+   const other=await this.q("SELECT id,data,revision,expires FROM rooms WHERE id<>? AND kind='quick' AND phase='waiting' AND expires>? AND updated>? ORDER BY updated,id LIMIT 1",row.id,this.clock(),this.clock()-15000).first<RoomRow>();
+   if(!other)return row.id;
+   const [host,guest]=[row,other].sort((a,b)=>a.id.localeCompare(b.id));
+   if(!host||!guest)return row.id;
+   const joined=this.parse(host),retired=this.parse(guest),guestPlayer=retired.players[0];if(!guestPlayer)return row.id;
+   joined.players.push({...guestPlayer,seen:this.clock()});joined.phase='ready';retired.phase='cancelled';retired.reason='Oyuncular eşleştirildi';
+   await this.db.batch([
+     this.q("UPDATE rooms SET data=?,phase='ready',revision=revision+1,updated=? WHERE id=? AND revision=? AND phase='waiting' AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='waiting')",JSON.stringify(joined),this.clock(),host.id,host.revision,guest.id,guest.revision),
+     this.q("UPDATE rooms SET data=?,phase='cancelled',revision=revision+1 WHERE id=? AND revision=? AND phase='waiting' AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND json_extract(data,'$.players[1].id')=?)",JSON.stringify(retired),guest.id,guest.revision,host.id,host.revision+1,guestPlayer.id),
+     this.q("UPDATE members SET room_id=? WHERE room_id=? AND active=1 AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='cancelled')",host.id,guest.id,guest.id,guest.revision+1)
+   ]);
+   const active=await this.active(current.players[0]!.id);return active?.id??row.id;
+ }
+ async state(userId:string,id?:string):Promise<RoomView|null> {
+   const active=await this.active(userId);
+   let row=active??(id?await this.row(id):null);if(!row)return null;
+   if(!this.parse(row).players.some(p=>p.id===userId))throw new GameError('Bu odada değilsin.',403);
+   const paired=await this.pairWaiting(row);if(paired!==row.id)row=await this.row(paired);
+   return this.mutate(userId,row.id,(_room,p)=>{p.seen=this.clock();},true);
+ }
+ private async mutate(userId:string,id:string,fn:(room:Room,you:DuelPlayer)=>void,heartbeat=false):Promise<RoomView>{
+   for(let tries=0;tries<8;tries++){
+     const row=await this.row(id),room=this.parse(row);const you=room.players.find(p=>p.id===userId);if(!you)throw new GameError('Bu odada değilsin.',403);
+     const now=this.clock();this.settle(room,now);
+     if(row.expires<now&&room.phase!=='finished'){room.phase='cancelled';room.reason='Odanın süresi doldu';}
+     const before=JSON.stringify(room);fn(room,you);
+     // Heartbeats write only every five seconds; countdown and results remain authoritative.
+     if(heartbeat&&now-JSON.parse(row.data).players.find((p:DuelPlayer)=>p.id===userId).seen<5000&&before===row.data)return this.view(room,userId);
+     if(await this.save(row,room))return this.view(room,userId);
+   }
+   throw new GameError('Oda güncelleniyor. Tekrar dene.',409);
+ }
+ private async joinRow(userId:string,row:RoomRow){
+   const name=(await this.profile(userId)).nickname;const room=this.parse(row);
+   if(room.players.some(p=>p.id===userId))return this.view(room,userId);
+   if(room.phase!=='waiting'||room.players.length!==1||row.expires<this.clock())throw new GameError('Bu oda dolu veya süresi dolmuş.',409);
+   room.players.push(player(userId,name,this.clock()));room.phase='ready';
+   const rev=row.revision+1;
+   try{
+     const r=await this.db.batch([
+       this.q("UPDATE rooms SET data=?,phase='ready',revision=?,updated=? WHERE id=? AND revision=? AND phase='waiting' AND expires>?",JSON.stringify(room),rev,this.clock(),room.id,row.revision,this.clock()),
+       this.q("INSERT INTO members(room_id,user_id,active) SELECT ?,?,1 WHERE EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND json_extract(data,'$.players[1].id')=?)",room.id,userId,room.id,rev,userId)
+     ]);
+     if(r[0]?.meta.changes!==1)throw new GameError('Başka bir oyuncu önce katıldı.',409);
+   }catch(e){if(e instanceof GameError)throw e;const active=await this.active(userId);if(active)return this.state(userId,active.id);throw new GameError('Odaya katılınamadı. Yeniden dene.',409);}
+   return this.view(room,userId);
+ }
+ async enter(userId:string,kind:'quick'|'friend',joinCode?:string){
+   const active=await this.active(userId);if(active)return this.state(userId,active.id);
+   if(joinCode){const row=await this.q("SELECT id,data,revision,expires FROM rooms WHERE code=? AND kind='friend'",joinCode.trim().toUpperCase()).first<RoomRow>();if(!row)throw new GameError('Bu kodla bir oda bulunamadı.',404);return this.joinRow(userId,row);}
+   if(kind==='quick'){
+     for(let attempt=0;attempt<3;attempt++){
+       const row=await this.q("SELECT id,data,revision,expires FROM rooms WHERE kind='quick' AND phase='waiting' AND expires>? AND updated>? ORDER BY updated LIMIT 1",this.clock(),this.clock()-15000).first<RoomRow>();if(!row)break;
+       try{return await this.joinRow(userId,row);}catch(e){if(!(e instanceof GameError)||e.status!==409)throw e;}
+     }
+   }
+   const now=this.clock();const id=crypto.randomUUID();const themeId=THEMES[hash(id)%THEMES.length]!.id;
+   const room:Room={id,code:code(),kind,phase:'waiting',themeId,level:2,seed:hash(crypto.randomUUID()),starts:null,ends:null,winner:null,reason:'',players:[player(userId,(await this.profile(userId)).nickname,now)],round:1};
+   try{await this.db.batch([
+     this.q('INSERT INTO rooms(id,code,kind,phase,data,revision,expires,updated) VALUES(?,?,?,?,?,0,?,?)',id,room.code,kind,room.phase,JSON.stringify(room),now+30*60000,now),
+     this.q('INSERT INTO members(room_id,user_id,active) VALUES(?,?,1)',id,userId)
+   ]);}catch{const existing=await this.active(userId);if(existing)return this.state(userId,existing.id);throw new GameError('Oda hazırlanamadı.',503);}
+   return kind==='quick'?this.state(userId,id):this.view(room,userId);
+ }
+ async ready(userId:string,id:string){return this.mutate(userId,id,(room,p)=>{
+   if(room.phase==='active'&&p.ready)return;
+   if(room.phase!=='ready')throw new GameError('İkinci oyuncu bekleniyor.',409);p.ready=true;p.seen=this.clock();
+   if(room.players.length===2&&room.players.every(x=>x.ready)){room.phase='active';room.starts=this.clock()+4000;room.ends=room.starts+120000;}
+ });}
+ async claim(userId:string,id:string,a:unknown,b:unknown){return this.mutate(userId,id,(room,p)=>{
+   const now=this.clock();if(room.phase!=='active'||room.starts===null||room.ends===null||now<room.starts||now>=room.ends)throw new GameError('Bu düelloda seçim süresi açık değil.',409);
+   const board=makePuzzle(room.themeId,room.level,room.seed);const target=match(board,a,b);if(!target)throw new GameError('Bu seçim listedeki bir kelimeyi oluşturmuyor.');
+   if(p.strokes.some(s=>s.id===target.id))return;
+   p.strokes.push({id:target.id,a:a as Cell,b:b as Cell});p.score+=pointsFor(target,goldenId(board.targets,room.starts,now)===target.id);p.seen=now;p.lastFind=now;
+   if(p.strokes.length===board.targets.length){room.phase='finished';room.winner=p.id;room.reason='Tüm kelimeler bulundu';room.ends=now;}
+ });}
+ async leave(userId:string,id:string){
+   await this.mutate(userId,id,(room,p)=>{if(room.phase==='active'){room.phase='finished';room.winner=room.players.find(x=>x.id!==p.id)?.id??null;room.reason='Rakip ayrıldı';room.ends=this.clock();}else if(room.phase==='waiting'||room.phase==='ready'){room.phase='cancelled';room.reason='Oyuncu ayrıldı';}});
+   await this.q('UPDATE members SET active=0 WHERE user_id=? AND room_id=?',userId,id).run();return {ok:true};
+ }
+ async rematch(userId:string,id:string){
+   const active=await this.q('SELECT COUNT(*) AS count FROM members WHERE room_id=? AND active=1',id).first<{count:number}>();
+   if(active?.count!==2)throw new GameError('Rakibin odadan ayrıldı. Yeni bir düello başlatabilirsin.',409);
+   return this.mutate(userId,id,(room,p)=>{
+   if(room.phase!=='finished')throw new GameError('Düello henüz bitmedi.',409);p.rematch=true;p.seen=this.clock();
+   if(room.players.every(x=>x.rematch)){
+     room.round++;room.seed=hash(crypto.randomUUID());room.starts=null;room.ends=null;room.winner=null;room.reason='';room.phase='ready';
+     room.players=room.players.map(x=>player(x.id,x.name,this.clock()));
+   }
+ });}
+ private dailyView(d:Daily){const spec=dailySpec(d.day);return {...d,serverNow:this.clock(),board:publicBoard(makePuzzle(spec.themeId,spec.level,spec.seed))};}
+ async daily(userId:string){
+   const day=istanbulDay(this.clock()),now=this.clock(),p=await this.profile(userId);const id=crypto.randomUUID();
+   const data:Daily={id,day,starts:now,strokes:[],hints:0,finished:null,duration:0};
+   await this.q('INSERT OR IGNORE INTO dailies(id,user_id,nickname,day,data,created) VALUES(?,?,?,?,?,?)',id,userId,p.nickname,day,JSON.stringify(data),now).run();
+   const row=await this.q('SELECT id,data,revision FROM dailies WHERE user_id=? AND day=?',userId,day).first<DailyRow>();if(!row)throw new GameError('Günlük hazırlanamadı.',503);return this.dailyView(JSON.parse(row.data));
+ }
+ async dailyClaim(userId:string,id:string,a:unknown,b:unknown,hint=false){
+   for(let tries=0;tries<8;tries++){
+     const row=await this.q('SELECT id,data,revision FROM dailies WHERE id=? AND user_id=?',id,userId).first<DailyRow>();if(!row)throw new GameError('Günlük oyun bulunamadı.',404);
+     const d=JSON.parse(row.data) as Daily;if(d.finished!==null)return this.dailyView(d);
+     if(this.clock()-d.starts>86400000)throw new GameError('Bu günlük oyunun süresi doldu. Yeni güne geçebilirsin.',409);
+     const spec=dailySpec(d.day),board=makePuzzle(spec.themeId,spec.level,spec.seed);let hintCell:Cell|null=null;
+     if(hint){if(d.hints>=3)throw new GameError('Üç ipucunu da kullandın.');const remaining=board.placements.find(t=>!d.strokes.some(s=>s.id===t.id));if(remaining){d.hints++;hintCell=remaining.a;}}
+     else{const target=match(board,a,b);if(!target)throw new GameError('Bu seçim listedeki bir kelimeyi oluşturmuyor.');if(!d.strokes.some(s=>s.id===target.id))d.strokes.push({id:target.id,a:a as Cell,b:b as Cell});}
+     if(d.strokes.length===board.targets.length){d.finished=this.clock();d.duration=Math.max(1,d.finished-d.starts)+d.hints*15000;}
+     const r=await this.q('UPDATE dailies SET data=?,revision=revision+1,completed=?,duration=? WHERE id=? AND revision=?',JSON.stringify(d),d.finished!==null?1:0,d.duration,id,row.revision).run();
+     if(r.meta.changes)return {...this.dailyView(d),hintCell};
+   }
+   throw new GameError('Günlük oyun güncelleniyor.',409);
+ }
+ async rankings(){
+   const day=istanbulDay(this.clock());
+   const daily=(await this.q('SELECT nickname,duration FROM dailies WHERE day=? AND completed=1 ORDER BY duration,created LIMIT 20',day).all<{nickname:string;duration:number}>()).results;
+   const arena=(await this.q('SELECT p.nickname,COUNT(*) AS played,SUM(r.win) AS wins,SUM(r.score) AS score FROM results r JOIN players p ON p.id=r.user_id GROUP BY r.user_id ORDER BY wins DESC,score DESC LIMIT 20').all<{nickname:string;played:number;wins:number;score:number}>()).results;
+   return {day,daily,arena};
+ }
+ async stats(userId:string){return this.q('SELECT COUNT(*) AS played,COALESCE(SUM(win),0) AS wins,COALESCE(SUM(score),0) AS score FROM results WHERE user_id=?',userId).first<{played:number;wins:number;score:number}>();}
+}
