@@ -3,12 +3,13 @@ import type {Progress,SavedLevel} from './progress.ts';
 
 export const DISCOVERY_GATE=3;
 export interface Expedition {
- id:string;title:string;subtitle:string;place:string;pieces:readonly string[];accent:string;
+ id:string;title:string;subtitle:string;place:string;pieces:readonly string[];accent:string;chapterIds:readonly string[];
 }
+const launchChapters=(theme:string)=>[1,2,3,4,5].map(n=>`${theme}-${n}`);
 export const EXPEDITIONS:readonly Expedition[]=[
- {id:'uzay',title:'Yıldız İskelesi',subtitle:'Pencerenden başlayan kocaman bir yolculuk.',place:'01',pieces:['İlk yıldız','Gezegen halkası','Keşif roketi','Galaksi izi','Uzak ufuk','Gözlemevinin ışığı'],accent:'#9aa8cb'},
- {id:'turkiye',title:'Anadolu Patikası',subtitle:'Bir sokak, bir manzara, bir yeni hikâye.',place:'02',pieces:['Yol bileti','Şehir ışığı','Dağ esintisi','Tarihin izi','Yol defteri','Son kartpostal'],accent:'#ccaa79'},
- {id:'hababam',title:'Teneffüs Bahçesi',subtitle:'Tanıdık bir sınıfta yeni hatıralar.',place:'03',pieces:['İlk zil','Arka sıranın notu','Sınıfın neşesi','Yoklama defteri','Son ders','Yıllık fotoğrafı'],accent:'#8eaf91'},
+ {id:'uzay',title:'Yıldız İskelesi',subtitle:'Pencerenden başlayan kocaman bir yolculuk.',place:'01',pieces:['İlk yıldız','Gezegen halkası','Keşif roketi','Galaksi izi','Uzak ufuk','Gözlemevinin ışığı'],accent:'#9aa8cb',chapterIds:launchChapters('uzay')},
+ {id:'turkiye',title:'Anadolu Patikası',subtitle:'Bir sokak, bir manzara, bir yeni hikâye.',place:'02',pieces:['Yol bileti','Şehir ışığı','Dağ esintisi','Tarihin izi','Yol defteri','Son kartpostal'],accent:'#ccaa79',chapterIds:launchChapters('turkiye')},
+ {id:'hababam',title:'Teneffüs Bahçesi',subtitle:'Tanıdık bir sınıfta yeni hatıralar.',place:'03',pieces:['İlk zil','Arka sıranın notu','Sınıfın neşesi','Yoklama defteri','Son ders','Yıllık fotoğrafı'],accent:'#8eaf91',chapterIds:launchChapters('hababam')},
 ];
 export interface ExpeditionState {
  expedition:Expedition;chapters:Journey[];bonus:Journey;done:number;pieces:number;earned:boolean[];
@@ -19,7 +20,7 @@ export interface ExpeditionState {
 export function discoveryState(progress:Pick<Progress,'saves'>):ExpeditionState[]{
  const states:ExpeditionState[]=[];
  for(const expedition of EXPEDITIONS){
-  const chapters=JOURNEYS.filter(j=>j.themeId===expedition.id),bonus=JOURNEY_BONUSES.find(j=>j.themeId===expedition.id)!;
+  const chapters=expedition.chapterIds.map(id=>JOURNEYS.find(j=>j.id===id)!),bonus=JOURNEY_BONUSES.find(j=>j.themeId===expedition.id)!;
   const earned=chapters.map(j=>progress.saves['route:'+j.id]?.complete===true);
   const done=earned.filter(Boolean).length,previous=states.at(-1);
   // Returning players retain access to any route they already started in the old open catalogue.
