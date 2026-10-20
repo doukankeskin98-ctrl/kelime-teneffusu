@@ -11,7 +11,18 @@ export function AuthPanel({initial='signin',returnTo='/',user,onDone}:{initial?:
  const [mode,setMode]=useState<AuthMode>(initial),[email,setEmail]=useState(''),[username,setUsername]=useState(user?.displayName??''),[password,setPassword]=useState(''),[confirm,setConfirm]=useState(''),[remember,setRemember]=useState(true),[visible,setVisible]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[sentUntil,setSentUntil]=useState(0),[now,setNow]=useState(Date.now());
  const errorRef=useRef<HTMLDivElement>(null),nameRef=useRef<HTMLInputElement>(null);
  const remaining=Math.max(0,Math.ceil((sentUntil-now)/1000));
- const finish=async()=>{const account=await me();if(account.needsUsername){setUsername(s=>s||user?.displayName||'');setMode('username');}else if(account.needsVerification)setMode('verify');else if(account.authenticated)onDone();else throw new Error('Oturum doğrulanamadı. Yeniden giriş yap.');};
+ const finish=async()=>{
+  const account=await me();
+  if(account.needsUsername){
+   const client=await getAuthClient(),candidate=normalizeUsername(client.auth.currentUser?.displayName??username);
+   if(candidate){
+    const response=await memberFetch('/api/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:candidate})});
+    if(response.ok){onDone();return;}
+    const data=await response.json() as {error?:string};setError(data.error??'Başka bir kullanıcı adı seç.');
+   }
+   setUsername(s=>s||candidate);setMode('username');
+  }else if(account.needsVerification)setMode('verify');else if(account.authenticated)onDone();else throw new Error('Oturum doğrulanamadı. Yeniden giriş yap.');
+ };
  useEffect(()=>{if(!user)return;if(!user.emailVerified){setMode('verify');setEmail(user.email);}else{setBusy(true);void finish().catch(e=>setError(authMessage(e))).finally(()=>setBusy(false));}},[user?.uid,user?.emailVerified]);
  useEffect(()=>{if(error)errorRef.current?.focus();},[error]);
  useEffect(()=>{if(!sentUntil)return;const id=setInterval(()=>setNow(Date.now()),1000);return ()=>clearInterval(id);},[sentUntil]);

@@ -12,7 +12,7 @@ export async function verifyMemberToken(token:string,config:FirebaseConfig,optio
  let payload:JWTPayload;
  try{({payload}=await jwtVerify(token,options.keys??googleKeys,{issuer:'https://securetoken.google.com/'+config.projectId,audience:config.projectId,algorithms:['RS256'],requiredClaims:['exp','iat','sub','auth_time'],currentDate:new Date(now),clockTolerance:5}));}
  catch{throw new IdentityError('Oturumun doğrulanamadı. Yeniden giriş yap.');}
- if(!payload.sub||payload.sub.length>128||typeof payload.iat!=='number'||payload.iat>seconds+5||typeof payload['auth_time']!=='number'||payload['auth_time']>seconds+5)throw new IdentityError('Oturumun doğrulanamadı.');
+ if(typeof payload.sub!=='string'||!payload.sub||payload.sub.length>128||typeof payload.iat!=='number'||payload.iat>seconds+5||typeof payload['auth_time']!=='number'||payload['auth_time']>seconds+5)throw new IdentityError('Oturumun doğrulanamadı.');
  const digest=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token)))].map(x=>x.toString(16).padStart(2,'0')).join('');
  const hit=cache.get(digest);if(options.cache!==false&&hit&&hit.until>now)return hit.user;
  let response:Response;

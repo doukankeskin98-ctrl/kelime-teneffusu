@@ -17,10 +17,10 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
       - run: pnpm db:generate
-      - name: Export generated review inputs
-        run: node scripts/export-review-inputs.mjs
+      - name: Verify committed migration snapshot
+        run: git diff --exit-code -- drizzle
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build

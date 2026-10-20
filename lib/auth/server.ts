@@ -21,3 +21,11 @@ export async function gameMember(request:Request){
 export const authJson=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export function authFailure(error:unknown){return error instanceof IdentityError?authJson({error:error.message},error.status):authJson({error:'İşlem tamamlanamadı. Tekrar dene.'},503);}
 export function requireSameOrigin(request:Request){if(request.headers.get('origin')!==new URL(request.url).origin)throw new IdentityError('İstek kaynağı doğrulanamadı.',403);}
+
+export async function boundedJson(request:Request,limit=2048):Promise<Record<string,unknown>>{
+ const reader=request.body?.getReader();if(!reader)throw new IdentityError('İstek okunamadı.',400);
+ const chunks:Uint8Array[]=[];let size=0;
+ for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>limit){await reader.cancel();throw new IdentityError('İstek çok büyük.',413);}chunks.push(value);}
+ const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}
+ try{const data:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));if(!data||typeof data!=='object'||Array.isArray(data))throw new Error();return data as Record<string,unknown>;}catch{throw new IdentityError('İstek okunamadı.',400);}
+}
