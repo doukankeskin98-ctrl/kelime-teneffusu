@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
+import {JOURNEY_BONUSES,journeyBoard} from '../lib/game/content.ts';
 const require=createRequire(import.meta.url);
 const {Miniflare,Log,LogLevel}=require(require.resolve('miniflare',{paths:[require.resolve('wrangler/package.json')]}));
 const root=path.resolve('dist/server');
@@ -22,6 +23,7 @@ try{
  const db=await mf.getD1Database('DB');
  for(const file of (await readdir('drizzle')).filter(x=>x.endsWith('.sql')).sort())for(const sql of (await readFile('drizzle/'+file,'utf8')).split('--> statement-breakpoint').map(x=>x.trim()).filter(Boolean))await db.prepare(sql).run();
  const home=await (await request('/')).text();check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
+ check(home.includes('kesif-haritasi')&&home.includes('Yıldız İskelesi')&&home.includes('Anadolu Patikası')&&home.includes('Teneffüs Bahçesi'),'public discovery map renders with all three destinations');
  check((await json('/api/auth/config')).available===false,'email availability is honest without configuration');
  await request('/api/game',{method:'POST',body:{action:'enter'},expected:401});
  await request('/api/session',{method:'POST',body:{name:'Alice'},originHeader:'https://foreign.test',expected:403});
@@ -46,6 +48,9 @@ try{
  const result=await json('/api/game?action=room',{cookie:bCookie});check(result.phase==='finished'&&result.winner===a.profile.id,'two-player result persisted');
  check((await json('/api/game',{cookie:aCookie})).stats.wins===1,'a single win is recorded');
  const cloud=await json('/api/progress',{cookie:aCookie});await json('/api/progress',{cookie:aCookie,method:'PUT',body:{progress:{...cloud.progress,sound:true,tutorialDone:true}}});check((await json('/api/progress',{cookie:bCookie})).progress.sound===false,'progress stays private');
+ const bonus=JOURNEY_BONUSES[0],bonusBoard=journeyBoard(bonus),bonusKey='route:'+bonus.id;
+ await json('/api/progress',{cookie:aCookie,method:'PUT',body:{progress:{...cloud.progress,tutorialDone:true,saves:{[bonusKey]:{strokes:bonusBoard.placements.map(({id,a,b})=>({id,a,b})),elapsed:45,hints:2,complete:true,stars:99}},last:{themeId:bonus.themeId,level:0,journey:bonus.id}}}});
+ const savedBonus=await json('/api/progress',{cookie:aCookie});check(savedBonus.progress.saves[bonusKey]?.complete===true&&savedBonus.progress.saves[bonusKey].stars===1,'bonus pieces persist using server-validated strokes and stars');check(savedBonus.progress.last.journey===bonus.id,'bonus destination survives cloud roundtrip');check(!(await json('/api/progress',{cookie:bCookie})).progress.saves[bonusKey],'bonus collection stays scoped to its owner');
  const sw=await (await request('/sw.js')).text();check(sw.includes('const BUILD_ASSETS=[')&&!sw.includes('const BUILD_ASSETS=[];'),'offline assets are built');
  for(const asset of ['/manifest.webmanifest','/icon-192.png','/icon-512.png'])await request(asset);
  const workshop=await (await request('/atolye')).text();check(workshop.includes('İÇERİK ATÖLYESİ'),'authoring workspace renders');

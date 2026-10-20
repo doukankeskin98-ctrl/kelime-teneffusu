@@ -4,7 +4,7 @@
 
 Ana sayfa, ilk keşif, tema/rota seçimi, tahta, duraklama, ipucu, sonuç, tekrar oynama ve albüm aynı görsel sistemi kullanır. Ana gezinme Keşfet, Arena, Günlük ve Albüm olarak kalır. Arena, canlı düello, kayıtlı performansa meydan okuma ve arkadaşlar arasında ayrılır. Bir karşılaşma açılınca genel gezinme gizlenir; ayrılma ve dönüş oyun içinden yapılır.
 
-Standart içerik ve klasik kayıtlar korunur. Rotalar ve Gizli Tema ayrı kayıt anahtarlarıyla eklenir. İpuçları, ses, titreşim, kontrast, renk paleti ve büyük harf ayarları oyuncunun kontrolündedir. Ses varsayılan kapalıdır. Titreşim yalnızca cihaz API'si varsa sunulur. Azaltılmış hareket tercihi CSS ile uygulanır.
+Keşif Haritası, üç dünya, 18 koleksiyon parçası ve üç bonus bulmaca eklenmiştir. Açılışlar ve eski kayıt uyumluluğu [discovery-map.md](discovery-map.md) içinde açıklanır. Standart içerik ve klasik kayıtlar korunur. Rotalar ve Gizli Tema ayrı kayıt anahtarlarıyla eklenir. İpuçları, ses, titreşim, kontrast, renk paleti ve büyük harf ayarları oyuncunun kontrolündedir. Ses varsayılan kapalıdır. Titreşim yalnızca cihaz API'si varsa sunulur. Azaltılmış hareket tercihi CSS ile uygulanır.
 
 ## Teknik sınırlar
 
@@ -37,7 +37,7 @@ Bu ortamda kullanılabilir control-browser becerisi bulunmadığından tarayıc�
 
 ## İçerik ve operasyon düzeni
 
-İçerik taslağı önce atölyede oynanır, Türkçe yazımı ve tema uygunluğu incelenir, kaynağa eklenir ve CI kontrollerinden geçer. Görsel sahneler, arayüz ve paylaşım kartı özgün vektörlerdir. Yeni koleksiyonlar aynı sanat ve zorluk ölçülerine uyar. Düzenli yeni paket yayını, insan incelemesi ve çalışma kapasitesine göre planlanmalıdır; otomatik yayın görevi kurulmadı.
+İçerik taslağı önce atölyede oynanır, Türkçe yazımı ve tema uygunluğu incelenir, kaynağa eklenir ve CI kontrollerinden geçer. Görsel sahneler, arayüz ve paylaşım kartı özgün vektörlerdir. Yeni koleksiyonlar aynı sanat ve zorluk ölçülerine uyar. Düzenli yeni paket yayını, insan incelemesi ve çalışma kapasitesine göre planlanmalıdır; 08.00 ve 20.00 UTC için bağlı bakım ve içerik görevi etkinleştirildi. Her başarılı çalışmanın kaydı ayrıca doğrulanmalıdır.
 
 Ölçüm varsayılan kapalıdır. Açıldığında `metrics` tablosunda gün, izinli olay adı ve aralık sayımları tutulur. İlk kelime için 15/30/60 saniye aralıkları; giriş geri bildirimi ve kare örnekleri için 17/34/50/100 ms aralıkları bulunur. Dönüş ölçümü yalnızca ölçüme izin veren aynı tarayıcıların ilk gün tarihinden hesaplanır; yeniden kurulum ve veri silme karşılaştırmayı etkiler.
 

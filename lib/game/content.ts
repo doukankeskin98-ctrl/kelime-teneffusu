@@ -27,7 +27,14 @@ export const JOURNEYS:Journey[]=[
   ['Yol defterinin sonu','Bir keşif daha seni bekliyor.','İSTANBUL|KAPADOKYA|SAFRANBOLU|BOĞAZİÇİ|TRABZON|ESKİŞEHİR|ANTALYA',11,'Ustalık','Anadolu Defteri bütün rotayı tamamlayınca albümüne eklenir.'],
  ]),
 ];
-export const journeyById=(id:string)=>JOURNEYS.find(j=>j.id===id);
+/** Separate IDs keep the original fifteen route boards and their saves unchanged. */
+export const JOURNEY_BONUSES:Journey[]=[
+ {id:'uzay-gozlemevi',themeId:'uzay',title:'Gözlemevinin kapısı',subtitle:'Bütün yolculuğun tek bir gökyüzünde buluşuyor.',words:['MERCEK','KUBBE','GÖZLEMEVİ','PUSULA','ODAK','GÖZLEM'],size:9,difficulty:'Dengeli',note:'Beş durak seni buraya getirdi. Son parça Yörünge Günlüğü’nü tamamlayacak.'},
+ {id:'turkiye-kartpostal',themeId:'turkiye',title:'Son kartpostal',subtitle:'Yol boyunca biriken renkleri bir araya getir.',words:['KERVAN','İPEK YOLU','KÖPRÜ','ÇİNİ','HAN','KİLİM'],size:8,difficulty:'Dengeli',note:'Bu kartpostalda yolun izleri var. Son parça Anadolu Defteri’ni tamamlayacak.'},
+ {id:'hababam-yillik',themeId:'hababam',title:'Yıllıktaki son sayfa',subtitle:'Bir sınıf dolusu anı, bir son hatıra.',words:['YILLIK','DOSTLUK','HATIRA','MEZUNİYET','FOTOĞRAF','ŞAKACI'],size:9,difficulty:'Dengeli',note:'Son zilden sonra kalan şeyler. Son parça Sınıf Hatırası’nı tamamlayacak.'},
+];
+export const ALL_JOURNEYS=[...JOURNEYS,...JOURNEY_BONUSES];
+export const journeyById=(id:string)=>ALL_JOURNEYS.find(j=>j.id===id);
 export const journeyBoard=(j:Journey)=>makeCustomPuzzle(j.words,hash('journey-v1:'+j.id),j.size);
 
 export interface Mystery {id:string;title:string;themeId:string;words:string[];answer:string;options:string[];bonus:string;size:number;note:string}

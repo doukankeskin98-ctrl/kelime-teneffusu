@@ -6,6 +6,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 
 - 16 tema, 96 özgün bölüm. Sekiz yön, her tahtada iki eğimde çapraz kelimeler.
 - Hababam, Uzay ve Türkiye için ayrıca 15 düzenlenmiş rota bölümü; küçük tahtalardan başlayan zorluk akışı.
+- Keşif Haritası: üç dünyada kalıcı ilerleme, 18 belirli koleksiyon parçası ve açılan üç bonus bölüm. Üç durak sonraki dünyayı, beş durak bonusu açar.
 - Altı Gizli Tema: kelimeleri bul, ortak bağlantıyı çöz, bonus kelimeyi aç.
 - İlk açılışta oynanabilir 6 × 6 öğrenme turu. Kaydırma, iki uca dokunma ve klavye kontrolü.
 - Keşif albümleri, rozetler, açılan renk paletleri, kişisel en iyi solo sonuçları ve tekrar oynama.
@@ -44,13 +45,13 @@ pnpm build
 node scripts/verify-worker.mjs
 ```
 
-İçerik kontrolü, 21 düzenlenmiş bulmacanın tüm hedeflerini ve 420 alternatif yerleşimini doğrular. Birim/servis testleri 6.000 özgün ve klasik tahta, kayıt uyumluluğu, kimlik, eşzamanlı güncellemeler, derece, zaman sınırları, arkadaşlar ve gerçek kayıtlı performansları kapsar. Üretim Worker kontrolü iki bağımsız oturumla HTTP üzerinden misafir girişi, CSRF reddi, meydan okuma, arkadaş kabulü, canlı olay akışı, düello, özel ilerleme, çıkış ve PWA paketini sınar. Tarayıcı veya dokunmatik ekran testi değildir.
+İçerik kontrolü, 24 düzenlenmiş bulmacanın tüm hedeflerini ve 480 alternatif yerleşimini doğrular. Birim/servis testleri 6.000 özgün ve klasik tahta, kayıt uyumluluğu, kimlik, eşzamanlı güncellemeler, derece, zaman sınırları, arkadaşlar ve gerçek kayıtlı performansları kapsar. Üretim Worker kontrolü iki bağımsız oturumla HTTP üzerinden misafir girişi, CSRF reddi, meydan okuma, arkadaş kabulü, canlı olay akışı, düello, özel ilerleme, çıkış ve PWA paketini sınar. Tarayıcı veya dokunmatik ekran testi değildir.
 
 `.openai/hosting.json` mevcut Site kimliğini ve `DB` bağlamasını korur. Şema `db/schema.ts`, değişmez SQL geçişleri `drizzle/` altındadır. Şemayı değiştirince `pnpm db:generate` çalıştırın ve yeni SQL ile Drizzle kayıtlarını birlikte ekleyin. Veritabanı istek sırasında oluşturulmaz. Sites, geçişleri yayımlarken uygular. Yayın için Sites kaynak/paketleme yardımcılarını kullanın.
 
 ## İçerik ve işletim
 
-`/atolye` yerel bölüm taslağı düzenler, yerleşim/çözümleri gösterir ve JSON dışa aktarır. Canlı içeriği değiştirmez. Düzenlenmiş içerik `lib/game/content.ts`, standart temalar `lib/game/catalog.ts` içindedir. Kaynağa eklenen içerik CI kontrolünden geçer.
+`/atolye` yerel bölüm taslağı düzenler, yerleşim/çözümleri gösterir ve JSON dışa aktarır. Canlı içeriği değiştirmez. Harita ve ödül uyumluluğu: [docs/discovery-map.md](docs/discovery-map.md). Düzenlenmiş içerik `lib/game/content.ts`, standart temalar `lib/game/catalog.ts` içindedir. Kaynağa eklenen içerik CI kontrolünden geçer.
 
 Canlı durum tarayıcıya SSE ile iletilir. Kalıcı durum D1 üzerinde izlenir; bu sürüm WebSocket/Durable Object altyapısı kullanmaz. Sunucu puan, sıra, üyelik, doğru seçim ve süreyi denetler. Bu, otomatik çözücülerin tamamen engellendiği anlamına gelmez.
 
