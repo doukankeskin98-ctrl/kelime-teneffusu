@@ -21,12 +21,14 @@ jobs:
       - run: pnpm db:generate
       - name: Verify committed migration snapshot
         run: git diff --exit-code -- drizzle
+      - run: pnpm content:check
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - run: node scripts/verify-worker.mjs
       - uses: actions/upload-artifact@v4
         with:
-          name: auth-reviewed-build-inputs
+          name: studio-checked-build-inputs
           retention-days: 1
           path: |
             pnpm-lock.yaml

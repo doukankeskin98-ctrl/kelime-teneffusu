@@ -1,0 +1,44 @@
+import {useId} from 'react';
+import {findTheme} from '@/lib/game/catalog';
+import {ThemeArt} from './Art';
+
+export function WorldArt({themeId,className=''}:{themeId:string;className?:string}){
+ const uid=useId().replace(/[^a-zA-Z0-9]/g,''),theme=findTheme(themeId);
+ return <svg className={'world-art '+className} viewBox="0 0 320 180" fill="none" aria-hidden="true"><defs><linearGradient id={uid+'bg'} x1="20" y1="0" x2="300" y2="180" gradientUnits="userSpaceOnUse"><stop stopColor={theme.color} stopOpacity=".38"/><stop offset="1" stopColor={theme.color} stopOpacity=".08"/></linearGradient><radialGradient id={uid+'sun'}><stop stopColor="#fff8dc"/><stop offset="1" stopColor="#f0c576"/></radialGradient></defs><path fill={'url(#'+uid+'bg)'} d="M0 0h320v180H0z"/>
+ {themeId==='hababam'?<>
+  <path fill="#e7d9b8" d="M0 0h320v142H0z"/><path fill="#c8ad81" d="M0 142h320v38H0z"/><path d="m0 166 320-14M30 180l92-38m111 38-40-38" stroke="#ae906a" strokeOpacity=".5"/>
+  <path fill="#fff6db" d="M23 24h57v91H23z"/><path stroke="#c0a46f" strokeWidth="5" d="M23 24h57v91H23zM51 25v89M24 67h54"/><path fill="#b6c5ab" d="m27 111 20-26 17 13 12-19v32"/>
+  <rect x="105" y="26" width="185" height="98" rx="5" fill="#9d724c"/><rect x="111" y="32" width="173" height="85" rx="2" fill="#234e42"/><path d="M139 57h37m-37 12h23m28-12h40m-40 12h21m-72 22 20-12 16 12 22-14 23 14" stroke="#e8ead9" strokeWidth="2" strokeLinecap="round" strokeOpacity=".7"/><rect x="119" y="119" width="157" height="5" rx="2" fill="#bd9366"/><rect x="240" y="116" width="17" height="3" rx="1" fill="#faf3d9"/>
+  <path d="m102 142-12 34m97-34 11 34m19-41-9 31m81-31 10 31" stroke="#705c48" strokeWidth="4" strokeLinecap="round"/><path d="m88 137 90-9 24 18-93 9z" fill="#b48b5c"/><path d="m207 131 69-7 24 15-72 9z" fill="#b48b5c"/><path d="m119 130 18-3 10 7-18 3z" fill="#f7f0d6"/><path d="m245 126 17-2 9 6-17 2z" fill="#dde5ce"/>
+  <circle cx="187" cy="13" r="8" fill="#fff5d3" stroke="#a78b60" strokeWidth="2"/><path d="M187 9v4l3 2" stroke="#8c795d" strokeWidth="1.4"/>
+ </>:themeId==='uzay'?<>
+  <path fill="#27374f" d="M0 0h320v180H0z"/><ellipse cx="236" cy="141" rx="127" ry="90" fill="#8295bb" fillOpacity=".12"/>
+  {[[26,26],[63,107],[123,21],[277,31],[301,108],[177,141],[84,154],[22,144],[205,21],[287,158],[132,108]].map(([x,y],i)=><g key={i} fill="#f7e6bd"><circle cx={x} cy={y} r={i%3===0?1.8:1}/>{i%4===0&&<path d={`M${x!-4} ${y}h8M${x} ${y!-4}v8`} stroke="#f7e6bd" strokeWidth=".8"/>}</g>)}
+  <g transform="rotate(-24 193 91)"><ellipse cx="193" cy="91" rx="98" ry="22" stroke="#d4be9c" strokeWidth="10"/><circle cx="193" cy="91" r="46" fill="#c1b4cb"/><path d="M152 71c18 10 45 13 79 6m-84 12c31 12 63 12 91 4m-82 19c26 10 49 11 71 6" stroke="#a396b5" strokeWidth="8" strokeLinecap="round"/><path d="M95 91c0 12 44 22 98 22s98-10 98-22" stroke="#e4d1ae" strokeWidth="10"/></g>
+  <g transform="translate(48 57) rotate(22)"><path d="m0 36 11-18h19l10 18-11-4H12z" fill="#ca8e7e"/><path d="M12 34V12C12 0 20-9 20-9s9 9 9 21v22" fill="#f5e9cb"/><circle cx="20.5" cy="12" r="5" fill="#6f99a1"/><path d="m16 37 4 17 5-17" fill="#f0c56c"/></g>
+ </>:themeId==='turkiye'?<>
+  <path fill="#e9e7d9" d="M0 0h320v180H0z"/><circle cx="253" cy="46" r="23" fill={'url(#'+uid+'sun)'}/><path d="m0 101 38-24 34 17 48-31 49 32 51-21 100 20v86H0" fill="#d9c4a4"/><path d="m0 136 56-20 48 12 60-26 67 27 89-20v71H0" fill="#c0ae8b"/>
+  <path d="m81 165 18-72 8-32 8 32 20 72z" fill="#e8d4ae"/><path d="m94 91 13-39 14 39z" fill="#bba381"/><path d="m159 165 15-53 11-26 12 26 19 53z" fill="#e1c6a0"/><path d="m171 113 14-34 15 34z" fill="#ab9274"/><path d="m237 169 12-43 10-29 11 29 15 43z" fill="#d4ba94"/><path d="m247 128 12-38 14 38z" fill="#a99174"/><path d="M104 127v14m79-11v12m76 0v9" stroke="#9b8367" strokeWidth="6" strokeLinecap="round"/>
+  <g transform="translate(39 21)"><path d="M0 15C0-5 30-5 30 15c0 10-12 23-15 26C12 38 0 25 0 15" fill="#ce9176"/><path d="M15 1c-7 10-7 24 0 40 8-17 8-30 0-40" fill="#f2d3a4"/><path d="m10 41 2 7h6l2-7" fill="#977353"/></g><g transform="translate(130 13) scale(.55)"><path d="M0 15C0-5 30-5 30 15c0 10-12 23-15 26C12 38 0 25 0 15" fill="#6f9c96"/><path d="m10 41 2 7h6l2-7" fill="#977353"/></g>
+  <path d="M0 167c65-13 121 17 181 0s98-10 139-2v15H0" fill="#8d9b7c"/>
+ </>:themeId==='lezzetler'?<>
+  <path fill="#f0e2ce" d="M0 0h320v180H0z"/><path fill="#d0ac86" d="M0 127h320v53H0z"/><path d="M18 127V20h80v107m-40-107v107M18 68h80" stroke="#f9f0dd" strokeWidth="7"/>
+  <ellipse cx="166" cy="154" rx="76" ry="12" fill="#b99470"/><path d="M106 111c0 47 23 54 60 54s60-7 60-54" fill="#f9efda"/><ellipse cx="166" cy="111" rx="60" ry="15" fill="#e2c9a0"/><ellipse cx="166" cy="111" rx="50" ry="10" fill="#b67c50"/><path d="m139 109 8-4 8 6m16-5 9 5 9-6m-43 5 5 4" stroke="#7e9459" strokeWidth="5" strokeLinecap="round"/><path d="M152 85c-15-14 13-21-1-34m25 29c-15-14 13-21-1-34" stroke="#fffbef" strokeWidth="4" strokeLinecap="round"/>
+  <path d="m249 99-7 63m16-62-7 63" stroke="#9a7854" strokeWidth="4" strokeLinecap="round"/><path d="M261 72V47m-10 25V49m20 23V47m-20 25c0 12 20 12 20 0" stroke="#9a7854" strokeWidth="4" strokeLinecap="round"/><ellipse cx="56" cy="151" rx="22" ry="7" fill="#eee1c7"/><path d="M44 116h25l-3 34H48z" fill="#c39571"/><path d="M48 118h17l-1 26H50" fill="#7d5538"/>
+ </>:<>
+  <circle cx="244" cy="34" r="46" fill={theme.color} fillOpacity=".22"/><path d="M0 150c63-37 100 23 164-9s108-29 156-8v47H0" fill={theme.color} fillOpacity=".2"/><path d="m25 31 6 10-10 6-6-10zM267 126l8 13-13 8-8-13z" fill={theme.color} fillOpacity=".65"/>
+  <circle cx="160" cy="88" r="62" fill="#fff9e9" fillOpacity=".7"/><g transform="translate(95 28) scale(1.08)"><ThemeArt icon={theme.icon} color={theme.color}/></g><path d="M53 108v12m-6-6h12M278 58v10m-5-5h10" stroke="#fff9e9" strokeWidth="3" strokeLinecap="round"/><circle cx="64" cy="49" r="4" fill={theme.color}/><circle cx="253" cy="103" r="3" fill={theme.color}/>
+ </>}
+ </svg>;
+}
+export function DiscoveryArt(){
+ const letters=['M','E','R','A','K','B','İ','R','E','L','S','A','Ş','M','E','A','İ','Z','Y','A','F','S','E','S','İ'];
+ return <svg className="discovery-art" viewBox="0 0 520 410" fill="none" aria-hidden="true"><defs><linearGradient id="discovery-sky" x1="80" y1="20" x2="445" y2="385" gradientUnits="userSpaceOnUse"><stop stopColor="#d7e4ce"/><stop offset="1" stopColor="#a4b9a2"/></linearGradient><filter id="paper-shadow" x="-40%" y="-30%" width="180%" height="180%"><feDropShadow dx="0" dy="16" stdDeviation="15" floodColor="#173b32" floodOpacity=".16"/></filter></defs>
+  <ellipse cx="275" cy="210" rx="209" ry="164" fill="url(#discovery-sky)"/><path d="M89 254c82-81 135 41 208-15s92-8 150-32" stroke="#f2f1d9" strokeWidth="2" strokeDasharray="5 8"/>
+  <g transform="translate(337 29) rotate(12)"><rect width="119" height="144" rx="9" fill="#faf3da"/><path d="M10 10h99v96H10z" fill="#c3cddc"/><circle cx="71" cy="48" r="25" fill="#939dbd"/><ellipse cx="71" cy="48" rx="42" ry="8" stroke="#f0d1a0" strokeWidth="6" transform="rotate(-24 71 48)"/><circle cx="27" cy="30" r="2" fill="#fff8e8"/><path d="M20 119h60m-60 9h37" stroke="#bdbaa5" strokeWidth="3" strokeLinecap="round"/></g>
+  <g transform="translate(58 154) rotate(-15)"><rect width="127" height="152" rx="8" fill="#fff4d9"/><path d="M10 10h107v104H10z" fill="#ead2a7"/><path d="m11 102 22-39 20 22 18-52 35 69" fill="#bba17e"/><path d="m33 65 6-23 8 23m23-32 5-15 8 15" fill="#8d9b7b"/><circle cx="88" cy="37" r="12" fill="#f3b76b"/><path d="M20 128h61m-61 9h38" stroke="#c9b89b" strokeWidth="3" strokeLinecap="round"/></g>
+  <g className="floating-board" transform="translate(171 88) rotate(7 113 115)" filter="url(#paper-shadow)"><rect width="226" height="246" rx="24" fill="#fffaf0"/><rect x="9" y="9" width="208" height="228" rx="18" stroke="#e5e6d5"/><path d="M28 42h170" stroke="#edc56f" strokeWidth="30" strokeLinecap="round"/><path d="m194 42-164 164" stroke="#aac7b3" strokeWidth="30" strokeLinecap="round" opacity=".8"/>{letters.map((ch,i)=><text key={i} x={30+(i%5)*41} y={50+Math.floor(i/5)*41} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="25" fontWeight="700" fill="#244c3e">{ch}</text>)}<circle cx="196" cy="224" r="3" fill="#d8aa5a"/><circle cx="186" cy="224" r="3" fill="#cbd7bd"/><circle cx="176" cy="224" r="3" fill="#cbd7bd"/></g>
+  <g className="little-plane"><path d="m75 68 63-19-17 53-17-21-29-13Z" fill="#f8edcd"/><path d="m104 81 34-32-22 37-12-5Z" fill="#d8ba83"/><path d="M83 93c-44 25-25 60 12 52" stroke="#e7ead2" strokeWidth="2" strokeDasharray="4 6"/></g>
+  <g transform="translate(372 287) rotate(-14)"><circle r="37" fill="#e7c16f"/><circle r="29" stroke="#f9e6ae" strokeWidth="1.5" strokeDasharray="2 3"/><path d="m0-16 4 11 12 1-9 8 3 12-10-6-10 6 3-12-9-8 12-1Z" fill="#fff1c8"/></g><path d="M433 212v15m-7-8h14M160 50v11m-5-5h10M116 341v13m-6-6h12" stroke="#f7e7af" strokeWidth="3" strokeLinecap="round"/>
+ </svg>;
+}

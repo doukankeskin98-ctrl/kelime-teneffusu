@@ -1,4 +1,4 @@
-export const USERNAME_HELP='3–20 karakter; küçük harf, rakam ve alt çizgi.';
+export const USERNAME_HELP='3–20 karakter; a-z harfleri, rakam ve alt çizgi.';
 export function normalizeUsername(raw:unknown):string {
  if(typeof raw!=='string')return '';
  const name=raw.trim().toLowerCase();
@@ -12,6 +12,9 @@ export function safeReturnTo(raw:unknown):string {
   const query=new URLSearchParams(),tab=url.searchParams.get('sekme'),room=url.searchParams.get('oda')?.toUpperCase();
   if(tab&&['arena','gunluk','profil','kesfet'].includes(tab))query.set('sekme',tab);
   if(room&&/^[A-HJ-NP-Z2-9]{8}$/.test(room)){query.set('oda',room);query.set('sekme','arena');}
+  for(const key of ['meydan','arkadas']){const value=url.searchParams.get(key)?.toUpperCase();if(value&&/^[A-HJ-NP-Z2-9]{10}$/.test(value)){query.set(key,value);query.set('sekme','arena');}}
+  if(url.searchParams.get('mod')==='meydan')query.set('mod','meydan');
+  if(url.searchParams.get('mod')==='arkadaslar')query.set('mod','arkadaslar');
   return '/'+(query.size?'?'+query.toString():'');
  }catch{return '/';}
 }

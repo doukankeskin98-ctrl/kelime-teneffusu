@@ -1,6 +1,7 @@
 import {env} from 'cloudflare:workers';
 import {verifyMemberToken,IdentityError,type Principal} from './verify.ts';
 import {Accounts} from './accounts.ts';
+import {guestMember} from './guest.ts';
 export function authConfig(){
  if(!env.FIREBASE_PROJECT_ID||!env.FIREBASE_WEB_API_KEY||!env.FIREBASE_APP_ID||!env.FIREBASE_AUTH_DOMAIN)throw new IdentityError('Üyelik servisi henüz hazır değil.',503);
  return {projectId:env.FIREBASE_PROJECT_ID,apiKey:env.FIREBASE_WEB_API_KEY,authDomain:env.FIREBASE_AUTH_DOMAIN,appId:env.FIREBASE_APP_ID};
@@ -13,10 +14,16 @@ export async function currentPrincipal(request:Request):Promise<Principal|null>{
 }
 export function accountStore(){if(!env.DB)throw new IdentityError('Oyun sunucusuna ulaşılamıyor.',503);return new Accounts(env.DB);}
 export async function gameMember(request:Request){
- const principal=await currentPrincipal(request);if(!principal)return null;
+ const principal=await currentPrincipal(request);
+ if(!principal){
+  const nativeId=request.headers.get('oai-authenticated-user-id');
+  if(nativeId)return {userId:nativeId,email:request.headers.get('oai-authenticated-user-email')??'',username:'',kind:'native' as const};
+  return env.DB?guestMember(env.DB,request):null;
+ }
+ if(!principal.verified)throw new IdentityError('Önce e-posta adresini doğrula.',403);
  const account=await accountStore().find(principal);
  if(!account)throw new IdentityError('Önce kullanıcı adını seç.',409);
- return {userId:account.game_user_id,email:principal.email,username:account.username};
+ return {userId:account.game_user_id,email:principal.email,username:account.username,kind:'email' as const};
 }
 export const authJson=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 export function authFailure(error:unknown){return error instanceof IdentityError?authJson({error:error.message},error.status):authJson({error:'İşlem tamamlanamadı. Tekrar dene.'},503);}

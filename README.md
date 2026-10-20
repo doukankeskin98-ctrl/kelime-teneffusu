@@ -1,46 +1,61 @@
 # Kelime Teneffüsü
 
-Türkçe, telefon öncelikli kelime bulma oyunu. Lovable kredisi veya Lovable çalışma zamanı gerektirmez. React arayüzü, Vinext/Vite, Cloudflare Workers ve D1 üzerinde çalışır.
+Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudflare Workers + D1 üzerinde çalışır. Lovable kredisi veya Lovable çalışma zamanı gerekmez.
 
-## Oyunda
+## Oyun
 
-- 16 tema, her temada 6 bölüm: 96 farklı kelime listesi.
-- Sekiz yönde seçim, her yeni tahtada her iki eğimde en az bir çapraz kelime.
-- Kaydırma, iki uca dokunma ve klavye seçimi; büyük harf modu; isteğe bağlı ses; azaltılmış hareket desteği.
-- Günlük ortak tahta, İstanbul saatine göre gün değişimi, sunucuda tutulan süre, ipucu başına 15 saniye ve gerçek günlük sıralama.
-- İki gerçek oyunculu Arena: hızlı eşleşme, özel oda, ortak geri sayım, 120 saniye, Altın Kelime, bağlantı sonrası dönüş ve karşılıklı rövanş.
-- Sahte rakip, sahte çevrimiçi oyuncu sayısı veya hazırlanmış sıralama bulunmaz.
+- 16 tema, 96 özgün bölüm. Sekiz yön, her tahtada iki eğimde çapraz kelimeler.
+- Hababam, Uzay ve Türkiye için ayrıca 15 düzenlenmiş rota bölümü; küçük tahtalardan başlayan zorluk akışı.
+- Altı Gizli Tema: kelimeleri bul, ortak bağlantıyı çöz, bonus kelimeyi aç.
+- İlk açılışta oynanabilir 6 × 6 öğrenme turu. Kaydırma, iki uca dokunma ve klavye kontrolü.
+- Keşif albümleri, rozetler, açılan renk paletleri, kişisel en iyi solo sonuçları ve tekrar oynama.
+- Her gün İstanbul saatine göre ortak bulmaca. Süre sunucuda, ipucu başına +15 saniye.
+- 120 saniyelik gerçek iki kişilik Arena. Özel odalar, paylaşım bağlantısı, ortak geri sayım, Altın Kelime, bağlantıdan dönüş ve karşılıklı rövanş.
+- Dereceli hızlı eşleşmede Elo, bekledikçe genişleyen beceri aralığı. Özel odalar dereceyi değiştirmez.
+- Arkadaşının İzinde: gerçek, sunucuda kaydedilmiş bir performansa karşı aynı tahta. Canlı olmadığı açıkça gösterilir.
+- Onayla kabul edilen arkadaş davetleri, haftalık arkadaş sıralaması ve maç geçmişi.
+- Özgün SVG sahneler, isteğe bağlı ses/titreşim, büyük harf, kontrast ve azaltılmış hareket desteği.
+- Ana ekrana kurulabilen PWA. İlk başarılı indirmeden sonra solo oyunlar çevrimdışı açılır. API ve hesap yanıtları önbelleğe alınmaz.
 
-## Geliştirme
+Sahte rakip, uydurma çevrimiçi oyuncu sayısı ve hazırlanmış skor listesi yoktur. Satın alınmış rekabet avantajı veya ödeme akışı eklenmemiştir.
 
-Node 24 ve package.json içindeki packageManager alanında sabitlenen pnpm sürümünü kullanın:
+## Üyelik ve ilerleme
+
+Misafir profilinde 256 bit rastgele oturum anahtarı, HttpOnly/Secure/SameSite cookie ve sunucuda yalnızca anahtarın SHA-256 özeti kullanılır. Misafir profili bu tarayıcıya bağlıdır. Kalıcı hesaplar için Sites ChatGPT girişi korunur. Firebase e-posta, şifre, doğrulama, şifre sıfırlama ve benzersiz kullanıcı adı uygulaması hazırdır; aşağıdaki dört ortam değeri yapılandırılmadan e-posta yöntemi sunulmaz:
+
+`FIREBASE_PROJECT_ID`, `FIREBASE_WEB_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_APP_ID`.
+
+Kurulum ayrıntıları: [docs/email-membership.md](docs/email-membership.md). Gizli servis hesabı anahtarı istemciye veya kaynak koduna konmaz. Yerel kaynakta ortam değerlerini, kullanıcı verilerini ve oturum anahtarlarını saklamayın.
+
+Solo ilerleme cihazda hemen kaydedilir; bağlı profilin D1 kaydıyla eşitlenir. Farklı cihazların bulduğu kelimeler birleştirilir, daha iyi tamamlanmış sonuçlar korunur. Solo kayıtları rekabetçi puan veya derece vermez. Misafirden kalıcı hesaba geçerken solo ilerleme taşınır; bu aktarım dereceleri birleştirmez.
+
+Sites kimlik başlıkları bu platformun doğrulanmış erişim sınırında kullanılır. Başka bir hosta taşırken bu başlıklara doğrudan güvenmeyin; yerel kimlik sağlayıcısını ve güven sınırını yapılandırın.
+
+## Geliştirme ve kontroller
+
+Node 24, pnpm 11.25.0:
 
 ```sh
 pnpm install --frozen-lockfile
+pnpm content:check
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm dev
+node scripts/verify-worker.mjs
 ```
 
-`npm run` komutları da kullanılabilir. Bağımlılıklar `pnpm-lock.yaml` ile sabitlenmiştir. Geliştirme sunucusu 5173 portundan açılır. Sites ortamındaki geliştirme/yayınlama için Sites yardımcılarını kullanın. Normal taşınabilir geliştirme ortamında yerel deneme kimliği starter tarafından sağlanır; üretim kimliğini Sites doğrular.
+İçerik kontrolü, 21 düzenlenmiş bulmacanın tüm hedeflerini ve 420 alternatif yerleşimini doğrular. Birim/servis testleri 6.000 özgün ve klasik tahta, kayıt uyumluluğu, kimlik, eşzamanlı güncellemeler, derece, zaman sınırları, arkadaşlar ve gerçek kayıtlı performansları kapsar. Üretim Worker kontrolü iki bağımsız oturumla HTTP üzerinden misafir girişi, CSRF reddi, meydan okuma, arkadaş kabulü, canlı olay akışı, düello, özel ilerleme, çıkış ve PWA paketini sınar. Tarayıcı veya dokunmatik ekran testi değildir.
 
-## Sunucu ve veri
+`.openai/hosting.json` mevcut Site kimliğini ve `DB` bağlamasını korur. Şema `db/schema.ts`, değişmez SQL geçişleri `drizzle/` altındadır. Şemayı değiştirince `pnpm db:generate` çalıştırın ve yeni SQL ile Drizzle kayıtlarını birlikte ekleyin. Veritabanı istek sırasında oluşturulmaz. Sites, geçişleri yayımlarken uygular. Yayın için Sites kaynak/paketleme yardımcılarını kullanın.
 
-`.openai/hosting.json` içinde D1 bağlaması `DB` olarak tanımlıdır. Şema `db/schema.ts`, sürümlenen SQL geçişi `drizzle/` içindedir. Yeni şemalarda `pnpm db:generate` çalıştırın. Veritabanı tabloları istek sırasında oluşturulmaz. Sites, yayımlarken geçişleri uygular. Başka bir Cloudflare hesabına taşımak için D1 veritabanını ve kimlik doğrulamasını ayrıca yapılandırın.
+## İçerik ve işletim
 
-Arena ve günlük sıralama, Sites tarafından doğrulanmış kullanıcı kimliğini kullanır. Oyuncu kimliği, bitiş süresi veya puan tarayıcıdan kabul edilmez. Sunucu düz çizgiyi, sınırları, kelimeyi, oda üyeliğini, tekrarları ve son tarihi denetler. SQLite işlemleri ve sürüm karşılaştırmaları aynı anda gelen hamlelerde puan kaybını ve çift kayıtları önler. Rakibin çözüm yolları maç sırasında gönderilmez.
+`/atolye` yerel bölüm taslağı düzenler, yerleşim/çözümleri gösterir ve JSON dışa aktarır. Canlı içeriği değiştirmez. Düzenlenmiş içerik `lib/game/content.ts`, standart temalar `lib/game/catalog.ts` içindedir. Kaynağa eklenen içerik CI kontrolünden geçer.
 
-Keşif ilerlemesi ve tercihler bu tarayıcıda, Arena ve günlük yarışma sonuçları D1 içinde tutulur. Kaynak kodunda servis anahtarı veya hesap belirteci bulunmaz. Üretim verilerini, `.env` dosyalarını ve yerel çalışma dizinlerini depoya eklemeyin.
+Canlı durum tarayıcıya SSE ile iletilir. Kalıcı durum D1 üzerinde izlenir; bu sürüm WebSocket/Durable Object altyapısı kullanmaz. Sunucu puan, sıra, üyelik, doğru seçim ve süreyi denetler. Bu, otomatik çözücülerin tamamen engellendiği anlamına gelmez.
 
-## Klasik oyunun korunması
+İsteğe bağlı ölçümler varsayılan kapalıdır. E-posta, kelime yolları veya kalıcı analitik kullanıcı kimliği gönderilmez. Günlük toplu olay/bucket sayımları ve cihazda tutulan tarihlerle izin veren kullanıcıların D1/D7 dönüşleri izlenebilir. Bunlar tüm oyuncuları temsil eden ölçümler değildir. Ayrıntılı çıkış kontrolleri ve henüz yapılmamış doğrulamalar: [docs/studio-release.md](docs/studio-release.md).
 
-Başlangıç kaynak sürümü: `f1405b3be941f075039e1348510c5b08c0b0903e`.
+## İlk fotoğrafın korunması
 
-`lib/game/legacy.ts`, fotoğraftaki 20 özgün Hababam ismini, dört turu, eski deterministik yerleşimi ve `hababam-kelime-v1` kayıt biçimini korur. Eski sürümle aynı başlangıç değerleri, aynı tahtaları üretir. Klasik oyun ana sayfadan açılır. Tarayıcı güvenliği nedeniyle başka bir alan adındaki eski kayıtlar yeni alan adına otomatik taşınamaz; eski oyun kendi adresinde kalır.
-
-## Doğrulama
-
-`tests/engine.test.ts` ve `tests/server.test.ts` içerik bütünlüğünü, 4.800 yeni tahtayı, 1.200 klasik tahtayı, İstanbul gün sınırını, kayıtları ve gerçek SQLite üzerinde iki bağımsız oyuncunun düello akışını sınar. Eşzamanlı eşleşme, tekrar edilen hamle, süre sonu, ayrılma, rövanş ve günlük yarışma da kapsanır.
-
-Bu geliştirme ortamında tarayıcı otomasyonu bulunmadığı için fiziksel telefonda dokunma, Safari ses davranışı ve yayımlanmış sitede iki gerçek hesapla uçtan uca test henüz yapılmadı. Bu kontroller, motor ve sunucu testlerinden ayrıdır.
+`lib/game/legacy.ts`, fotoğraftaki 20 Hababam ismini, dört turu, deterministik yerleşimi ve `hababam-kelime-v1` kayıt biçimini korur. Eski tohumlar aynı tahtaları üretir. Klasik oyun ana sayfadan açılır. Farklı bir alan adındaki eski tarayıcı kayıtları otomatik taşınamaz.

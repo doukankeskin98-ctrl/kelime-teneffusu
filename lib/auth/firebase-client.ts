@@ -1,16 +1,16 @@
 'use client';
 import type {Auth,User} from 'firebase/auth';
 import {safeReturnTo} from './shared.ts';
-interface PublicConfig {apiKey:string;authDomain:string;projectId:string;appId:string}
+interface PublicConfig {apiKey?:string;authDomain?:string;projectId?:string;appId?:string;available:boolean}
 type Client={auth:Auth;sdk:typeof import('firebase/auth')};
 let pending:Promise<Client>|null=null;
 let active:Client|null=null;
+let configuration:Promise<PublicConfig>|null=null;
+export function publicAuthConfig(){return configuration??=(async()=>{const r=await fetch('/api/auth/config',{cache:'no-store'});if(!r.ok)throw new Error('Giriş bilgileri alınamadı.');return r.json() as Promise<PublicConfig>;})().catch(e=>{configuration=null;throw e;});}
 export function getAuthClient():Promise<Client>{
  if(pending)return pending;
  pending=(async()=>{
-  const response=await fetch('/api/auth/config',{cache:'no-store'});
-  if(!response.ok)throw new Error('Üyelik servisine şu an ulaşılamıyor. Biraz sonra tekrar dene.');
-  const config=await response.json() as PublicConfig;
+  const config=await publicAuthConfig();
   if(!config.apiKey||!config.projectId||!config.authDomain||!config.appId)throw new Error('Üyelik servisi henüz hazır değil.');
   const [appSdk,sdk]=await Promise.all([import('firebase/app'),import('firebase/auth')]);
   const app=appSdk.getApps().find(a=>a.name==='kelime-membership')??appSdk.initializeApp(config,'kelime-membership');
@@ -55,4 +55,4 @@ export async function resetEmail(email:string,returnTo:string){
  try{await sdk.sendPasswordResetEmail(auth,email.trim(),continueSettings(returnTo));}
  catch(error){if(!(error&&typeof error==='object'&&'code' in error&&error.code==='auth/user-not-found'))throw error;}
 }
-export async function signOutMember(){const {auth,sdk}=await getAuthClient();await sdk.signOut(auth);window.dispatchEvent(new Event('kt-auth-updated'));}
+export async function signOutMember(){if(active)await active.sdk.signOut(active.auth);const r=await fetch('/api/session',{method:'DELETE'});if(!r.ok)throw new Error('Çıkış yapılamadı.');window.dispatchEvent(new Event('kt-auth-updated'));}

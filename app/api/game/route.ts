@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
-import {accountStore,currentPrincipal,gameMember} from '@/lib/auth/server';
+import {accountStore,boundedJson,currentPrincipal,gameMember} from '@/lib/auth/server';
+import {rateLimit} from '@/lib/game/security';
 import {IdentityError} from '@/lib/auth/verify';
 import { GameService, GameError } from '@/lib/game/server';
 export const dynamic='force-dynamic';
@@ -8,17 +9,18 @@ async function service(){if(!env.DB)throw new GameError('Oyun sunucusu hazırlan
 export async function GET(request:Request){try{
  const url=new URL(request.url),action=url.searchParams.get('action');
  const game=await service();if(action==='rankings')return json(await game.rankings());
- const principal=await currentPrincipal(request);if(!principal)return json({authenticated:false});
- if(!principal.verified)return json({authenticated:false,needsVerification:true});
- const member=await accountStore().find(principal);if(!member)return json({authenticated:false,needsUsername:true});
- if(action==='room')return json(await game.state(member.game_user_id,url.searchParams.get('id')??undefined));
- return json({authenticated:true,username:member.username,email:principal.email,profile:await game.profile(member.game_user_id),stats:await game.stats(member.game_user_id)});
+ const principal=await currentPrincipal(request);
+ if(principal&&!principal.verified)return json({authenticated:false,needsVerification:true});
+ if(principal&&!await accountStore().find(principal))return json({authenticated:false,needsUsername:true});
+ const member=await gameMember(request);if(!member)return json({authenticated:false});
+ if(action==='room')return json(await game.state(member.userId,url.searchParams.get('id')??undefined));
+ return json({authenticated:true,nativeSession:!!request.headers.get('oai-authenticated-user-id'),kind:member.kind,username:member.username,email:member.email,profile:await game.profile(member.userId),stats:await game.stats(member.userId),rating:await game.rating(member.userId)});
 }catch(e){return failure(e);}}
 export async function POST(request:Request){try{
  const origin=request.headers.get('origin');if(origin!==new URL(request.url).origin)throw new GameError('İstek kaynağı doğrulanamadı.',403);
  const user=await gameMember(request);if(!user)throw new GameError('Devam etmek için giriş yap.',401);
- const raw=await request.text();if(raw.length>4096)throw new GameError('İstek çok büyük.',413);
- const data=JSON.parse(raw) as Record<string,unknown>,game=await service(),id=typeof data['id']==='string'?data['id']:'';
+ const data=await boundedJson(request,4096),game=await service(),id=typeof data['id']==='string'?data['id']:'';
+ await rateLimit(env.DB!,'game:'+user.userId,180);
  switch(data['action']){
   case 'rename':return json(await game.rename(user.userId,data['name']));
   case 'enter':return json(await game.enter(user.userId,data['kind']==='friend'?'friend':'quick',typeof data['code']==='string'?data['code']:undefined));

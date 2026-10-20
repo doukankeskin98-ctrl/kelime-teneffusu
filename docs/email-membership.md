@@ -1,6 +1,6 @@
 # E-posta üyeliği
 
-Durum: geliştirme dalı. İlk CI kontrolünde TypeScript, 25 test ve üretim derlemesi başarılı oldu. Bu değişiklik henüz üretime alınmadı. Firebase hesabı bağlantısı ve çalışır yayınlama ortamı bekleniyor.
+Durum: kod Studio sürümüne dahil edildi. Firebase projesi ve ortam yapılandırması henüz bağlı değil; e-posta yöntemi yapılandırma tamamlanıncaya kadar sunulmaz. Bu sırada misafir profili ve mevcut Sites ChatGPT girişi çalışır. E-posta gelen kutusu ve Emulator doğrulaması ayrıca tamamlanmalıdır.
 
 ## Hazırlanan akış
 
