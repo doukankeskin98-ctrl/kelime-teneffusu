@@ -13,7 +13,7 @@ Türkçe, telefon öncelikli kelime bulma oyunu. Lovable kredisi veya Lovable ç
 
 ## Geliştirme
 
-Node 24 ve pnpm 10 kullanın:
+Node 24 ve package.json içindeki packageManager alanında sabitlenen pnpm sürümünü kullanın:
 
 ```sh
 pnpm install --frozen-lockfile
