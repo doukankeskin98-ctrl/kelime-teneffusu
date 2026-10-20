@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./game.css";
+import "./auth.css";
 
 export const metadata: Metadata = {
   title: "Kelime Teneffüsü | Keşfet, bul, kapış",

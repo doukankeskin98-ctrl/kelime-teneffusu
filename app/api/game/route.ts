@@ -1,19 +1,22 @@
 import { env } from 'cloudflare:workers';
-import { getChatGPTUser } from '../../chatgpt-auth';
+import {accountStore,currentPrincipal,gameMember} from '@/lib/auth/server';
+import {IdentityError} from '@/lib/auth/verify';
 import { GameService, GameError } from '@/lib/game/server';
 export const dynamic='force-dynamic';
 const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 async function service(){if(!env.DB)throw new GameError('Oyun sunucusu hazırlanıyor. Birazdan yeniden dene.',503);return new GameService(env.DB);}
 export async function GET(request:Request){try{
- const user=await getChatGPTUser(),url=new URL(request.url),action=url.searchParams.get('action');
+ const url=new URL(request.url),action=url.searchParams.get('action');
  const game=await service();if(action==='rankings')return json(await game.rankings());
- if(!user)return json({authenticated:false});
- if(action==='room')return json(await game.state(user.userId,url.searchParams.get('id')??undefined));
- return json({authenticated:true,profile:await game.profile(user.userId),stats:await game.stats(user.userId)});
+ const principal=await currentPrincipal(request);if(!principal)return json({authenticated:false});
+ if(!principal.verified)return json({authenticated:false,needsVerification:true});
+ const member=await accountStore().find(principal);if(!member)return json({authenticated:false,needsUsername:true});
+ if(action==='room')return json(await game.state(member.game_user_id,url.searchParams.get('id')??undefined));
+ return json({authenticated:true,username:member.username,email:principal.email,profile:await game.profile(member.game_user_id),stats:await game.stats(member.game_user_id)});
 }catch(e){return failure(e);}}
 export async function POST(request:Request){try{
  const origin=request.headers.get('origin');if(origin!==new URL(request.url).origin)throw new GameError('İstek kaynağı doğrulanamadı.',403);
- const user=await getChatGPTUser();if(!user)throw new GameError('Canlı oyun için ChatGPT ile giriş yap.',401);
+ const user=await gameMember(request);if(!user)throw new GameError('Devam etmek için giriş yap.',401);
  const raw=await request.text();if(raw.length>4096)throw new GameError('İstek çok büyük.',413);
  const data=JSON.parse(raw) as Record<string,unknown>,game=await service(),id=typeof data['id']==='string'?data['id']:'';
  switch(data['action']){
@@ -29,4 +32,4 @@ export async function POST(request:Request){try{
   default:throw new GameError('Bilinmeyen işlem.');
  }
 }catch(e){return failure(e);}}
-function failure(e:unknown){if(e instanceof GameError)return json({error:e.message},e.status);if(e instanceof SyntaxError)return json({error:'İstek okunamadı.'},400);console.error('Game API operation failed',e instanceof Error?e.message:'unknown');return json({error:'Bağlantı kurulamadı. Tekrar dene.'},503);}
+function failure(e:unknown){if(e instanceof GameError||e instanceof IdentityError)return json({error:e.message},e.status);if(e instanceof SyntaxError)return json({error:'İstek okunamadı.'},400);console.error('Game API operation failed',e instanceof Error?e.message:'unknown');return json({error:'Bağlantı kurulamadı. Tekrar dene.'},503);}
