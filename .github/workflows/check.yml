@@ -19,6 +19,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm db:generate
+      - name: Export generated review inputs
+        run: node scripts/export-review-inputs.mjs
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
