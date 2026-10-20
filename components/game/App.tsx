@@ -1,46 +1,80 @@
 'use client';
-import {useEffect,useState} from 'react';
-import {ArrowRight,CalendarDays,Compass,Flame,HelpCircle,LoaderCircle,Star,Swords,User,ChevronRight} from 'lucide-react';
+import {useEffect,useRef,useState} from 'react';
+import {ArrowRight,BookOpen,CalendarDays,Check,ChevronRight,Compass,Flame,HelpCircle,LoaderCircle,Sparkles,Star,Swords,User} from 'lucide-react';
+import {EntryPanel} from '@/components/auth/EntryPanel';
+import type {AuthMode} from '@/components/auth/AuthPanel';
+import {useMembership} from '@/components/auth/useMembership';
+import {safeReturnTo} from '@/lib/auth/shared';
+import {signOutMember} from '@/lib/auth/firebase-client';
 import {THEMES,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
-import {dailySpec} from '@/lib/game/engine';
-import {emptyProgress,loadProgress,PROGRESS_KEY,streak,type Progress} from '@/lib/game/progress';
+import {JOURNEYS} from '@/lib/game/content';
+import {dailySpec,istanbulDay} from '@/lib/game/engine';
+import {emptyProgress,loadProgress,mergeProgress,PROGRESS_KEY,streak,collectionStats} from '@/lib/game/progress';
 import {SAVE_KEY,validateSave} from '@/lib/game/legacy';
-import {istanbulDay} from '@/lib/game/engine';
 import type {DailyView} from '@/lib/game/server';
-import {ThemeArt} from './Art';
 import {Arena} from './Arena';
+import {Challenges} from './Challenges';
+import {Friends} from './Friends';
+import {Mystery} from './Mystery';
+import {Platform} from './Platform';
+import {useCloudProgress} from './useCloudProgress';
+import {WorldArt} from './WorldArt';
 import {api,getApi,Help,Modal} from './common';
 import {Solo,type SoloConfig} from './Solo';
 import {Explore,DailyPage,ProfilePage,type Account} from './Pages';
 type Nav='kesfet'|'arena'|'gunluk'|'profil';
-const TABS=[{id:'kesfet' as Nav,label:'Keşfet',icon:Compass},{id:'arena' as Nav,label:'Arena',icon:Swords},{id:'gunluk' as Nav,label:'Günlük',icon:CalendarDays},{id:'profil' as Nav,label:'Profil',icon:User}];
-export function GameApp({authenticated}:{authenticated:boolean}){
+type ArenaTab='live'|'challenge'|'friends';
+const TABS=[{id:'kesfet' as Nav,label:'Keşfet',icon:Compass},{id:'arena' as Nav,label:'Arena',icon:Swords},{id:'gunluk' as Nav,label:'Günlük',icon:CalendarDays},{id:'profil' as Nav,label:'Albüm',icon:BookOpen}];
+export function GameApp(){
+ const membership=useMembership(),bootOwner=useRef('');
+ const [authMode,setAuthMode]=useState<AuthMode|null>(null),[authReturn,setAuthReturn]=useState('/');
  const [progress,setProgress]=useState(emptyProgress),[ready,setReady]=useState(false),[storageError,setStorageError]=useState(false),[nav,setNav]=useState<Nav>('kesfet');
- const [theme,setTheme]=useState<Theme|null>(null),[solo,setSolo]=useState<SoloConfig|null>(null),[daily,setDaily]=useState<DailyView|null>(null),[help,setHelp]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[account,setAccount]=useState<Account>({authenticated});
- useEffect(()=>{try{setProgress(loadProgress(localStorage.getItem(PROGRESS_KEY)));}catch{setStorageError(true);}const query=new URLSearchParams(location.search);const tab=query.get('sekme');if(query.has('oda')||tab==='arena')setNav('arena');else if(tab==='gunluk')setNav('gunluk');setReady(true);},[]);
- useEffect(()=>{if(!ready)return;try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(progress));}catch{setStorageError(true);}},[progress,ready]);
- useEffect(()=>{if(!authenticated)return;const c=new AbortController();getApi<Account>('',c.signal).then(setAccount).catch(()=>{});return ()=>c.abort();},[authenticated,nav]);
- const stars=Object.values(progress.saves).reduce((sum,s)=>sum+(s.complete?s.stars:0),0),dailyStreak=streak(progress.days,istanbulDay());
- const openSolo=(config:SoloConfig)=>{setTheme(null);setSolo(config);setDaily(null);window.scrollTo({top:0});};
- const back=()=>{setSolo(null);setDaily(null);window.scrollTo({top:0});};
- const startDaily=async()=>{setBusy(true);setError('');try{const d=await api<DailyView>('daily');setDaily(d);const s=dailySpec(d.day);setSolo({themeId:s.themeId,level:s.level});window.scrollTo({top:0});}catch(e){setError((e as Error).message);}finally{setBusy(false);}};
+ const [arenaTab,setArenaTab]=useState<ArenaTab>('live'),[playing,setPlaying]=useState(false),[invites,setInvites]=useState({challenge:'',friend:''});
+ const [theme,setTheme]=useState<Theme|null>(null),[solo,setSolo]=useState<SoloConfig|null>(null),[mystery,setMystery]=useState<string|null>(null),[daily,setDaily]=useState<DailyView|null>(null),[help,setHelp]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[account,setAccount]=useState<Account>({authenticated:false});
+ const authenticated=account.authenticated,syncStatus=useCloudProgress(account.profile?.id,progress,setProgress,ready);
+ const openAuth=(mode:AuthMode='signin')=>{if(account.kind==='guest'){try{sessionStorage.setItem('kt-upgrade-progress',JSON.stringify(progress));}catch{}}const url=new URL(location.href);url.searchParams.set('sekme',nav);if(nav==='arena'&&arenaTab!=='live')url.searchParams.set('mod',arenaTab==='challenge'?'meydan':'arkadaslar');setAuthReturn(safeReturnTo(url.pathname+url.search));setAuthMode(mode);};
+ useEffect(()=>{
+  let loaded=emptyProgress();try{bootOwner.current=localStorage.getItem(PROGRESS_KEY+':last-user')??'';loaded=loadProgress(localStorage.getItem(bootOwner.current?PROGRESS_KEY+':'+bootOwner.current:PROGRESS_KEY));setProgress(loaded);}catch{setStorageError(true);}
+  const query=new URLSearchParams(location.search),tab=query.get('sekme'),challenge=query.get('meydan')?.toUpperCase()??'',friend=query.get('arkadas')?.toUpperCase()??'';
+  if(query.has('oda')||tab==='arena'||challenge||friend){setNav('arena');if(challenge||query.get('mod')==='meydan')setArenaTab('challenge');if(friend||query.get('mod')==='arkadaslar')setArenaTab('friends');setInvites({challenge:/^[A-HJ-NP-Z2-9]{10}$/.test(challenge)?challenge:'',friend:/^[A-HJ-NP-Z2-9]{10}$/.test(friend)?friend:''});}
+  else if(tab==='gunluk')setNav('gunluk');else if(tab==='profil')setNav('profil');
+  else if(!loaded.tutorialDone&&Object.keys(loaded.saves).length===0)setSolo({themeId:'uzay',level:0,tutorial:true,run:Date.now()});
+  setReady(true);
+ },[]);
+ useEffect(()=>{if(!ready||authenticated)return;try{localStorage.setItem(bootOwner.current?PROGRESS_KEY+':'+bootOwner.current:PROGRESS_KEY,JSON.stringify(progress));}catch{setStorageError(true);}},[progress,ready,authenticated]);
+ useEffect(()=>{
+  if(!membership.ready)return;
+  const c=new AbortController();getApi<Account>('',c.signal).then(next=>{
+   if(bootOwner.current&&next.profile?.id&&bootOwner.current!==next.profile.id){try{setProgress(loadProgress(localStorage.getItem(PROGRESS_KEY+':'+next.profile.id)));}catch{setProgress(emptyProgress());}}if(next.profile?.id)bootOwner.current=next.profile.id;if(next.authenticated&&next.kind!=='guest'){try{const upgrade=sessionStorage.getItem('kt-upgrade-progress');if(upgrade){setProgress(p=>mergeProgress(p,loadProgress(upgrade)));sessionStorage.removeItem('kt-upgrade-progress');}}catch{}}setAccount(next);
+   if(next.needsUsername){setAuthReturn(safeReturnTo(location.pathname+location.search));setAuthMode('username');}
+  }).catch(e=>{if(e.name!=='AbortError'&&navigator.onLine)setError('Oyuncu profiline ulaşılamadı. Yeniden deneyebilirsin.');});
+  return ()=>c.abort();
+ },[membership.revision,nav]);
+ const {stars}=collectionStats(progress),dailyStreak=streak(progress.days,istanbulDay());
+ const selectNav=(next:Nav)=>{setNav(next);setError('');setPlaying(false);const url=new URL(location.href);url.searchParams.set('sekme',next);if(next!=='arena'){for(const key of ['oda','meydan','arkadas','mod'])url.searchParams.delete(key);setInvites({challenge:'',friend:''});}history.replaceState(null,'',url.pathname+url.search);window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));};
+ const openSolo=(config:SoloConfig)=>{setTheme(null);setMystery(null);setSolo({...config,run:Date.now()});setDaily(null);window.scrollTo({top:0});};
+ const back=()=>{if(solo?.tutorial)setProgress(p=>({...p,tutorialDone:true}));setSolo(null);setDaily(null);setMystery(null);window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));};
+ const startDaily=async()=>{if(!authenticated){openAuth();return;}setBusy(true);setError('');try{const d=await api<DailyView>('daily');setDaily(d);const s=dailySpec(d.day);setSolo({themeId:s.themeId,level:s.level,run:Date.now()});window.scrollTo({top:0});}catch(e){setError((e as Error).message);}finally{setBusy(false);}};
  const classic=()=>{let level=0;try{level=validateSave(JSON.parse(localStorage.getItem(SAVE_KEY)??'null'))?.round??0;}catch{}openSolo({themeId:'hababam',level,classic:true});};
- if(solo&&ready)return <div className="game-app"><Solo key={`${solo.classic?'classic':daily?'daily':'solo'}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} progress={progress} onProgress={setProgress} onBack={back} onNext={openSolo} daily={daily??undefined}/></div>;
- return <div className="app-shell">
-  <aside className="sidebar"><button className="brand" onClick={()=>setNav('kesfet')} aria-label="Kelime Teneffüsü ana sayfa"><span className="brand-mark">Kt<span>.</span></span><span>kelime<br/><b>teneffüsü</b></span></button><span className="sidebar-label">KENDİNE BİR TENEFFÜS VER</span>
-   <nav aria-label="Ana gezinme">{TABS.map(t=><button key={t.id} className={nav===t.id?'active':''} onClick={()=>{setNav(t.id);setError('');window.scrollTo({top:0});}}><t.icon size={21}/><span>{t.label}</span>{t.id==='arena'&&<i className="live-dot"/>}{t.id==='gunluk'&&<small>1</small>}</button>)}</nav>
-   <div className="sidebar-bottom"><div className="small-chalk"><HelpCircle size={25}/><p>Bir kelime bul.<br/><em>Kafanı dağıt.</em></p><span>Her gün küçük bir keşif.</span></div><button className="sidebar-help" onClick={()=>setHelp(true)}><HelpCircle size={18}/> Nasıl oynanır?</button><small>Merakla yapıldı. Türkçe oynanır.</small></div>
-  </aside>
-  <div className="main-area"><header className="topbar"><div className="mobile-brand"><span className="brand-mark">Kt<span>.</span></span><b>kelime teneffüsü</b></div><div className="breadcrumb"><span>Senin oyun alanın</span><ChevronRight size={14}/><b>{TABS.find(t=>t.id===nav)?.label}</b></div><div className="topbar-right"><span className="streak-badge" title="Günlük oyun serisi"><Flame size={17}/>{dailyStreak}<small>gün</small></span><span className="star-badge"><Star size={17}/>{stars}</span><button className="profile-avatar" onClick={()=>setNav('profil')} aria-label="Profilini aç">{account.profile?.nickname.slice(0,1)??'K'}</button></div></header>
-   <main className="main-content">{storageError&&<div className="error-box" role="status">Tarayıcı kayıt alanına erişilemiyor. Bu oturumdaki ilerlemen sayfayı kapatınca kaybolabilir.</div>}
-    {nav==='kesfet'&&<Explore progress={progress} setTheme={setTheme} openSolo={openSolo} setNav={setNav} classic={classic}/>}
-    {nav==='arena'&&<Arena authenticated={authenticated} progress={progress} onProgress={setProgress} practice={()=>openSolo({themeId:'hababam',level:0})}/>}
-    {nav==='gunluk'&&<DailyPage authenticated={authenticated} progress={progress} busy={busy} error={error} start={()=>void startDaily()}/>}
-    {nav==='profil'&&<ProfilePage account={account} setAccount={setAccount} progress={progress} onProgress={setProgress}/>}
-   </main>
-  </div>
-  <nav className="mobile-nav" aria-label="Mobil gezinme">{TABS.map(t=><button className={nav===t.id?'active':''} onClick={()=>{setNav(t.id);window.scrollTo({top:0});}} key={t.id}><t.icon size={21}/><span>{t.label}</span></button>)}</nav>
-  {theme&&<Modal title={theme.title} onClose={()=>setTheme(null)}><div className="theme-modal-intro"><ThemeArt icon={theme.icon} color={theme.color}/><p>{theme.subtitle}<br/><small>Her bölüm açık. Merak ettiğinden başlayabilirsin.</small></p></div><div className="level-grid">{LEVEL_NAMES.map((name,l)=>{const saved=progress.saves[`${theme.id}.${l}`];return <button key={l} className={'level-card'+(saved?.complete?' complete':'')} onClick={()=>openSolo({themeId:theme.id,level:l})}><span>{String(l+1).padStart(2,'0')}</span><b>{name}</b><small>{5+l} kelime · {l<2?'Rahat':l<4?'Dengeli':'Ustalık'}</small><div>{[0,1,2].map(s=><Star key={s} size={13} fill={(saved?.stars??0)>s?'currentColor':'none'}/>)}</div>{saved?.strokes.length&&!saved.complete?<em>Kaldığın yerden</em>:null}</button>;})}</div></Modal>}
+ const openChallenge=()=>{selectNav('arena');setArenaTab('challenge');};
+ const openMystery=(id:string)=>{setMystery(id);setTheme(null);window.scrollTo({top:0});};
+ const wrap=' '+(progress.contrast?'contrast-mode':'');
+ if(solo&&ready)return <div className={'game-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/><Solo key={`${solo.run}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} progress={progress} onProgress={setProgress} onBack={back} onNext={openSolo} daily={daily??undefined}/></div>;
+ if(mystery&&ready)return <div className={'game-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/><Mystery key={mystery} id={mystery} progress={progress} onProgress={setProgress} onBack={back} onNext={openMystery}/></div>;
+ return <div className={'app-shell'+wrap} data-palette={progress.palette}>
+  <Platform consent={progress.analytics} playing={playing}/>
+  <aside className="sidebar"><button className="brand" onClick={()=>selectNav('kesfet')} aria-label="Kelime Teneffüsü ana sayfa"><span className="brand-mark">Kt<span>.</span></span><span>kelime<br/><b>teneffüsü</b></span></button><span className="sidebar-label">MERAKINA İYİ GELİR.</span><nav aria-label="Ana gezinme">{TABS.map(t=><button key={t.id} className={nav===t.id?'active':''} onClick={()=>selectNav(t.id)} aria-current={nav===t.id?'page':undefined}><t.icon size={21}/><span>{t.label}</span>{t.id==='gunluk'&&!progress.days.includes(istanbulDay())&&<i className="new-discovery-dot"/>}</button>)}</nav><div className="sidebar-bottom"><div className="small-chalk"><Sparkles size={26}/><p>Bir kelime bul.<br/><em>Kafanı dağıt.</em></p><span>Her gün küçük bir keşif.</span></div><button className="sidebar-help" onClick={()=>setHelp(true)}><HelpCircle size={18}/>Nasıl oynanır?</button><small>Merakla yapıldı. Keyifle oynanır.</small></div></aside>
+  <div className="main-area">{!playing&&<header className="topbar"><button className="mobile-brand" onClick={()=>selectNav('kesfet')}><span className="brand-mark">Kt<span>.</span></span><b>kelime teneffüsü</b></button><div className="breadcrumb"><span>Küçük bir mola</span><ChevronRight size={14}/><b>{TABS.find(t=>t.id===nav)?.label}</b></div><div className="topbar-right"><span className="streak-badge" title="Günlük oyun serisi"><Flame size={17}/>{dailyStreak}</span><span className="star-badge" title="Kazanılan yıldızlar"><Star size={17}/>{stars}</span>{authenticated?<button className={'profile-avatar frame-'+progress.palette} onClick={()=>selectNav('profil')} aria-label="Oyuncu profilini aç">{account.profile?.nickname.slice(0,1)??'K'}</button>:<button className="auth-nav-button register" onClick={()=>openAuth('signin')}><User size={16}/>Giriş yap</button>}</div></header>}
+  <main className={'main-content'+(playing?' arena-is-playing':'')} id="game-main">{storageError&&<div className="error-box" role="status">Bu tarayıcıda kayıt alanı kullanılamıyor. İlerlemeni korumak için hesabınla giriş yapabilirsin.</div>}{error&&nav!=='gunluk'&&<p className="error-box" role="alert">{error}</p>}{membership.user&&!membership.user.emailVerified&&<div className="auth-banner"><span>Kalıcı hesabın için e-posta adresini doğrula.</span><button className="text-button" onClick={()=>openAuth('verify')}>Doğrulamaya devam et</button></div>}
+   {nav==='kesfet'&&<Explore progress={progress} setTheme={setTheme} openSolo={openSolo} setNav={selectNav} classic={classic} onMystery={openMystery} onChallenge={openChallenge}/>}
+   {nav==='arena'&&<>{!playing&&<div className="arena-tabs" aria-label="Birlikte oynama seçenekleri">{[{id:'live' as const,label:'Canlı düello',Icon:Swords},{id:'challenge' as const,label:'Meydan okuma',Icon:Compass},{id:'friends' as const,label:'Arkadaşlar',Icon:User}].map(tab=><button key={tab.id} className={arenaTab===tab.id?'selected':''} aria-pressed={arenaTab===tab.id} onClick={()=>setArenaTab(tab.id)}><tab.Icon size={17}/>{tab.label}</button>)}</div>}{arenaTab==='live'&&<Arena authenticated={authenticated} onLogin={()=>openAuth()} progress={progress} onProgress={setProgress} practice={()=>openSolo({themeId:'uzay',level:0,journey:'uzay-1',practice:true})} onPlaying={setPlaying}/>} {arenaTab==='challenge'&&<Challenges authenticated={authenticated} onLogin={()=>openAuth()} progress={progress} onProgress={setProgress} inviteCode={invites.challenge} onPlaying={setPlaying}/>} {arenaTab==='friends'&&<Friends authenticated={authenticated} onLogin={()=>openAuth()} invitation={invites.friend} onDuel={()=>setArenaTab('live')}/>}</>}
+   {nav==='gunluk'&&<DailyPage authenticated={authenticated} onLogin={()=>openAuth()} progress={progress} busy={busy} error={error} start={()=>void startDaily()}/>}
+   {nav==='profil'&&<ProfilePage account={account} setAccount={setAccount} onLogin={()=>openAuth('register')} onLogout={async()=>{try{localStorage.removeItem(PROGRESS_KEY+':last-user');}catch{}bootOwner.current='';await signOutMember();if(account.kind==='native'||account.nativeSession){location.assign('/signout-with-chatgpt?return_to=%2F');return;}setAccount({authenticated:false});setProgress(emptyProgress());selectNav('kesfet');}} progress={progress} onProgress={setProgress} syncStatus={syncStatus} onTheme={setTheme}/>}
+  </main></div>
+  {!playing&&<nav className="mobile-nav" aria-label="Mobil gezinme">{TABS.map(t=><button className={nav===t.id?'active':''} onClick={()=>selectNav(t.id)} key={t.id} aria-current={nav===t.id?'page':undefined}><t.icon size={21}/><span>{t.label}</span></button>)}</nav>}
+  {theme&&<Modal title={theme.title} onClose={()=>setTheme(null)}><div className="theme-modal-hero"><WorldArt themeId={theme.id}/><p>{theme.subtitle}</p></div>{JOURNEYS.some(j=>j.themeId===theme.id)&&<><div className="section-title route-section-title"><div><span className="eyebrow">BEŞ DURAKLIK ÖZEL BİR YOLCULUK</span><h3>Keşif rotası</h3></div><Compass size={23}/></div><div className="journey-list">{JOURNEYS.filter(j=>j.themeId===theme.id).map((j,i)=>{const saved=progress.saves['route:'+j.id];return <button className={saved?.complete?'done':''} key={j.id} onClick={()=>openSolo({themeId:theme.id,level:0,journey:j.id,practice:saved?.complete})}><span className="journey-number">{saved?.complete?<Check size={20}/>:String(i+1).padStart(2,'0')}</span><span><b>{j.title}</b><small>{j.words.length} kelime · {j.difficulty}</small></span><span className="journey-stars">{saved?.complete?[0,1,2].map(s=><Star size={12} key={s} fill={saved.stars>s?'currentColor':'none'}/>):<ArrowRight size={19}/>}</span></button>;})}</div></>}
+  <details className="classic-levels" open={!JOURNEYS.some(j=>j.themeId===theme.id)}><summary>{JOURNEYS.some(j=>j.themeId===theme.id)?'Altı bölüm daha keşfet':'Bölümünü seç'}<ChevronRight size={18}/></summary><div className="level-grid">{LEVEL_NAMES.map((name,l)=>{const saved=progress.saves[`${theme.id}.${l}`];return <button key={l} className={'level-card'+(saved?.complete?' complete':'')} onClick={()=>openSolo({themeId:theme.id,level:l,practice:saved?.complete})}><span>{String(l+1).padStart(2,'0')}</span><b>{name}</b><small>{5+l} kelime · {l<2?'Rahat':l<4?'Dengeli':'Ustalık'}</small><div>{[0,1,2].map(s=><Star key={s} size={13} fill={(saved?.stars??0)>s?'currentColor':'none'}/>)}</div>{saved?.strokes.length&&!saved.complete?<em>Kaldığın yerden</em>:null}</button>;})}</div></details></Modal>}
+  {authMode&&<Modal title={authMode==='register'?'Oyuncu profilin':'Hoş geldin'} onClose={()=>setAuthMode(null)}><EntryPanel initial={authMode} returnTo={authReturn} user={membership.user} available={membership.available} onDone={()=>location.assign(safeReturnTo(authReturn))}/></Modal>}
   {help&&<Help onClose={()=>setHelp(false)}/>} {busy&&<span className="global-busy" role="status"><LoaderCircle size={18} className="spin"/>Günün keşfi hazırlanıyor…</span>}
  </div>;
 }
