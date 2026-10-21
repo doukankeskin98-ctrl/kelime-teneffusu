@@ -4,6 +4,7 @@ import {IdentityError} from '@/lib/auth/verify';
 import {GameError} from '@/lib/game/server';
 import {SocialService} from '@/lib/game/social';
 import {rateLimit} from '@/lib/game/security';
+import {recordOperationalFault} from '@/lib/studio/health';
 export const dynamic='force-dynamic';
 function service(){if(!env.DB)throw new GameError('Oyun bağlantısı kurulamadı.',503);return new SocialService(env.DB);}
 export async function GET(request:Request){try{
@@ -28,4 +29,4 @@ export async function POST(request:Request){try{
   default:throw new GameError('Bu işlem bulunamadı.');
  }
  }catch(e){return failure(e);}}
-function failure(e:unknown){return authJson({error:e instanceof GameError||e instanceof IdentityError?e.message:'Bağlantı kurulamadı. Tekrar dene.'},e instanceof GameError||e instanceof IdentityError?e.status:503);}
+async function failure(e:unknown){const known=e instanceof GameError||e instanceof IdentityError,status=known?e.status:503;if(status>=500)await recordOperationalFault(env.DB,'social');return authJson({error:known?e.message:'Bağlantı kurulamadı. Tekrar dene.'},status);}

@@ -3,6 +3,7 @@ import {accountStore,boundedJson,currentPrincipal,gameMember} from '@/lib/auth/s
 import {rateLimit} from '@/lib/game/security';
 import {IdentityError} from '@/lib/auth/verify';
 import { GameService, GameError } from '@/lib/game/server';
+import {recordOperationalFault} from '@/lib/studio/health';
 export const dynamic='force-dynamic';
 const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 async function service(){if(!env.DB)throw new GameError('Oyun sunucusu hazırlanıyor. Birazdan yeniden dene.',503);return new GameService(env.DB);}
@@ -34,4 +35,4 @@ export async function POST(request:Request){try{
   default:throw new GameError('Bilinmeyen işlem.');
  }
 }catch(e){return failure(e);}}
-function failure(e:unknown){if(e instanceof GameError||e instanceof IdentityError)return json({error:e.message},e.status);if(e instanceof SyntaxError)return json({error:'İstek okunamadı.'},400);console.error('Game API operation failed',e instanceof Error?e.message:'unknown');return json({error:'Bağlantı kurulamadı. Tekrar dene.'},503);}
+async function failure(e:unknown){if(e instanceof GameError||e instanceof IdentityError){if(e.status>=500)await recordOperationalFault(env.DB,'game');return json({error:e.message},e.status);}if(e instanceof SyntaxError)return json({error:'İstek okunamadı.'},400);await recordOperationalFault(env.DB,'game');return json({error:'Bağlantı kurulamadı. Tekrar dene.'},503);}

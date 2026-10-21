@@ -8,7 +8,7 @@ self.addEventListener('fetch',event=>{
  const request=event.request,url=new URL(request.url);
  if(request.method!=='GET'||url.origin!==self.location.origin)return;
  // API, identity, email action links and private responses are never cached.
- if(url.pathname.startsWith('/api/')||url.pathname==='/uye'||url.pathname.includes('signin')||url.pathname.includes('signout')||url.pathname.includes('callback'))return;
+ if(url.pathname.startsWith('/api/')||url.pathname==='/uye'||url.pathname.startsWith('/yonetim')||url.pathname.includes('signin')||url.pathname.includes('signout')||url.pathname.includes('callback'))return;
  if(request.mode==='navigate'&&url.pathname==='/'){
   event.respondWith((async()=>{const cache=await caches.open(CACHE);try{const response=await fetch(request);if(response.ok&&response.headers.get('Content-Type')?.includes('text/html'))await cache.put('/',response.clone());return response;}catch{return await cache.match('/')??new Response('Teneffüsüne hazırlanmak için önce bir kez internete bağlan.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});}})());return;
  }
