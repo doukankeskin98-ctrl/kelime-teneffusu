@@ -35,6 +35,8 @@ Sites kimlik başlıkları bu platformun doğrulanmış erişim sınırında kul
 
 ## Geliştirme ve kontroller
 
+Ürün, görsel düzen, kayıt güvenliği ve sıradaki ölçülebilir kalite hedefleri: [21 Ekim kalite incelemesi](docs/quality-review.md).
+
 Node 24, pnpm 11.25.0:
 
 ```sh
