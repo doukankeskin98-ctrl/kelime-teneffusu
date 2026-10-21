@@ -4,6 +4,7 @@ import {ArrowRight,Check,Clock,Lightbulb,LockKeyhole,Sparkles,Star,Trophy} from 
 import {MYSTERIES,mysteryBoard} from '@/lib/game/content';
 import {match,timeLabel,type Cell,type Stroke} from '@/lib/game/engine';
 import {cleanSave,type Progress} from '@/lib/game/progress';
+import {keepBestSave} from '@/lib/game/discovery';
 import {track} from '@/lib/game/telemetry';
 import {Help,Modal,PlayControls,PlayLayout,useChime,WordList} from './common';
 
@@ -16,7 +17,7 @@ export function Mystery({id,progress,onProgress,onBack,onNext}:{id:string;progre
  useEffect(()=>{
   if(paused||save.complete||choose||help)return;const at=performance.now(),base=save.elapsed,t=setInterval(()=>setSave(s=>({...s,elapsed:base+Math.floor((performance.now()-at)/1000)})),1000),hide=()=>{if(document.hidden)setPaused(true);};document.addEventListener('visibilitychange',hide);return ()=>{clearInterval(t);document.removeEventListener('visibilitychange',hide);};
  },[paused,save.complete,choose,help]);
- useEffect(()=>{onProgress(p=>({...p,saves:{...p.saves,[key]:p.saves[key]?.complete&&(!save.complete||p.saves[key]!.stars>save.stars)?p.saves[key]!:save},mysteries:solved?[...new Set([...p.mysteries,spec.id])]:p.mysteries}));},[save,solved]);
+ useEffect(()=>{onProgress(p=>({...p,saves:{...p.saves,[key]:keepBestSave(p.saves[key],save)},mysteries:solved?[...new Set([...p.mysteries,spec.id])]:p.mysteries}));},[save,solved]);
  useEffect(()=>{if(!hint)return;const timer=setTimeout(()=>setHint(null),3500);return ()=>clearTimeout(timer);},[hint]);
  const commit=(a:Cell,b:Cell)=>{
   if(paused||save.complete||choose||help)return;const target=match(board,a,b);if(!target){setMessage('Bağlantı başka bir yerde olabilir.');track('selection_miss');return;}
