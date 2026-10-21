@@ -6,10 +6,12 @@ import {StudioError} from '@/lib/studio/content';
 import {GameError} from '@/lib/game/server';
 import {ChapterStore} from '@/lib/studio/store';
 import {recordOperationalFault} from '@/lib/studio/health';
+import {releaseCatalogue} from '@/lib/studio/releases';
 export const dynamic='force-dynamic';
 function store(){if(!env.DB)throw new StudioError('Yeni keşiflere şu an ulaşılamıyor.',503);return new ChapterStore(env.DB);}
 export async function GET(request:Request){try{
  const service=store(),url=new URL(request.url),id=url.searchParams.get('id');
+ if(url.searchParams.get('collection')==='releases'&&!id&&!url.searchParams.has('action'))return authJson(releaseCatalogue(Number(url.searchParams.get('offset')??0)));
  if(url.searchParams.get('action')==='progress'){const member=await gameMember(request);if(!member)throw new StudioError('İlerlemeni eşitlemek için giriş yap.',401);return authJson(await service.progress(member.userId,id));}
  return authJson(id?await service.playable(id):await service.catalogue(Number(url.searchParams.get('offset')??0)));
  }catch(e){return failure(e);}}

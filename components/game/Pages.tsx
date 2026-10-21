@@ -13,14 +13,17 @@ import {nextDiscovery} from '@/lib/game/next-discovery';
 import type {SoloConfig} from './Solo';
 import {PublishedChapters} from './PublishedChapters';
 import type {PublishedChapter} from '@/lib/studio/content';
+import type {ReleaseSummary} from '@/lib/studio/releases';
+import {DailyDiscoveries} from './DailyDiscoveries';
 export type Account={authenticated:boolean;kind?:'guest'|'native'|'email';nativeSession?:boolean;needsUsername?:boolean;needsVerification?:boolean;username?:string;email?:string;profile?:{id:string;nickname:string};stats?:{played:number;wins:number;score:number};rating?:{value:number;played:number}};
-export function Explore({progress,setTheme,openSolo,setNav,classic,onMystery,onChallenge,onExtra}:{progress:Progress;setTheme:(t:Theme)=>void;openSolo:(c:SoloConfig)=>void;setNav:(n:'kesfet'|'arena'|'gunluk'|'profil')=>void;classic:()=>void;onMystery:(id:string)=>void;onChallenge:()=>void;onExtra:(chapter:PublishedChapter)=>void}){
+export function Explore({releases,progress,setTheme,openSolo,setNav,classic,onMystery,onChallenge,onExtra}:{releases:ReleaseSummary[];progress:Progress;setTheme:(t:Theme)=>void;openSolo:(c:SoloConfig)=>void;setNav:(n:'kesfet'|'arena'|'gunluk'|'profil')=>void;classic:()=>void;onMystery:(id:string)=>void;onChallenge:()=>void;onExtra:(chapter:PublishedChapter)=>void}){
  const [search,setSearch]=useState(''),[filter,setFilter]=useState('Tümü');
  const visible=useMemo(()=>THEMES.filter(t=>(filter==='Tümü'||t.category===filter)&&(t.title+' '+t.subtitle).toLocaleLowerCase('tr-TR').includes(search.toLocaleLowerCase('tr-TR'))),[search,filter]);
  const dailyTheme=findTheme(dailySpec(istanbulDay()).themeId),nextMystery=MYSTERIES.find(m=>!progress.saves['mystery:'+m.id]?.complete)??MYSTERIES[0]!;
  const recommendation=nextDiscovery(progress),destination=recommendation.config;
  const begin=()=>openSolo(destination);
  return <div className="page-enter studio-home"><div className="welcome-row"><div><span className="eyebrow">KENDİNE KÜÇÜK BİR MOLA VER</span><h1>Bugün ne keşfedelim?</h1></div><span className="collection-count"><Compass size={17}/>16 dünya, binbir merak.</span></div>
+ <DailyDiscoveries chapters={releases} onPlay={onExtra}/>
  <section className="discovery-hero"><div className="discovery-hero-copy"><span className="pill hero-pill"><Sparkles size={14}/>Kelimelerle iyi bir mola.</span><h2>Merakına<br/>bir <em>teneffüs.</em></h2><p>Bir kelimeyle başla.<br/>Bambaşka dünyalar keşfet.</p><button className="button primary" onClick={begin}>{recommendation.label}<ArrowRight size={18}/></button><div className="hero-next-note"><span>{recommendation.mode==='continue'?'YARIM KALAN KEŞFİN':'SIRADAKİ KÜÇÜK ADIM'}</span><b>{recommendation.title}</b><small>{recommendation.theme}{recommendation.found>0?` · ${recommendation.found} kelime bulundu`: ''}</small></div><div className="hero-footnote"><span><Check size={14}/>Süre baskısı yok</span><span><Compass size={14}/>Her yöne keşif</span></div></div><DiscoveryArt/><span className="hero-note">Küçük bir keşif,<br/><em>güzel bir his.</em></span></section>
  <DiscoveryMap progress={progress} onPlay={(journey,practice)=>openSolo({themeId:journey.themeId,level:0,journey:journey.id,practice})}/>
  <PublishedChapters onPlay={onExtra}/>
