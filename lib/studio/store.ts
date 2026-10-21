@@ -8,6 +8,7 @@ import {ALL_JOURNEYS,MYSTERIES} from '../game/content.ts';
 import {checkChapter,validChapterId,StudioError,type AdminChapter,type ChapterSpec,type PublishedChapter,type PlayableChapter} from './content.ts';
 import {HEALTH_AREAS} from './health.ts';
 import {releasedChapter,reservedReleaseId,releaseCatalogue} from './releases.ts';
+import {cardProgress} from './card-progress.ts';
 
 interface ChapterRow {id:string;status:AdminChapter['status'];spec:string;board:string;content_hash:string;revision:number;created:number;updated:number;published:number|null;starts?:number;completions?:number}
 export interface AdminSetup {hash?:string;expiresAt?:string}
@@ -33,6 +34,15 @@ export class ChapterStore {
  async catalogue(offset=0){const start=offsetValue(offset),limit=24,rows=await this.q("SELECT id,spec,content_hash,published,status FROM studio_chapters WHERE status='published' ORDER BY published DESC,id DESC LIMIT ? OFFSET ?",limit+1,start).all<ChapterRow>();const total=await this.q("SELECT COUNT(*) AS count FROM studio_chapters WHERE status='published'").first<{count:number}>();return {chapters:rows.results.slice(0,limit).map(rowPublic),nextOffset:rows.results.length>limit?start+limit:null,total:total?.count??0};}
  async playable(id:unknown){const released=releasedChapter(id,this.clock());if(released)return released;const row=await this.row(id);if(row.published===null||row.status==='draft')throw new StudioError('Bölüm bulunamadı.',404);return rowPlayable(row);}
  async progress(userId:string,id:unknown){const chapter=await this.playable(id),row=await this.q('SELECT data,revision FROM chapter_saves WHERE user_id=? AND chapter_id=?',userId,chapter.id).first<{data:string;revision:number}>();return {save:cleanSave(row?JSON.parse(row.data) as SavedLevel:undefined,chapter.board),revision:row?.revision??0};}
+ async cardProgress(userId:string,rawIds:unknown){
+  if(!Array.isArray(rawIds)||rawIds.length<1||rawIds.length>24||rawIds.some(id=>!validChapterId(id)))throw new StudioError('En fazla 24 geçerli bölüm seç.');
+  const ids=[...new Set(rawIds as string[])],source=new Map(ids.map(id=>[id,releasedChapter(id,this.clock())])),runtime=ids.filter(id=>!source.get(id));
+  const rows=runtime.length?(await this.q(`SELECT * FROM studio_chapters WHERE id IN (${runtime.map(()=>'?').join(',')}) AND published IS NOT NULL AND status IN ('published','archived')`,...runtime).all<ChapterRow>()).results:[];
+  const chapters=ids.map(id=>source.get(id)??(rows.find(row=>row.id===id)?rowPlayable(rows.find(row=>row.id===id)!):undefined)).filter((chapter):chapter is PlayableChapter=>!!chapter);
+  if(!chapters.length)return {chapters:[]};
+  const saves=await this.q(`SELECT chapter_id,data FROM chapter_saves WHERE user_id=? AND chapter_id IN (${chapters.map(()=>'?').join(',')})`,userId,...chapters.map(c=>c.id)).all<{chapter_id:string;data:string}>();
+  return {chapters:chapters.map(chapter=>{const row=saves.results.find(s=>s.chapter_id===chapter.id),save=cleanSave(row?JSON.parse(row.data) as SavedLevel:undefined,chapter.board);return {id:chapter.id,contentHash:chapter.contentHash,progress:cardProgress(save,chapter.spec)};})};
+ }
  async saveProgress(userId:string,id:unknown,raw:unknown){
   const chapter=await this.playable(id),incoming=cleanSave(raw as SavedLevel,chapter.board);
   for(let attempt=0;attempt<6;attempt++){
