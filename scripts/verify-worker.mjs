@@ -42,6 +42,10 @@ try{
  const sourceChapter=releasedChapter(released.chapters[0].id);await request('/api/chapters?action=progress&id='+sourceChapter.id,{expected:401});
  const sourceSave=await json('/api/chapters',{cookie:aCookie,method:'PUT',body:{id:sourceChapter.id,save:{strokes:sourceChapter.board.placements,elapsed:35,hints:0,complete:false,stars:99}}});check(sourceSave.save.complete&&sourceSave.save.stars===3,'source release saves are validated by the production Worker');
  const otherSource=await json('/api/chapters?action=progress&id='+sourceChapter.id,{cookie:bCookie});check(otherSource.save.strokes.length===0,'daily release progress remains scoped to its actual player');
+ await request('/api/chapters?action=card-progress&ids='+sourceChapter.id,{expected:401});
+ const cardResponse=await request('/api/chapters?action=card-progress&ids='+sourceChapter.id,{cookie:aCookie}),cards=await cardResponse.json();check(cards.chapters[0].progress.complete&&cards.chapters[0].progress.stars===3&&cards.chapters[0].progress.foundIds.length===sourceChapter.board.targets.length,'card progress reflects the actual completed board');check(cardResponse.headers.get('Cache-Control')==='no-store'&&!JSON.stringify(cards).includes('placements')&&!JSON.stringify(cards).includes('strokes'),'card replies do not cache private progress or expose word paths');
+ const otherCards=await json('/api/chapters?action=card-progress&ids='+sourceChapter.id+'&userId='+a.profile.id,{cookie:bCookie});check(otherCards.chapters[0].progress.foundIds.length===0,'a query cannot select another account for card progress');
+ await request('/api/chapters?action=card-progress&ids=invalid',{cookie:aCookie,expected:400});await request('/api/chapters?action=card-progress&ids='+Array(25).fill(sourceChapter.id).join(','),{cookie:aCookie,expected:400});
  const friendInvite=await json('/api/social',{cookie:aCookie,method:'POST',body:{action:'invite'}});
  await json('/api/social',{cookie:bCookie,method:'POST',body:{action:'accept',code:friendInvite.code}});
  check((await json('/api/social',{cookie:aCookie})).friends[0].nickname==='Bob','friend consent flow');
