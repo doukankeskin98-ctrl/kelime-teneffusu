@@ -1,0 +1,153 @@
+/* Readability and touch polish. Original artwork, palettes and board layouts are retained. */
+:is(.app-shell,.game-app){--readable-secondary:#526548;--readable-caption:#5b6d50;--muted:#526548}
+:is(.app-shell,.game-app) :is(button,a){touch-action:manipulation}
+:is(.app-shell,.game-app) :is(.button,.text-button){min-height:44px;font-size:13px}
+:is(.app-shell,.game-app) .icon-button{min-width:44px;min-height:44px;width:44px;height:44px}
+:is(.app-shell,.game-app) input{font-size:16px;min-height:46px}
+:is(.app-shell,.game-app) input::placeholder{color:#65715b;opacity:1}
+:is(.app-shell,.game-app) .eyebrow{font-size:10px;line-height:1.65;letter-spacing:1.2px}
+.app-shell :is(.theme-info p,.section-intro>p,.section-title p,.discovery-heading p,.setting-row small,.profile-header p,.league-card small,.friend-card p,.arena-facts p,.lobby>.muted,.ranking-empty p,.nickname-form .muted){color:var(--readable-secondary);font-size:13px;line-height:1.7}
+.app-shell :is(.theme-progress,.theme-category,.route-badge,.quick-action small,.quick-action em,.hero-footnote,.special-count,.classic-banner p,.page-footer,.daily-rules,.block-note,.daily-week small,.stat-cards span,.achievement-row small,.palette-options small,.cloud-status,.friend-card small,.player-card>span,.share-notice){font-size:11px;line-height:1.7;color:var(--readable-caption)}
+.app-shell :is(.expedition-subtitle,.expedition-chapter small,.collection-piece small,.map-next-world,.album-description,.discovery-result p){color:var(--readable-secondary)}
+.app-shell .setting-row b{font-size:14px;line-height:1.5}
+.app-shell .setting-row{padding-top:16px;padding-bottom:16px;gap:13px;min-height:76px}
+.app-shell .theme-info p{min-height:44px}
+.app-shell .theme-progress{gap:8px;flex-wrap:wrap}
+.app-shell .theme-card{border-color:#d7dfc9;transition:transform .18s ease,box-shadow .18s ease}
+.app-shell .theme-card:active{transform:translateY(1px)}
+.app-shell .category-tabs button{min-height:44px;font-size:12px;padding:10px 15px}
+.app-shell .search-box{min-height:46px;width:230px;border-color:#c8d3bb;background:#fffef8}
+.app-shell .search-box input{font-size:14px;min-height:44px}
+.app-shell .discovery-hero{min-height:430px;border-color:#d2dec2}
+.app-shell .discovery-hero-copy{padding-top:31px;padding-bottom:29px}
+.app-shell .discovery-hero-copy>p{font-size:14px;margin-bottom:18px;line-height:1.65}
+.hero-next-note{border-left:2px solid #9caf77;padding-left:12px;margin-top:19px;max-width:270px}
+.hero-next-note>span{display:block;font-size:10px;letter-spacing:1px;color:#576e43;font-weight:700}
+.hero-next-note>b{display:block;font-family:var(--serif);font-size:21px;font-weight:500;line-height:1.3;margin:5px 0;overflow-wrap:anywhere}
+.hero-next-note>small{display:block;font-size:11px;color:#536a40;line-height:1.6}
+.app-shell .hero-footnote{gap:15px;flex-wrap:wrap;margin-top:17px}
+.app-shell .quick-action{min-height:110px;border-color:#d4dfc6}
+.app-shell .quick-action b{font-size:18px;line-height:1.3}
+.app-shell .quick-action em{margin-top:6px;font-style:normal;overflow-wrap:anywhere}
+.app-shell .daily-studio-copy>p{font-size:14px;line-height:1.75;color:var(--readable-secondary)}
+.app-shell .arena-main-card>small{font-size:12px;line-height:1.75;color:#d7e3c4}
+.app-shell .arena-main-card>p{font-size:14px;line-height:1.75;color:#e1e9d0}
+.app-shell .arena-tabs button{min-height:44px;font-size:13px;padding:11px 16px}
+.app-shell .topbar .profile-avatar{width:44px;height:44px}
+.app-shell .mobile-nav button{min-height:51px;min-width:66px;font-size:11px;color:#5e6e50}
+.app-shell .mobile-nav button.active{color:#294e2f}
+.app-shell :is(.published-chapter-card p,.published-chapter-card b,.published-chapter-card>div>span){font-size:11px;color:#526847;line-height:1.7}
+.app-shell .published-chapter-card i{font-size:9px;color:#526847}
+.game-app .play-heading .eyebrow{font-size:10px;color:#526548;letter-spacing:.8px}
+.game-app .play-heading h1{font-size:clamp(25px,4vw,35px);line-height:1.15;overflow-wrap:anywhere}
+.game-app .play-heading>div{min-width:0}
+.game-app :is(.game-message,.game-note p,.board-access-note,.opponent-progress,.duel-controls>span,.golden-note small,.published-save-status){font-size:12px;line-height:1.7;color:#526548}
+.game-app .game-note p{font-size:13px}
+.game-app .game-message{min-height:24px;margin:3px 0 10px}
+.game-app .selection-preview{height:auto;min-height:43px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;margin-bottom:10px;border:1px solid #dce5cd;border-radius:9px;background:#f2f5e8;color:#4e643f;font-size:12px;line-height:1.5}
+.game-app .selection-preview.selecting{background:#e8efd8;border-color:#c3d2aa}
+.game-app .selection-preview>b{font-size:14px;letter-spacing:1.4px;overflow-wrap:anywhere;min-width:0}
+.game-app .selection-preview>b+span{font-size:11px;white-space:nowrap;flex-shrink:0;color:#4d643d}
+.game-app .word-tag{min-height:38px;padding:9px 10px;font-size:13px;line-height:1.5;gap:8px;border-color:#d3ddc4;color:#2b472e}
+.game-app .word-tag>div>small{font-size:11px!important;color:#526548;line-height:1.6}
+.game-app .word-tag.found>div{color:#3f5837;text-decoration-thickness:1px}
+.game-app .word-tag>div>small .part-found{color:#3f5837}
+.game-app .word-tag>span{height:15px;width:15px}
+.game-app .word-tag>span>svg{height:15px;width:15px}
+.game-app .play-controls{gap:6px;padding:8px;background:#fbfcf2f2;border-color:#d6e0c8;bottom:max(8px,env(safe-area-inset-bottom));box-shadow:0 4px 16px #29472e0a}
+.game-app .play-controls .hint-button{flex:1;min-width:0;font-size:13px;min-height:44px;padding:9px 6px;gap:5px}
+.game-app .play-controls .icon-button{flex:0 0 44px}
+.game-app .play-controls .icon-button.selected{background:#dce8c9;box-shadow:inset 0 0 0 1px #91a876}
+.game-app .duel-controls{flex-wrap:wrap;gap:9px;padding:10px 0}
+.game-app .duel-controls>span{flex:1 1 130px}
+.game-app .duel-scorebar small{font-size:11px;line-height:1.5;color:#526548;max-width:140px}
+.game-app .opponent-progress{gap:14px}
+.game-app .duel-clock.urgent{color:#a4512f}
+.game-app .game-status{font-variant-numeric:tabular-nums}
+.game-app .game-status small{font-size:11px;color:#5b6d50}
+.game-app .targets-panel .panel-heading>.eyebrow{color:#526548}
+.save-warning{max-width:1080px;padding:13px 16px;margin:0 auto 18px;background:#f8ecd8;border:1px solid #dcc69c;border-radius:10px;color:#77532c;font-size:13px;line-height:1.7}
+.modal{max-height:88dvh;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.modal p{font-size:14px;line-height:1.8}
+.modal .button{min-height:46px;font-size:13px}
+.modal .icon-button{min-width:44px;min-height:44px}
+.modal .button-row{flex-wrap:wrap}
+.modal .button-row>.button{flex:1 1 140px}
+.modal .level-card b{font-size:13px;line-height:1.5}
+.modal .level-card small{font-size:11px;color:#56694a}
+.modal .journey-list small{font-size:12px;color:#56694a;line-height:1.6}
+.result-details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0;padding:18px 8px;border-block:1px solid #dce4d0;text-align:center}
+.result-details strong{display:block;font-size:22px;font-family:var(--serif);font-weight:500;font-variant-numeric:tabular-nums}
+.result-details small{display:block;font-size:11px;line-height:1.6;color:#536747;margin-top:5px}
+.result-personal-best{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;background:#f1e5bc;color:#705824;padding:10px 14px;font-size:12px;font-weight:700;margin-bottom:18px}
+@media(max-width:780px){
+ .app-shell .main-content{padding-bottom:105px}
+ .app-shell .discovery-hero{min-height:450px}
+ .app-shell .discovery-hero-copy{max-width:62%;padding:27px 0 27px 25px}
+ .app-shell .discovery-art{opacity:.84}
+ .app-shell .hero-note{display:none}
+ .app-shell .theme-grid{gap:15px}
+ .app-shell .theme-info{padding:17px 14px}
+ .app-shell .theme-category{font-size:10px;padding:5px 8px}
+ .app-shell .route-badge{font-size:9px}
+ .app-shell .quick-actions{gap:12px}
+ .app-shell .quick-action{padding:18px;gap:13px}
+ .app-shell .quick-action small{font-size:10px}
+ .game-app .board-access-note{font-size:11px;margin-top:12px}
+}
+@media(max-width:600px){
+ .app-shell .discovery-hero-copy{max-width:72%;padding:26px 0 25px 21px}
+ .app-shell .discovery-hero h2{font-size:38px;line-height:1.1;max-width:230px}
+ .app-shell .discovery-hero-copy>p{font-size:13px;margin:16px 0}
+ .app-shell .discovery-hero-copy .button{font-size:13px;min-height:46px;padding:12px 16px}
+ .app-shell .discovery-hero{min-height:460px}
+ .hero-next-note{max-width:220px;margin-top:17px;padding-left:10px}
+ .hero-next-note>b{font-size:20px}
+ .app-shell .hero-footnote{gap:7px;font-size:10px;flex-direction:column;align-items:flex-start;margin-top:15px}
+ .app-shell .hero-footnote>span{gap:5px}
+ .app-shell .discovery-heading{gap:16px;flex-wrap:wrap;align-items:flex-start}
+ .app-shell .discovery-heading .search-box{width:100%;margin-top:4px}
+ .app-shell .search-box input{font-size:16px}
+ .app-shell .theme-info h3{font-size:23px;line-height:1.15}
+ .app-shell .theme-info p{font-size:13px;min-height:44px;margin-top:9px}
+ .app-shell .theme-progress{font-size:10px;line-height:1.8}
+ .app-shell .special-discoveries h2{font-size:26px}
+ .app-shell .special-discoveries p{font-size:13px;line-height:1.65;color:#526548}
+ .app-shell .special-discoveries .eyebrow{font-size:9px}
+ .app-shell .card-link{font-size:12px;min-height:35px}
+ .app-shell .arena-facts strong{font-size:13px}
+ .app-shell .arena-facts p{font-size:12px;line-height:1.7}
+ .app-shell .player-card>strong{font-size:13px}
+ .app-shell .rankings li{gap:10px;font-size:12px}
+ .app-shell .rankings li b{font-size:12px}
+ .app-shell .rankings li strong{min-width:0;overflow-wrap:anywhere}
+ .app-shell .daily-rules{flex-wrap:wrap;font-size:11px;gap:10px}
+ .app-shell .daily-studio-copy .block-note{font-size:12px;line-height:1.7}
+ .app-shell .stat-cards span{font-size:12px;line-height:1.6}
+ .app-shell .achievement-row b{font-size:13px}
+ .app-shell .achievement-row small{font-size:12px;line-height:1.6}
+ .game-app .play-heading{gap:12px;margin-bottom:17px}
+ .game-app .mini-mark{display:none}
+ .game-app .word-list{gap:7px}
+ .game-app .targets-panel{padding:16px 14px}
+ .game-app .panel-heading{margin-bottom:13px}
+ .game-app .play-columns{gap:17px}
+ .game-app .selection-preview{font-size:11px;gap:9px;padding:9px 10px}
+ .game-app .duel-scorebar{padding:13px 11px;gap:8px}
+ .game-app .duel-scorebar small{max-width:90px;font-size:11px}
+ .game-app .duel-scorebar .avatar.small{display:none}
+ .game-app .opponent-progress{font-size:11px;line-height:1.7;align-items:flex-start}
+ .game-app .opponent-progress>span:last-child{text-align:right}
+ .modal{width:calc(100% - 24px);padding:23px 20px;max-height:90dvh}
+ .modal .modal-head h2{font-size:27px;line-height:1.15}
+}
+@media(max-width:360px){
+ .app-shell .theme-grid{gap:12px}
+ .app-shell .theme-info{padding:15px 11px}
+ .app-shell .theme-info h3{font-size:21px}
+ .app-shell .theme-info p{font-size:12px}
+ .game-app .play-controls{gap:5px;padding:7px 5px}
+ .game-app .play-controls .hint-button{font-size:12px}
+ .game-app .word-tag{font-size:12px;padding:8px}
+}
+@media(prefers-reduced-motion:reduce){.app-shell .theme-card:active{transform:none}}
