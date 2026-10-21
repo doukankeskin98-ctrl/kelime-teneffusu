@@ -2,18 +2,23 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import {JOURNEY_BONUSES,journeyBoard} from '../lib/game/content.ts';
+import {NEW_CHAPTER} from '../lib/studio/content.ts';
 const require=createRequire(import.meta.url);
 const {Miniflare,Log,LogLevel}=require(require.resolve('miniflare',{paths:[require.resolve('wrangler/package.json')]}));
 const root=path.resolve('dist/server');
 async function files(directory){const result=[];for(const entry of await readdir(directory,{withFileTypes:true})){const full=path.join(directory,entry.name);if(entry.isDirectory())result.push(...await files(full));else if(entry.name.endsWith('.js'))result.push(full);}return result;}
 const modules=(await files(root)).sort((a,b)=>Number(b===path.join(root,'index.js'))-Number(a===path.join(root,'index.js'))).map(file=>({type:'ESModule',path:file}));
-const mf=new Miniflare({modules,modulesRoot:root,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:{DB:'integration'},assets:{directory:path.resolve('dist/client'),binding:'ASSETS',routerConfig:{has_user_worker:true,invoke_user_worker_ahead_of_assets:true}},log:new Log(LogLevel.ERROR)});
+const setupToken='e'.repeat(64),setupHash=createHash('sha256').update('kelime-admin-setup-v1:'+setupToken).digest('hex');
+const mf=new Miniflare({modules,modulesRoot:root,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],bindings:{ADMIN_SETUP_HASH:setupHash,ADMIN_SETUP_EXPIRES_AT:String(Date.now()+86400000)},d1Databases:{DB:'integration'},assets:{directory:path.resolve('dist/client'),binding:'ASSETS',routerConfig:{has_user_worker:true,invoke_user_worker_ahead_of_assets:true}},log:new Log(LogLevel.ERROR)});
 let checks=0;
 const check=(condition,label)=>{assert(condition,label);checks++;};
 const origin='https://game.test';
-async function request(url,{cookie,method='GET',body,expected=200,originHeader=origin}={}){
+async function request(url,{cookie,nativeUser,method='GET',body,expected=200,originHeader=origin}={}){
  const headers={};if(cookie)headers.Cookie=cookie;if(method!=='GET'){headers.Origin=originHeader;headers['Content-Type']='application/json';}
+ // Only this isolated Worker harness supplies the trusted dispatch identity headers.
+ if(nativeUser){headers['oai-authenticated-user-id']=nativeUser;headers['oai-authenticated-user-email']=nativeUser+'@example.test';}
  const response=await mf.dispatchFetch(origin+url,{method,headers,...(body!==undefined?{body:JSON.stringify(body)}:{})});
  assert.equal(response.status,expected,`${method} ${url}: ${response.status}`);checks++;return response;
 }
@@ -54,6 +59,27 @@ try{
  const sw=await (await request('/sw.js')).text();check(sw.includes('const BUILD_ASSETS=[')&&!sw.includes('const BUILD_ASSETS=[];'),'offline assets are built');
  for(const asset of ['/manifest.webmanifest','/icon-192.png','/icon-512.png'])await request(asset);
  const workshop=await (await request('/atolye')).text();check(workshop.includes('İÇERİK ATÖLYESİ'),'authoring workspace renders');
+ const panel=await (await request('/yonetim')).text();check(panel.includes('YÖNETİM ATÖLYESİ')&&panel.includes('noindex'),'admin entry is rendered and excluded from indexing');check(sw.includes("pathname.startsWith('/yonetim')"),'service worker excludes the administration entry');
+ const visitorSession=await json('/api/admin?action=session');check(visitorSession.signedIn===false&&visitorSession.authorized===false&&visitorSession.setupAvailable===true,'enrollment requires a signed-in native identity');
+ await request('/api/admin?action=overview',{cookie:aCookie,expected:401});await request('/api/admin?action=overview',{nativeUser:'not-owner',expected:403});
+ await request('/api/admin',{cookie:aCookie,method:'POST',body:{action:'claim',token:setupToken,role:'owner',userId:'native-owner'},expected:401});
+ await request('/api/admin',{nativeUser:'native-owner',method:'POST',originHeader:'https://foreign.test',body:{action:'claim',token:setupToken},expected:403});
+ await request('/api/admin',{nativeUser:'native-owner',method:'POST',body:{action:'claim',token:'bad'},expected:403});
+ const owner={nativeUser:'native-owner'},ownerSession=await json('/api/admin',{...owner,method:'POST',body:{action:'claim',token:setupToken}});check(ownerSession.authorized===true,'only the correct native account and secret bind the owner');
+ await request('/api/admin',{nativeUser:'someone-else',method:'POST',body:{action:'claim',token:setupToken},expected:409});
+ for(let i=0;i<4;i++)await request('/api/admin',{nativeUser:'someone-else',method:'POST',body:{action:'claim',token:setupToken},expected:409});await request('/api/admin',{nativeUser:'someone-else',method:'POST',body:{action:'claim',token:setupToken},expected:429});
+ const adminOverviewResponse=await request('/api/admin?action=overview',owner),adminOverview=await adminOverviewResponse.json();check(adminOverviewResponse.headers.get('Cache-Control')?.includes('no-store'),'private admin data is never cacheable');check(adminOverview.profiles===2&&adminOverview.finishedDuels===1&&adminOverview.duelPlayers===2,'overview reflects actual isolated game records');check(!JSON.stringify(adminOverview).includes(setupToken)&&!JSON.stringify(adminOverview).includes(setupHash),'admin overview never contains enrollment secrets');
+ const preview=await json('/api/admin',{...owner,method:'POST',body:{action:'preview',spec:NEW_CHAPTER}});check(preview.checks.alternateLayouts===20&&preview.checks.diagonals===true,'admin preview validates twenty alternatives and both diagonal slopes');
+ const creationId=crypto.randomUUID(),draft=await json('/api/admin',{...owner,method:'POST',body:{action:'save',spec:NEW_CHAPTER,creationId}}),duplicate=await json('/api/admin',{...owner,method:'POST',body:{action:'save',spec:NEW_CHAPTER,creationId}});check(draft.id===duplicate.id,'a retried draft request does not create a duplicate');check((await json('/api/chapters')).total===0,'draft is absent from the public catalogue');await request('/api/chapters?id='+draft.id,{expected:404});
+ await request('/api/admin',{...owner,method:'POST',body:{action:'publish',id:draft.id,revision:draft.revision},expected:400});
+ const published=await json('/api/admin',{...owner,method:'POST',body:{action:'publish',id:draft.id,revision:draft.revision,confirmation:draft.spec.title}});check((await json('/api/chapters')).chapters[0].id===draft.id,'a reviewed published chapter is publicly discoverable');const publicChapter=await json('/api/chapters?id='+draft.id);check(JSON.stringify(publicChapter.board)===JSON.stringify(preview.board),'the published board is the exact reviewed snapshot');check(!('revision' in publicChapter)&&!('actor_id' in publicChapter),'public chapter does not contain private management fields');
+ for(const action of ['save','archive','restore'])await request('/api/admin',{nativeUser:'not-owner',method:'POST',body:{action,id:draft.id,spec:NEW_CHAPTER,revision:published.revision,confirmation:draft.spec.title,role:'owner'},expected:403});
+ await request('/api/chapters',{method:'PUT',body:{id:draft.id,save:{}},expected:401});
+ const chapterSave=await json('/api/chapters',{cookie:aCookie,method:'PUT',body:{id:draft.id,userId:b.profile.id,save:{strokes:publicChapter.board.placements,elapsed:30,hints:0,complete:true,stars:99}}});check(chapterSave.save.complete&&chapterSave.save.stars===3,'extra progress is validated against the published board');check((await json('/api/chapters?action=progress&id='+draft.id,{cookie:bCookie})).save.strokes.length===0,'extra progress is isolated even when a body spoofs another user');check((await json('/api/admin?action=overview',owner)).extraCompletions===1,'admin counts actual account completions');
+ const archived=await json('/api/admin',{...owner,method:'POST',body:{action:'archive',id:draft.id,revision:published.revision,confirmation:draft.spec.title}});check((await json('/api/chapters')).total===0,'archived chapter is hidden from new discovery');check((await json('/api/chapters?id='+draft.id)).archived===true,'archived board remains available for saved players');check((await json('/api/chapters?action=progress&id='+draft.id,{cookie:aCookie})).save.complete,'archiving preserves completed player saves');
+ const restored=await json('/api/admin',{...owner,method:'POST',body:{action:'restore',id:draft.id,revision:archived.revision,confirmation:draft.spec.title}});check(restored.contentHash===published.contentHash&&restored.publishedAt===published.publishedAt,'restoring retains original content and publication timestamp');check((await json('/api/admin?action=audit',owner)).rows.length===5,'only completed owner, create, publish, archive and restore actions are audited');
  await request('/api/session',{cookie:aCookie,method:'DELETE'});check((await json('/api/game',{cookie:aCookie})).authenticated===false,'guest logout revokes its token');
+ // Deliberate isolated database failure verifies that the production route records a sanitized fault.
+ await db.prepare('DROP TABLE ratings').run();await request('/api/game',{cookie:bCookie,expected:503});const fault=(await json('/api/admin?action=faults',owner)).rows[0];check(fault?.area==='game'&&fault.count===1&&fault.reviewed_count===0,'unexpected route failures create operational counters');check(!JSON.stringify(fault).includes(b.profile.id)&&!JSON.stringify(fault).includes('ratings'),'fault counters contain no identity or raw database error');await json('/api/admin',{...owner,method:'POST',body:{action:'reviewFault',day:fault.day,area:fault.area,code:fault.code}});check((await json('/api/admin?action=faults',owner)).rows[0].reviewed_count===1,'fault review is persisted');
  console.log(`${checks} production Worker HTTP checks passed with two independent players.`);
 }finally{await mf.dispose();}
