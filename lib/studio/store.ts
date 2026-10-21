@@ -7,6 +7,7 @@ import {THEMES} from '../game/catalog.ts';
 import {ALL_JOURNEYS,MYSTERIES} from '../game/content.ts';
 import {checkChapter,validChapterId,StudioError,type AdminChapter,type ChapterSpec,type PublishedChapter,type PlayableChapter} from './content.ts';
 import {HEALTH_AREAS} from './health.ts';
+import {releasedChapter,reservedReleaseId,releaseCatalogue} from './releases.ts';
 
 interface ChapterRow {id:string;status:AdminChapter['status'];spec:string;board:string;content_hash:string;revision:number;created:number;updated:number;published:number|null;starts?:number;completions?:number}
 export interface AdminSetup {hash?:string;expiresAt?:string}
@@ -30,7 +31,7 @@ export class ChapterStore {
  protected q(sql:string,...args:unknown[]){return this.db.prepare(sql).bind(...args);}
  protected async row(id:unknown){if(!validChapterId(id))throw new StudioError('Bölüm bulunamadı.',404);const row=await this.q('SELECT * FROM studio_chapters WHERE id=?',id).first<ChapterRow>();if(!row)throw new StudioError('Bölüm bulunamadı.',404);return row;}
  async catalogue(offset=0){const start=offsetValue(offset),limit=24,rows=await this.q("SELECT id,spec,content_hash,published,status FROM studio_chapters WHERE status='published' ORDER BY published DESC,id DESC LIMIT ? OFFSET ?",limit+1,start).all<ChapterRow>();const total=await this.q("SELECT COUNT(*) AS count FROM studio_chapters WHERE status='published'").first<{count:number}>();return {chapters:rows.results.slice(0,limit).map(rowPublic),nextOffset:rows.results.length>limit?start+limit:null,total:total?.count??0};}
- async playable(id:unknown){const row=await this.row(id);if(row.published===null||row.status==='draft')throw new StudioError('Bölüm bulunamadı.',404);return rowPlayable(row);}
+ async playable(id:unknown){const released=releasedChapter(id,this.clock());if(released)return released;const row=await this.row(id);if(row.published===null||row.status==='draft')throw new StudioError('Bölüm bulunamadı.',404);return rowPlayable(row);}
  async progress(userId:string,id:unknown){const chapter=await this.playable(id),row=await this.q('SELECT data,revision FROM chapter_saves WHERE user_id=? AND chapter_id=?',userId,chapter.id).first<{data:string;revision:number}>();return {save:cleanSave(row?JSON.parse(row.data) as SavedLevel:undefined,chapter.board),revision:row?.revision??0};}
  async saveProgress(userId:string,id:unknown,raw:unknown){
   const chapter=await this.playable(id),incoming=cleanSave(raw as SavedLevel,chapter.board);
@@ -75,6 +76,7 @@ export class AdminStore extends ChapterStore {
  }
  async chapter(actor:string|null,id:unknown){await this.authorize(actor);return rowAdmin(await this.row(id));}
  async saveDraft(actor:string|null,raw:unknown,id?:unknown,expected?:unknown,creationId?:unknown){
+  if(reservedReleaseId(id)||reservedReleaseId(creationId)){await this.authorize(actor);throw new StudioError('Kaynakta yayımlanan bu bölüm değişmez. Yeni bir taslak kimliği kullan.',409);}
   const userId=await this.authorize(actor),checked=checkChapter(raw),spec=JSON.stringify(checked.spec),board=JSON.stringify(checked.board),contentHash=await digest(spec),now=this.clock(),op=crypto.randomUUID();
   if(id!==undefined){const old=await this.row(id);revision(expected);if(old.status!=='draft'||old.published!==null)throw new StudioError('Yayımlanan tahtalar değişmez. Yeni bir taslak olarak kopyalayabilirsin.',409);
    const result=await this.db.batch([this.q("UPDATE studio_chapters SET spec=?,board=?,content_hash=?,search_text=?,revision=revision+1,updated=?,last_operation=? WHERE id=? AND revision=? AND status='draft' AND published IS NULL",spec,board,contentHash,searchText(checked.spec),now,op,old.id,expected),this.auditChapter(userId,'draft_saved',old.id,checked.spec.title+' taslağı kaydedildi.',op)]);
@@ -102,7 +104,7 @@ export class AdminStore extends ChapterStore {
    this.q("SELECT strftime('%Y-%m-%d',created/1000,'unixepoch','+3 hours') day,COUNT(DISTINCT room_id) count FROM results WHERE created>=? GROUP BY day",Date.parse(start+'T00:00:00+03:00')).all<{day:string;count:number}>(),this.q('SELECT day,COUNT(*) count FROM dailies WHERE completed=1 AND day>=? GROUP BY day',start).all<{day:string;count:number}>(),this.q("SELECT strftime('%Y-%m-%d',completed_at/1000,'unixepoch','+3 hours') day,COUNT(*) count FROM chapter_saves WHERE completed_at>=? GROUP BY day",Date.parse(start+'T00:00:00+03:00')).all<{day:string;count:number}>(),
   ]);
   const trend=Array.from({length:7},(_,i)=>{const d=new Date(start+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+i);const day=d.toISOString().slice(0,10);return {day,duels:duelTrend.results.find(r=>r.day===day)?.count??0,dailies:dailyTrend.results.find(r=>r.day===day)?.count??0,extras:extraTrend.results.find(r=>r.day===day)?.count??0};});
-  return {now,profiles,newProfiles,finishedDuels,duelPlayers,finishedDailies,extraCompletions,published,drafts,archived,unreviewedFaults,fixedLevels:THEMES.length*6+ALL_JOURNEYS.length+MYSTERIES.length,trend};
+  return {now,profiles,newProfiles,finishedDuels,duelPlayers,finishedDailies,extraCompletions,published,drafts,archived,unreviewedFaults,fixedLevels:THEMES.length*6+ALL_JOURNEYS.length+MYSTERIES.length+releaseCatalogue(0,now).total,trend};
  }
  async metrics(actor:string|null,days=7){await this.authorize(actor);const length=days===30?30:7;return {days:length,from:firstDay(this.clock(),length),to:istanbulDay(this.clock()),rows:(await this.q('SELECT day,event,bucket,count FROM metrics WHERE day>=? AND day<=? ORDER BY day,event,bucket',firstDay(this.clock(),length),istanbulDay(this.clock())).all<{day:string;event:string;bucket:string;count:number}>()).results};}
  async faults(actor:string|null){await this.authorize(actor);return {rows:(await this.q('SELECT day,area,code,count,reviewed_count,first_seen,last_seen FROM operational_faults WHERE day>=? ORDER BY last_seen DESC LIMIT 100',firstDay(this.clock(),30)).all<OperationalFault>()).results};}

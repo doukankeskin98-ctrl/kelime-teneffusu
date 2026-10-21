@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-21",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261021-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Ormanın minik komşuları",
+          "themeId": "hayvanlar",
+          "words": [
+            "KİRPİ",
+            "TİLKİ",
+            "SİNCAP",
+            "ARI"
+          ],
+          "size": 6,
+          "seed": 2026102101,
+          "difficulty": "Rahat",
+          "note": "Dört küçük komşu saklandı. Çaprazlara bak; yanlış seçim ceza getirmez."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "S",
+              "Ö",
+              "I",
+              "Z",
+              "C",
+              "İ"
+            ],
+            [
+              "E",
+              "İ",
+              "G",
+              "R",
+              "K",
+              "K"
+            ],
+            [
+              "J",
+              "Ç",
+              "N",
+              "İ",
+              "A",
+              "L"
+            ],
+            [
+              "Ğ",
+              "S",
+              "R",
+              "C",
+              "Z",
+              "İ"
+            ],
+            [
+              "P",
+              "P",
+              "R",
+              "T",
+              "A",
+              "T"
+            ],
+            [
+              "İ",
+              "Ö",
+              "E",
+              "V",
+              "B",
+              "P"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "KİRPİ",
+              "text": "KİRPİ",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "TİLKİ",
+              "text": "TİLKİ",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "SİNCAP",
+              "text": "SİNCAP",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "ARI",
+              "text": "ARI",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "2.0",
+              "label": "SİNCAP",
+              "text": "SİNCAP",
+              "group": 2,
+              "a": [
+                0,
+                0
+              ],
+              "b": [
+                5,
+                5
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "KİRPİ",
+              "text": "KİRPİ",
+              "group": 0,
+              "a": [
+                1,
+                4
+              ],
+              "b": [
+                5,
+                0
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "TİLKİ",
+              "text": "TİLKİ",
+              "group": 1,
+              "a": [
+                4,
+                5
+              ],
+              "b": [
+                0,
+                5
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "ARI",
+              "text": "ARI",
+              "group": 3,
+              "a": [
+                2,
+                4
+              ],
+              "b": [
+                0,
+                2
+              ]
+            }
+          ]
+        },
+        "contentHash": "b301087222102eb6e7f2dd7d86dbef1aa09fce0f0e60cab7577a938c996ad732",
+        "publishedAt": 1792570313977,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261021-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Merak laboratuvarı",
+          "themeId": "bilim",
+          "words": [
+            "DENEY",
+            "ÖLÇÜM",
+            "MERCEK",
+            "MİKNATIS",
+            "ENERJİ",
+            "PROTON",
+            "DEVRE"
+          ],
+          "size": 8,
+          "seed": 2026102102,
+          "difficulty": "Dengeli",
+          "note": "Bir fikirden yeni bir keşfe. İlk ve son harfi arayarak uzun kelimeleri yakala."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "D",
+              "E",
+              "M",
+              "K",
+              "T",
+              "T",
+              "M",
+              "I"
+            ],
+            [
+              "D",
+              "N",
+              "İ",
+              "E",
+              "J",
+              "H",
+              "D",
+              "Ö"
+            ],
+            [
+              "P",
+              "E",
+              "K",
+              "C",
+              "Ü",
+              "R",
+              "L",
+              "A"
+            ],
+            [
+              "R",
+              "R",
+              "N",
+              "R",
+              "G",
+              "Ç",
+              "M",
+              "D"
+            ],
+            [
+              "O",
+              "J",
+              "A",
+              "E",
+              "Ü",
+              "İ",
+              "E",
+              "S"
+            ],
+            [
+              "T",
+              "İ",
+              "T",
+              "M",
+              "Y",
+              "V",
+              "Ğ",
+              "N"
+            ],
+            [
+              "O",
+              "B",
+              "I",
+              "E",
+              "R",
+              "I",
+              "J",
+              "Ğ"
+            ],
+            [
+              "N",
+              "Ç",
+              "S",
+              "E",
+              "M",
+              "J",
+              "Ö",
+              "J"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "DENEY",
+              "text": "DENEY",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "ÖLÇÜM",
+              "text": "ÖLÇÜM",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "MERCEK",
+              "text": "MERCEK",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "MİKNATIS",
+              "text": "MİKNATIS",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "ENERJİ",
+              "text": "ENERJİ",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "PROTON",
+              "text": "PROTON",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "DEVRE",
+              "text": "DEVRE",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "3.0",
+              "label": "MİKNATIS",
+              "text": "MİKNATIS",
+              "group": 3,
+              "a": [
+                0,
+                2
+              ],
+              "b": [
+                7,
+                2
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "MERCEK",
+              "text": "MERCEK",
+              "group": 2,
+              "a": [
+                5,
+                3
+              ],
+              "b": [
+                0,
+                3
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "ENERJİ",
+              "text": "ENERJİ",
+              "group": 4,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                5,
+                1
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "PROTON",
+              "text": "PROTON",
+              "group": 5,
+              "a": [
+                2,
+                0
+              ],
+              "b": [
+                7,
+                0
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "DENEY",
+              "text": "DENEY",
+              "group": 0,
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                5,
+                4
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "ÖLÇÜM",
+              "text": "ÖLÇÜM",
+              "group": 1,
+              "a": [
+                1,
+                7
+              ],
+              "b": [
+                5,
+                3
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "DEVRE",
+              "text": "DEVRE",
+              "group": 6,
+              "a": [
+                3,
+                7
+              ],
+              "b": [
+                7,
+                3
+              ]
+            }
+          ]
+        },
+        "contentHash": "b3428518a9c23441bd607f0939e96a832971db78cdb7fcfcdb7d75e58f41bef3",
+        "publishedAt": 1792570313977,
+        "archived": false
+      }
+    }
+  ]
+}

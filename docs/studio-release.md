@@ -1,5 +1,7 @@
 # Studio sürümü: teslim ve doğrulama
 
+0.6.0 ile günlük kaynak bölümleri, kalıcı arşiv ve uygulama içi sürüm notları eklendi. Güncel kapsam, kabul ölçütleri ve doğrulama sınırları: [geliştirme defteri](development-log.md). Önceki tarayıcı kontrolü ifadeleri bu sürüm için yeni bir görsel test yapıldığı anlamına gelmez.
+
 ## Uygulanan ürün akışları
 
 Ana sayfa, ilk keşif, tema/rota seçimi, tahta, duraklama, ipucu, sonuç, tekrar oynama ve albüm aynı görsel sistemi kullanır. Ana gezinme Keşfet, Arena, Günlük ve Albüm olarak kalır. Arena, canlı düello, kayıtlı performansa meydan okuma ve arkadaşlar arasında ayrılır. Bir karşılaşma açılınca genel gezinme gizlenir; ayrılma ve dönüş oyun içinden yapılır.

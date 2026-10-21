@@ -1,0 +1,35 @@
+.daily-discoveries{margin:25px 0 29px;padding:29px;border:1px solid #d4dec6;border-radius:20px;background:linear-gradient(135deg,#f3f5e8,#e9efde);overflow:hidden}
+.fresh-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;margin-bottom:25px}
+.fresh-heading .eyebrow{display:flex;align-items:center;gap:7px;color:#526d41;font-size:10px;letter-spacing:1.3px}
+.fresh-heading h2{font-family:var(--serif);font-size:clamp(30px,3.6vw,43px);font-weight:400;letter-spacing:-1.1px;line-height:1.16;margin:13px 0 12px}
+.fresh-heading h2 em{color:#59734b;font-weight:400}.fresh-heading p{font-size:13px;line-height:1.75;color:#536548}
+.fresh-update-link{display:flex;align-items:center;justify-content:flex-end;gap:9px;min-height:44px;font-size:12px;flex-wrap:wrap;color:#385735;text-align:left}
+.fresh-version{border:1px solid #c9d4b8;border-radius:6px;padding:5px 7px;font-size:10px;letter-spacing:.3px;font-variant-numeric:tabular-nums}
+.fresh-chapter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.fresh-chapter{background:#fffdf3;border:1px solid #d0dcc0;border-radius:14px;overflow:hidden;text-align:left;display:flex;flex-direction:column;min-width:0;transition:transform .18s ease,box-shadow .18s ease}
+.fresh-chapter:hover{transform:translateY(-2px);box-shadow:0 8px 20px #344d2d0d}.fresh-chapter:active{transform:translateY(1px)}
+.fresh-chapter-art{position:relative;background:#e3ecd4;overflow:hidden;height:145px}.fresh-chapter-art .world-art{height:100%;width:100%;object-fit:cover}
+.fresh-chapter-number{position:absolute;top:13px;left:13px;background:#fffdf1e8;border:1px solid #d8e1c8;border-radius:7px;padding:6px 9px;font-size:11px;letter-spacing:1px;color:#4d6541}
+.fresh-chapter.curious{background:#f5f9f6;border-color:#cbdcd5}.fresh-chapter.curious .fresh-chapter-art{background:#dcece5}
+.fresh-chapter-copy{padding:20px;display:flex;flex:1;flex-direction:column}
+.fresh-chapter-kicker{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#60764d;font-size:9px;letter-spacing:1px;font-weight:600;line-height:1.6}
+.fresh-chapter-kicker>span{font-weight:400;letter-spacing:0;font-size:11px;color:#516747}
+.fresh-chapter h3{font-family:var(--serif);font-weight:400;font-size:28px;letter-spacing:-.6px;line-height:1.18;margin-top:13px;max-width:260px;overflow-wrap:anywhere}
+.fresh-chapter-copy>p{color:#566b4b;font-size:12px;line-height:1.8;margin:12px 0 19px}.fresh-chapter-copy>p>span{padding:0 5px;color:#7c8d6d}
+.fresh-chapter-action{display:flex;align-items:center;justify-content:space-between;margin-top:auto;border-top:1px solid #dce4cf;padding-top:15px;font-size:13px;font-weight:600;color:#345334;min-height:44px}
+.fresh-footer{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:15px}.fresh-footer>span{display:flex;align-items:center;gap:7px;color:#586c4b;font-size:11px;line-height:1.7}
+.fresh-footer .text-button{color:#3c5e38;min-height:44px;font-size:12px}.fresh-empty{padding:22px 0;color:#526548;font-size:14px;line-height:1.7}
+.game-update-list article{padding:21px 0;border-top:1px solid #dce4d0}.game-update-list article:last-child{padding-bottom:8px}
+.game-update-date{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#56694b;font-size:11px;line-height:1.7}.game-update-date b{border:1px solid #d4dfc5;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:500}
+.game-update-list h3{font-family:var(--serif);font-size:24px;line-height:1.25;font-weight:400;margin:12px 0 18px}.game-update-list ul{list-style:none;padding:0;display:grid;gap:17px}
+.game-update-list li{display:flex;align-items:flex-start;gap:11px}.game-update-list li>svg{flex-shrink:0;color:#6f855c;margin-top:2px}.game-update-list li b{display:block;font-size:13px;color:#365735;line-height:1.6}.game-update-list li p{margin:4px 0 0;font-size:13px;color:#526548;line-height:1.8}
+.modal .published-chapter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.modal .published-chapter-card h3{font-size:23px}.modal .published-chapter-card p{font-size:12px}.modal .published-chapter-card>div{padding:16px}.modal .published-chapter-card i{font-size:9px;letter-spacing:0}.modal .published-chapter-card b{font-size:12px;min-height:44px}.modal .published-chapters>.section-title .eyebrow{font-size:9px;color:#5a7049}.modal .published-chapters>.section-title p{font-size:13px;color:#526548}
+@media(max-width:780px){.daily-discoveries{padding:25px 23px;border-radius:17px}.fresh-heading h2{font-size:36px}.fresh-heading{gap:16px}.fresh-update-link{max-width:150px}.fresh-chapter-grid{gap:14px}.fresh-chapter-copy{padding:17px}.fresh-chapter h3{font-size:25px}.fresh-chapter-art{height:125px}}
+@media(max-width:600px){
+ .daily-discoveries{padding:22px 17px;margin:20px 0 26px;border-radius:17px}.fresh-heading{display:block;margin-bottom:21px}.fresh-heading h2{font-size:33px;margin-top:12px}.fresh-heading p{font-size:13px}.fresh-update-link{max-width:none;justify-content:flex-start;margin-top:13px;gap:10px}
+ .fresh-chapter-grid{grid-template-columns:1fr;gap:13px}.fresh-chapter{display:grid;grid-template-columns:93px minmax(0,1fr)}.fresh-chapter-art{height:100%;min-height:190px}.fresh-chapter-art .world-art{width:230px;max-width:none;position:absolute;left:50%;transform:translateX(-50%);height:100%}.fresh-chapter-number{left:9px;top:10px;padding:5px 7px;font-size:10px}
+ .fresh-chapter-copy{padding:17px 14px}.fresh-chapter-kicker{font-size:9px;letter-spacing:.5px;gap:4px}.fresh-chapter-kicker>span{font-size:10px}.fresh-chapter h3{font-size:24px;margin-top:10px}.fresh-chapter-copy>p{font-size:11px;margin:10px 0;line-height:1.7}.fresh-chapter-copy>p>span{padding:0 2px}.fresh-chapter-action{font-size:12px;padding-top:11px;min-height:44px}
+ .fresh-footer{margin-top:12px;gap:3px}.fresh-footer>span{font-size:11px}.fresh-footer>.text-button{padding-left:0}.modal .published-chapter-grid{grid-template-columns:1fr}.modal .published-chapter-card{display:grid;grid-template-columns:85px minmax(0,1fr)}.modal .published-chapter-card>.theme-art{height:100%;padding:0;min-height:140px}
+}
+@media(max-width:360px){.daily-discoveries{padding:20px 13px}.fresh-heading h2{font-size:30px}.fresh-chapter{grid-template-columns:70px minmax(0,1fr)}.fresh-chapter-copy{padding:15px 12px}.fresh-chapter h3{font-size:22px}}
+@media(prefers-reduced-motion:reduce){.fresh-chapter{transition:none}.fresh-chapter:hover,.fresh-chapter:active{transform:none}}

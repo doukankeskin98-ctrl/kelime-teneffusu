@@ -5,6 +5,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {JOURNEY_BONUSES,journeyBoard} from '../lib/game/content.ts';
 import {NEW_CHAPTER} from '../lib/studio/content.ts';
+import {releaseCatalogue,releasedChapter} from '../lib/studio/releases.ts';
 const require=createRequire(import.meta.url);
 const {Miniflare,Log,LogLevel}=require(require.resolve('miniflare',{paths:[require.resolve('wrangler/package.json')]}));
 const root=path.resolve('dist/server');
@@ -29,12 +30,18 @@ try{
  for(const file of (await readdir('drizzle')).filter(x=>x.endsWith('.sql')).sort())for(const sql of (await readFile('drizzle/'+file,'utf8')).split('--> statement-breakpoint').map(x=>x.trim()).filter(Boolean))await db.prepare(sql).run();
  const home=await (await request('/')).text();check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
  check(home.includes('kesif-haritasi')&&home.includes('Yıldız İskelesi')&&home.includes('Anadolu Patikası')&&home.includes('Teneffüs Bahçesi'),'public discovery map renders with all three destinations');
+ const released=releaseCatalogue();check(home.includes('fresh-discoveries-title')&&home.includes('Neler değişti?')&&released.chapters.slice(0,2).every(c=>home.includes(c.spec.title)),'home visibly presents the new chapters and in-game release notes');
+ const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
+ for(const c of archive.chapters){const playable=await json('/api/chapters?id='+c.id);check(JSON.stringify(playable.board)===JSON.stringify(releasedChapter(c.id).board),'source release API returns the immutable reviewed board');}
  check((await json('/api/auth/config')).available===false,'email availability is honest without configuration');
  await request('/api/game',{method:'POST',body:{action:'enter'},expected:401});
  await request('/api/session',{method:'POST',body:{name:'Alice'},originHeader:'https://foreign.test',expected:403});
  const aResponse=await request('/api/session',{method:'POST',body:{name:'Alice'}}),bResponse=await request('/api/session',{method:'POST',body:{name:'Bob'}});
  const aCookie=aResponse.headers.get('Set-Cookie'),bCookie=bResponse.headers.get('Set-Cookie');check(aCookie?.includes('HttpOnly')&&bCookie?.includes('Secure'),'protected guest cookies');
  const a=await json('/api/game',{cookie:aCookie}),b=await json('/api/game',{cookie:bCookie});check(a.profile.id!==b.profile.id,'independent identities');check(a.profile.nickname==='Alice'&&b.profile.nickname==='Bob','chosen display names');
+ const sourceChapter=releasedChapter(released.chapters[0].id);await request('/api/chapters?action=progress&id='+sourceChapter.id,{expected:401});
+ const sourceSave=await json('/api/chapters',{cookie:aCookie,method:'PUT',body:{id:sourceChapter.id,save:{strokes:sourceChapter.board.placements,elapsed:35,hints:0,complete:false,stars:99}}});check(sourceSave.save.complete&&sourceSave.save.stars===3,'source release saves are validated by the production Worker');
+ const otherSource=await json('/api/chapters?action=progress&id='+sourceChapter.id,{cookie:bCookie});check(otherSource.save.strokes.length===0,'daily release progress remains scoped to its actual player');
  const friendInvite=await json('/api/social',{cookie:aCookie,method:'POST',body:{action:'invite'}});
  await json('/api/social',{cookie:bCookie,method:'POST',body:{action:'accept',code:friendInvite.code}});
  check((await json('/api/social',{cookie:aCookie})).friends[0].nickname==='Bob','friend consent flow');
@@ -75,7 +82,7 @@ try{
  const published=await json('/api/admin',{...owner,method:'POST',body:{action:'publish',id:draft.id,revision:draft.revision,confirmation:draft.spec.title}});check((await json('/api/chapters')).chapters[0].id===draft.id,'a reviewed published chapter is publicly discoverable');const publicChapter=await json('/api/chapters?id='+draft.id);check(JSON.stringify(publicChapter.board)===JSON.stringify(preview.board),'the published board is the exact reviewed snapshot');check(!('revision' in publicChapter)&&!('actor_id' in publicChapter),'public chapter does not contain private management fields');
  for(const action of ['save','archive','restore'])await request('/api/admin',{nativeUser:'not-owner',method:'POST',body:{action,id:draft.id,spec:NEW_CHAPTER,revision:published.revision,confirmation:draft.spec.title,role:'owner'},expected:403});
  await request('/api/chapters',{method:'PUT',body:{id:draft.id,save:{}},expected:401});
- const chapterSave=await json('/api/chapters',{cookie:aCookie,method:'PUT',body:{id:draft.id,userId:b.profile.id,save:{strokes:publicChapter.board.placements,elapsed:30,hints:0,complete:true,stars:99}}});check(chapterSave.save.complete&&chapterSave.save.stars===3,'extra progress is validated against the published board');check((await json('/api/chapters?action=progress&id='+draft.id,{cookie:bCookie})).save.strokes.length===0,'extra progress is isolated even when a body spoofs another user');check((await json('/api/admin?action=overview',owner)).extraCompletions===1,'admin counts actual account completions');
+ const chapterSave=await json('/api/chapters',{cookie:aCookie,method:'PUT',body:{id:draft.id,userId:b.profile.id,save:{strokes:publicChapter.board.placements,elapsed:30,hints:0,complete:true,stars:99}}});check(chapterSave.save.complete&&chapterSave.save.stars===3,'extra progress is validated against the published board');check((await json('/api/chapters?action=progress&id='+draft.id,{cookie:bCookie})).save.strokes.length===0,'extra progress is isolated even when a body spoofs another user');check((await json('/api/admin?action=overview',owner)).extraCompletions===2,'admin counts actual source and editor chapter completions');
  const archived=await json('/api/admin',{...owner,method:'POST',body:{action:'archive',id:draft.id,revision:published.revision,confirmation:draft.spec.title}});check((await json('/api/chapters')).total===0,'archived chapter is hidden from new discovery');check((await json('/api/chapters?id='+draft.id)).archived===true,'archived board remains available for saved players');check((await json('/api/chapters?action=progress&id='+draft.id,{cookie:aCookie})).save.complete,'archiving preserves completed player saves');
  const restored=await json('/api/admin',{...owner,method:'POST',body:{action:'restore',id:draft.id,revision:archived.revision,confirmation:draft.spec.title}});check(restored.contentHash===published.contentHash&&restored.publishedAt===published.publishedAt,'restoring retains original content and publication timestamp');check((await json('/api/admin?action=audit',owner)).rows.length===5,'only completed owner, create, publish, archive and restore actions are audited');
  await request('/api/session',{cookie:aCookie,method:'DELETE'});check((await json('/api/game',{cookie:aCookie})).authenticated===false,'guest logout revokes its token');
