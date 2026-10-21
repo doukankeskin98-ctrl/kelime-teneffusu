@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import {ALL_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from '../lib/game/content.ts';
 import {exactLine,makeCustomPuzzle} from '../lib/game/engine.ts';
+import {RELEASE_BATCHES} from '../lib/studio/releases.ts';
+import {checkChapter} from '../lib/studio/content.ts';
 let count=0;
 for(const entry of [...ALL_JOURNEYS,...MYSTERIES]){
  const board='answer' in entry?mysteryBoard(entry):journeyBoard(entry);
@@ -10,4 +12,5 @@ for(const entry of [...ALL_JOURNEYS,...MYSTERIES]){
  for(let seed=1;seed<=20;seed++)makeCustomPuzzle('answer' in entry?[...entry.words,entry.bonus]:entry.words,seed,entry.size);
  count++;
 }
+for(const batch of RELEASE_BATCHES)for(const {chapter} of batch.chapters){assert.deepEqual(checkChapter(chapter.spec).board,chapter.board);count++;}
 console.log(`${count} authored boards and ${count*20} alternate layouts passed.`);
