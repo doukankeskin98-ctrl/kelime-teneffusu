@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.7.0',date:'22 Ekim 2026',title:'İki keşif, kalıcı bir hatıra',items:[
+  {where:'İki yeni bölüm',detail:'Bir avuç melodi ile kolay bir başlangıç yap; Robot atölyesi ile teknoloji dünyasına geç. İki bölümde de çapraz kelimeler var.'},
+  {where:'Keşif damgaları',detail:'Aynı tarihin iki bölümünü de tamamlayınca o tarihin damgası açılır. İpucu veya süre şartı yok; arşivden istediğin zaman tamamlayabilirsin.'},
+  {where:'Tarihli bölüm arşivi',detail:'Her çiftin ilerlemesi ve kazandığın damga birlikte görünür. Önceki tamamlamalar da geçerli; Damganı gör ile kalıcı hatıranı açabilirsin.'},
+ ]},
  {version:'0.6.1',date:'21 Ekim 2026',title:'Keşiflerin kaldığı yerden devam ediyor',items:[
   {where:'Ana sayfa ve bölüm arşivi',detail:'Yarım kalan bölümde bulunan kelime sayısını ve Kaldığın yerden düğmesini gör. Tamamlanan bölümde kazandığın yıldızlar ve en iyi süren görünür.'},
   {where:'Bir daha keşfet',detail:'Tamamladığın bölümden doğrudan yeni bir tur aç. Önceki en iyi sonucun korunur; yeni tur onu gerçekten geçerse güncellenir.'},

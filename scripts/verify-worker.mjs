@@ -31,7 +31,9 @@ try{
  const home=await (await request('/')).text();check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
  check(home.includes('kesif-haritasi')&&home.includes('Yıldız İskelesi')&&home.includes('Anadolu Patikası')&&home.includes('Teneffüs Bahçesi'),'public discovery map renders with all three destinations');
  const released=releaseCatalogue();check(home.includes('fresh-discoveries-title')&&home.includes('Neler değişti?')&&released.chapters.slice(0,2).every(c=>home.includes(c.spec.title)),'home visibly presents the new chapters and in-game release notes');
+ check(home.includes('İki keşif, bir hatıra')&&home.includes('İki bölümü de tamamla.')&&!home.includes('Damganı gör'),'home presents the stamp condition without awarding an unauthenticated visitor');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
+ check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
  for(const c of archive.chapters){const playable=await json('/api/chapters?id='+c.id);check(JSON.stringify(playable.board)===JSON.stringify(releasedChapter(c.id).board),'source release API returns the immutable reviewed board');}
  check((await json('/api/auth/config')).available===false,'email availability is honest without configuration');
  await request('/api/game',{method:'POST',body:{action:'enter'},expected:401});
