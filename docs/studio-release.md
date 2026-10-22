@@ -4,6 +4,8 @@
 
 0.6.1, bu kartlarda gerçek hesap/cihaz ilerlemesini ve doğru devam/tekrar eylemini gösterir. Kart verisi en fazla 24 kimlikle, yalnız mevcut hesap için okunur; yanıt önbelleğe alınmaz ve kelime yolları içermez. Geçersiz veya hash'i uyuşmayan cihaz tahtasından ilerleme gösterilmez.
 
+0.7.0, **Bir avuç melodi** ve **Robot atölyesi** bölümleriyle tarihli keşif damgalarını ekler. Her tarihin sabit iki bölümünü tamamlamak o çiftin kalıcı hatırasını açar. Damga gerçek hesaba özel tamamlamalardan türetilir; ayrı ödül yazımı, süre/ipuçsuzluk şartı ve yeni şema yoktur. Arşiv çiftleri tarihe göre gösterir. Anlık oyun sonu damga bildirimi bu aşamada uygulanmadı.
+
 ## Uygulanan ürün akışları
 
 Ana sayfa, ilk keşif, tema/rota seçimi, tahta, duraklama, ipucu, sonuç, tekrar oynama ve albüm aynı görsel sistemi kullanır. Ana gezinme Keşfet, Arena, Günlük ve Albüm olarak kalır. Arena, canlı düello, kayıtlı performansa meydan okuma ve arkadaşlar arasında ayrılır. Bir karşılaşma açılınca genel gezinme gizlenir; ayrılma ve dönüş oyun içinden yapılır.
@@ -28,7 +30,7 @@ TypeScript, içerik kontrolü, gerçek SQLite üzerindeki servis testleri ve ür
 
 ## Gerçek cihaz ve oyuncu doğrulaması
 
-Bu ortamda kullanılabilir control-browser becerisi bulunmadığından tarayıcı otomasyonu ve fiziksel telefon kontrolü yapılmadı. İlk oyuncu grubunda şunlar doğrulanmalı:
+Önceki destekli önizleme erişim denemesi bağlantı ve tarayıcı güvenlik engeliyle sonuçlandı. Bu engelin giderildiğine dair kanıt olmadığından başka bir tarayıcı yolu denenmedi; güncel değişikliklerin tarayıcı ve fiziksel telefon kontrolü yapılmış sayılmaz. İlk oyuncu grubunda şunlar doğrulanmalı:
 
 1. iPhone Safari, ana ekrandan açılış, Android Chrome ve daha düşük güçlü bir Android cihaz.
 2. Çapraz kaydırma, iki uca dokunma, büyük harf modunda kaydırma, ekran döndürme, arka plan/ön plan dönüşü.
