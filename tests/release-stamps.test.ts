@@ -1,0 +1,63 @@
+import assert from 'node:assert/strict';
+import {describe,it} from 'node:test';
+import {releaseCatalogue,releasedChapter,RELEASE_BATCHES} from '../lib/studio/releases.ts';
+import {releasePairs,releaseStamp} from '../lib/studio/release-stamps.ts';
+import {cardProgress,parseCardProgress,type ChapterCardProgress} from '../lib/studio/card-progress.ts';
+import {ChapterStore} from '../lib/studio/store.ts';
+import {cleanSave} from '../lib/game/progress.ts';
+import {rememberChapter,readChapterSave,saveKey} from '../lib/studio/chapter-cache.ts';
+import {fixture} from './fixtures.ts';
+
+const now=Math.max(Date.parse('2026-10-22T12:00:00Z'),...RELEASE_BATCHES.flatMap(b=>b.chapters.map(c=>c.chapter.publishedAt)))+1000;
+const chapters=releaseCatalogue(0,now).chapters,pairs=releasePairs(chapters),pair=pairs[0]!;
+const progress=(count=100,hints=0,elapsed=30)=>Object.fromEntries(pair.chapters.map(chapter=>{
+ const board=releasedChapter(chapter.id,now)!.board;
+ return [chapter.id,cardProgress(cleanSave({strokes:board.placements.slice(0,count),elapsed,hints,complete:false,stars:0},board),chapter.spec)];
+}));
+
+describe('permanent discovery stamps',()=>{
+ it('groups dates newest first, binds each goal to its original two IDs and does not duplicate cards',()=>{
+  assert.equal(pairs.length,RELEASE_BATCHES.length);assert.deepEqual(pair.chapters.map(c=>c.slot),[1,2]);assert.equal(pair.date,'2026-10-22');
+  assert.deepEqual(releasePairs([...chapters,...chapters]),pairs);
+  assert.deepEqual(releasePairs([...chapters,{...pair.chapters[0],id:crypto.randomUUID(),slot:3}]),pairs);
+ });
+ it('does not make goals from editor entries, malformed dates, mismatched IDs or an incomplete pair',()=>{
+  assert.deepEqual(releasePairs([{...pair.chapters[0],releaseDate:'2026-02-30'},pair.chapters[1]]),[]);
+  assert.deepEqual(releasePairs([{...pair.chapters[0],id:crypto.randomUUID()},pair.chapters[1]]),[]);
+  const {releaseDate:_date,slot:_slot,...editor}=pair.chapters[0];assert.deepEqual(releasePairs([editor,pair.chapters[1]]),[]);
+  assert.deepEqual(releasePairs([pair.chapters[0]]),[]);
+ });
+ it('shows unavailable records honestly through loading, offline and failure without inventing zero progress',()=>{
+  for(const state of ['loading','offline','error','ready'] as const){const result=releaseStamp(pair,{},state);assert.equal(result.known,false);assert.equal(result.earned,false);assert(!result.detail.includes('0/2'));assert(result.steps.every(s=>s.progress===null));}
+  const values=progress(0);assert.equal(releaseStamp(pair,values,'ready').detail,'0/2 keşif tamamlandı. İkisini de bitir, damganı aç.');
+ });
+ it('requires both real completions and does not trust claimed completion flags or malformed targets',()=>{
+  const first=pair.chapters[0],second=pair.chapters[1],done=progress();
+  delete done[second.id];const missing=releaseStamp(pair,done,'offline');assert.equal(missing.completed,1);assert.equal(missing.earned,false);assert.equal(missing.known,false);
+  done[second.id]={foundIds:[],elapsed:0,hints:0,complete:true,stars:99};assert.equal(releaseStamp(pair,done,'ready').earned,false);
+  done[second.id]={...done[first.id]!,foundIds:['forged']};assert.equal(releaseStamp(pair,done,'ready').known,false);
+ });
+ it('accepts any hints or time, keeps one fixed stamp and never adds a deadline or repeat balance',()=>{
+  const earned=releaseStamp(pair,progress(100,3,604800),'ready');assert.equal(earned.earned,true);assert.equal(earned.id,'pair:2026-10-22');
+  assert.equal(releaseStamp(pair,progress(100,0,3),'offline').id,earned.id);
+  assert.equal(releaseStamp(pair,progress(100,3,604800),'offline').earned,true);
+  const old=pairs.at(-1)!,oldValues=Object.fromEntries(old.chapters.map(c=>[c.id,parseCardProgress({foundIds:releasedChapter(c.id,now)!.board.targets.map(t=>t.id),elapsed:90,hints:3},c.spec)!]));
+  const original=releaseStamp(old,oldValues,'ready');assert.equal(original.earned,true);assert.deepEqual(releaseStamp(releasePairs([...chapters,{...pair.chapters[0],id:crypto.randomUUID()}]).at(-1)!,oldValues,'ready'),original);
+ });
+ it('recovers old completions from actual cloud saves, isolates accounts and preserves best results on replay',async()=>{
+  const f=fixture(now),store=new ChapterStore(f.db,f.clock),ids=pair.chapters.map(c=>c.id);
+  const read=async(owner:string)=>Object.fromEntries((await store.cardProgress(owner,ids)).chapters.map(c=>[c.id,c.progress]));
+  for(const c of pair.chapters){const board=releasedChapter(c.id,now)!.board;await store.saveProgress('alice',c.id,{strokes:board.placements,elapsed:80,hints:3,complete:false,stars:0});}
+  assert.equal(releaseStamp(pair,await read('alice'),'ready').earned,true);assert.equal(releaseStamp(pair,await read('bob'),'ready').earned,false);
+  const before=await read('alice');await store.saveProgress('alice',ids[0],{strokes:[],elapsed:1,hints:0,complete:true,stars:99});
+  assert.deepEqual(await read('alice'),before);assert.equal((await f.game.rating('alice')).played,0);
+ });
+ it('uses validated owner-specific offline saves and leaves missing boards unknown',()=>{
+  const memory=new Map<string,string>(),storage={getItem:(key:string)=>memory.get(key)??null,setItem:(key:string,value:string)=>{memory.set(key,value);}},saves:Record<string,unknown>={};
+  for(const c of pair.chapters){const chapter=releasedChapter(c.id,now)!;rememberChapter(chapter,storage);saves[c.id]=cleanSave({strokes:chapter.board.placements,elapsed:50,hints:2,complete:false,stars:0},chapter.board);}
+  storage.setItem(saveKey('alice'),JSON.stringify(saves));
+  const read=(owner:string)=>{const values:Record<string,ChapterCardProgress>={};for(const c of pair.chapters){const cached=readChapterSave(storage,owner,c);if(cached)values[c.id]=cardProgress(cached.save,c.spec);}return values;};
+  assert.equal(releaseStamp(pair,read('alice'),'offline').earned,true);assert.equal(releaseStamp(pair,read('bob'),'offline').earned,false);
+  memory.clear();assert.equal(releaseStamp(pair,read('alice'),'offline').known,false);
+ });
+});

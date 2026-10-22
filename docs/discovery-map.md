@@ -23,3 +23,9 @@ Her rota bölümünün belirli bir koleksiyon parçası vardır. Beş ana bölü
 Bu paket harita, belirli ödüller, koleksiyon sahneleri ve üç bonus bölümünü kapsar. Çok aşamalı final bulmacaları, döşenebilir kişisel oda ve arkadaşla ortak bulmaca bu pakette uygulanmadı.
 
 Bağlı bakım görevi 08.00 ve 20.00 UTC için etkindir. Her UTC tarihi için iki yeni bölüm hedefler; bakım ve iyileştirme iki çalışmada da yapılır. Görevin kaydedilmiş olması her çalışmanın başarıyla tamamlandığı anlamına gelmez. Düzenli içerik eklerken mevcut harita kimliklerini ve kazanımları koruyun, başarılı yayından önce aynı tarihli bölümleri yeniden üretmeyin.
+
+## Tarihli keşif damgaları
+
+0.7.0 ile günlük kaynak çiftlerine ayrı, kalıcı bir hatıra eklenir. Her UTC tarihinin yalnız sabit 1 ve 2 numaralı bölümünü tamamlamak o tarihin damgasını açar. Hız, yıldız ve ipucu şartı yok; geçmiş tarihler daha sonra tamamlanabilir. Kazanım mevcut özel `chapter_saves` ve doğrulanmış cihaz kayıtlarından türetilir. Bilinmeyen kayıt kazanılmış veya sıfır gibi sunulmaz. Ayrı talep/bakiye, yeni göç veya tekrarla çoğalan ödül yoktur.
+
+Ana sayfa son çifti, kalıcı arşiv her tarihin bölüm ve damgasını gösterir. Bu sistem yukarıdaki beşli rota kümelerini, dünya açılışlarını ve koleksiyon parçalarını değiştirmez. Daha fazla tarih veya bölüm eklemek önceki damgayı yeniden kilitlemez. Oyun sonu anlık bildirimi ve Albüm sekmesindeki ayrı raf sonraki aşamadır.
