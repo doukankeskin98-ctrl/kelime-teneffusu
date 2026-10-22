@@ -6,6 +6,8 @@
 
 0.7.0, **Bir avuç melodi** ve **Robot atölyesi** bölümleriyle tarihli keşif damgalarını ekler. Her tarihin sabit iki bölümünü tamamlamak o çiftin kalıcı hatırasını açar. Damga gerçek hesaba özel tamamlamalardan türetilir; ayrı ödül yazımı, süre/ipuçsuzluk şartı ve yeni şema yoktur. Arşiv çiftleri tarihe göre gösterir. Anlık oyun sonu damga bildirimi bu aşamada uygulanmadı.
 
+0.7.1, tarihli bölüm sonucunda doğrulanmış damga durumunu ve varsa aynı çiftin kalan keşfine geçişi gösterir. Son doğru kelime anında hesaba katılır; diğer kayıt bilinmiyorsa tamamlandı iddiası yoktur. Eski arşiv çiftleri ve tekrar oyunları aynı kalıcı hatırayı kullanır.
+
 ## Uygulanan ürün akışları
 
 Ana sayfa, ilk keşif, tema/rota seçimi, tahta, duraklama, ipucu, sonuç, tekrar oynama ve albüm aynı görsel sistemi kullanır. Ana gezinme Keşfet, Arena, Günlük ve Albüm olarak kalır. Arena, canlı düello, kayıtlı performansa meydan okuma ve arkadaşlar arasında ayrılır. Bir karşılaşma açılınca genel gezinme gizlenir; ayrılma ve dönüş oyun içinden yapılır.

@@ -1,5 +1,38 @@
 # Geliştirme defteri
 
+## 22 Ekim 2026 · 0.7.1
+
+Güncel Sites kaynağı `3201ab2a4addeb0a57f3eed3a915ee84f6c4bc66`, kayıtlı 9. sürüm ve `appgdep_6ada36fcbb448191b5e70f34f7dfb857` başarılı yayını esas alındı. GitHub başlangıcı `bba457490d84e81503610f411bdf7b36c9ef88c8`. Bugünün **Bir avuç melodi** ve **Robot atölyesi** bölümleri zaten yayında; ikinci çift eklenmedi. Kaynak yayın dosyaları, kimlikler, kelimeler ve sabit tahtalar korunur.
+
+| Aday | Oyuncuya fayda | Karar / kabul ölçütü |
+| --- | --- | --- |
+| Damga durumunu gerçek bölüm sonucuna bağlama | Oyuncu tamamlamasının kalıcı hedefe nasıl katkı yaptığını hemen görür ve diğer keşfe kolay döner. | Seçildi. Geçerli son kelimeyle güncellenir; eksik/başka hesaptaki kayıt kazanım sayılmaz. |
+| Albümde ayrı damga rafı | Hatıraları tek yerde toplar. | Sonraki aşama. Önce sonuçtan hedefe bağlantıyı tamamla; arşivdeki mevcut hatıralar korunur. |
+| iOS varsayılan simge adreslerini düzenleme | Ana ekrana ekleme uyumluluğunu iyileştirebilir. | Günlüklerdeki küçük 404'ler kaydedildi; temel oyun hatası kanıtı yok. Gerçek cihaz/PWA kontrolünde ele alınacak. |
+
+### Yapılanlar ve kabul ölçütleri
+
+- Tarihli bir bölüm tamamlanınca sonuç penceresinde **Keşif damgan tamam** veya kalan keşif hedefi görünür. Tamamlanmış gerçek tahta kullanılır; kendi kaydının bulut yanıtını beklemeden son doğru kelime hesaba katılır.
+- Diğer bölümün doğrulanmış kaydı eksikse başlığı ve **Diğer keşfi aç** eylemi gösterilir. Oyuncu kendi seçimiyle aynı tarihin diğer bölümüne geçer; sonuç ve geri dönüş eylemleri korunur, otomatik yeni oyun başlatılmaz.
+- Sonuç kartında gerçek cihaz/bulut eşitleme durumu da görünür; cihaz kaydı hatası sonuç penceresinde uyarılır. Bulut onayı gelmeden hesabında kayıtlı denmez.
+- Diğer kayıt yükleniyor/çevrimdışı/hata durumundaysa bilinmiyor olarak kalır. Eksik bulut bilgisi tamamlandı veya sıfır gibi sunulmaz. Hata/eksik kayıtta yeniden kontrol, bağlantı gelince mevcut otomatik okuma ve çevrimdışı doğrulanmış cihaz kaydı davranışı korunur.
+- Ana sayfa, eski tarihli arşiv ve yeniden oyundan aynı sabit çift bağlamı taşınır. Bölüm kimliği, hash, tarih veya içerik eşleşmiyorsa bu sonuç kartı açılmaz. Yönetim panelindeki bağımsız bölümler bu hedefe dahil edilmez.
+- Tekrarda aynı hatıra gösterilir; yeni damga veya bakiye kazanıldığı söylenmez. Hız, yıldız veya ipucu şartı yok. Koleksiyon/harita açılışları, bulut yazma ve en iyi kayıt birleştirme yolu değiştirilmedi; Arena derecesi verilmez.
+- Aynı özgün SVG damgası, krem/orman yeşili/altın dili, metinli durum ve 44 px eylemler kullanılır. Sonuç penceresinin kaydırma, klavye odağı, geri dönüş ve azaltılmış hareket davranışı korunur.
+- Yeni servis, bağımlılık, ücret, tablo veya göç yok. Salt okunan tek ek bölüm metaverisi mevcut hesaba özel toplu uçtan alınır. Hesap değişiminde önceki yanıtın gösterilmemesi önceki kancayla sürer.
+
+### Doğrulama ve sınırlar
+
+Yedi yeni test: doğru çift/hash/içerik sınırı; sahte tamamlama/yol reddi; son kelimeyi bulut onayından önce doğru sayma; iki sıra için doğru diğer hedef; bilinmeyen kayıt durumları; tekrar/ipuçlu oyunda aynı damga; eski arşiv ve gerçek sahip ayrımı. Üretim Worker akışına gerçek tamamlamadan diğer hedef, ardından gerçek ikinci kayıttan tek damga kontrolü eklendi. Önceki testler ve HTTP kontrolleri korunur.
+
+Yerel sonuç: **112/112 test**, **28 tahta + 560 alternatif yerleşim**, TypeScript ve üretim derlemesi başarılı. İki bağımsız oyuncuyla **165 üretim Worker HTTP kontrolü** geçti. Önceki bütün kaynak bölüm dosyaları, tahta motoru, klasik oyun, içerik ve veritabanı göçleri başlangıç kaynağıyla aynıdır. GitHub ağacı/CI ve gerçek Sites yayın sonucu tamamlanmadan bu kayıt yayın kanıtı değildir.
+
+Erişilebilir son üretim günlüklerinde iki istemci iptali ve varsayılan simge/robots adreslerinde 404 vardı; uygulama istisnası kaydı yoktu. Bu sınırlı günlük örneği tüm oyuncu oturumlarının hatasız olduğu anlamına gelmez. İzinli ürün ölçümlerine yetkili oyun oturumu olmadan erişilmedi.
+
+Önceki destekli önizleme erişim engeli için onarım/toparlanma kanıtı yok; başka tarayıcı veya güvenlik aşma yolu denenmedi. Gerçek telefon, tarayıcı etkileşimi, ekran okuyucu ve FPS bu tur doğrulanmadı. Bu sınırla kaynak, servis ve üretim Worker doğrulaması sürdürülür.
+
+Sonraki öncelik iPhone/Android üzerinde seçim, 200% metin, sonuçtan diğer keşfe geçiş ve geri dönüş; ardından Albümde kalıcı damga rafı. Kullanıcıyla iOS/App Store hazırlığı ve gelir modeli konuşuluyor; native paket, Apple hesabı, ödeme/reklam SDK'sı veya abonelik henüz uygulanmadı.
+
 ## 22 Ekim 2026 · 0.7.0
 
 Güncel Sites kaynağı `edc2a77eb91fc9f1c08336399d14606be80072fe`, herkese açık sahip erişimi ve 8. sürüm kontrol edildi. GitHub `main` başlangıcı `480360f7bb92bee3a18becec0766e6d22345009a`. Önceki iki tarihli bölüm değişmeden korunur; 22 Ekim girdisi yoktu. Yeni, değişmez kayıt `content/releases/2026-10-22.json` olarak eklendi. Aynı tarihin yeniden çalışmasında bu dosya ve sabit kimlikler kullanılacak.

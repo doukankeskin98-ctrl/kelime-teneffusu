@@ -20,7 +20,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 - Yönetim Atölyesi: yetkili ChatGPT hesabıyla taslak, oynanabilir önizleme, yayın, arşiv, gerçek kullanım verileri, hata sayımları ve işlem günlüğü. Panelden yayımlanan bölümler ayrı Yeni keşifler alanında açılır.
 - Günlük iki kalıcı keşif: ana sayfada kolay ve orta bölüm kartları, sayfalı bölüm arşivi ve **Neler değişti?** penceresi. Kaynak yayın kaydı `content/releases/`, seçim ve doğrulama notları [geliştirme defterinde](docs/development-log.md).
 - Ek bölüm kartlarında hesaba özel ilerleme, kaldığı yerden devam etme, kazanılmış yıldızlar ve en iyi süre. Tamamlanan karttan doğrudan tekrar oyun açılır; en iyi sonuç korunur.
-- Keşif damgaları: aynı tarihin iki sabit bölümünü tamamla, kalıcı tarihli hatıranı aç. İpucu veya hız şartı yok; önceki tamamlamalar geçerli ve damgalar tarihli arşivde kalır.
+- Keşif damgaları: aynı tarihin iki sabit bölümünü tamamla, kalıcı tarihli hatıranı aç. İpucu veya hız şartı yok; önceki tamamlamalar geçerli ve damgalar tarihli arşivde kalır. Bölüm sonucunda damga durumu ve varsa kalan keşfe doğrudan geçiş görünür.
 
 Sahte rakip, uydurma çevrimiçi oyuncu sayısı ve hazırlanmış skor listesi yoktur. Satın alınmış rekabet avantajı veya ödeme akışı eklenmemiştir.
 

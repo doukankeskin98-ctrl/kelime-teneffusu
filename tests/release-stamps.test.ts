@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {releaseCatalogue,releasedChapter,RELEASE_BATCHES} from '../lib/studio/releases.ts';
-import {releasePairs,releaseStamp} from '../lib/studio/release-stamps.ts';
+import {releasePairs,releaseStamp,playableReleasePair,releaseRunResult} from '../lib/studio/release-stamps.ts';
 import {cardProgress,parseCardProgress,type ChapterCardProgress} from '../lib/studio/card-progress.ts';
 import {ChapterStore} from '../lib/studio/store.ts';
-import {cleanSave} from '../lib/game/progress.ts';
+import {cleanSave,type SavedLevel} from '../lib/game/progress.ts';
 import {rememberChapter,readChapterSave,saveKey} from '../lib/studio/chapter-cache.ts';
 import {fixture} from './fixtures.ts';
 
@@ -59,5 +59,46 @@ describe('permanent discovery stamps',()=>{
   const read=(owner:string)=>{const values:Record<string,ChapterCardProgress>={};for(const c of pair.chapters){const cached=readChapterSave(storage,owner,c);if(cached)values[c.id]=cardProgress(cached.save,c.spec);}return values;};
   assert.equal(releaseStamp(pair,read('alice'),'offline').earned,true);assert.equal(releaseStamp(pair,read('bob'),'offline').earned,false);
   memory.clear();assert.equal(releaseStamp(pair,read('alice'),'offline').known,false);
+ });
+});
+
+describe('discovery stamp feedback at the actual chapter result',()=>{
+ const first=releasedChapter(pair.chapters[0].id,now)!,second=releasedChapter(pair.chapters[1].id,now)!;
+ const solve=(chapter:typeof first,hints=0)=>cleanSave({strokes:chapter.board.placements,elapsed:90,hints,complete:false,stars:0},chapter.board);
+ const noProgress=(chapter:typeof first)=>cardProgress(cleanSave(undefined,chapter.board),chapter.spec);
+ it('accepts only the matching immutable pair, hash, spec and date, keeping editor chapters separate',()=>{
+  assert.equal(playableReleasePair(first,pair)?.date,pair.date);assert.equal(playableReleasePair(first),undefined);
+  assert.equal(playableReleasePair({...first,id:crypto.randomUUID()},pair),undefined);
+  assert.equal(playableReleasePair({...first,contentHash:'a'.repeat(64)},pair),undefined);
+  assert.equal(playableReleasePair({...first,spec:{...first.spec,title:'Different chapter'}},pair),undefined);
+  assert.equal(playableReleasePair(first,{...pair,date:'2026-02-30'}),undefined);
+ });
+ it('rejects an unfinished board or forged completion flags and paths before showing any result award',()=>{
+  const forged:SavedLevel={strokes:[{...first.board.placements[0]!,a:[-1,-1]}],elapsed:0,hints:0,complete:true,stars:99};
+  assert.equal(releaseRunResult(pair,first,forged,progress(),'ready'),null);
+  assert.equal(releaseRunResult(pair,first,cleanSave(undefined,first.board),progress(),'ready'),null);
+  assert.equal(releaseRunResult(undefined,first,solve(first),progress(),'ready'),null);
+ });
+ it('uses the last valid word immediately even when the current chapter has not reached the cloud',()=>{
+  const values={[second.id]:cardProgress(solve(second,3),second.spec)},before=structuredClone(values);
+  const result=releaseRunResult(pair,first,solve(first,3),values,'offline')!;
+  assert.equal(result.stamp.earned,true);assert.equal(result.stamp.completed,2);assert.equal(result.next,undefined);assert.deepEqual(values,before);
+ });
+ it('offers precisely the other incomplete chapter in either order without opening another date',()=>{
+  for(const [current,other] of [[first,second],[second,first]] as const){const result=releaseRunResult(pair,current,solve(current),{[other.id]:noProgress(other)},'ready')!;assert.equal(result.stamp.completed,1);assert.equal(result.stamp.earned,false);assert.equal(result.next?.id,other.id);assert.equal(result.next?.releaseDate,pair.date);}
+ });
+ it('keeps the companion unknown during loading, offline and failure and does not guess a next target',()=>{
+  for(const status of ['loading','offline','error','ready'] as const){const result=releaseRunResult(pair,first,solve(first),{},status)!;assert.equal(result.stamp.known,false);assert.equal(result.stamp.earned,false);assert.equal(result.stamp.completed,1);assert.equal(result.next,undefined);}
+ });
+ it('keeps the same earned stamp on replays with hints or a different duration',()=>{
+  const values={[second.id]:cardProgress(solve(second),second.spec)},a=releaseRunResult(pair,first,solve(first),values,'ready')!,b=releaseRunResult(pair,first,{...solve(first,3),elapsed:604800},values,'offline')!;
+  assert.equal(a.stamp.id,b.stamp.id);assert.equal(a.stamp.earned,true);assert.equal(b.stamp.earned,true);assert.equal(b.next,undefined);
+ });
+ it('resolves an older archive pair from actual owner-only cloud records after today has changed',async()=>{
+  const old=pairs.at(-1)!,current=releasedChapter(old.chapters[0].id,now)!,other=releasedChapter(old.chapters[1].id,now)!,f=fixture(now),store=new ChapterStore(f.db,f.clock);
+  await store.saveProgress('alice',other.id,solve(other,3));
+  const read=async(owner:string)=>Object.fromEntries((await store.cardProgress(owner,[other.id])).chapters.map(c=>[c.id,c.progress]));
+  const a=releaseRunResult(old,current,solve(current,2),await read('alice'),'ready')!,b=releaseRunResult(old,current,solve(current),await read('bob'),'ready')!;
+  assert.equal(a.stamp.earned,true);assert.equal(a.stamp.date,old.date);assert.notEqual(a.stamp.date,pair.date);assert.equal(b.stamp.earned,false);assert.equal(b.next?.id,other.id);assert.equal((await f.game.rating('alice')).played,0);
  });
 });

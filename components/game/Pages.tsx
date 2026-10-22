@@ -14,9 +14,10 @@ import type {SoloConfig} from './Solo';
 import {PublishedChapters} from './PublishedChapters';
 import type {PublishedChapter} from '@/lib/studio/content';
 import type {ReleaseSummary} from '@/lib/studio/releases';
+import type {ReleasePair} from '@/lib/studio/release-stamps';
 import {DailyDiscoveries} from './DailyDiscoveries';
 export type Account={authenticated:boolean;kind?:'guest'|'native'|'email';nativeSession?:boolean;needsUsername?:boolean;needsVerification?:boolean;username?:string;email?:string;profile?:{id:string;nickname:string};stats?:{played:number;wins:number;score:number};rating?:{value:number;played:number}};
-export function Explore({releases,userId,progress,setTheme,openSolo,setNav,classic,onMystery,onChallenge,onExtra}:{releases:ReleaseSummary[];userId?:string;progress:Progress;setTheme:(t:Theme)=>void;openSolo:(c:SoloConfig)=>void;setNav:(n:'kesfet'|'arena'|'gunluk'|'profil')=>void;classic:()=>void;onMystery:(id:string)=>void;onChallenge:()=>void;onExtra:(chapter:PublishedChapter,practice?:boolean)=>void}){
+export function Explore({releases,userId,progress,setTheme,openSolo,setNav,classic,onMystery,onChallenge,onExtra}:{releases:ReleaseSummary[];userId?:string;progress:Progress;setTheme:(t:Theme)=>void;openSolo:(c:SoloConfig)=>void;setNav:(n:'kesfet'|'arena'|'gunluk'|'profil')=>void;classic:()=>void;onMystery:(id:string)=>void;onChallenge:()=>void;onExtra:(chapter:PublishedChapter,practice?:boolean,pair?:ReleasePair)=>void}){
  const [search,setSearch]=useState(''),[filter,setFilter]=useState('Tümü');
  const visible=useMemo(()=>THEMES.filter(t=>(filter==='Tümü'||t.category===filter)&&(t.title+' '+t.subtitle).toLocaleLowerCase('tr-TR').includes(search.toLocaleLowerCase('tr-TR'))),[search,filter]);
  const dailyTheme=findTheme(dailySpec(istanbulDay()).themeId),nextMystery=MYSTERIES.find(m=>!progress.saves['mystery:'+m.id]?.complete)??MYSTERIES[0]!;

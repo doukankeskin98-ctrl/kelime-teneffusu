@@ -1,12 +1,17 @@
 'use client';
 import {useId,useState} from 'react';
 import {ArrowRight,Check,CheckCircle2,LoaderCircle} from 'lucide-react';
-import {releaseDateLabel,releaseStamp,type ReleasePair} from '@/lib/studio/release-stamps';
+import {releaseDateLabel,releaseStamp,releaseRunResult,type ReleasePair} from '@/lib/studio/release-stamps';
 import type {ChapterCardProgress,ChapterCardState} from '@/lib/studio/card-progress';
 import {Modal} from './common';
 
 function StampArt({earned=false,large=false}:{earned?:boolean;large?:boolean}){
  return <svg className={'release-stamp-art'+(large?' large':'')} viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="1.2" strokeDasharray="2 3"/><circle cx="50" cy="50" r="39" stroke="currentColor"/><path d="M33 68c5-15 16-29 33-39-1 21-10 37-28 35M42 58c-14-1-22-11-21-23 16 2 25 9 25 18M37 67l-4 9M47 50l12-10M42 57l-9-10" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>{earned&&<path d="m61 68 5 5 12-14" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>}</svg>;
+}
+
+export function ReleaseStampResult({result,status,saveMessage,saveError=false,onRetry,onNext}:{result:NonNullable<ReturnType<typeof releaseRunResult>>;status:ChapterCardState;saveMessage:string;saveError?:boolean;onRetry:()=>void;onNext?:()=>void}){
+ const {stamp,next}=result,id=useId();
+ return <section className={'release-result'+(stamp.earned?' earned':'')} aria-labelledby={id}><div className="release-result-heading"><StampArt earned={stamp.earned}/><div><span className="eyebrow">{releaseDateLabel(stamp.date)}</span><h3 id={id}>{stamp.earned?'Keşif damgan tamam':stamp.known?'Bir keşif daha, bir hatıra':'Keşfin tamamlandı'}</h3></div></div><p role="status">{stamp.earned?'İki bölüm de tamam. Bu tarihin damgasını arşivinde görebilirsin. Tekrarda aynı hatıra korunur.':stamp.detail}</p>{next&&<div className="release-result-next"><span>Damga için kalan keşif</span><strong>{next.spec.title}</strong>{onNext&&<button className="text-button" onClick={onNext}>Diğer keşfi aç <ArrowRight size={16}/></button>}</div>}{!stamp.known&&status==='loading'&&<span className="release-result-wait"><LoaderCircle className="spin" size={15}/>Diğer keşfinin kaydı kontrol ediliyor.</span>}{!stamp.known&&(status==='error'||status==='ready')&&<button className="text-button" onClick={onRetry}>Damga kaydını yeniden kontrol et <ArrowRight size={16}/></button>}{!stamp.earned&&<small>İpucu ve süre şartı yok. İstediğin zaman tamamlayabilirsin.</small>}<small className={'release-result-save'+(saveError?' failed':'')} role={saveError?'alert':'status'}>{saveMessage}</small></section>;
 }
 
 export function ReleaseStamp({pair,values,status,compact=false}:{pair:ReleasePair;values:Record<string,ChapterCardProgress>;status:ChapterCardState;compact?:boolean}){
