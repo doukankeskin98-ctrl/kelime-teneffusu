@@ -30,6 +30,8 @@ try{
  const db=await mf.getD1Database('DB');
  for(const file of (await readdir('drizzle')).filter(x=>x.endsWith('.sql')).sort())for(const sql of (await readFile('drizzle/'+file,'utf8')).split('--> statement-breakpoint').map(x=>x.trim()).filter(Boolean))await db.prepare(sql).run();
  const home=await (await request('/')).text();check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
+ check(home.includes('id="discovery-start-title"')&&home.includes('id="fresh-discoveries-title"')&&home.indexOf('id="discovery-start-title"')<home.indexOf('id="fresh-discoveries-title"'),'personal starting point precedes the daily catalogue');
+ check(home.includes('href="#kesif-haritasi"')&&home.includes('href="#dunyalar"')&&home.includes('id="kesif-haritasi"')&&home.includes('id="dunyalar"'),'home shortcuts point to existing map and world sections');
  check(home.includes('kesif-haritasi')&&home.includes('Yıldız İskelesi')&&home.includes('Anadolu Patikası')&&home.includes('Teneffüs Bahçesi'),'public discovery map renders with all three destinations');
  const released=releaseCatalogue();check(home.includes('fresh-discoveries-title')&&home.includes('Neler değişti?')&&released.chapters.slice(0,2).every(c=>home.includes(c.spec.title)),'home visibly presents the new chapters and in-game release notes');
  check(home.includes('İki keşif, bir hatıra')&&home.includes('İki bölümü de tamamla.')&&!home.includes('Damganı gör'),'home presents the stamp condition without awarding an unauthenticated visitor');

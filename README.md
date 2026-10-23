@@ -9,6 +9,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 - Keşif Haritası: üç dünyada kalıcı ilerleme, 18 belirli koleksiyon parçası ve açılan üç bonus bölüm. Üç durak sonraki dünyayı, beş durak bonusu açar.
 - Altı Gizli Tema: kelimeleri bul, ortak bağlantıyı çöz, bonus kelimeyi aç.
 - İlk açılışta oynanabilir 6 × 6 öğrenme turu. Kaydırma, iki uca dokunma ve klavye kontrolü.
+- Ana sayfanın ilk kartında kişisel sıradaki/yarım kalan keşif; haritaya, dünyalara ve arkadaş oyununa doğrudan geçiş. Günlük içerik ve arşiv ayrı kalır.
 - Keşif albümleri, rozetler, açılan renk paletleri, kişisel en iyi solo sonuçları ve tekrar oynama.
 - Her gün İstanbul saatine göre ortak bulmaca. Süre sunucuda, ipucu başına +15 saniye.
 - 120 saniyelik gerçek iki kişilik Arena. Özel odalar, paylaşım bağlantısı, ortak geri sayım, Altın Kelime, bağlantıdan dönüş ve karşılıklı rövanş.

@@ -7,7 +7,8 @@ import {dailySpec,istanbulDay} from '@/lib/game/engine';
 import {collectionStats,streak,type Progress} from '@/lib/game/progress';
 import {Rankings} from './Arena';
 import {api} from './common';
-import {DiscoveryArt,WorldArt} from './WorldArt';
+import {WorldArt} from './WorldArt';
+import {DiscoveryStart} from './DiscoveryStart';
 import {DiscoveryMap,DiscoveryAlbums} from './Discovery';
 import {nextDiscovery} from '@/lib/game/next-discovery';
 import type {SoloConfig} from './Solo';
@@ -20,16 +21,15 @@ export type Account={authenticated:boolean;kind?:'guest'|'native'|'email';native
 export function Explore({releases,userId,progress,setTheme,openSolo,setNav,classic,onMystery,onChallenge,onExtra}:{releases:ReleaseSummary[];userId?:string;progress:Progress;setTheme:(t:Theme)=>void;openSolo:(c:SoloConfig)=>void;setNav:(n:'kesfet'|'arena'|'gunluk'|'profil')=>void;classic:()=>void;onMystery:(id:string)=>void;onChallenge:()=>void;onExtra:(chapter:PublishedChapter,practice?:boolean,pair?:ReleasePair)=>void}){
  const [search,setSearch]=useState(''),[filter,setFilter]=useState('Tümü');
  const visible=useMemo(()=>THEMES.filter(t=>(filter==='Tümü'||t.category===filter)&&(t.title+' '+t.subtitle).toLocaleLowerCase('tr-TR').includes(search.toLocaleLowerCase('tr-TR'))),[search,filter]);
- const dailyTheme=findTheme(dailySpec(istanbulDay()).themeId),nextMystery=MYSTERIES.find(m=>!progress.saves['mystery:'+m.id]?.complete)??MYSTERIES[0]!;
+ const nextMystery=MYSTERIES.find(m=>!progress.saves['mystery:'+m.id]?.complete)??MYSTERIES[0]!;
  const recommendation=nextDiscovery(progress),destination=recommendation.config;
  const begin=()=>openSolo(destination);
  return <div className="page-enter studio-home"><div className="welcome-row"><div><span className="eyebrow">KENDİNE KÜÇÜK BİR MOLA VER</span><h1>Bugün ne keşfedelim?</h1></div><span className="collection-count"><Compass size={17}/>16 dünya, binbir merak.</span></div>
+ <DiscoveryStart recommendation={recommendation} onPlay={begin} onArena={()=>setNav('arena')}/>
  <DailyDiscoveries userId={userId} chapters={releases} onPlay={onExtra}/>
- <section className="discovery-hero"><div className="discovery-hero-copy"><span className="pill hero-pill"><Sparkles size={14}/>Kelimelerle iyi bir mola.</span><h2>Merakına<br/>bir <em>teneffüs.</em></h2><p>Bir kelimeyle başla.<br/>Bambaşka dünyalar keşfet.</p><button className="button primary" onClick={begin}>{recommendation.label}<ArrowRight size={18}/></button><div className="hero-next-note"><span>{recommendation.mode==='continue'?'YARIM KALAN KEŞFİN':'SIRADAKİ KÜÇÜK ADIM'}</span><b>{recommendation.title}</b><small>{recommendation.theme}{recommendation.found>0?` · ${recommendation.found} kelime bulundu`: ''}</small></div><div className="hero-footnote"><span><Check size={14}/>Süre baskısı yok</span><span><Compass size={14}/>Her yöne keşif</span></div></div><DiscoveryArt/><span className="hero-note">Küçük bir keşif,<br/><em>güzel bir his.</em></span></section>
  <DiscoveryMap progress={progress} onPlay={(journey,practice)=>openSolo({themeId:journey.themeId,level:0,journey:journey.id,practice})}/>
  <PublishedChapters userId={userId} onPlay={onExtra}/>
- <section className="quick-actions" aria-label="Hızlı oyun seçenekleri"><button className="quick-action continue" onClick={begin}><span className="quick-action-icon"><BookOpen size={23}/></span><span><small>{recommendation.mode==='continue'?'SENİN YOLCULUĞUN':'KENDİ TEMPONDA'}</small><b>{recommendation.label}</b><em>{recommendation.title}</em></span><ArrowRight size={19}/></button><button className="quick-action friends" onClick={()=>setNav('arena')}><span className="quick-action-icon"><Swords size={23}/></span><span><small>TANIDIK REKABET</small><b>Arkadaşınla oyna</b><em>Aynı tahta. İki keskin bakış.</em></span><ArrowRight size={19}/></button><button className="quick-action daily" onClick={()=>setNav('gunluk')}><span className="quick-action-icon"><CalendarDays size={23}/></span><span><small>BUGÜNE ÖZEL</small><b>Günün bulmacası</b><em>{dailyTheme.title} dünyasına uğra.</em></span><ArrowRight size={19}/></button></section>
- <div className="discovery-heading"><div><span className="eyebrow">MERAKIN NEREYE GÖTÜRÜRSE</span><h2>Bir dünya seç.</h2></div><label className="search-box"><Search size={18}/><input aria-label="Tema ara" placeholder="Dünyalarda ara…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div>
+ <div className="discovery-heading" id="dunyalar"><div><span className="eyebrow">MERAKIN NEREYE GÖTÜRÜRSE</span><h2>Bir dünya seç.</h2></div><label className="search-box"><Search size={18}/><input aria-label="Tema ara" placeholder="Dünyalarda ara…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div>
  <div className="category-tabs" aria-label="Tema kategorileri">{['Tümü','Nostalji','Ekran','Spor','Keşif','Yaşam','Merak','Kültür'].map(c=><button className={filter===c?'selected':''} key={c} onClick={()=>setFilter(c)} aria-pressed={filter===c}>{c}</button>)}</div>
  <div className="theme-grid">{visible.map((t,i)=>{
   const routes=JOURNEYS.filter(j=>j.themeId===t.id),routeDone=routes.filter(j=>progress.saves['route:'+j.id]?.complete).length;

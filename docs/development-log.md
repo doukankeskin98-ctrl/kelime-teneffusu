@@ -1,5 +1,40 @@
 # Geliştirme defteri
 
+## 24 Ekim 2026 · 0.8.1
+
+Başlangıç: en güncel Sites kaynağı `99630ee37b9fdac40922725787e3d155fef7ae6d`, kayıtlı 11. sürüm ve herkese açık sahip erişimi doğrulandı. GitHub `main` başlangıcı `f24d2b7d9d0cf14eb3efd3e9f6a05a9d339ed7f6`; kaynak ağaçları aynı. UTC 23 Ekim'in iki bölümü zaten yayında olduğundan yeni çift üretilmedi. İstanbul'da 24 Ekim'e geçilmiş olması UTC içerik kaydını değiştirmez.
+
+| Aday | Oyuncuya fayda | Karar / kabul ölçütü |
+| --- | --- | --- |
+| Kişisel keşfi ana sayfanın başına alma | Oyuna dönmek için günlük kartları, damgayı ve büyük tanıtım alanını kaydırma ihtiyacını azaltır. | Seçildi. Doğru başla/devam/tekrar hedefi günlük katalogdan önce görünür; mevcut öneri ve kayıt kuralları kullanılır. |
+| Arşivde küçük metin ve çizim ölçülerini düzeltme | Tarih, zorluk ve oynama eylemi telefonda daha rahat okunur. | Aynı gezinme işinin parçası olarak seçildi. Sayfa/pencerede en az 11 px tarih, 12 px metaveri, 13 px eylem ve dar ekranda tek sütun. |
+| Kişisel keşif odası / yeni gizem mekaniği | Kalıcı ilerlemeyi daha zengin bir deneyime dönüştürür. | Sonraki aşama. Önce mevcut keşfe ulaşma ve gerçek cihaz doğrulaması; yüzeysel yeni ödül veya kalabalık eklenmedi. |
+| iOS uygulama prototipi | Kurulum, dokunma ve çevrimdışı akışın mağaza yolunda sınanmasını sağlar. | Xcode/iPhone ve giriş akışı doğrulaması gereken ayrı iş. Native sürüm hazır veya App Store'a uygun iddiası yok. |
+
+### Yapılanlar ve kabul ölçütleri
+
+- **Keşfet → ilk kart:** kişisel sonraki/yarım kalan keşif, gerçek bölüm başlığı, tema ve varsa bulunan kelime sayısı. Tek bir ana eylem mevcut `nextDiscovery` sonucunu açar. Tamamlanmış kayıt yanlışlıkla yarım gösterilmez; tekrar en iyi sonucu korur.
+- **Harita / Dünyalar / Arkadaşla oyna:** ilk iki bağlantı sayfadaki gerçek bölümlere, üçüncü düğme mevcut Arena'ya gider. İlk öğrenme turu, Günlük sekmesi, sosyal akışlar ve arşiv korunur.
+- Krem/orman yeşili tasarım, önerilen temanın mevcut özgün SVG çizimi, 48 px ana eylemler, dar ekranda tek sütun, görünür klavye odağı ve azaltılmış hareket desteği. Büyük tekrarlı tanıtım ve hızlı seçim alanları tek başlangıç alanında birleştirildi.
+- Arşiv kartlarının çizimine doğru `theme-art` sınıfı bağlandı; sınırlı çizim alanı gerçekten uygulanır. Tarih/metaveri/oynama yazıları sayfa ve pencerede aynı okunabilir ölçeği kullanır. Küçük ekranda kartlar bir sütun olur.
+- Kartların gerçek yükleniyor/boş/çevrimdışı/hata/yeniden dene durumları, hesap ayrımı ve bölümden dönüş korunur. Yeni ağ isteği, bağımlılık, ödeme, ölçüm, tablo veya göç eklenmedi.
+- Eski bölüm kimlikleri, kelimeler, deterministik tahtalar, beşli harita kümeleri ve ödül kuralları değişmedi. Kaynak yayın dosyaları yeniden üretilmedi.
+- Bağlı bakım görevinin yönergesine somut etki/kanıt/maliyet/risk önceliklendirmesi, tutarlı tasarım ve tamamlanmış küçük aşamalarla ilerleyen proaktif stüdyo çalışma biçimi eklendi. Zamanlama, mevcut kalite kapıları ve kayıt koruma şartları aynı kaldı. Kesintisiz çalışma garantisi verilmez.
+
+### Doğrulama ve sınırlar
+
+Üretim Worker akışına kişisel başlangıcın günlük katalogdan önce geldiğini ve iki sayfa bağlantısının gerçek hedefleri olduğunu denetleyen iki kabul kontrolü eklendi. Mevcut öneri/başla/devam/tekrar, hesap, misafir, bulut birleştirme, arkadaş, Arena, içerik ve çevrimdışı solo regresyonları korunur.
+
+Yerel sonuç: **113/113 test**, **30 tahta + 600 alternatif yerleşim**, TypeScript ve son üretim derlemesi başarılı. Son paket üzerinde iki bağımsız oyuncuyla **171 üretim Worker HTTP kontrolü** geçti. Kaynak fark kontrolünde eski yayın dosyaları, motor, klasik içerik, katalog, ilerleme ve veritabanı/göçler başlangıçla aynı. Son üç saat için erişilebilir üretim hata günlüğü boş döndü; bu tüm oyuncu oturumlarının hatasız olduğuna kanıt değildir. Özel oyuncu verisi veya izinsiz ölçüm okunmadı. Kaynak ağacı/GitHub CI ve Sites yayın sonucu tamamlanmadan bu kayıt yayın kanıtı değildir.
+
+Destekli önizleme bu tur yeniden denendi ancak mevcut Vinext sunucu kilidi (`PID 14`, `/site`, `4173`) nedeniyle başlatılamadı. Önizleme yardımcısı başlatılmış bir önizleme göstermedi. Kilit silinmedi, bilinmeyen süreç durdurulmadı ve başka tarayıcı yolu denenmedi. Gerçek tarayıcı düzeni, telefon dokunması, ekran okuyucu ve FPS doğrulanmış değildir; kaynak/HTTP incelemesi bunların yerine geçmez.
+
+### Sıradaki öncelikler
+
+1. Destekli önizleme/gerçek iPhone ve Android doğrulaması: ilk karttan başlama, yarım oyuna dönüş, çapraz seçim, arşiv, büyük yazı ve çevrimdışı yeniden açılış. Kabul: taşma veya erişilemeyen kontrol yok; bölüm/kayıt/dönüş aynı kalıyor.
+2. İzinli ilk oyuncu gözlemlerinden en büyük sürtünmeyi seçme. Kabul: gerçek örnek ve ölçülebilir hedef; uydurma kullanım veya başarı oranı yok.
+3. iOS için tek oynanabilir dikey akış: ilk açılış, solo bölüm, kayıt ve geri dönüş. Kabul: gerçek derleme/cihaz doğrulaması; giriş sağlayıcısı veya satın alma bağlanmadan çalışıyor sayılmaz.
+
 ## 23 Ekim 2026 · 0.8.0
 
 En güncel Sites kaynağı `f8c047a097196d0262502b2c1f111a5591ad2477`, herkese açık sahip erişimi ve 10. sürüm kontrol edildi. Önceki başarılı yayın `appgdep_6ada6e8c26508191865368588bcdbf2b`; GitHub başlangıcı `e5a8ea97f4583b87216cdeb2b30565021047e8d7`. 23 Ekim dosyası yoktu; iki yeni, değişmez bölüm `content/releases/2026-10-23.json` içine eklendi. Önceki yayın dosyaları korunur.
