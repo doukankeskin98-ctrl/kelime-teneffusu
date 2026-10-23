@@ -8,6 +8,8 @@
 
 0.7.1, tarihli bölüm sonucunda doğrulanmış damga durumunu ve varsa aynı çiftin kalan keşfine geçişi gösterir. Son doğru kelime anında hesaba katılır; diğer kayıt bilinmiyorsa tamamlandı iddiası yoktur. Eski arşiv çiftleri ve tekrar oyunları aynı kalıcı hatırayı kullanır.
 
+0.8.0, **Fırında bir sabah** ve **Eski kentin izleri** bölümleriyle Albümde tarihli damga rafını ekler. Raf mevcut tamamlamalardan türetilir; eski bölümlere açılan pencere, doğru devam/tekrar ve bölümden rafa dönüş sunar. Bilinmeyen ilerleme kazanılmış gibi gösterilmez. Yeni şema veya ödeme entegrasyonu yoktur.
+
 ## Uygulanan ürün akışları
 
 Ana sayfa, ilk keşif, tema/rota seçimi, tahta, duraklama, ipucu, sonuç, tekrar oynama ve albüm aynı görsel sistemi kullanır. Ana gezinme Keşfet, Arena, Günlük ve Albüm olarak kalır. Arena, canlı düello, kayıtlı performansa meydan okuma ve arkadaşlar arasında ayrılır. Bir karşılaşma açılınca genel gezinme gizlenir; ayrılma ve dönüş oyun içinden yapılır.
