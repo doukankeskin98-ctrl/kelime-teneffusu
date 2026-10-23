@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-23",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261023-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Fırında bir sabah",
+          "themeId": "lezzetler",
+          "words": [
+            "EKMEK",
+            "SİMİT",
+            "MAYA",
+            "PİDE"
+          ],
+          "size": 6,
+          "seed": 2026102301,
+          "difficulty": "Rahat",
+          "note": "Sıcacık bir başlangıç. Kelimeleri kaydırarak veya iki ucuna dokunarak seçebilirsin."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "M",
+              "İ",
+              "Ö",
+              "T",
+              "A",
+              "P"
+            ],
+            [
+              "T",
+              "A",
+              "G",
+              "H",
+              "İ",
+              "İ"
+            ],
+            [
+              "İ",
+              "K",
+              "Y",
+              "D",
+              "B",
+              "I"
+            ],
+            [
+              "M",
+              "İ",
+              "E",
+              "A",
+              "U",
+              "K"
+            ],
+            [
+              "İ",
+              "E",
+              "K",
+              "M",
+              "E",
+              "K"
+            ],
+            [
+              "S",
+              "Ğ",
+              "Ş",
+              "L",
+              "T",
+              "Y"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "EKMEK",
+              "text": "EKMEK",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "SİMİT",
+              "text": "SİMİT",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "MAYA",
+              "text": "MAYA",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "PİDE",
+              "text": "PİDE",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "0.0",
+              "label": "EKMEK",
+              "text": "EKMEK",
+              "group": 0,
+              "a": [
+                4,
+                1
+              ],
+              "b": [
+                4,
+                5
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "SİMİT",
+              "text": "SİMİT",
+              "group": 1,
+              "a": [
+                5,
+                0
+              ],
+              "b": [
+                1,
+                0
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "MAYA",
+              "text": "MAYA",
+              "group": 2,
+              "a": [
+                0,
+                0
+              ],
+              "b": [
+                3,
+                3
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "PİDE",
+              "text": "PİDE",
+              "group": 3,
+              "a": [
+                0,
+                5
+              ],
+              "b": [
+                3,
+                2
+              ]
+            }
+          ]
+        },
+        "contentHash": "1642709fe12a3e3b9f31e713764216c58362f1e2720915df9e7302b09eaf2ae2",
+        "publishedAt": 1792742718951,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261023-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Eski kentin izleri",
+          "themeId": "dunya",
+          "words": [
+            "MOZAİK",
+            "SÜTUN",
+            "KEMER",
+            "HEYKEL",
+            "KİTABE",
+            "HARABE",
+            "KAZI"
+          ],
+          "size": 8,
+          "seed": 2026102302,
+          "difficulty": "Dengeli",
+          "note": "Her taşın bir hikâyesi var. Çaprazlarda ve tersten yazılan kelimelerde izleri ara."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "F",
+              "K",
+              "İ",
+              "A",
+              "Z",
+              "O",
+              "M",
+              "L"
+            ],
+            [
+              "H",
+              "S",
+              "L",
+              "N",
+              "H",
+              "B",
+              "E",
+              "Z"
+            ],
+            [
+              "A",
+              "M",
+              "E",
+              "D",
+              "L",
+              "K",
+              "Ş",
+              "T"
+            ],
+            [
+              "R",
+              "K",
+              "U",
+              "B",
+              "Y",
+              "U",
+              "S",
+              "U"
+            ],
+            [
+              "A",
+              "E",
+              "I",
+              "E",
+              "A",
+              "Ü",
+              "D",
+              "C"
+            ],
+            [
+              "B",
+              "M",
+              "H",
+              "Z",
+              "T",
+              "T",
+              "P",
+              "K"
+            ],
+            [
+              "E",
+              "E",
+              "L",
+              "U",
+              "A",
+              "G",
+              "İ",
+              "M"
+            ],
+            [
+              "İ",
+              "R",
+              "N",
+              "K",
+              "Ü",
+              "K",
+              "U",
+              "K"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "MOZAİK",
+              "text": "MOZAİK",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "SÜTUN",
+              "text": "SÜTUN",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "KEMER",
+              "text": "KEMER",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "HEYKEL",
+              "text": "HEYKEL",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "KİTABE",
+              "text": "KİTABE",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "HARABE",
+              "text": "HARABE",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "KAZI",
+              "text": "KAZI",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "0.0",
+              "label": "MOZAİK",
+              "text": "MOZAİK",
+              "group": 0,
+              "a": [
+                0,
+                6
+              ],
+              "b": [
+                0,
+                1
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "HEYKEL",
+              "text": "HEYKEL",
+              "group": 3,
+              "a": [
+                5,
+                2
+              ],
+              "b": [
+                0,
+                7
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "KİTABE",
+              "text": "KİTABE",
+              "group": 4,
+              "a": [
+                7,
+                7
+              ],
+              "b": [
+                2,
+                2
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "HARABE",
+              "text": "HARABE",
+              "group": 5,
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                6,
+                0
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "SÜTUN",
+              "text": "SÜTUN",
+              "group": 1,
+              "a": [
+                3,
+                6
+              ],
+              "b": [
+                7,
+                2
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "KEMER",
+              "text": "KEMER",
+              "group": 2,
+              "a": [
+                3,
+                1
+              ],
+              "b": [
+                7,
+                1
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "KAZI",
+              "text": "KAZI",
+              "group": 6,
+              "a": [
+                7,
+                5
+              ],
+              "b": [
+                4,
+                2
+              ]
+            }
+          ]
+        },
+        "contentHash": "ba286090b66d704f95c09ae986c8b0e3c5d4572eabda74589ccd8c38f53a708e",
+        "publishedAt": 1792742718951,
+        "archived": false
+      }
+    }
+  ]
+}

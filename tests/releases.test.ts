@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
-import {RELEASE_BATCHES,releaseCatalogue,releasedChapter,releaseChapterId} from '../lib/studio/releases.ts';
+import {RELEASE_BATCHES,releaseCatalogue,releasedChapter,releaseChapterId,type ReleaseBatch} from '../lib/studio/releases.ts';
 import {checkChapter,validChapterId,StudioError} from '../lib/studio/content.ts';
 import {AdminStore,ChapterStore} from '../lib/studio/store.ts';
 import {digest} from '../lib/game/security.ts';
@@ -8,6 +8,8 @@ import {discoveryState} from '../lib/game/discovery.ts';
 import {emptyProgress,type SavedLevel} from '../lib/game/progress.ts';
 import {fixture} from './fixtures.ts';
 import {chapterSyncResult,mergeChapterSave} from '../lib/studio/chapter-progress.ts';
+import {releaseArchive} from './release-fixtures.ts';
+import {releasePairs} from '../lib/studio/release-stamps.ts';
 
 const now=Math.max(Date.parse('2026-10-21T12:00:00Z'),...RELEASE_BATCHES.flatMap(b=>b.chapters.map(c=>c.chapter.publishedAt)))+1000;
 const raw=(strokes:SavedLevel['strokes'],elapsed=25,hints=0):SavedLevel=>({strokes,elapsed,hints,complete:false,stars:99});
@@ -22,7 +24,17 @@ describe('immutable daily releases and permanent archive',()=>{
  });
  it('omits future releases, retains old ones indefinitely and returns board-free archive summaries',()=>{
   const first=RELEASE_BATCHES[0]!,old=first.chapters[0]!.chapter;assert.equal(releaseCatalogue(0,Date.parse(first.date+'T00:00:00Z')-1).total,0);
-  const archive=releaseCatalogue(0,now+3650*86400000);assert.equal(archive.total,RELEASE_BATCHES.length*2);assert(archive.chapters.some(c=>c.id===old.id));assert(archive.chapters.every(c=>!('board' in c)&&!('archived' in c)));assert.equal(releaseCatalogue(20000,now).chapters.length,0);
+  const archive=releaseArchive(now+3650*86400000);assert.equal(archive.total,RELEASE_BATCHES.length*2);assert(archive.chapters.some(c=>c.id===old.id));assert(archive.chapters.every(c=>!('board' in c)&&!('archived' in c)));assert.equal(releaseCatalogue(20000,now).chapters.length,0);
+ });
+ it('keeps old stamp pairs reachable beyond 24 chapter summaries without splitting a pair between pages',()=>{
+  // Synthetic future batches exist only in this isolated test process and are removed below.
+  const batches=RELEASE_BATCHES as ReleaseBatch[],length=batches.length,old=batches[0]!.chapters[0]!.chapter.id;
+  try{
+   for(let i=0;i<13;i++){const date=new Date(Date.UTC(2090,0,i+1)).toISOString().slice(0,10),copy=structuredClone(batches[0]!);copy.date=date;for(const item of copy.chapters){item.chapter.id=releaseChapterId(date,item.slot);item.chapter.publishedAt=Date.parse(date+'T00:00:00Z');}batches.push(copy);}
+   const clock=Date.parse('2091-01-01T00:00:00Z'),first=releaseCatalogue(0,clock),archive=releaseArchive(clock);
+   assert.equal(first.chapters.length,24);assert.notEqual(first.nextOffset,null);assert(!first.chapters.some(c=>c.id===old));assert.equal(releasePairs(first.chapters).length,12);
+   assert.equal(archive.chapters.length,batches.length*2);assert.equal(new Set(archive.chapters.map(c=>c.id)).size,archive.chapters.length);assert(archive.chapters.some(c=>c.id===old));assert.equal(releasePairs(archive.chapters).length,batches.length);
+  }finally{batches.splice(length);}
  });
  it('returns the same source board after reload and isolates caller mutations',()=>{
   const id=RELEASE_BATCHES[0]!.chapters[0]!.chapter.id,a=releasedChapter(id,now)!,original=JSON.stringify(a);a.board.grid[0]![0]='X';a.spec.words[0]='DEĞİŞTİ';assert.equal(JSON.stringify(releasedChapter(id,now)),original);assert.equal(releasedChapter('unknown',now),undefined);

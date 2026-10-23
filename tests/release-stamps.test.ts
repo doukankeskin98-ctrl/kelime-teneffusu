@@ -1,15 +1,16 @@
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
-import {releaseCatalogue,releasedChapter,RELEASE_BATCHES} from '../lib/studio/releases.ts';
+import {releasedChapter,RELEASE_BATCHES} from '../lib/studio/releases.ts';
 import {releasePairs,releaseStamp,playableReleasePair,releaseRunResult} from '../lib/studio/release-stamps.ts';
 import {cardProgress,parseCardProgress,type ChapterCardProgress} from '../lib/studio/card-progress.ts';
 import {ChapterStore} from '../lib/studio/store.ts';
 import {cleanSave,type SavedLevel} from '../lib/game/progress.ts';
 import {rememberChapter,readChapterSave,saveKey} from '../lib/studio/chapter-cache.ts';
 import {fixture} from './fixtures.ts';
+import {releaseArchive} from './release-fixtures.ts';
 
 const now=Math.max(Date.parse('2026-10-22T12:00:00Z'),...RELEASE_BATCHES.flatMap(b=>b.chapters.map(c=>c.chapter.publishedAt)))+1000;
-const chapters=releaseCatalogue(0,now).chapters,pairs=releasePairs(chapters),pair=pairs[0]!;
+const chapters=releaseArchive(now).chapters,pairs=releasePairs(chapters),pair=pairs.find(p=>p.date==='2026-10-22')!;
 const progress=(count=100,hints=0,elapsed=30)=>Object.fromEntries(pair.chapters.map(chapter=>{
  const board=releasedChapter(chapter.id,now)!.board;
  return [chapter.id,cardProgress(cleanSave({strokes:board.placements.slice(0,count),elapsed,hints,complete:false,stars:0},board),chapter.spec)];
@@ -17,7 +18,7 @@ const progress=(count=100,hints=0,elapsed=30)=>Object.fromEntries(pair.chapters.
 
 describe('permanent discovery stamps',()=>{
  it('groups dates newest first, binds each goal to its original two IDs and does not duplicate cards',()=>{
-  assert.equal(pairs.length,RELEASE_BATCHES.length);assert.deepEqual(pair.chapters.map(c=>c.slot),[1,2]);assert.equal(pair.date,'2026-10-22');
+  assert.equal(pairs.length,RELEASE_BATCHES.length);assert.deepEqual(pairs.map(p=>p.date),RELEASE_BATCHES.map(b=>b.date).sort().reverse());assert.deepEqual(pair.chapters.map(c=>c.slot),[1,2]);assert.equal(pair.date,'2026-10-22');
   assert.deepEqual(releasePairs([...chapters,...chapters]),pairs);
   assert.deepEqual(releasePairs([...chapters,{...pair.chapters[0],id:crypto.randomUUID(),slot:3}]),pairs);
  });

@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.8.0',date:'23 Ekim 2026',title:'Hatıraların albümünde birikiyor',items:[
+  {where:'Bugünün iki keşfi',detail:'Fırında bir sabah ile 6 × 6 kolay bir mola; Eski kentin izleri ile 8 × 8 dengeli bir keşif. İki bölümde de çapraz kelimeler var.'},
+  {where:'Albüm · Keşif damgaların',detail:'Tarihli hatıraların artık bir rafta. Kazandığın damgayı aç, kalan iki keşfi gör veya eski bir bölüme dön. Önceki tamamlamalar geçerli.'},
+  {where:'Keşiften albüme dönüş',detail:'Raftan açtığın bir bölümden geri döndüğünde damgalarının olduğu alana dönersin. Tekrar oyunu yeni ödül eklemez; en iyi sonuç korunur.'},
+ ]},
  {version:'0.7.1',date:'22 Ekim 2026',title:'Hatıranı bölüm sonunda gör',items:[
   {where:'Bölüm sonucu',detail:'Tarihli bir keşfi bitirince damganın durumunu hemen gör. İki bölüm tamamlandıysa aynı tarihin hatırası gösterilir; tekrar oyununda yeni bir ödül eklenmez.'},
   {where:'Diğer keşfi aç',detail:'Çiftin bir bölümü kaldıysa sonuçta adını görüp doğrudan açabilirsin. İpucu veya süre şartı yok; istediğin zaman ara verebilirsin.'},

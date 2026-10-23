@@ -1,5 +1,44 @@
 # Geliştirme defteri
 
+## 23 Ekim 2026 · 0.8.0
+
+En güncel Sites kaynağı `f8c047a097196d0262502b2c1f111a5591ad2477`, herkese açık sahip erişimi ve 10. sürüm kontrol edildi. Önceki başarılı yayın `appgdep_6ada6e8c26508191865368588bcdbf2b`; GitHub başlangıcı `e5a8ea97f4583b87216cdeb2b30565021047e8d7`. 23 Ekim dosyası yoktu; iki yeni, değişmez bölüm `content/releases/2026-10-23.json` içine eklendi. Önceki yayın dosyaları korunur.
+
+| Aday | Oyuncuya fayda | Karar / kabul ölçütü |
+| --- | --- | --- |
+| Albümde kalıcı damga rafı | Oyuncu eski hatıralarını bir yerde görür, kalan keşfi bulur ve bölümden aynı rafa döner. | Seçildi. Önceki sonuç ekranı aşamasını tamamlar. Yalnız gerçek iki tamamlamadan türetilir, yeni kayıt veya ödül talebi yoktur. |
+| iOS prototipi ve App Store hazırlığı | Kurulabilir uygulamada dokunma, çevrimdışı kayıt ve giriş sınanabilir. | Bu tur uygulanmadı. Gerçek Xcode/iPhone doğrulaması ve yayın hesabı kurulumu ayrı aşama; çalışan web sürümü korunur. |
+| Varsayılan iOS simge adreslerini tamamlama | Ana ekrana ekleme uyumluluğuna yardımcı olabilir. | Küçük 404'ler kaydedildi; temel oynanış arızası kanıtı yok. Cihaz/PWA doğrulamasıyla ele alınacak. |
+
+### Yeni içerik
+
+- **Fırında bir sabah:** Lezzetler, Rahat, 6 × 6, EKMEK, SİMİT, MAYA, PİDE. Tohum `2026102301`, kimlik `20261023-0001-4000-8000-000000000001`.
+- **Eski kentin izleri:** Dünya Turu, Dengeli, 8 × 8, MOZAİK, SÜTUN, KEMER, HEYKEL, KİTABE, HARABE, KAZI. Tohum `2026102302`, kimlik `20261023-0002-4000-8000-000000000001`.
+- Her tahtada iki çapraz eğim; istenen boyut ve bölüm başına 20 alternatif yerleşim kontrolü. Yeni kelime/tema çifti, ana sayfa kartları ve kalıcı arşivde bulunur.
+- Aynı UTC tarihinin yeniden çalışmasında bu dosya yeniden üretilmez. Eksik yayın aynı kimlikler ve snapshotlarla sürdürülür; önceki tarihler değişmez.
+
+### Yapılanlar ve kabul ölçütleri
+
+- **Albüm → Keşif damgaların:** tarihe göre raf; kazanılmış damganın gerçek hatıra penceresi, iki bölümün adları, tamamlanma koşulu ve **Keşifleri aç** eylemi.
+- Kalan veya eski bölümler raftaki tarihin penceresinden açılır. Tamamlanan bölüm doğrudan tekrar oyununa, yarım bölüm kendi kaydına gider. Aynı sabit çift bağlamı sonuç ekranına taşınır.
+- Raftan açılan bölümden geri dönünce Albüm ve damga alanı korunur. Sonuçtaki geri dönüş yazısı her iki giriş noktası için **Keşiflerine dön** olarak genelleştirildi.
+- Tamamlanmış damgalar eski kayıtlardan otomatik görünür; tekrar, yeni tarih veya ek içerik damgayı çoğaltmaz ya da kilitlemez. Beşli dünya kümeleri ve mevcut bonuslar değiştirilmez.
+- Yükleniyor, boş, çevrimdışı ve hata durumları mevcut ortak katalog/özel ilerleme okumasını kullanır. Bilinmeyen kayıtta uydurma sayı veya ödül yoktur. Yeniden deneme ve eski tarihler için sayfalama korunur. Yalnız yüklenen tarihler gösterilir; bütün koleksiyon için doğrulanmamış toplam iddiası yoktur.
+- Özgün damga SVG'si ve krem/orman yeşili/altın dili; dar ekranda tek sütun, 44 px eylemler, okunur metinli durumlar ve mevcut azaltılmış hareket tercihi. Yeni animasyon, görsel üretimi, bağımlılık veya ücretli hizmet eklenmedi.
+- Raf aynı hesaba özel doğrulanmış bölüm kayıtlarını okur. Yeni tablo/göç, ödül bakiyesi, sunucu yazması veya Arena puanı yoktur. Hesap değişiminde önceki yanıtı göstermeme ve cihaz/bulut birleştirme yolu korunur.
+
+### Kontroller ve sınırlar
+
+Tarih büyümesini hesaba katmak için eski damga senaryoları sabit 22 Ekim örneğine bağlandı; bütün arşiv sayfaları testte okunur. Önceki kazanım, hesap ayrımı, çevrimdışı doğrulama, son kelime ve tekrar testleri korunur. Yeni regresyon, yalnız yalıtılmış test belleğindeki sentetik tarihlerle 24 bölüm sınırını aşar; eski damga çiftlerinin kaybolmadığını, sayfada bölünmediğini ve yinelenmediğini doğrular. Üretim içeriğine sahte bölüm eklenmez.
+
+Yerel sonuç: **113/113 test**, **30 tahta + 600 alternatif yerleşim**, TypeScript ve son üretim derlemesi başarılı. İki bağımsız oyuncuyla **169 üretim Worker HTTP kontrolü** geçti. Küçük ekrandaki raf başlığı ve durum metinleri okunur boyuta getirildikten sonra üretim paketi yeniden derlendi ve HTTP akışı bu paketle çalıştırıldı. Önceki yayın JSON'ları, tahta motoru, klasik içerik ve veritabanı göçleri başlangıç kaynağıyla aynıdır. Tam kaynak ağacı/GitHub CI ve Sites yayın sonucu tamamlanmadan bu kayıt yayın kanıtı değildir.
+
+Erişilebilir son üretim günlüklerinde istemci iptalleri ve varsayılan simge/robots adreslerinde 404 vardı; uygulama istisnası kaydı görülmedi. Bu örnek tüm oturumların hatasız olduğu anlamına gelmez. Yetkili oyun oturumu olmadan özel kullanım ölçümleri veya oyuncu verisi okunmadı.
+
+Önceki destekli önizleme erişim engelinin giderildiğine dair kanıt yok; başka tarayıcı veya güvenlik aşma yolu denenmedi. Bu tur gerçek telefon, tarayıcı etkileşimi, ekran okuyucu ve FPS doğrulanmış sayılmaz. Mobil düzen, metin, odak ve dokunma boyutları kaynakta incelenir; bu inceleme gerçek cihaz testinin yerine geçmez.
+
+Sonraki öncelik gerçek iPhone/Android üzerinde albümden bölüme geçiş ve geri dönüş, çapraz seçim, büyük yazı ve çevrimdışı dönüş. Sonra iOS prototipinin giriş/kayıt/çevrimdışı davranışını küçük bir dikey akışta doğrulama. Native paket, Apple ile Giriş, reklam, ödeme veya abonelik henüz uygulanmadı.
+
 ## 22 Ekim 2026 · 0.7.1
 
 Güncel Sites kaynağı `3201ab2a4addeb0a57f3eed3a915ee84f6c4bc66`, kayıtlı 9. sürüm ve `appgdep_6ada36fcbb448191b5e70f34f7dfb857` başarılı yayını esas alındı. GitHub başlangıcı `bba457490d84e81503610f411bdf7b36c9ef88c8`. Bugünün **Bir avuç melodi** ve **Robot atölyesi** bölümleri zaten yayında; ikinci çift eklenmedi. Kaynak yayın dosyaları, kimlikler, kelimeler ve sabit tahtalar korunur.
