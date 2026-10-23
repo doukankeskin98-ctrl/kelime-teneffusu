@@ -12,6 +12,8 @@
 
 ## Uygulanan ürün akışları
 
+0.8.1, ana sayfanın başına kişisel devam/başlama kartını taşır. Mevcut doğrulanmış öneri kuralı, bölüm başlığı ve gerçek bulunan kelime sayısı kullanılır. Harita/dünyalar bağlantıları ve Arena eylemi tek alandadır. Arşiv kartlarının tarih/metaveri yazıları büyütülür, mobil tek sütun ve tema çizimi ölçüleri sayfa ile pencerede tutarlı hale gelir. Kayıt, tahta ve ödül kuralları değiştirilmez. Bu sürümde destekli önizleme başka bir geliştirme sunucusuna ait kilit nedeniyle başlatılamadı; görsel tarayıcı ve fiziksel telefon doğrulaması tamamlanmış değildir.
+
 Ana sayfa, ilk keşif, tema/rota seçimi, tahta, duraklama, ipucu, sonuç, tekrar oynama ve albüm aynı görsel sistemi kullanır. Ana gezinme Keşfet, Arena, Günlük ve Albüm olarak kalır. Arena, canlı düello, kayıtlı performansa meydan okuma ve arkadaşlar arasında ayrılır. Bir karşılaşma açılınca genel gezinme gizlenir; ayrılma ve dönüş oyun içinden yapılır.
 
 Keşif Haritası, üç dünya, 18 koleksiyon parçası ve üç bonus bulmaca eklenmiştir. Açılışlar ve eski kayıt uyumluluğu [discovery-map.md](discovery-map.md) içinde açıklanır. Standart içerik ve klasik kayıtlar korunur. Rotalar ve Gizli Tema ayrı kayıt anahtarlarıyla eklenir. İpuçları, ses, titreşim, kontrast, renk paleti ve büyük harf ayarları oyuncunun kontrolündedir. Ses varsayılan kapalıdır. Titreşim yalnızca cihaz API'si varsa sunulur. Azaltılmış hareket tercihi CSS ile uygulanır.

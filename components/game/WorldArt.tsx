@@ -2,9 +2,9 @@ import {useId} from 'react';
 import {findTheme} from '@/lib/game/catalog';
 import {ThemeArt} from './Art';
 
-export function WorldArt({themeId,className=''}:{themeId:string;className?:string}){
+export function WorldArt({themeId,className='',crop=false}:{themeId:string;className?:string;crop?:boolean}){
  const uid=useId().replace(/[^a-zA-Z0-9]/g,''),theme=findTheme(themeId);
- return <svg className={'world-art '+className} viewBox="0 0 320 180" fill="none" aria-hidden="true"><defs><linearGradient id={uid+'bg'} x1="20" y1="0" x2="300" y2="180" gradientUnits="userSpaceOnUse"><stop stopColor={theme.color} stopOpacity=".38"/><stop offset="1" stopColor={theme.color} stopOpacity=".08"/></linearGradient><radialGradient id={uid+'sun'}><stop stopColor="#fff8dc"/><stop offset="1" stopColor="#f0c576"/></radialGradient></defs><path fill={'url(#'+uid+'bg)'} d="M0 0h320v180H0z"/>
+ return <svg className={'world-art '+className} viewBox="0 0 320 180" preserveAspectRatio={crop?'xMidYMid slice':undefined} fill="none" aria-hidden="true"><defs><linearGradient id={uid+'bg'} x1="20" y1="0" x2="300" y2="180" gradientUnits="userSpaceOnUse"><stop stopColor={theme.color} stopOpacity=".38"/><stop offset="1" stopColor={theme.color} stopOpacity=".08"/></linearGradient><radialGradient id={uid+'sun'}><stop stopColor="#fff8dc"/><stop offset="1" stopColor="#f0c576"/></radialGradient></defs><path fill={'url(#'+uid+'bg)'} d="M0 0h320v180H0z"/>
  {themeId==='hababam'?<>
   <path fill="#e7d9b8" d="M0 0h320v142H0z"/><path fill="#c8ad81" d="M0 142h320v38H0z"/><path d="m0 166 320-14M30 180l92-38m111 38-40-38" stroke="#ae906a" strokeOpacity=".5"/>
   <path fill="#fff6db" d="M23 24h57v91H23z"/><path stroke="#c0a46f" strokeWidth="5" d="M23 24h57v91H23zM51 25v89M24 67h54"/><path fill="#b6c5ab" d="m27 111 20-26 17 13 12-19v32"/>
