@@ -4,6 +4,7 @@ import "./auth.css";
 import "./studio.css";
 import "./discovery.css";
 import "./quality.css";
+import "./start.css";
 import "./releases.css";
 
 export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',themeColor:'#f7f7ef'};

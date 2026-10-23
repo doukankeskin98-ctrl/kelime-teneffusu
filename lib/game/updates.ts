@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.8.1',date:'24 Ekim 2026',title:'Keşfine daha kolay dön',items:[
+  {where:'Ana sayfanın en üstü',detail:'Sıradaki veya yarım kalan kişisel keşfin artık ilk sırada. Bölüm adını görüp tek düğmeyle başlayabilir veya kaldığın yerden devam edebilirsin.'},
+  {where:'Harita, dünyalar ve arkadaşlar',detail:'Yeni başlangıç alanından haritana, tema seçimine ve Arena’ya doğrudan ulaş. Günlük bölümlerin ve kalıcı hatıraların aşağıda seni bekliyor.'},
+  {where:'Bölüm arşivi',detail:'Tarih, zorluk ve bölüm bilgileri büyütüldü. Kartlar küçük ekranda tek sütuna geçer; tema çizimleri ve oynama eylemleri aynı düzeni kullanır.'},
+ ]},
  {version:'0.8.0',date:'23 Ekim 2026',title:'Hatıraların albümünde birikiyor',items:[
   {where:'Bugünün iki keşfi',detail:'Fırında bir sabah ile 6 × 6 kolay bir mola; Eski kentin izleri ile 8 × 8 dengeli bir keşif. İki bölümde de çapraz kelimeler var.'},
   {where:'Albüm · Keşif damgaların',detail:'Tarihli hatıraların artık bir rafta. Kazandığın damgayı aç, kalan iki keşfi gör veya eski bir bölüme dön. Önceki tamamlamalar geçerli.'},
