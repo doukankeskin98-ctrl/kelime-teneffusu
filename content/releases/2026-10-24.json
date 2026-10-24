@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-24",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261024-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Parkede küçük mola",
+          "themeId": "basketbol",
+          "words": [
+            "POTA",
+            "PAS",
+            "ŞUT",
+            "FİLE"
+          ],
+          "size": 6,
+          "seed": 2026102401,
+          "difficulty": "Rahat",
+          "note": "Sahada kısa bir kelime molası. Yatay, dikey ve çaprazlara bak; acele yok."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "Y",
+              "C",
+              "Ş",
+              "U",
+              "F",
+              "P"
+            ],
+            [
+              "Ç",
+              "U",
+              "C",
+              "Ü",
+              "İ",
+              "H"
+            ],
+            [
+              "T",
+              "E",
+              "Y",
+              "Ü",
+              "L",
+              "V"
+            ],
+            [
+              "U",
+              "A",
+              "A",
+              "S",
+              "E",
+              "U"
+            ],
+            [
+              "R",
+              "G",
+              "O",
+              "P",
+              "A",
+              "O"
+            ],
+            [
+              "C",
+              "A",
+              "T",
+              "O",
+              "P",
+              "P"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "POTA",
+              "text": "POTA",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "PAS",
+              "text": "PAS",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "ŞUT",
+              "text": "ŞUT",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "FİLE",
+              "text": "FİLE",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "0.0",
+              "label": "POTA",
+              "text": "POTA",
+              "group": 0,
+              "a": [
+                5,
+                4
+              ],
+              "b": [
+                5,
+                1
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "FİLE",
+              "text": "FİLE",
+              "group": 3,
+              "a": [
+                0,
+                4
+              ],
+              "b": [
+                3,
+                4
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "PAS",
+              "text": "PAS",
+              "group": 1,
+              "a": [
+                5,
+                5
+              ],
+              "b": [
+                3,
+                3
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "ŞUT",
+              "text": "ŞUT",
+              "group": 2,
+              "a": [
+                0,
+                2
+              ],
+              "b": [
+                2,
+                0
+              ]
+            }
+          ]
+        },
+        "contentHash": "54ccefef7495f1161e36c8f9cd7d8c1f401c4ced4b11f5ab2437f301e1014746",
+        "publishedAt": 1792828800000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261024-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Yörüngede bir gün",
+          "themeId": "uzay",
+          "words": [
+            "UYDU",
+            "ROKET",
+            "KAPSÜL",
+            "YÖRÜNGE",
+            "MODÜL",
+            "İSTASYON",
+            "ANTEN"
+          ],
+          "size": 8,
+          "seed": 2026102402,
+          "difficulty": "Dengeli",
+          "note": "Uzay istasyonunun kelimelerini keşfet. Çapraz ve ters yazılmış kelimeleri de gözden geçir."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "L",
+              "Ü",
+              "S",
+              "P",
+              "A",
+              "K",
+              "H",
+              "B"
+            ],
+            [
+              "Ü",
+              "U",
+              "D",
+              "G",
+              "R",
+              "M",
+              "K",
+              "İ"
+            ],
+            [
+              "H",
+              "M",
+              "Y",
+              "O",
+              "S",
+              "O",
+              "Z",
+              "A"
+            ],
+            [
+              "N",
+              "İ",
+              "K",
+              "D",
+              "L",
+              "D",
+              "K",
+              "N"
+            ],
+            [
+              "T",
+              "E",
+              "K",
+              "Ş",
+              "U",
+              "Ü",
+              "P",
+              "T"
+            ],
+            [
+              "T",
+              "Ö",
+              "P",
+              "U",
+              "Ü",
+              "L",
+              "G",
+              "E"
+            ],
+            [
+              "İ",
+              "S",
+              "T",
+              "A",
+              "S",
+              "Y",
+              "O",
+              "N"
+            ],
+            [
+              "E",
+              "G",
+              "N",
+              "Ü",
+              "R",
+              "Ö",
+              "Y",
+              "C"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "UYDU",
+              "text": "UYDU",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "ROKET",
+              "text": "ROKET",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "KAPSÜL",
+              "text": "KAPSÜL",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "YÖRÜNGE",
+              "text": "YÖRÜNGE",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "MODÜL",
+              "text": "MODÜL",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "İSTASYON",
+              "text": "İSTASYON",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "ANTEN",
+              "text": "ANTEN",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "5.0",
+              "label": "İSTASYON",
+              "text": "İSTASYON",
+              "group": 5,
+              "a": [
+                6,
+                0
+              ],
+              "b": [
+                6,
+                7
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "YÖRÜNGE",
+              "text": "YÖRÜNGE",
+              "group": 3,
+              "a": [
+                7,
+                6
+              ],
+              "b": [
+                7,
+                0
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "KAPSÜL",
+              "text": "KAPSÜL",
+              "group": 2,
+              "a": [
+                0,
+                5
+              ],
+              "b": [
+                0,
+                0
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "ROKET",
+              "text": "ROKET",
+              "group": 1,
+              "a": [
+                1,
+                4
+              ],
+              "b": [
+                5,
+                0
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "MODÜL",
+              "text": "MODÜL",
+              "group": 4,
+              "a": [
+                1,
+                5
+              ],
+              "b": [
+                5,
+                5
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "ANTEN",
+              "text": "ANTEN",
+              "group": 6,
+              "a": [
+                2,
+                7
+              ],
+              "b": [
+                6,
+                7
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "UYDU",
+              "text": "UYDU",
+              "group": 0,
+              "a": [
+                1,
+                1
+              ],
+              "b": [
+                4,
+                4
+              ]
+            }
+          ]
+        },
+        "contentHash": "e457bb8e0a0c8b66fb6d2101bae155f774c425078526af4ff41ac16ffd1becbc",
+        "publishedAt": 1792828800000,
+        "archived": false
+      }
+    }
+  ]
+}

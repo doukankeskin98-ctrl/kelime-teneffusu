@@ -1,5 +1,36 @@
 # Geliştirme defteri
 
+## 24 Ekim 2026 · 0.8.2
+
+Güncel Sites kaynağı `acaa1fc2de1fc64bbec85d3fa08cd400b69f9122`, kayıtlı 12. sürüm, herkese açık sahip erişimi ve GitHub `main` başlangıcı `33d9d6f3034e7cec4f190fc0eb68678a589187b3` doğrulandı. 24 Ekim kaynak çifti henüz yok. Önceki sürümün kişisel başlangıç kartı korunuyor.
+
+| Aday | Oyuncuya fayda | Karar / kabul ölçütü |
+| --- | --- | --- |
+| Kartta doğrulanmış çevrimdışı hazırlık | Bağlantı kesildiğinde hangi tarihli/ek bölümün bu cihazda açılacağını önceden bilir. | Seçildi. Yalnız kimliği, hash'i, içeriği ve kelime yolları doğrulanan yerel tahta hazır sayılır; bulut tamamlaması indirme kanıtı değildir. |
+| Kelime listesinde yalnız kalanları gösterme | Kalabalık tahtada aramayı kolaylaştırabilir. | Sonraki aday. Temel çevrimdışı erişim belirsizliği daha doğrudan bir sorun; gerçek cihaz gözlemi önce gelir. |
+| Yeni keşif odası / iOS prototipi | Kalıcı koleksiyon veya kurulabilir uygulama deneyimini genişletir. | Ayrı aşama. Destekli etkileşim/cihaz doğrulaması olmadan geniş yeni akış eklenmedi. |
+
+### Uygulama öncesi kabul ölçütleri
+
+- **Parkede küçük mola:** Basketbol, Rahat, 6 × 6; POTA, PAS, ŞUT, FİLE. **Yörüngede bir gün:** Uzay, Dengeli, 8 × 8; UYDU, ROKET, KAPSÜL, YÖRÜNGE, MODÜL, İSTASYON, ANTEN. Her ikisinde iki çapraz eğim, geçerli Türkçe yazım ve alternatif yerleşim kontrolü.
+- Sabit UTC tarih/sıra kimlikleri ve yeni snapshot: `content/releases/2026-10-24.json`. Dosya yeniden çalışmada yeniden üretilmez; önceki yayınlar, tahta motoru ve beşli harita kümeleri aynı kalır.
+- Ana sayfa, arşiv ve Albüm içindeki bölüm kartlarında gerçekten indirilmiş tahta için **Çevrimdışı hazır**. Çevrimdışıyken eksik/bozuk/uyuşmayan tahta için **İnternet gerekli**, açıklama ve devre dışı açma eylemi. Bağlantı gelince mevcut yenileme yolu eylemi yeniden açar.
+- Yerel kontrol tamamlanmadan hazır/eksik iddiası yok. Bulut ilerlemesi ve cihaz hazırlığı ayrı tutulur; başka hesaba ait kayıt veya sahte tamamlanma üretilmez. Puan, yıldız, damga ve kayıt birleştirme kuralları değişmez.
+- Kartı hazır gösteren doğrulama ile çevrimdışı bölüm açılışı aynı kimlik/hash/içerik kuralını kullanır. Bozuk önbellek veya kapalı depolama hazır sayılmaz. Eski bölüm bir kez çevrimiçi açılarak mevcut indirme yoluyla hazırlanır; yeni indirme/abonelik servisi yok.
+- Mevcut testler, güncel içerik denetimi, TypeScript, üretim derlemesi ve iki oyunculu Worker HTTP kontrolleri geçmeden yayın yapılmaz. GitHub ve Sites tam kaynak eşleşmesi korunur.
+
+### Doğrulama ve sıradaki iş
+
+İki bölümün değişmez dosyası oluşturuldu; kimlikleri `20261024-0001-4000-8000-000000000001` ve `20261024-0002-4000-8000-000000000001`, tohumları `2026102401` ve `2026102402`. Katalog, ana sayfa ve arşiv kaydı eklendi. Aynı tarihte yeniden çalışılırsa bu çift korunur ve varsa yarım kalan yayın bu kaynak durumundan sürdürülür.
+
+Kartlara cihaz hazırlığı ve çevrimdışı eksik tahta açıklaması uygulandı. Aynı doğrulama bölüm açılışında da kullanılır; farklı kimlikteki ağ yanıtı kabul edilmez. Hesap veya katalog değiştiğinde eski kart durumu gösterilmez. Bağlantı kesildikten sonra gelen geç bir ağ yanıtı çevrimdışı durumunu yanlışlıkla hata/hazır durumuna çeviremez. Başka sekmedeki önbellek değişikliği/silinmesi ve bağlantı dönüşü mevcut olay dinleyicilerinden güncellenir. Yeni sunucu isteği, göç, ödül, bağımlılık veya ücretli servis yoktur. Metin ve ikon birlikte kullanılır; eksik kart soluklaştırılıp okunmaz hale getirilmez. Bulut ilerlemesi için belirsiz indirme metni kaldırılarak cihaz hazırlığı ayrı gösterilir.
+
+Beş yeni regresyon testi: tamamlanmış kayıt tek başına indirme sayılmaz; yanlış kimlikteki tahta reddedilir; hash/içerik/yol uyuşmazlığı reddedilir; kapalı depolama veya yazma hatası hazır sayılmaz; yeni içerik eklenirken eski arşiv tahtası, hesap ayrımı ve iyi sonuç korunur. Önceki bütün regresyonlar geçerli.
+
+Yerel sonuç: **118/118 test**, **32 tahta + 640 alternatif yerleşim**, TypeScript ve üretim derlemesi başarılı. Son metin düzenlemesinden sonra etkilenen 15 kart/çevrimdışı testi yeniden geçti ve son üretim paketiyle iki bağımsız oyunculu **175 Worker HTTP kontrolü** başarılı oldu. Önceki üç yayın dosyası, tahta motoru, klasik oyun, standart katalog, ilerleme/harita kuralları ve veritabanı/göçler başlangıç kaynağıyla aynı. GitHub CI, tam kaynak eşleşmesi ve Sites yayın sonucu tamamlanmadan bu kayıt yayın kanıtı değildir.
+
+Erişilebilir son üç saatlik üretim hata günlüğü boş; bu tüm oturumların hatasız olduğuna kanıt değildir. Mevcut Sites yayın görüntüsü ilk öğrenme turunun masaüstü görünümünü gösteriyor; yeni değişikliğin mobil/etkileşim testi sayılmaz. Destekli önizleme durumu kapalı ve önceki kilit sorununda toparlanma kanıtı yok; tekrar tekrar başlatılmadı. Gerçek telefon, ekran okuyucu, FPS ve tarayıcı çevrimdışı geçişi doğrulanmış sayılmaz. Tahta önbelleği testleri, PWA kabuğunun fiziksel cihazda ilk indirme testinin yerine geçmez. Öncelik destekli gerçek iPhone/Android üzerinde ilk karttan oyuna, çevrimdışı bölüm açılışına ve arşive dönüşe kadar doğrulama; ardından izinli oyuncu gözlemi ve iOS dikey prototipi.
+
 ## 24 Ekim 2026 · 0.8.1
 
 Başlangıç: en güncel Sites kaynağı `99630ee37b9fdac40922725787e3d155fef7ae6d`, kayıtlı 11. sürüm ve herkese açık sahip erişimi doğrulandı. GitHub `main` başlangıcı `f24d2b7d9d0cf14eb3efd3e9f6a05a9d339ed7f6`; kaynak ağaçları aynı. UTC 23 Ekim'in iki bölümü zaten yayında olduğundan yeni çift üretilmedi. İstanbul'da 24 Ekim'e geçilmiş olması UTC içerik kaydını değiştirmez.
