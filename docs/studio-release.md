@@ -12,6 +12,8 @@
 
 ## Uygulanan ürün akışları
 
+0.8.2, **Parkede küçük mola** ve **Yörüngede bir gün** tarihli bölümlerini ekler. Ek bölüm kartları cihazda doğrulanmış tahta varsa **Çevrimdışı hazır**, bağlantı yok ve tahta eksikse **İnternet gerekli** gösterir. Yerel kontrol tamamlanmadan hazır iddiası yoktur; çevrimdışı eksik kart bağlantı gelene kadar devre dışıdır. Kart ile açılış aynı kimlik/hash/içerik eşleştirmesini kullanır. Bulut tamamlama kaydı yerel tahta indirmesi sayılmaz; hesap ayrımı ve en iyi sonuç kuralları korunur.
+
 0.8.1, ana sayfanın başına kişisel devam/başlama kartını taşır. Mevcut doğrulanmış öneri kuralı, bölüm başlığı ve gerçek bulunan kelime sayısı kullanılır. Harita/dünyalar bağlantıları ve Arena eylemi tek alandadır. Arşiv kartlarının tarih/metaveri yazıları büyütülür, mobil tek sütun ve tema çizimi ölçüleri sayfa ile pencerede tutarlı hale gelir. Kayıt, tahta ve ödül kuralları değiştirilmez. Bu sürümde destekli önizleme başka bir geliştirme sunucusuna ait kilit nedeniyle başlatılamadı; görsel tarayıcı ve fiziksel telefon doğrulaması tamamlanmış değildir.
 
 Ana sayfa, ilk keşif, tema/rota seçimi, tahta, duraklama, ipucu, sonuç, tekrar oynama ve albüm aynı görsel sistemi kullanır. Ana gezinme Keşfet, Arena, Günlük ve Albüm olarak kalır. Arena, canlı düello, kayıtlı performansa meydan okuma ve arkadaşlar arasında ayrılır. Bir karşılaşma açılınca genel gezinme gizlenir; ayrılma ve dönüş oyun içinden yapılır.

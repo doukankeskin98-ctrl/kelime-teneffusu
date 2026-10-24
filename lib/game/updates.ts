@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.8.2',date:'24 Ekim 2026',title:'Çevrimdışı keşiflerini gör',items:[
+  {where:'Bugünün iki keşfi',detail:'Parkede küçük mola ile 6 × 6 kolay bir başlangıç; Yörüngede bir gün ile 8 × 8 dengeli bir uzay keşfi. İkisinde de çapraz kelimeler var.'},
+  {where:'Ana sayfa, arşiv ve albümdeki bölüm kartları',detail:'Bu cihazda doğrulanmış tahtası bulunan bölümlerde Çevrimdışı hazır yazar. Başka cihazda tamamlamak, bu telefona indirmek anlamına gelmez.'},
+  {where:'Bağlantı kesildiğinde',detail:'Henüz indirilmemiş bölümler İnternet gerekli olarak görünür. Bir bölümü çevrimiçi aç; tahtası kaydedilince hazır etiketi görünür.'},
+ ]},
  {version:'0.8.1',date:'24 Ekim 2026',title:'Keşfine daha kolay dön',items:[
   {where:'Ana sayfanın en üstü',detail:'Sıradaki veya yarım kalan kişisel keşfin artık ilk sırada. Bölüm adını görüp tek düğmeyle başlayabilir veya kaldığın yerden devam edebilirsin.'},
   {where:'Harita, dünyalar ve arkadaşlar',detail:'Yeni başlangıç alanından haritana, tema seçimine ve Arena’ya doğrudan ulaş. Günlük bölümlerin ve kalıcı hatıraların aşağıda seni bekliyor.'},

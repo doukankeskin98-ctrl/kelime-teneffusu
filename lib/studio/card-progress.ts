@@ -24,5 +24,5 @@ export function chapterCardCopy(value:ChapterCardProgress|undefined,state:Chapte
  if(value?.complete)return {kind:'complete' as const,action:'Bir daha keşfet',detail:`${value.stars} yıldız · En iyi ${timeLabel(value.elapsed)}`};
  if(value?.foundIds.length){const total=chapterTargetIds(spec).length;return {kind:'continue' as const,action:'Kaldığın yerden',detail:`${value.foundIds.length}/${total} ${total>spec.words.length?'kelime parçası':'kelime'} bulundu`};}
  if(value&&state==='ready')return {kind:'new' as const,action:'Keşfe başla',detail:'Seni bekleyen bir keşif'};
- return {kind:'unknown' as const,action:'Keşfi aç',detail:state==='loading'?'İlerlemene bakılıyor…':state==='offline'?'Çevrimdışı · İndirilmişse açılabilir':state==='error'?'İlerleme durumu alınamadı':'Yeni bir keşif'};
+ return {kind:'unknown' as const,action:'Keşfi aç',detail:state==='loading'?'İlerlemene bakılıyor…':state==='offline'?'Çevrimdışı · Bulut bilgisi alınamıyor':state==='error'?'İlerleme durumu alınamadı':'Yeni bir keşif'};
 }
