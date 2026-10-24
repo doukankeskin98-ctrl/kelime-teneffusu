@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.8.3',date:'24 Ekim 2026',title:'Cihazdaki keşfin bağlantıda yeniden eşitlenir',items:[
+  {where:'Bağlantıdan sonra kayıt',detail:'Bölüm açılırken ağ hatası olduysa cihazındaki tamamlanmış keşif de yeniden gönderilir. Eşitlemeyi başlatmak için yeni kelime bulman gerekmez.'},
+  {where:'Oyun içindeki kayıt satırı',detail:'Cihaza kayıt yapılamadığında açık bir uyarı simgesi ve metni görünür. Hesaba gönderim sürerken bekleme simgesi gösterilir; bulut onayından önce kaydedildi denmez.'},
+ ]},
  {version:'0.8.2',date:'24 Ekim 2026',title:'Çevrimdışı keşiflerini gör',items:[
   {where:'Bugünün iki keşfi',detail:'Parkede küçük mola ile 6 × 6 kolay bir başlangıç; Yörüngede bir gün ile 8 × 8 dengeli bir uzay keşfi. İkisinde de çapraz kelimeler var.'},
   {where:'Ana sayfa, arşiv ve albümdeki bölüm kartları',detail:'Bu cihazda doğrulanmış tahtası bulunan bölümlerde Çevrimdışı hazır yazar. Başka cihazda tamamlamak, bu telefona indirmek anlamına gelmez.'},

@@ -40,6 +40,8 @@ Sites kimlik başlıkları bu platformun doğrulanmış erişim sınırında kul
 
 ## Geliştirme ve kontroller
 
+Bakım ve geliştirme, kullanıcının ajan şablonundan uyarlanan [çalışma sözleşmesi](AGENTS.md) ve [rol düzeni](studio-agents/README.md) ile yürütülür. Koordinatör bağımsız deneyim/güvenilirlik incelemelerini ortak günlükte toplar, tek odak ve kabul ölçütü seçer; uygulama ve yayın tek elde kalır. Mevcut bağlı görev kullanılır, ayrı sürekli ajan sunucusu kurulmaz. Test edilmemiş cihaz veya ölçülmemiş oyuncu etkisi tamamlanmış sayılmaz.
+
 Ürün, görsel düzen, kayıt güvenliği ve sıradaki ölçülebilir kalite hedefleri: [21 Ekim kalite incelemesi](docs/quality-review.md).
 
 Node 24, pnpm 11.25.0:

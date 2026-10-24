@@ -1,5 +1,19 @@
 # Geliştirme defteri
 
+## 24 Ekim 2026 · 0.8.3 · İlk ajan döngüsü
+
+Kullanıcı `Agent-dosyaları v1(1).zip` ile bakım ve geliştirmede ajan yapısını kullanmamızı istedi. Güncel Sites kaynağı `14e8cceb5f4d7ece7911eba21ab98b5523b254cf`, kayıtlı 13. sürüm, herkese açık sahip erişimi ve GitHub `33b85d16c7291576969ca4914ae15087538603b1` doğrulandı. Bugünün iki bölümü zaten yayımlandı; aynı içerik dosyaları korunur.
+
+Şablon `studio-agents/` altında oyuna uyarlandı. Kök AGENTS, iki uzman rolü, hedef/ölçüt, uygulama rehberi, mevcut göreve bağlı döngü, ortak günlük ve boş başlayan kanıtlı rol hafızaları var. Yeni eklenti/hesap/ücretli servis veya ayrı zamanlama kurulmadı. Koordinatör uygulama ve yayının tek sahibi; iki gerçek alt ajan salt okunur bağımsız inceleme yaptı. Dosya varlığı çalışan süreç veya ürün başarısı gibi sunulmaz.
+
+Deneyim incelemesi açılış beklemesi, kayıt hatasının olumlu simgesi ve arşiv dönüş bağlamını; güvenilirlik incelemesi hata dönüşündeki gönderim eksiği ile iki uçuş/kuyruk sorununu raporladı. Kaynaklı bulgular ve sınırlar `studio-agents/journal/entries/2026-10-24_*review.md`, seçim ve uygulama öncesi kabul ölçütü `2026-10-24_coordinator-decision.md` içindedir.
+
+Seçilen odak: tahta GET'i hata/zaman aşımı verince cihazdaki tamamlanmış kayıt `dirty=false` kaldığı için yeni hamle olmadan buluta gönderilmiyordu. Geri dönüş yolu artık gönderim bekleyen kayıt sayılır; mevcut sahip/generation sınırı ve birleştirme korunur. Aynı kayıt güvenilirliği işinde depolama hatası uyarı simgesi/hata biçimi, uçuş sırasında bekleme simgesi eklenir. İndirilmiş bölümün sekiz saniyeye kadar ağ bekleyişi, uçuş sırasındaki son kaydın kaçması, eski hesap PUT kilidi ve arşiv konumu ayrı açık işlerdir; bu sürüm bunları düzeltmiş sayılmaz.
+
+Yerel sonuç: **121/121 test**, **32 tahta + 640 alternatif yerleşim**, TypeScript ve üretim derlemesi başarılı. Son paketle iki bağımsız oyunculu **175 Worker HTTP kontrolü** geçti. Üç yeni kalıcı regresyon gerçek TSX gövdesini yalıtılmış hook/IO kabuğunda çalıştırır; yeni hamle olmadan doğru sahipte gönderimi ve bulut onayını beklemeyi denetler. Eski kaynakla iki hata senaryosu başarısız, düzeltilmiş kaynakla üçü başarılı. Bu test DOM, gerçek React eşzamanlı render veya telefon testi değildir. Günlük yayınlar, motor/klasik içerik, ilerleme/harita kuralları ve veritabanı/göçler başlangıçla aynı. Son bağımsız diff incelemesi ve kısa ortak sonuç ajan günlüğünde tutulur. GitHub CI/kaynak eşleşmesi ve Sites yayın sonucu tamamlanmadan bu kayıt yayın kanıtı değildir.
+
+Gerçek telefon, ekran okuyucu, tarayıcı çevrimdışı geçişi veya FPS bu tur ölçülmedi. Önceki destekli önizleme engelinde toparlanma kanıtı yok; başka tarayıcı/server yolu denenmedi. Oyuncu tutma veya performans artışı iddiası yoktur. Son üretim hata örneğindeki istemci iptalleri ve varsayılan simge 404'leri takip listesinde; uygulama istisnası görülmemesi tüm oturumlar için başarı garantisi sayılmaz.
+
 ## 24 Ekim 2026 · 0.8.2
 
 Güncel Sites kaynağı `acaa1fc2de1fc64bbec85d3fa08cd400b69f9122`, kayıtlı 12. sürüm, herkese açık sahip erişimi ve GitHub `main` başlangıcı `33d9d6f3034e7cec4f190fc0eb68678a589187b3` doğrulandı. 24 Ekim kaynak çifti henüz yok. Önceki sürümün kişisel başlangıç kartı korunuyor.
