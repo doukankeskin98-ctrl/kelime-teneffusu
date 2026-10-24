@@ -15,4 +15,10 @@ export function cachedChapter(raw:unknown):PlayableChapter|null{try{
  }catch{return null;}}
 export function rememberChapter(chapter:PlayableChapter,storage:Pick<Storage,'getItem'|'setItem'>=localStorage){try{const cached=dictionary<PlayableChapter>(BOARD_KEY,storage);cached[chapter.id]=chapter;const entries=Object.values(cached).filter(c=>validChapterId(c.id)).sort((a,b)=>b.publishedAt-a.publishedAt).slice(0,100);storage.setItem(BOARD_KEY,JSON.stringify(Object.fromEntries(entries.map(c=>[c.id,c]))));}catch{}}
 
-export function readChapterSave(storage:Pick<Storage,'getItem'>,owner:string|undefined,chapter:PublishedChapter){const cached=cachedChapter(dictionary<PlayableChapter>(BOARD_KEY,storage)[chapter.id]);if(!cached||cached.contentHash!==chapter.contentHash)return null;const raw=dictionary<SavedLevel>(saveKey(owner),storage)[chapter.id];return {save:cleanSave(raw,cached.board),board:cached.board};}
+/** A cloud result or a catalogue card alone is not proof of an offline board. */
+export function matchingCachedChapter(raw:unknown,chapter:PublishedChapter):PlayableChapter|null{
+ const cached=cachedChapter(raw);if(!cached||cached.id!==chapter.id||cached.contentHash!==chapter.contentHash)return null;
+ try{if(JSON.stringify(cached.spec)!==JSON.stringify(parseChapterSpec(chapter.spec)))return null;}catch{return null;}
+ return cached;
+}
+export function readChapterSave(storage:Pick<Storage,'getItem'>,owner:string|undefined,chapter:PublishedChapter){const cached=matchingCachedChapter(dictionary<PlayableChapter>(BOARD_KEY,storage)[chapter.id],chapter);if(!cached)return null;const raw=dictionary<SavedLevel>(saveKey(owner),storage)[chapter.id];return {save:cleanSave(raw,cached.board),board:cached.board};}
