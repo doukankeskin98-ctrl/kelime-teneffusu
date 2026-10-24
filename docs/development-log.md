@@ -1,5 +1,37 @@
 # Geliştirme defteri
 
+## 25 Ekim 2026 · 0.9.0 · Mobil oyun deneyimi
+
+Kullanıcının profesyonel mobil UI/UX isteği öncelik oldu. İki sınırlı uzman incelemesi, tek uygulama sahibi. Kelime listesindeki 133px iç kaydırma kaldırıldı; tüm hedef/parçalar açık ızgarada kalır. Ortak PlayLayout kullanılabilir viewport, gerçek içerik yüksekliği ve güvenli alt boşluğa göre tahtayı boyutlar; aşırı kısa ekran/büyük yazıda 22px hücre alt sınırıyla doğal taşma korunur. Büyük harf modu bilinçli kaydırma ve iki uca dokunma davranışını korur. Tahta ölçüsü değişirse seçim temizlenir.
+
+Krem/yeşil/altın kimliği; yuvarlak başlıklar, daha canlı dünya başlangıç kartı, hacimli kontroller, hedef/çizgi geri bildirimi ve hafif sonuç kutlamasıyla yenilendi. Azaltılmış hareket ve kontrast korunur. Oyun motoru, tahta kimlikleri, içerik, ödül, hesap ve kayıt kodu değiştirilmedi. Yeni bağımlılık veya ücretli servis yok.
+
+Destekli preview CLI çalışıyor bildirdi, bulut tarayıcısı ERR_CONNECTION_REFUSED verdi; status aynı adresi bildirdi. Alternatif tarayıcı yolu kullanılmadı. Görsel/gerçek telefon sığması ve FPS doğrulanmadı. Yerel 133 test, 32 tahta/640 alternatif ve tip kontrolü geçti. Son derleme/Worker/CI/yayın kanıtı ortak doğrulama günlüğünde takip edilir.
+
+
+## 24 Ekim 2026 · 0.8.4 · Son kayıt ve hesap kuyruğu
+
+Güncel Sites kaynağı `4e3e63c8c9df9af590128c21e198c1e16712ffc4`, kayıtlı 14. sürüm ve herkese açık sahip erişimi; GitHub main `4e311d7bea09a784f4fedf612f77de5031fd9db1` kontrol edildi. Bugünün **Parkede küçük mola** ve **Yörüngede bir gün** çifti zaten yayında; dört kaynak yayın dosyası aynen korunur.
+
+Adaylar, seçim ve uygulama öncesi kabul ölçütleri `studio-agents/journal/entries/2026-10-24_evening-coordinator-decision.md` içinde. Açık iki kayıt sorunu, indirilmiş tahtanın açılışı ve arşiv dönüşü karşılaştırıldı. Son tamamlamanın başka cihazda görünmesi ve hesap güvenliği önce geldi. Tek sınırlı güvenilirlik uzmanı tasarım ve son diff'i bağımsız inceledi; aynı deneyim taraması/araştırması tekrarlanmadı. Koordinatör kod, test ve yayının tek sahibi kaldı.
+
+### Oyuncuda değişen davranış
+
+- **Tarihli/ek bölüm → geri dönüş:** ilk kısmi gönderim sürerken son kelimeyi bulup geri dönersen, başarılı ilk yanıtın ardından son tamamlama da aynı hesap için gönderilir. İkinci gönderimde yeni son kayıt oluşması da korunur. Başarısız gönderimde kayıt cihazda kalır; kontrolsüz tekrar döngüsü yoktur.
+- **Aynı bölümde hesap değişimi:** eski kanal iptal edilir, yeni hesap ayrı gönderir. Geç eski yanıt veya `finally` yeni kaydı/arayüzü/kilidi değiştiremez. Hesap değişiminin geçiş karesinde eski kayıt veya boş hata yerine hazırlık durumu gösterilir.
+- **Uzayan istek:** sekiz saniyelik uygulama sınırı token bekleme, HTTP ve JSON okumayı kapsar. Aktif oyunda sonraki olağan bağlantı/periyodik deneme en son kaydı gönderir. Sunucu beklenen hesapla doğrulanmış kimliği karşılaştırır; değişmiş/yanlış/boş kimlik altında eski snapshot yazılamaz. Alanı olmayan eski istemci isteği geriye uyumludur.
+- **Cihaz kaydı:** yazı hemen yapılır, ayrılmış kanalın geç yanıtı da kendi sahibinin mevcut cihaz kaydıyla en iyi sonuç kuralını kullanır. Depolama hatası açık kalır; gerçekten düzeldiğinde durum yenilenir. Oyun içi **Neler değişti? → 0.8.4** bu davranışları anlatır.
+
+### Doğrulama ve sınırlar
+
+**130/130 test, 30 grup**, **32 tahta / 640 alternatif**, TypeScript ve son üretim derlemesi geçti. Son üretim paketiyle iki bağımsız oyunculu **180 Worker HTTP kontrolü** başarılı. Mevcut üç TSX regresyonuna dokuz anlamlı senaryo eklendi: çıkışta son kayıt, hesap/iptal/geç yanıt, zaman aşımı ve tekrar, hata sonrası durma, daha iyi cihaz sonucu, ikinci uçuşta üçüncü kayıt, takılan JSON, cihaz yazma hatası/düzelme ve çevrimdışı dönüş. İlk yeni senaryo kümesi eski 0.8.3 bileşeniyle altı başarısızlık vererek asıl tetikleyicileri yakaladı; düzeltilmiş kaynakta geçti. Bu testler gerçek TSX ve kuyruk gövdesini sahte hook/IO/zamanlayıcıyla çalıştırır; DOM, React eşzamanlı/StrictMode veya telefon testi değildir.
+
+Worker kontrolleri yanlış/boş beklenen sahip ve yetkisiz yazıyı reddeder, diğer oyuncunun kaydını değiştirmez, doğru sahipte ve eski istemci biçiminde kayıt kabul eder. Önceki hesap, misafir, bulut birleştirme, arkadaş odası, Arena, çevrimdışı/önbellek ve sabit harita regresyonları korunur. Eski bölümler/tahtalar/kelimeler, motor, klasik içerik, kayıt/ödül/harita kuralları, veritabanı/göçler ve hosting manifesti başlangıçla aynı. Yeni bağımlılık, ücret veya entegrasyon yoktur.
+
+Bağımsız son inceleme engel bulmadı. Son küçük hazırlık görünümü değişikliği koordinatör tarafından TSX kabulü, tip, tam test, yeniden derleme ve son HTTP paketiyle doğrulandı; bağımsız incelemeye dahilmiş gibi sunulmaz. İlk haftalık değerlendirme `2026-10-24_weekly-review.md` içinde, gerçek erişilebilir 21–24 Ekim kaydı ve eksik cihaz kanıtıyla yapıldı. Sonraki öncelik indirilen tahtayı ağ beklemeden açmak ve geç bulut yanıtını yeni kelimeleri silmeden birleştirmek; ardından arşiv dönüşü ve destekli gerçek cihaz kontrolü.
+
+Destekli önizleme engelinde toparlanma kanıtı yok; alternatif tarayıcı/server denenmedi. Telefon, ekran okuyucu, fiziksel çevrimdışı PWA açılışı ve FPS doğrulanmadı. Sekme kapanması/işletim sistemi sonlandırmasında buluta kesin teslim iddiası yok; cihaz kaydı korunur. Oyuncu tutma, gelir veya deneyim artışı ölçülmedi. App Store/native paket, e-posta sağlayıcısı, reklam ve ödeme bu sürümde kurulmadı. GitHub CI, tam ağaç eşleşmesi ve Sites'in gerçek yayın cevabı ayrıca tamamlanmadan bu yerel kayıt yayın kanıtı değildir.
+
 ## 24 Ekim 2026 · 0.8.3 · İlk ajan döngüsü
 
 Kullanıcı `Agent-dosyaları v1(1).zip` ile bakım ve geliştirmede ajan yapısını kullanmamızı istedi. Güncel Sites kaynağı `14e8cceb5f4d7ece7911eba21ab98b5523b254cf`, kayıtlı 13. sürüm, herkese açık sahip erişimi ve GitHub `33b85d16c7291576969ca4914ae15087538603b1` doğrulandı. Bugünün iki bölümü zaten yayımlandı; aynı içerik dosyaları korunur.

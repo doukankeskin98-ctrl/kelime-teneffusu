@@ -1,0 +1,5 @@
+# Mobil deneyim yenileme
+Kullanıcı: profesyonel, çekici mobil oyun arayüzü; kelimeler ve tahta için kaydırma zorunluluğunu kaldır; mevcut sistemi koru; kredi verimli kullan. Gönderilen v1(8) şablonu mevcut studio-agents rol/günlük düzeniyle aynı yaklaşımda. İki sınırlı bağımsız inceleme, tek uygulama/yayın sahibi.
+Kabul: varsayılan hedef listesinde iç kaydırma yok; tahta kullanılabilir ekran yüksekliği ve panel genişliğine uyarlanır; uzun isimler gizlenmez; büyük harf/pan ve klavye davranışı korunur. Başlangıç ve sonuç görsel dili tutarlı, başarılı kelimede hareket geri bildirimi; reduced-motion korunur. Kayıt/ödül/tahta/API değişmez. Mevcut zorunlu kontroller geçer.
+Güncel başlangıç 0.8.4, Sites kaynak 4b025eb82ef911c7219f065a091b88409df3f90c. Önceki sohbet özeti 0.8.3 bilgisi eski.
+Destekli preview çalışıyor bildirdi fakat cloud browser ERR_CONNECTION_REFUSED verdi; CLI status aynı URL'yi bildiriyor. Alternatif tarayıcı yolu kullanılmayacak. Görsel ve fiziksel cihaz doğrulaması henüz yok.

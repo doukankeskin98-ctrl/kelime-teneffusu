@@ -12,6 +12,11 @@
 
 ## Uygulanan ürün akışları
 
+0.9.0, tüm hedefleri açık tutan mobil ızgara ve kullanılabilir ekran yüksekliğine göre boyutlanan tahta getirir. Büyük yazı veya çok kısa ekranlarda okunabilirlik korunarak doğal kaydırma sürer. Ana ekran, kontroller ve başarı anları daha canlı aynı görsel dille yenilendi. Browser preview bağlantısı reddedildiğinden fiziksel telefon, görsel sığma ve FPS doğrulaması bekler.
+
+
+0.8.4, tarihli/ek bölümlerin gönderimini hesap ve bölüme bağlı bir kuyrukta tutar. Kısmi istek sürerken tamamlayıp oyun içinde geri dönüldüğünde, başarılı ilk yanıtın ardından son tamamlama da gönderilir. Hesap değişimi eski kanalı iptal eder; sunucudaki beklenen hesap kontrolü geç kimlik değişiminde yanlış hesaba yazmayı reddeder. Sekiz saniyelik sınır token, HTTP ve yanıt okumayı kapsar; hata sonrasında aktif oyunun olağan yeniden denemesi sürer. Yerel en iyi sonuç, kayıt biçimi ve ödül kuralları korunur. Sekme kapanması veya işletim sisteminin uygulamayı kapatmasında garantili bulut teslimi iddia edilmez. İndirilmiş tahtanın başlangıçta ağ beklemesi ayrı açık iştir.
+
 0.8.3, tahta isteği hata verdiğinde doğrulanmış cihaz kaydıyla açılan tamamlanmış keşfi de bulut onayı bekleyen kayıt olarak tutar. Yeni kelime bulmadan veya süre eklemeden mevcut gönderim yolu tekrar denenebilir. Üst kayıt satırında cihaz yazma hatası uyarı simgesi ve ayrı hata biçimiyle, gönderim ise bekleme simgesiyle gösterilir. Kayıt, iyi sonuç, kimlik ve ödül birleştirme kuralları aynı kalır. İndirilmiş tahtanın ağdan bağımsız açılışı ve uçuş sırasındaki son gönderim kuyruğu bu sürümde tamamlanmış sayılmaz.
 
 0.8.2, **Parkede küçük mola** ve **Yörüngede bir gün** tarihli bölümlerini ekler. Ek bölüm kartları cihazda doğrulanmış tahta varsa **Çevrimdışı hazır**, bağlantı yok ve tahta eksikse **İnternet gerekli** gösterir. Yerel kontrol tamamlanmadan hazır iddiası yoktur; çevrimdışı eksik kart bağlantı gelene kadar devre dışıdır. Kart ile açılış aynı kimlik/hash/içerik eşleştirmesini kullanır. Bulut tamamlama kaydı yerel tahta indirmesi sayılmaz; hesap ayrımı ve en iyi sonuç kuralları korunur.
