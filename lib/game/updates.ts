@@ -1,4 +1,12 @@
 export const GAME_UPDATES=[
+ {version:'0.9.0',date:'25 Ekim 2026',title:'Teneffüsün yeni yüzü',items:[
+  {where:'Daha rahat oyun ekranı',detail:'Kelimeler açık bir ızgarada, tahta ekranın kalan alanına göre boyutlanır. Büyük harf modunu istediğin zaman kullanabilirsin.'},
+  {where:'Keşfet, bul, kutla',detail:'Daha canlı başlangıç kartı, dokunma hissi veren düğmeler, kelime bulma animasyonları ve yeni bölüm sonu kutlaması.'},
+ ]},
+ {version:'0.8.4',date:'24 Ekim 2026',title:'Son keşfin de sıraya alınır',items:[
+  {where:'Bölümden geri dönüş',detail:'Kısmi kaydın gönderilirken bölümü tamamlayıp geri dönersen, bağlantı açıkken son tamamlaman da ardından gönderilir. Cihazındaki en iyi sonuç korunur.'},
+  {where:'Hesap değiştirme ve zayıf bağlantı',detail:'Eski hesabın bekleyen isteği yeni hesabı bekletmez. Uzayan gönderim durdurulup yeniden denenir; hesap onayı gelmeden kaydedildi denmez.'},
+ ]},
  {version:'0.8.3',date:'24 Ekim 2026',title:'Cihazdaki keşfin bağlantıda yeniden eşitlenir',items:[
   {where:'Bağlantıdan sonra kayıt',detail:'Bölüm açılırken ağ hatası olduysa cihazındaki tamamlanmış keşif de yeniden gönderilir. Eşitlemeyi başlatmak için yeni kelime bulman gerekmez.'},
   {where:'Oyun içindeki kayıt satırı',detail:'Cihaza kayıt yapılamadığında açık bir uyarı simgesi ve metni görünür. Hesaba gönderim sürerken bekleme simgesi gösterilir; bulut onayından önce kaydedildi denmez.'},

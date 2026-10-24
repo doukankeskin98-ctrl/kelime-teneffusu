@@ -4,6 +4,7 @@ import {ArrowRight,Check,Cloud,CloudOff,LoaderCircle,RefreshCw,Sparkles,Triangle
 import {findTheme} from '@/lib/game/catalog';
 import {cleanSave,type Progress,type SavedLevel} from '@/lib/game/progress';
 import {mergeChapterSave,chapterSyncResult} from '@/lib/studio/chapter-progress';
+import {ChapterSaveQueue,type ChapterSaveStatus} from '@/lib/studio/chapter-save-queue';
 import {parseChapterSpec,validChapterId,type PlayableChapter,type PublishedChapter} from '@/lib/studio/content';
 import {memberFetch} from '@/lib/auth/firebase-client';
 import {BOARD_KEY,saveKey,dictionary,cachedChapter,matchingCachedChapter,rememberChapter} from '@/lib/studio/chapter-cache';
@@ -35,24 +36,78 @@ export function PublishedChapters({onPlay,userId,collection='studio',presentatio
 
 export function PublishedPlay({chapter:summary,userId,initialPractice=false,pair,onRelated,progress,onProgress,onBack}:{chapter:PublishedChapter;userId?:string;initialPractice?:boolean;pair?:ReleasePair;onRelated?:(chapter:PublishedChapter,pair:ReleasePair)=>void;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void}){
  const runPair=playableReleasePair(summary,pair),related=runPair?.chapters.filter(c=>c.id!==summary.id)??[],cards=useChapterCards(userId,related);
- const [loaded,setLoaded]=useState<{chapter:PlayableChapter;save:SavedLevel}|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[sync,setSync]=useState('local'),[run,setRun]=useState(0),[practice,setPractice]=useState(initialPractice),[retry,setRetry]=useState(0),latest=useRef<SavedLevel|null>(null),savedSignature=useRef(''),dirty=useRef(false),sending=useRef(false),active=useRef(true),generation=useRef(0),storageFailed=useRef(false),flushRef=useRef<()=>void>(()=>{});
+ const [loaded,setLoaded]=useState<{chapter:PlayableChapter;save:SavedLevel;queue:ChapterSaveQueue;owner?:string}|null>(null);
+ const [loading,setLoading]=useState(true),[error,setError]=useState(''),[sync,setSync]=useState<ChapterSaveStatus>('local');
+ const [run,setRun]=useState(0),[practice,setPractice]=useState(initialPractice),[retry,setRetry]=useState(0);
+ const channel=useRef<ChapterSaveQueue|null>(null),generation=useRef(0),flushRef=useRef<()=>void>(()=>{});
  useEffect(()=>{
-  const currentGeneration=++generation.current;active.current=true;storageFailed.current=false;latest.current=null;dirty.current=false;setLoaded(null);setLoading(true);setError('');setPractice(initialPractice);
+  const currentGeneration=++generation.current;
+  channel.current?.cancel();channel.current=null;
+  setLoaded(null);setLoading(true);setError('');setSync('local');setPractice(initialPractice);
   const c=new AbortController(),timeout=setTimeout(()=>c.abort(),8000);
-  const start=async()=>{let chapter=matchingCachedChapter(dictionary<PlayableChapter>(BOARD_KEY)[summary.id],summary),save:SavedLevel|undefined;
-   try{if(navigator.onLine){const response=await fetch('/api/chapters?id='+encodeURIComponent(summary.id),{cache:'no-store',signal:c.signal});if(!response.ok)throw new Error('Bu keşfe şu an ulaşılamıyor.');const candidate=cachedChapter(await response.json());if(!candidate||candidate.id!==summary.id)throw new Error('Bölüm kaydı doğrulanamadı.');chapter=candidate;rememberChapter(chapter);}if(!chapter)throw new Error('Bu bölüm henüz bu cihaza indirilmemiş. Bir kez internete bağlanarak açabilirsin.');
-    save=cleanSave(dictionary<SavedLevel>(saveKey(userId))[chapter.id],chapter.board);dirty.current=true;
-    if(userId&&navigator.onLine){try{const response=await memberFetch('/api/chapters?action=progress&id='+encodeURIComponent(chapter.id),{cache:'no-store',signal:c.signal});if(response.ok){const cloud=await response.json() as {save:SavedLevel},result=chapterSyncResult(save,cloud.save,chapter.board);save=result.save;dirty.current=result.pending;if((active.current&&generation.current===currentGeneration))setSync(result.pending?'local':'saved');}else if((active.current&&generation.current===currentGeneration))setSync('local');}catch{if((active.current&&generation.current===currentGeneration))setSync('offline');}}
-    if((active.current&&generation.current===currentGeneration)){latest.current=save;savedSignature.current=JSON.stringify(save);setLoaded({chapter,save});setLoading(false);}
-   }catch(e){if(chapter&&(active.current&&generation.current===currentGeneration)){const local=cleanSave(dictionary<SavedLevel>(saveKey(userId))[chapter.id],chapter.board);latest.current=local;savedSignature.current=JSON.stringify(local);dirty.current=true;setLoaded({chapter,save:local});setSync('offline');setLoading(false);}else if((active.current&&generation.current===currentGeneration)){setError((e as Error).message||'Bölüm açılamadı.');setLoading(false);}}
-  };void start();return ()=>{active.current=false;generation.current++;clearTimeout(timeout);c.abort();};
+  let queue:ChapterSaveQueue|null=null;
+  const current=()=>generation.current===currentGeneration;
+  const open=(chapter:PlayableChapter,save:SavedLevel,pending:boolean,status:ChapterSaveStatus)=>{
+   if(!current())return;
+   const owner=userId,key=saveKey(owner);
+   queue=new ChapterSaveQueue({board:chapter.board,save,pending,
+    canSend:()=>!!owner&&navigator.onLine,
+    send:async(snapshot,signal)=>{
+     const response=await memberFetch('/api/chapters',{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:chapter.id,save:snapshot,expectedOwnerId:owner}),signal,keepalive:true});
+     if(!response.ok)throw new Error('Kayıt eşitlenemedi.');
+     return (await response.json() as {save:SavedLevel}).save;
+    },
+    persist:incoming=>{
+     // A detached request must not overwrite a newer run or another tab's best save.
+     let merged=incoming;
+     try{const values=dictionary<SavedLevel>(key);merged=mergeChapterSave(values[chapter.id],incoming,chapter.board);
+      values[chapter.id]=merged;localStorage.setItem(key,JSON.stringify(values));return {save:merged,ok:true};}
+     catch{return {save:merged,ok:false};}
+    },
+    onStatus:value=>{if(current())setSync(value);}
+   });
+   channel.current=queue;setSync(status);setLoaded({chapter,save,queue,owner});setLoading(false);
+  };
+  const start=async()=>{
+   let chapter=matchingCachedChapter(dictionary<PlayableChapter>(BOARD_KEY)[summary.id],summary);
+   try{
+    if(navigator.onLine){
+     const response=await fetch('/api/chapters?id='+encodeURIComponent(summary.id),{cache:'no-store',signal:c.signal});
+     if(!response.ok)throw new Error('Bu keşfe şu an ulaşılamıyor.');
+     const candidate=cachedChapter(await response.json());
+     if(!candidate||candidate.id!==summary.id)throw new Error('Bölüm kaydı doğrulanamadı.');
+     chapter=candidate;rememberChapter(chapter);
+    }
+    if(!chapter)throw new Error('Bu bölüm henüz bu cihaza indirilmemiş. Bir kez internete bağlanarak açabilirsin.');
+    let save=cleanSave(dictionary<SavedLevel>(saveKey(userId))[chapter.id],chapter.board),pending=true;
+    let status:ChapterSaveStatus=navigator.onLine?'local':'offline';
+    if(userId&&navigator.onLine){
+     try{
+      const response=await memberFetch('/api/chapters?action=progress&id='+encodeURIComponent(chapter.id),{cache:'no-store',signal:c.signal});
+      if(response.ok){const cloud=await response.json() as {save:SavedLevel},result=chapterSyncResult(save,cloud.save,chapter.board);
+       save=result.save;pending=result.pending;status=pending?'local':'saved';}
+     }catch{status='offline';}
+    }
+    open(chapter,save,pending,status);
+   }catch(e){
+    if(chapter)open(chapter,cleanSave(dictionary<SavedLevel>(saveKey(userId))[chapter.id],chapter.board),true,'offline');
+    else if(current()){setError((e as Error).message||'Bölüm açılamadı.');setLoading(false);}
+   }finally{clearTimeout(timeout);}
+  };
+  void start();
+  return ()=>{generation.current++;clearTimeout(timeout);c.abort();queue?.detach();};
  },[summary.id,userId,retry,initialPractice]);
- const writeLocal=(save:SavedLevel)=>{try{const values=dictionary<SavedLevel>(saveKey(userId));values[summary.id]=save;localStorage.setItem(saveKey(userId),JSON.stringify(values));storageFailed.current=false;}catch{storageFailed.current=true;if(active.current)setSync('storage-error');}};
- const flush=async()=>{if(!loaded||!userId||!dirty.current||sending.current||!latest.current||!navigator.onLine)return;sending.current=true;const save=latest.current,currentGeneration=generation.current;if(active.current)setSync('syncing');try{const response=await memberFetch('/api/chapters',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:loaded.chapter.id,save}),keepalive:true});if(!response.ok)throw new Error();const result=await response.json() as {save:SavedLevel};if(active.current&&generation.current===currentGeneration){const confirmed=chapterSyncResult(latest.current??save,result.save,loaded.chapter.board);latest.current=confirmed.save;writeLocal(confirmed.save);dirty.current=confirmed.pending;setSync(storageFailed.current?'storage-error':confirmed.pending?'local':'saved');}}catch{if(active.current&&generation.current===currentGeneration)setSync(storageFailed.current?'storage-error':'offline');}finally{sending.current=false;}};
- flushRef.current=()=>{void flush();};
- useEffect(()=>{const online=()=>flushRef.current(),timer=setInterval(()=>flushRef.current(),5000),hide=()=>{if(document.hidden)flushRef.current();};window.addEventListener('online',online);document.addEventListener('visibilitychange',hide);return ()=>{clearInterval(timer);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',hide);};},[loaded?.chapter.id,userId]);
+ flushRef.current=()=>{void channel.current?.flush();};
+ useEffect(()=>{
+  const online=()=>flushRef.current(),timer=setInterval(()=>flushRef.current(),5000);
+  const hide=()=>{if(document.hidden)flushRef.current();};
+  window.addEventListener('online',online);document.addEventListener('visibilitychange',hide);
+  return ()=>{clearInterval(timer);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',hide);};
+ },[]);
  const saveMessage=sync==='syncing'?'İlerlemen eşitleniyor…':sync==='saved'?'Hesabında kayıtlı':sync==='storage-error'?'Cihaz kaydı kullanılamıyor. Çıkmadan önce bağlantını kontrol et.':sync==='offline'?'Cihazında kayıtlı, bağlantıda yeniden denenecek':'Bu cihazda kayıtlı';
  const back=()=>{flushRef.current();onBack();};
- if(loading||!loaded)return <section className="published-play-loading"><button className="text-button" onClick={onBack}>Keşiflere dön</button>{loading?<p role="status"><LoaderCircle className="spin" size={24}/>Bölümün ve kayıtların hazırlanıyor…</p>:<><p className="error-box" role="alert">{error}</p><button className="button primary" onClick={()=>setRetry(n=>n+1)}><RefreshCw size={17}/>Yeniden dene</button></>}</section>;
- return <><div className={'published-save-status'+(sync==='storage-error'?' failed':'')} role="status">{sync==='storage-error'?<TriangleAlert size={14}/>:sync==='saved'?<Cloud size={14}/>:sync==='offline'?<CloudOff size={14}/>:sync==='syncing'?<LoaderCircle size={14} className="spin"/>:<Check size={14}/>} {saveMessage}{loaded.chapter.archived&&<span>Arşiv bölümü</span>}</div><Solo key={summary.id+':'+run} config={{themeId:loaded.chapter.spec.themeId,level:0,practice}} progress={progress} onProgress={onProgress} onBack={back} onMap={back} onNext={()=>{if(latest.current)setLoaded(current=>current?{...current,save:latest.current!}:current);setPractice(true);setRun(n=>n+1);}} external={{board:loaded.chapter.board,save:loaded.save,title:loaded.chapter.spec.title,note:loaded.chapter.spec.note,result:save=>{const result=releaseRunResult(runPair,loaded.chapter,save,cards.values,cards.status);return result?<ReleaseStampResult result={result} status={cards.status} saveMessage={saveMessage} saveError={sync==='storage-error'} onRetry={cards.retry} onNext={result.next&&onRelated&&runPair?()=>{flushRef.current();onRelated(result.next!,runPair);}:undefined}/>:null;},onSave:save=>{const merged=mergeChapterSave(latest.current??undefined,save,loaded.chapter.board);latest.current=merged;writeLocal(merged);const signature=JSON.stringify(merged);if(signature!==savedSignature.current){savedSignature.current=signature;dirty.current=true;if(active.current&&!storageFailed.current)setSync(navigator.onLine?'local':'offline');}if(save.complete)queueMicrotask(()=>flushRef.current());}}}/></>;
+ const opening=loading||!!loaded&&(loaded.owner!==userId||loaded.chapter.id!==summary.id);
+ if(opening||!loaded)return <section className="published-play-loading"><button className="text-button" onClick={onBack}>Keşiflere dön</button>{opening?<p role="status"><LoaderCircle className="spin" size={24}/>Bölümün ve kayıtların hazırlanıyor…</p>:<><p className="error-box" role="alert">{error}</p><button className="button primary" onClick={()=>setRetry(n=>n+1)}><RefreshCw size={17}/>Yeniden dene</button></>}</section>;
+ return <><div className={'published-save-status'+(sync==='storage-error'?' failed':'')} role="status">{sync==='storage-error'?<TriangleAlert size={14}/>:sync==='saved'?<Cloud size={14}/>:sync==='offline'?<CloudOff size={14}/>:sync==='syncing'?<LoaderCircle size={14} className="spin"/>:<Check size={14}/>} {saveMessage}{loaded.chapter.archived&&<span>Arşiv bölümü</span>}</div><Solo key={summary.id+':'+run} config={{themeId:loaded.chapter.spec.themeId,level:0,practice}} progress={progress} onProgress={onProgress} onBack={back} onMap={back} onNext={()=>{setLoaded(current=>current?{...current,save:current.queue.save}:current);setPractice(true);setRun(n=>n+1);}} external={{board:loaded.chapter.board,save:loaded.save,title:loaded.chapter.spec.title,note:loaded.chapter.spec.note,result:save=>{const result=releaseRunResult(runPair,loaded.chapter,save,cards.values,cards.status);return result?<ReleaseStampResult result={result} status={cards.status} saveMessage={saveMessage} saveError={sync==='storage-error'} onRetry={cards.retry} onNext={result.next&&onRelated&&runPair?()=>{flushRef.current();onRelated(result.next!,runPair);}:undefined}/>:null;},onSave:save=>{if(channel.current!==loaded.queue)return;loaded.queue.update(save);if(save.complete)queueMicrotask(()=>void loaded.queue.flush());}}}/></>;
 }
