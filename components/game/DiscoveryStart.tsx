@@ -11,7 +11,7 @@ export function DiscoveryStart({recommendation,onPlay,onArena}:{
 }){
  const continuing=recommendation.mode==='continue';
  const replay=recommendation.mode==='replay';
- return <section className="discovery-start" aria-labelledby="discovery-start-title">
+ return <section className="discovery-start island-start" aria-labelledby="discovery-start-title"><div className="island-scene" aria-hidden="true"><img src="/art/discovery-island.webp" alt="" width="1280" height="853" fetchPriority="high"/><i>✦</i><i>✦</i><i>✦</i></div>
   <div className="start-intro">
    <div className="start-intro-copy">
     <span className="eyebrow"><Sparkles size={14}/>KENDİ TEMPONDA KEŞFET</span>

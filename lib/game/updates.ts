@@ -1,4 +1,10 @@
 export const GAME_UPDATES=[
+ {version:'0.10.0',date:'25 Ekim 2026',title:'Bir tur daha?',items:[
+  {where:'Hızlı Tur',detail:'60 saniyede kelimeleri bul, seri kur ve yeni tahtaya geç. Kendi cihaz rekorunu geçmeyi dene; bu mod isteğe bağlı ve ligden bağımsız.'},
+  {where:'Yeni bölümler dünyalarında',detail:'Her gün eklenen keşifler artık ilgili dünyanın bölüm listesinde. Dünya kartında kaç yeni bölüm olduğunu görebilirsin.'},
+  {where:'Arkadaşlarla teneffüs',detail:'Ekibin, haftalık lig ve maç geçmişin ayrı sekmelerde. Oda davetinin kodunu gör, paylaş ve aynı yerden odana dön.'},
+  {where:'Yeni keşif adası',detail:'Özgün ada sahnesi, hareketli yıldızlar, seri çarpanı, geri sayım ve tur sonu puan özeti.'},
+ ]},
  {version:'0.9.0',date:'25 Ekim 2026',title:'Teneffüsün yeni yüzü',items:[
   {where:'Daha rahat oyun ekranı',detail:'Kelimeler açık bir ızgarada, tahta ekranın kalan alanına göre boyutlanır. Büyük harf modunu istediğin zaman kullanabilirsin.'},
   {where:'Keşfet, bul, kutla',detail:'Daha canlı başlangıç kartı, dokunma hissi veren düğmeler, kelime bulma animasyonları ve yeni bölüm sonu kutlaması.'},

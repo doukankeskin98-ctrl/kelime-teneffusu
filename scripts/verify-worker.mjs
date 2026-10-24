@@ -37,6 +37,12 @@ try{
  check(home.includes('İki keşif, bir hatıra')&&home.includes('İki bölümü de tamamla.')&&!home.includes('Damganı gör'),'home presents the stamp condition without awarding an unauthenticated visitor');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
+ check(home.includes('Hızlı Tur')&&home.includes('/art/discovery-island.webp'),'home includes the playable sprint entry and original island artwork');
+ const themeId=released.chapters[0].spec.themeId,themeArchive=await json('/api/chapters?collection=releases&theme='+themeId);
+ check(themeArchive.total===archive.themeCounts[themeId]&&themeArchive.chapters.every(c=>c.spec.themeId===themeId),'world catalogue filters before pagination and counts all releases in that world');
+ check(themeArchive.companions.every(c=>!('board' in c))&&themeArchive.chapters.every(c=>releasePairs([...themeArchive.chapters,...themeArchive.companions]).some(p=>p.chapters.some(member=>member.id===c.id))),'world catalogue retains complete stamp pairs without exposing board paths');
+ await request('/api/chapters?collection=releases&theme=not-a-world',{expected:400});
+ await request('/art/discovery-island.webp');
  for(const c of archive.chapters){const playable=await json('/api/chapters?id='+c.id);check(JSON.stringify(playable.board)===JSON.stringify(releasedChapter(c.id).board),'source release API returns the immutable reviewed board');}
  check((await json('/api/auth/config')).available===false,'email availability is honest without configuration');
  await request('/api/game',{method:'POST',body:{action:'enter'},expected:401});
