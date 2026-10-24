@@ -1,5 +1,14 @@
 # Geliştirme defteri
 
+## 25 Ekim 2026 · 0.9.0 · Mobil oyun deneyimi
+
+Kullanıcının profesyonel mobil UI/UX isteği öncelik oldu. İki sınırlı uzman incelemesi, tek uygulama sahibi. Kelime listesindeki 133px iç kaydırma kaldırıldı; tüm hedef/parçalar açık ızgarada kalır. Ortak PlayLayout kullanılabilir viewport, gerçek içerik yüksekliği ve güvenli alt boşluğa göre tahtayı boyutlar; aşırı kısa ekran/büyük yazıda 22px hücre alt sınırıyla doğal taşma korunur. Büyük harf modu bilinçli kaydırma ve iki uca dokunma davranışını korur. Tahta ölçüsü değişirse seçim temizlenir.
+
+Krem/yeşil/altın kimliği; yuvarlak başlıklar, daha canlı dünya başlangıç kartı, hacimli kontroller, hedef/çizgi geri bildirimi ve hafif sonuç kutlamasıyla yenilendi. Azaltılmış hareket ve kontrast korunur. Oyun motoru, tahta kimlikleri, içerik, ödül, hesap ve kayıt kodu değiştirilmedi. Yeni bağımlılık veya ücretli servis yok.
+
+Destekli preview CLI çalışıyor bildirdi, bulut tarayıcısı ERR_CONNECTION_REFUSED verdi; status aynı adresi bildirdi. Alternatif tarayıcı yolu kullanılmadı. Görsel/gerçek telefon sığması ve FPS doğrulanmadı. Yerel 133 test, 32 tahta/640 alternatif ve tip kontrolü geçti. Son derleme/Worker/CI/yayın kanıtı ortak doğrulama günlüğünde takip edilir.
+
+
 ## 24 Ekim 2026 · 0.8.4 · Son kayıt ve hesap kuyruğu
 
 Güncel Sites kaynağı `4e3e63c8c9df9af590128c21e198c1e16712ffc4`, kayıtlı 14. sürüm ve herkese açık sahip erişimi; GitHub main `4e311d7bea09a784f4fedf612f77de5031fd9db1` kontrol edildi. Bugünün **Parkede küçük mola** ve **Yörüngede bir gün** çifti zaten yayında; dört kaynak yayın dosyası aynen korunur.

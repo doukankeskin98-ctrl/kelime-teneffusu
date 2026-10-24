@@ -1,5 +1,8 @@
 # Öncelikler
 
+25 Ekim 2026: kullanıcının mobil UI/UX isteği önceliklendirildi. 0.9.0 uygulaması, iki uzman incelemesi ve kontroller 2026-10-25_mobile-* günlüklerinde. Öncelik: destekli telefon görünümünde 360×640, 390×844, 430×932 normal/büyük yazı, çapraz seçim, duraklatma, Arena ve kayıt geri dönüşünü doğrulamak. İlk önizleme ERR_CONNECTION_REFUSED nedeniyle gözlenemedi. App Store veya tam stüdyo kalitesi onayı verilmedi. Bundan sonraki isteklerde aynı görev/ortak günlük/tek uygulama sahibi yapısı sürer; yeni otomasyon veya servis kurulmadı.
+
+
 24 Ekim 2026 akşam. Başlangıç: Sites `4e3e63c8c9df9af590128c21e198c1e16712ffc4`, GitHub `4e311d7bea09a784f4fedf612f77de5031fd9db1`, 0.8.3.
 
 0.8.4 odağı tamamlandı: hesap/bölüm başına kuyruk; gönderim sürerken tamamlayıp oyun içinden çıkışta son snapshot drain'i; yeni hesabı kilitlemeyen iptal; token/HTTP/JSON dahil süre sınırı; sunucuda beklenen hesap kontrolü; cihazdaki iyi sonucu koruyan geç yanıt birleşimi. Tek sınırlı uzman tasarım/son inceleme yaptı. Yerel 130 test, 180 Worker HTTP, tip, 32 tahta/640 alternatif ve son üretim derlemesi geçti. GitHub CI/ağaç eşleşmesi ve Sites yayın sonucu ayrıca gerçek metadata ile doğrulanır. Son kanıt `../journal/entries/2026-10-24_evening-coordinator-validation.md`.
