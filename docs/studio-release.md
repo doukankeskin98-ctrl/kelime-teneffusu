@@ -12,6 +12,8 @@
 
 ## Uygulanan ürün akışları
 
+0.10.0: isteğe bağlı 60 saniyelik Hızlı Tur, dünyalara katılan tarihli bölümler ve tema filtreli API, görünür oda daveti ve ekip/lig/geçmiş sekmeleri, özgün ada sahnesi ve puan/seri animasyonları. Kapsam ve sınırlar geliştirme defterinde.
+
 0.9.0, tüm hedefleri açık tutan mobil ızgara ve kullanılabilir ekran yüksekliğine göre boyutlanan tahta getirir. Büyük yazı veya çok kısa ekranlarda okunabilirlik korunarak doğal kaydırma sürer. Ana ekran, kontroller ve başarı anları daha canlı aynı görsel dille yenilendi. Browser preview bağlantısı reddedildiğinden fiziksel telefon, görsel sığma ve FPS doğrulaması bekler.
 
 

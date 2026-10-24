@@ -1,5 +1,17 @@
 # Geliştirme defteri
 
+## 25 Ekim 2026 · 0.10.0 · Oynanış, dünyalar ve arkadaşlar
+
+Önceki görsel yenilemenin ötesinde isteğe bağlı Hızlı Tur eklendi: 3 saniye hazırlık, 60 saniye oyun, 6×6 tahtada dört kelime, 7 saniye seri penceresi, en fazla ×3 çarpan, tamamlanan tahta için 100 puan ve yeni tahta. Yanlış seçim seriyi sıfırlar; süre arka planda devam eder. Sonuç gerçek puan, kelime, tahta ve en uzun seriyi gösterir. Cihaz rekoru hesap anahtarıyla ayrılır; bulut ilerlemesi, ödül veya rekabetçi derecelere yazılmaz.
+
+Tarihli kaynak bölümler dünya kartlarının toplamına ve ilgili dünyanın bölüm penceresine katılır. API temayı sayfalamadan önce filtreler, bütün arşivden sayar ve damga çiftinin eksik eşini özet olarak taşır. Aynı tema çifti 24 kayıt sınırında bölünse de bağlantı korunur. Son eklenenler yalnız isteğe bağlı özet alanıdır. Eski kimlikler, tohumlar, kelimeler, beşli keşif haritaları ve tamamlamalar korunur. Tema üzerinden bölümden dönünce dünya penceresi tekrar açılır.
+
+Arkadaşlar; ekip araması, haftalık lig ve maç geçmişi sekmeleri, görünür davet kodu/paylaş/odaya dön adımları, boş/yükleniyor/hata/yeniden dene durumlarıyla yenilendi. Var olan aktif oda yeni arkadaş daveti sanılmaz. Mutasyon başarısı ile yenileme hatası ayrılır; hesap değişiminde bileşen yeniden açılır. Sunucu oturum, oda, izin ve sonuç kuralları korunur.
+
+Tek özgün ada illüstrasyonu WebP olarak 173 KB'a indirildi. Hareketli yıldız, süre halkası, seri çubuğu, puan geri bildirimi ve geri sayım eklendi. Azaltılmış hareket desteği var. İki sınırlı uzman incelemesi yapıldı; uygulama ve yayın tek koordinatörde. Yeni servis, bağımlılık veya zamanlayıcı yok.
+
+Doğrulama sonuçları ortak sürüm günlüğünde. Önizleme bağlantısı önceki denemede reddedildi; toparlanma kanıtı olmadan alternatif yol denenmedi. Gerçek telefon, görsel sığma, FPS, oyuncu keyfi/tutma artışı ve App Store hazır oluşu doğrulanmış sayılmaz.
+
 ## 25 Ekim 2026 · 0.9.0 · Mobil oyun deneyimi
 
 Kullanıcının profesyonel mobil UI/UX isteği öncelik oldu. İki sınırlı uzman incelemesi, tek uygulama sahibi. Kelime listesindeki 133px iç kaydırma kaldırıldı; tüm hedef/parçalar açık ızgarada kalır. Ortak PlayLayout kullanılabilir viewport, gerçek içerik yüksekliği ve güvenli alt boşluğa göre tahtayı boyutlar; aşırı kısa ekran/büyük yazıda 22px hücre alt sınırıyla doğal taşma korunur. Büyük harf modu bilinçli kaydırma ve iki uca dokunma davranışını korur. Tahta ölçüsü değişirse seçim temizlenir.
