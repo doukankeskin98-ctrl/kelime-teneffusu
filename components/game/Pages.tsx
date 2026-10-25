@@ -22,8 +22,10 @@ export function Explore({releases,releaseCounts={},onSprint,userId,progress,setT
  const visible=useMemo(()=>THEMES.filter(t=>(filter==='Tümü'||t.category===filter)&&(t.title+' '+t.subtitle).toLocaleLowerCase('tr-TR').includes(search.toLocaleLowerCase('tr-TR'))),[search,filter]);
  const nextMystery=MYSTERIES.find(m=>!progress.saves['mystery:'+m.id]?.complete)??MYSTERIES[0]!;
  const recommendation=nextDiscovery(progress),destination=recommendation.config;
+ const personal=collectionStats(progress);
  const begin=()=>openSolo(destination);
  return <div className="page-enter studio-home"><div className="welcome-row"><div><span className="eyebrow">KENDİNE KÜÇÜK BİR MOLA VER</span><h1>Bugün ne keşfedelim?</h1></div><span className="collection-count"><Compass size={17}/>16 dünya, binbir merak.</span></div>
+ <div className="discovery-passport" aria-label="Keşif birikimin"><span><Star size={18}/><b>{personal.stars}</b> yıldız</span><span><BookOpen size={18}/><b>{personal.completed}</b> keşif</span><span><Compass size={18}/><b>{personal.worlds}</b> dünya</span></div>
  <DiscoveryStart recommendation={recommendation} onPlay={begin} onArena={()=>setNav('arena')}/>
  <DiscoveryMap progress={progress} onPlay={(journey,practice)=>openSolo({themeId:journey.themeId,level:0,journey:journey.id,practice})}/>
  <section className="play-modes" aria-label="Oyun modları"><button className="speed-mode" onClick={onSprint}><span className="mode-symbol">⚡</span><span><small>60 SANİYE · YENİ OYUN MODU</small><b>Hızlı Tur</b><em>Kelimeleri zincirle. Rekorunu geç.</em></span><ArrowRight/></button><button className="mystery-mode" onClick={()=>onMystery(nextMystery.id)}><span className="mode-symbol">?</span><span><small>BAĞLANTIYI ÇÖZ</small><b>Gizli Tema</b><em>Kelimelerin ortak sırrını bul.</em></span><ArrowRight/></button></section>
