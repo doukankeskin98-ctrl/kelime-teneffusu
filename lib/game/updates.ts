@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.11.2',date:'25 Ekim 2026',title:'İpucu Avı kartları yerini korur',items:[
+  {where:'İpucu Avı · kelime bulunduğunda',detail:'Tanım cevaba dönüşürken iki görünüm için ayrılan alan korunur. Kartların küçülüp tahtayı yeniden boyutlandırmasına yol açan yerleşim değişikliği giderildi.'},
+  {where:'Uzun tanımlar ve büyük yazı',detail:'Metinler kırpılmaz; kartlar metnin ihtiyacı kadar yer ayırır. Bulunmamış cevaplar görünür metne veya erişilebilir kart adına eklenmez.'},
+ ]},
  {version:'0.11.1',date:'25 Ekim 2026',title:'Keşfine beklemeden dön',items:[
   {where:'Bugünün iki keşfi',detail:'Kıyıda bir gün ile 6 × 6 kolay bir mola; Efsanelerin kapısı ile 8 × 8 dengeli bir keşif. Çapraz kelimeler, dünya seçicisi ve kalıcı arşivde yerlerini alırlar.'},
   {where:'Çevrimdışı hazır bölümler',detail:'İndirilmiş bir bölümü açarken ağ yanıtını beklemezsin. Cihaz kaydınla başlarsın; bağlantı varken hesap kaydın arka planda birleştirilir.'},

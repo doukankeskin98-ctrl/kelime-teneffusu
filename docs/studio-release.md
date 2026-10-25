@@ -12,6 +12,8 @@
 
 ## Uygulanan ürün akışları
 
+0.11.2: İpucu Avı kartlarında tanım ve cevap aynı intrinsic alanda yer tutar; bulununca kart türü veya ayrılan metin alanı kaybolmaz. Gizli yüz görünür/erişilebilir cevap olarak sunulmaz; uzun metin ve büyük yazı kırpılmaz. Normal/parçalı/golden davranışları korunur. Kaynak/markup sözleşmesi doğrulandı; gerçek telefon ve CSS piksel sığması ayrıca gözlenmelidir.
+
 0.11.1: **Kıyıda bir gün** ve **Efsanelerin kapısı** tarihli bölümleri ana sayfa, arşiv ve ilgili dünyalara eklenir. Doğrulanmış cihaz tahtası ağ beklemeden açılır; hesap kaydı mevcut korumalı PUT'la arka planda birleştirilir. Geç onay aktif turdaki kelimeleri/süreyi korur; tekrar boş kalır. Belirsiz hesap başlangıcında kişisel rekor iddiası gösterilmez. İlk indirme hâlâ gerçek tahtayı bekler; fiziksel telefon/PWA ve FPS doğrulaması açık kalır.
 
 0.11.0: 13 yeni harita/78 bölüm ve 26 İpucu Avı; eski üçlü tamamlanınca yeni dünyaya öneri, gerçek sıradaki bölüm eylemi, yeniden tasarlanan yol atlası ve kabul edilmiş kelime kutlaması. Sonlu katalog, kalıcı kayıt ve cihaz doğrulama sınırları [harita belgesinde](discovery-map.md).

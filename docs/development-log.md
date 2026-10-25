@@ -1,5 +1,17 @@
 # Geliştirme defteri
 
+## 25 Ekim 2026 · 0.11.2 · İpucu Avı kartlarının alanını koru
+
+Başlangıç güncel Sites helper kaynağı `bb33a116f8d7adb859890b5edbd8942d54526e60` / başarılı 19. sürüm ve public sahip erişimi; GitHub main `84cc59ea6cf970723f3464de6a047a243e472cb2`, eş ağaç `eaff7e5546b31b9fe371ba94ac8797955690b7eb`. Bugünün **Kıyıda bir gün** ve **Efsanelerin kapısı** çifti zaten yayında; yeni çift eklenmedi. Önceki kayıt/açılış düzeltmesi aynı kaldı.
+
+Önceki deneyim incelemesinden kalan somut sorun seçildi: hedef bulununca tanım sınıfı ve uzun metin kayboluyor, kart/ızgara küçülebiliyor ve PlayLayout yeniden ölçümü tahtayı değiştirebiliyordu. Arşiv dönüşü ve gerçek cihaz kanıtı diğer adaylar; yeni büyük özellik veya geniş araştırma tekrarı yapılmadı. Uygulama öncesi kabul `studio-agents/journal/entries/2026-10-25_clue-layout-decision.md` içinde.
+
+**Oyun ekranı → İpucu Avı:** kartın `clue-tag` türü artık tamamlamadan bağımsız. Tanım/harf sayısı ve cevap aynı intrinsic grid alanında her iki durumda da ölçüye katılır; yalnız görünür yüz değişir. Böylece kısa tanımın uzun cevabı için de yer önceden ayrılır. Sabit metin yüksekliği, kırpma ve iç scroll yoktur; büyük yazı doğal sarılır. Bulunmamış cevap inline `visibility:hidden` ve `aria-hidden=true`; erişilebilir kart adı yalnız tanımı/harf sayısını içerir. Harf sayısı bileşenin açık kuralıyla ayrı satırdadır. Normal çok parçalı kelimeler, Altın Kelime ve bulunmuş renk/hareket tercihleri korunur.
+
+**165/165 test, 37 grup**, **112 tahta / 2240 alternatif**, TypeScript, son üretim derlemesi ve iki bağımsız oyunculu **200 Worker HTTP kontrolü** geçti. Dört yeni gerçek WordList markup sözleşmesi, tüm 26 İpucu Avı bölümünün durumlarını, gizli/erişilebilir yüzleri, uzun metin ve normal parçalı/golden davranışını denetler. Bu testler CSS piksel geometrisi ölçmez. Paylaşılan bileşen değiştiği için tüm regresyonlar ve son build/HTTP doğrulandı; içerik/tahta/atlas/Progress/ödül/kayıt kuyruğu/DB/göç/manifest başlangıçla aynı. Yeni bağımlılık, servis, görsel üretimi, harcama veya zamanlayıcı yok.
+
+Tek sınırlı uzman son kaynak/erişilebilirlik incelemesi yaptı. Açık harf sayısı satır kuralı önerisi uygulandı; başlangıçtaki olası bitişme uyarısı gözlenmiş üretim kusuru sayılmadı. Son inceleme engel bulmadı. Gerçek DOM, telefon, büyük sistem yazısı, ekran okuyucu ve FPS doğrulanmadı; önceki preview engelinde toparlanma kanıtı yok, başka browser/server denenmedi. Sıradaki odak arşivden dönüş bağlamını koruma; gerçek cihaz doğrulaması açık kalır. CI/tam kaynak eşleşmesi/birleştirme ve aynı adrese Sites yayını gerçek araç sonuçlarıyla ayrıca doğrulanır.
+
 ## 25 Ekim 2026 · 0.11.1 · Beklemeden keşfe dön
 
 Başlangıç en güncel Sites kaynağı `d3dfeb4a91453c56e15b1cf1a947434bc5a875f7`, başarılı 18. sürüm, aynı public adres ve sahip erişimi; GitHub main `69d219b217d02764b8721bb674e9c4285aeda7db`. Eski yerel 0.8.4 paketi kullanılmadı. Güncel 0.9/0.10/0.11 mobil düzeni, Hızlı Tur ve atlas devamı korundu. Root sözleşmesi, rol ve son doğrulama/öncelikler okundu; iki sınırlı bağımsız inceleme yalnız ayrılmış günlüklerine yazdı. Uygulama/yayın tek koordinatörde kaldı.
