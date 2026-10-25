@@ -1,3 +1,4 @@
+import {ATLAS_REGIONS} from './atlas-content.ts';
 import {ALBUMS,JOURNEYS,JOURNEY_BONUSES,type Journey} from './content.ts';
 import type {Progress,SavedLevel} from './progress.ts';
 
@@ -10,6 +11,7 @@ export const EXPEDITIONS:readonly Expedition[]=[
  {id:'uzay',title:'Yıldız İskelesi',subtitle:'Pencerenden başlayan kocaman bir yolculuk.',place:'01',pieces:['İlk yıldız','Gezegen halkası','Keşif roketi','Galaksi izi','Uzak ufuk','Gözlemevinin ışığı'],accent:'#9aa8cb',chapterIds:launchChapters('uzay')},
  {id:'turkiye',title:'Anadolu Patikası',subtitle:'Bir sokak, bir manzara, bir yeni hikâye.',place:'02',pieces:['Yol bileti','Şehir ışığı','Dağ esintisi','Tarihin izi','Yol defteri','Son kartpostal'],accent:'#ccaa79',chapterIds:launchChapters('turkiye')},
  {id:'hababam',title:'Teneffüs Bahçesi',subtitle:'Tanıdık bir sınıfta yeni hatıralar.',place:'03',pieces:['İlk zil','Arka sıranın notu','Sınıfın neşesi','Yoklama defteri','Son ders','Yıllık fotoğrafı'],accent:'#8eaf91',chapterIds:launchChapters('hababam')},
+ ...ATLAS_REGIONS.map((r,i)=>({id:r.id,title:r.title,subtitle:r.subtitle,place:String(i+4).padStart(2,'0'),pieces:r.pieces,accent:r.accent,chapterIds:[1,2,3,4,5].map(n=>`${r.id}-atlas-${n}`)})),
 ];
 export interface ExpeditionState {
  expedition:Expedition;chapters:Journey[];bonus:Journey;done:number;pieces:number;earned:boolean[];
@@ -52,4 +54,11 @@ export function discoveryRewards(before:Pick<Progress,'saves'>,after:Pick<Progre
 /** A replay may improve a result, but never replaces an already better discovery. */
 export function keepBestSave(current:SavedLevel|undefined,incoming:SavedLevel):SavedLevel{
  return current?.complete&&(!incoming.complete||current.stars>incoming.stars||(current.stars===incoming.stars&&current.elapsed<incoming.elapsed))?current:incoming;
+}
+
+/** Continue in the current world first, then the first unlocked unfinished one. */
+export function nextJourneyAfter(progress:Pick<Progress,'saves'>,journeyId:string):Journey|null{
+ const states=discoveryState(progress),current=states.find(s=>s.chapters.some(j=>j.id===journeyId)||s.bonus.id===journeyId);
+ if(current?.next)return current.next;
+ return states.find(s=>s.unlocked&&s.next)?.next??null;
 }

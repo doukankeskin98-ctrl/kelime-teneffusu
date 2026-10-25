@@ -1,5 +1,7 @@
 # Öncelikler
 
+25 Ekim 2026, 0.11.0: bitmiş üçlüden devam için 13 yeni harita/78 bölüm, 26 İpucu Avı, yeni yol haritası ve sonuçtan gerçek sonraki keşif. Eski18 tahta snapshot ile korunur. Sonlu katalog; sonraki eklemeler atlas-v1 satırlarını değiştirmeden yapılır. Öncelik gerçek telefon/oyuncu kanıtı: haritada hedef anlaşılıyor mu, İpucu Avı tanımları okunuyor mu, seçme/son kelime/sonuç akışı tatmin edici mi. İzinsiz arka plan işi, yeni servis veya zamanlayıcı yok.
+
 25 Ekim 2026, 0.10.0: kullanıcı tüm deneyim ve eğlenceyi önceliklendirdi. Hızlı Tur, dünya içi günlük katalog ve sosyal davet akışı uygulandı. İki sınırlı incelemenin gerçek bulguları studio-* günlüklerinde. Sonraki kanıt gereksinimi: erişilebilir destekli önizleme ve gerçek telefonlarda bu akışların oynanması; oyuncu gözlemi olmadan eğlence/retansiyon başarısı iddia etmeyin. 24 kayıt sınırında aynı tema çiftinin damgası regresyonla korunur.
 
 25 Ekim 2026: kullanıcının mobil UI/UX isteği önceliklendirildi. 0.9.0 uygulaması, iki uzman incelemesi ve kontroller 2026-10-25_mobile-* günlüklerinde. Öncelik: destekli telefon görünümünde 360×640, 390×844, 430×932 normal/büyük yazı, çapraz seçim, duraklatma, Arena ve kayıt geri dönüşünü doğrulamak. İlk önizleme ERR_CONNECTION_REFUSED nedeniyle gözlenemedi. App Store veya tam stüdyo kalitesi onayı verilmedi. Bundan sonraki isteklerde aynı görev/ortak günlük/tek uygulama sahibi yapısı sürer; yeni otomasyon veya servis kurulmadı.

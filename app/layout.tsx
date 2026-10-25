@@ -8,6 +8,7 @@ import "./start.css";
 import "./releases.css";
 import "./mobile-game.css";
 import "./playful-studio.css";
+import "./atlas-adventure.css";
 
 export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',themeColor:'#f7f7ef'};
 
