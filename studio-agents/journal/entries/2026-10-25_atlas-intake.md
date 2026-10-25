@@ -1,0 +1,7 @@
+# 0.11.0: devam eden keşif ve oyun hissi
+
+Kullanıcı eski üç haritayı bitirdiğini bildirdi. Odak: harita tükenmesini gideren 13 yeni temalı 5+1 rota (78 bölüm), açık sonraki hedef, kısa tanımlardan kelime bulduran İpucu Avı, harita/başarı sunumu. Alternatif sınırsız rastgele üretim bu tur seçilmedi: doğrulanmış Türkçe içerik, sabit kimlik ve kayıt güvenliği daha güçlü kanıt sağlar. Eski üçlüde kimlik, kelime, seed, 3/5 açılış ve ödül değişmez. Yeni haritalar ilerlemeyle açılır, kayıtlı hesap otomatik doğru devam hedefine gider.
+
+Kabul: 18 eski tahta ve eski ödüller aynı; 78 yeni tahta geçerli ve iki çapraz eğim içerir; ilk üç haritası bitmiş kullanıcı yeni ilk haritaya önerilir; sonucun ana düğmesi gerçek sıradaki bölüme gider; aynı parçaya tekrar ödül yok; yeni tüm kayıtlar sunucuda doğrulanır, iki hesap ayrımı korunur, en geniş kayıt HTTP sınırına sığar. İpucu Avı cevapları tamamlanmadan hedef listesinde yazılmaz, normal ipucu işlevi korunur. Son kabul edilmiş kelime kısa süre görünür, eski tamamlanmış kayıtta kutlama tekrarlanmaz. Azaltılmış hareket ve 44px dokunma hedefleri gözetilir.
+
+Referans: Dream Games resmi Royal Match sayfasında tutarlı dünya/alan ilerlemesi; PeopleFun resmi oyun sayfasında kelime bulmacası ve sakin sahneler. Ürün ilkeleri uyarlanır, varlık kopyalanmaz. İki bounded review, koordinatör uygulaması. Yeni bağımlılık/entegrasyon/otomasyon yok. Preview önceki bağlantı engelinde; toparlanma kanıtı yoksa alternatif yol denenmez. Cihaz/FPS/retansiyon kanıtı iddia edilmez.

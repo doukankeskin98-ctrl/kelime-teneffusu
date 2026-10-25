@@ -3,6 +3,8 @@ import {createRequire} from 'node:module';
 import {readdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {ATLAS_JOURNEYS} from '../lib/game/atlas-content.ts';
+import {EXPEDITIONS} from '../lib/game/discovery.ts';
 import {JOURNEY_BONUSES,journeyBoard} from '../lib/game/content.ts';
 import {NEW_CHAPTER} from '../lib/studio/content.ts';
 import {releaseCatalogue,releasedChapter} from '../lib/studio/releases.ts';
@@ -32,7 +34,7 @@ try{
  const home=await (await request('/')).text();check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
  check(home.includes('id="discovery-start-title"')&&home.includes('id="fresh-discoveries-title"')&&home.indexOf('id="discovery-start-title"')<home.indexOf('id="fresh-discoveries-title"'),'personal starting point precedes the daily catalogue');
  check(home.includes('href="#kesif-haritasi"')&&home.includes('href="#dunyalar"')&&home.includes('id="kesif-haritasi"')&&home.includes('id="dunyalar"'),'home shortcuts point to existing map and world sections');
- check(home.includes('kesif-haritasi')&&home.includes('Yıldız İskelesi')&&home.includes('Anadolu Patikası')&&home.includes('Teneffüs Bahçesi'),'public discovery map renders with all three destinations');
+ check(home.includes('kesif-haritasi')&&home.includes('Yıldız İskelesi')&&home.includes('Yolculuğun devam ediyor.')&&home.includes('atlas-node')&&EXPEDITIONS.length===16,'public illustrated atlas renders with sixteen registered destinations');
  const released=releaseCatalogue();check(home.includes('fresh-discoveries-title')&&home.includes('Neler değişti?')&&released.chapters.slice(0,2).every(c=>home.includes(c.spec.title)),'home visibly presents the new chapters and in-game release notes');
  check(home.includes('İki keşif, bir hatıra')&&home.includes('İki bölümü de tamamla.')&&!home.includes('Damganı gör'),'home presents the stamp condition without awarding an unauthenticated visitor');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
@@ -84,6 +86,11 @@ try{
  const bonus=JOURNEY_BONUSES[0],bonusBoard=journeyBoard(bonus),bonusKey='route:'+bonus.id;
  await json('/api/progress',{cookie:aCookie,method:'PUT',body:{progress:{...cloud.progress,tutorialDone:true,saves:{[bonusKey]:{strokes:bonusBoard.placements.map(({id,a,b})=>({id,a,b})),elapsed:45,hints:2,complete:true,stars:99}},last:{themeId:bonus.themeId,level:0,journey:bonus.id}}}});
  const savedBonus=await json('/api/progress',{cookie:aCookie});check(savedBonus.progress.saves[bonusKey]?.complete===true&&savedBonus.progress.saves[bonusKey].stars===1,'bonus pieces persist using server-validated strokes and stars');check(savedBonus.progress.last.journey===bonus.id,'bonus destination survives cloud roundtrip');check(!(await json('/api/progress',{cookie:bCookie})).progress.saves[bonusKey],'bonus collection stays scoped to its owner');
+ const atlasSaves={...savedBonus.progress.saves};for(const chapter of [ATLAS_JOURNEYS[0],ATLAS_JOURNEYS[2],ATLAS_JOURNEYS[5]]){const board=journeyBoard(chapter);atlasSaves['route:'+chapter.id]={strokes:board.placements,elapsed:30,hints:1,complete:false,stars:99};}
+ await json('/api/progress',{cookie:aCookie,method:'PUT',body:{progress:{...savedBonus.progress,saves:atlasSaves,last:{themeId:ATLAS_JOURNEYS[2].themeId,level:0,journey:ATLAS_JOURNEYS[2].id}}}});
+ const atlasSaved=await json('/api/progress',{cookie:aCookie});check([ATLAS_JOURNEYS[0],ATLAS_JOURNEYS[2],ATLAS_JOURNEYS[5]].every(j=>atlasSaved.progress.saves['route:'+j.id]?.complete&&atlasSaved.progress.saves['route:'+j.id]?.stars===2),'new atlas normal, clue and final chapters are validated and preserved by the Worker');
+ check(atlasSaved.progress.last.journey===ATLAS_JOURNEYS[2].id,'the saved clue hunt remains the actual last destination');
+ check(!(await json('/api/progress',{cookie:bCookie})).progress.saves['route:'+ATLAS_JOURNEYS[0].id],'atlas chapters remain private to the account');
  const sw=await (await request('/sw.js')).text();check(sw.includes('const BUILD_ASSETS=[')&&!sw.includes('const BUILD_ASSETS=[];'),'offline assets are built');
  for(const asset of ['/manifest.webmanifest','/icon-192.png','/icon-512.png'])await request(asset);
  const workshop=await (await request('/atolye')).text();check(workshop.includes('İÇERİK ATÖLYESİ'),'authoring workspace renders');

@@ -1,4 +1,10 @@
 export const GAME_UPDATES=[
+ {version:'0.11.0',date:'25 Ekim 2026',title:'Yolculuğun devam ediyor',items:[
+  {where:'13 yeni keşif haritası',detail:'78 yeni bölümle Fısıltı Ormanı, Tarçın Sokağı ve daha birçok yere yelken aç. Önceki haritaların ve hatıraların korunur.'},
+  {where:'İpucu Avı',detail:'Yeni haritalardaki 26 bölümde kelimeyi kısa tanımından bul. Cevabı keşfedince tanım kelimeye dönüşür.'},
+  {where:'Yeni yolculuk ekranı',detail:'Sıradaki durağın, kazanacağın parça ve son mühür aynı haritada. Tamamladığın bölümün ardından sıradaki keşfe doğrudan geç.'},
+  {where:'Her kelimede küçük bir başarı',detail:'Bulduğun kelime tahtanın üzerinde kutlanır. Son kelimeni gördükten sonra bölüm özeti ve yeni hatıraların açılır.'},
+ ]},
  {version:'0.10.0',date:'25 Ekim 2026',title:'Bir tur daha?',items:[
   {where:'Hızlı Tur',detail:'60 saniyede kelimeleri bul, seri kur ve yeni tahtaya geç. Kendi cihaz rekorunu geçmeyi dene; bu mod isteğe bağlı ve ligden bağımsız.'},
   {where:'Yeni bölümler dünyalarında',detail:'Her gün eklenen keşifler artık ilgili dünyanın bölüm listesinde. Dünya kartında kaç yeni bölüm olduğunu görebilirsin.'},
