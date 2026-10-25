@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-25",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261025-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Kıyıda bir gün",
+          "themeId": "dunya",
+          "words": [
+            "KUM",
+            "ADA",
+            "KIYI",
+            "DALGA"
+          ],
+          "size": 6,
+          "seed": 2026102501,
+          "difficulty": "Rahat",
+          "note": "Kıyıda küçük bir kelime molası. Yatay, dikey ve iki yöndeki çaprazlara bak; acele yok."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "K",
+              "K",
+              "I",
+              "Y",
+              "I",
+              "I"
+            ],
+            [
+              "D",
+              "I",
+              "V",
+              "P",
+              "Z",
+              "A"
+            ],
+            [
+              "A",
+              "A",
+              "M",
+              "K",
+              "D",
+              "Z"
+            ],
+            [
+              "H",
+              "S",
+              "L",
+              "A",
+              "U",
+              "R"
+            ],
+            [
+              "S",
+              "L",
+              "Ç",
+              "G",
+              "Z",
+              "M"
+            ],
+            [
+              "Z",
+              "D",
+              "K",
+              "V",
+              "A",
+              "P"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "KUM",
+              "text": "KUM",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "ADA",
+              "text": "ADA",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "KIYI",
+              "text": "KIYI",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "DALGA",
+              "text": "DALGA",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "3.0",
+              "label": "DALGA",
+              "text": "DALGA",
+              "group": 3,
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                5,
+                4
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "KIYI",
+              "text": "KIYI",
+              "group": 2,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                0,
+                4
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "KUM",
+              "text": "KUM",
+              "group": 0,
+              "a": [
+                2,
+                3
+              ],
+              "b": [
+                4,
+                5
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "ADA",
+              "text": "ADA",
+              "group": 1,
+              "a": [
+                3,
+                3
+              ],
+              "b": [
+                1,
+                5
+              ]
+            }
+          ]
+        },
+        "contentHash": "1a49acf004b188c93fbcf5aaf1041827e471cfd2ba5d181307713fdc14a82ce8",
+        "publishedAt": 1792915200000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261025-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Efsanelerin kapısı",
+          "themeId": "mitoloji",
+          "words": [
+            "ZEUS",
+            "HERA",
+            "HERMES",
+            "ATHENA",
+            "APOLLON",
+            "ARTEMİS",
+            "ATLAS"
+          ],
+          "size": 8,
+          "seed": 2026102502,
+          "difficulty": "Dengeli",
+          "note": "Efsanelerin isimleri harflerin arasında. İki yöndeki çaprazları da izleyerek yedi adı keşfet."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "S",
+              "A",
+              "L",
+              "T",
+              "A",
+              "N",
+              "H",
+              "R"
+            ],
+            [
+              "Ş",
+              "D",
+              "Ö",
+              "B",
+              "C",
+              "A",
+              "E",
+              "A"
+            ],
+            [
+              "D",
+              "F",
+              "F",
+              "Ğ",
+              "R",
+              "R",
+              "G",
+              "P"
+            ],
+            [
+              "S",
+              "İ",
+              "M",
+              "E",
+              "T",
+              "R",
+              "A",
+              "O"
+            ],
+            [
+              "V",
+              "G",
+              "H",
+              "Z",
+              "A",
+              "Z",
+              "D",
+              "L"
+            ],
+            [
+              "S",
+              "E",
+              "M",
+              "R",
+              "E",
+              "H",
+              "H",
+              "L"
+            ],
+            [
+              "D",
+              "S",
+              "F",
+              "Ö",
+              "R",
+              "U",
+              "T",
+              "O"
+            ],
+            [
+              "A",
+              "T",
+              "H",
+              "E",
+              "N",
+              "A",
+              "S",
+              "N"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "ZEUS",
+              "text": "ZEUS",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "HERA",
+              "text": "HERA",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "HERMES",
+              "text": "HERMES",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "ATHENA",
+              "text": "ATHENA",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "APOLLON",
+              "text": "APOLLON",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "ARTEMİS",
+              "text": "ARTEMİS",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "ATLAS",
+              "text": "ATLAS",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "4.0",
+              "label": "APOLLON",
+              "text": "APOLLON",
+              "group": 4,
+              "a": [
+                1,
+                7
+              ],
+              "b": [
+                7,
+                7
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "ARTEMİS",
+              "text": "ARTEMİS",
+              "group": 5,
+              "a": [
+                3,
+                6
+              ],
+              "b": [
+                3,
+                0
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "HERMES",
+              "text": "HERMES",
+              "group": 2,
+              "a": [
+                5,
+                5
+              ],
+              "b": [
+                5,
+                0
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "ATHENA",
+              "text": "ATHENA",
+              "group": 3,
+              "a": [
+                7,
+                0
+              ],
+              "b": [
+                7,
+                5
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "ATLAS",
+              "text": "ATLAS",
+              "group": 6,
+              "a": [
+                0,
+                4
+              ],
+              "b": [
+                0,
+                0
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "ZEUS",
+              "text": "ZEUS",
+              "group": 0,
+              "a": [
+                4,
+                3
+              ],
+              "b": [
+                7,
+                6
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "HERA",
+              "text": "HERA",
+              "group": 1,
+              "a": [
+                4,
+                2
+              ],
+              "b": [
+                1,
+                5
+              ]
+            }
+          ]
+        },
+        "contentHash": "536aed7ce8e57e26fb0e95f685e63c5eeb5247da13f4b85efc67f8aaf900071d",
+        "publishedAt": 1792915200000,
+        "archived": false
+      }
+    }
+  ]
+}

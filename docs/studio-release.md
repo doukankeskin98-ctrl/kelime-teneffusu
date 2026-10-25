@@ -12,6 +12,8 @@
 
 ## Uygulanan ürün akışları
 
+0.11.1: **Kıyıda bir gün** ve **Efsanelerin kapısı** tarihli bölümleri ana sayfa, arşiv ve ilgili dünyalara eklenir. Doğrulanmış cihaz tahtası ağ beklemeden açılır; hesap kaydı mevcut korumalı PUT'la arka planda birleştirilir. Geç onay aktif turdaki kelimeleri/süreyi korur; tekrar boş kalır. Belirsiz hesap başlangıcında kişisel rekor iddiası gösterilmez. İlk indirme hâlâ gerçek tahtayı bekler; fiziksel telefon/PWA ve FPS doğrulaması açık kalır.
+
 0.11.0: 13 yeni harita/78 bölüm ve 26 İpucu Avı; eski üçlü tamamlanınca yeni dünyaya öneri, gerçek sıradaki bölüm eylemi, yeniden tasarlanan yol atlası ve kabul edilmiş kelime kutlaması. Sonlu katalog, kalıcı kayıt ve cihaz doğrulama sınırları [harita belgesinde](discovery-map.md).
 
 0.10.0: isteğe bağlı 60 saniyelik Hızlı Tur, dünyalara katılan tarihli bölümler ve tema filtreli API, görünür oda daveti ve ekip/lig/geçmiş sekmeleri, özgün ada sahnesi ve puan/seri animasyonları. Kapsam ve sınırlar geliştirme defterinde.

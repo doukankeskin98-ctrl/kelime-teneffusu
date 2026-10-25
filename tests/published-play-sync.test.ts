@@ -21,11 +21,11 @@ const compiled=ts.transpileModule(
  {compilerOptions:{module:ts.ModuleKind.CommonJS,
   jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}
 ).outputText;
-type VNode={type:unknown;props:Record<string,unknown>};
+type VNode={type:unknown;key?:unknown;props:Record<string,unknown>};
 type Slot={value?:unknown;ref?:{current:unknown};deps?:unknown[];cleanup?:()=>void};
 type Timer={fn:()=>void;delay:number;repeat:boolean};
-type SoloView={props:{config:{practice:boolean};external:{
- board:Puzzle;save?:SavedLevel;onSave:(save:SavedLevel)=>void};onBack:()=>void}};
+type SoloView={key?:unknown;props:{config:{practice:boolean};external:{
+ board:Puzzle;save?:SavedLevel;resume?:SavedLevel;personalBestKnown?:boolean;onSave:(save:SavedLevel)=>void};onBack:()=>void;onNext:()=>void}};
 function deferred<T>(){
  let resolve!:(value:T)=>void;
  const promise=new Promise<T>(yes=>{resolve=yes;});
@@ -48,11 +48,12 @@ function textOf(node:unknown):string{
  return typeof node==='string'?node:children(node).map(textOf).join(' ');
 }
 
-function harness(owner:string,mode:'reject'|'timeout',initial:SavedLevel=complete){
+function harness(owner:string,mode:'reject'|'timeout'|'success',initial:SavedLevel=complete,options:{cache?:'missing'|'mismatch';offline?:boolean}={}){
  let currentOwner=owner,mounted=true,storageFails=false;
- const connectivity={onLine:true};
+ const connectivity={onLine:!options.offline};
+ let afterUnmountUpdates=0;const gets:string[]=[];
  const values=new Map<string,string>([
-  [cache.BOARD_KEY,JSON.stringify({[chapter.id]:chapter})],
+  [cache.BOARD_KEY,JSON.stringify(options.cache==='missing'?{}:{[chapter.id]:options.cache==='mismatch'?{...chapter,contentHash:'f'.repeat(64)}:chapter})],
   [cache.saveKey('alice'),JSON.stringify({[chapter.id]:initial})]
  ]),reads:string[]=[];
  const storage={getItem:(key:string)=>{reads.push(key);return values.get(key)??null;},
@@ -65,7 +66,10 @@ function harness(owner:string,mode:'reject'|'timeout',initial:SavedLevel=complet
    const flight=puts.length===1?upload:deferred<Response>();if(puts.length>1)uploads.push(flight);
    return flight.promise;
   }
+  gets.push(path);
+  if(path.startsWith('/api/chapters?action=progress'))return response(progress.cleanSave(undefined,chapter.board));
   assert.equal(path,'/api/chapters?id='+encodeURIComponent(chapter.id));
+  if(mode==='success')return {ok:true,json:async()=>chapter} as Response;
   if(mode==='reject')throw new Error('Controlled network failure');
   assert.ok(init.signal);
   const signal=init.signal;
@@ -81,6 +85,7 @@ function harness(owner:string,mode:'reject'|'timeout',initial:SavedLevel=complet
    const slot=slots[cursor]??=( {value:typeof initial==='function'?initial():initial} );
    cursor++;
    return [slot.value,(next:unknown)=>{
+    if(!mounted)afterUnmountUpdates++;
     const value=typeof next==='function'?next(slot.value):next;
     if(!Object.is(slot.value,value)){slot.value=value;pendingRender=true;}
    }];
@@ -104,7 +109,7 @@ function harness(owner:string,mode:'reject'|'timeout',initial:SavedLevel=complet
   const id=++timerId;timers.set(id,{fn,delay,repeat});return id;
  };
  const exports:Record<string,unknown>={},queueExports:Record<string,unknown>={};
- const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
+ const jsx=(type:unknown,props:Record<string,unknown>,key?:unknown)=>({type,props,key});
  const modules:Record<string,unknown>={
   react:hooks,'react/jsx-runtime':{jsx,jsxs:jsx,Fragment:'Fragment'},
   '@/lib/game/progress':progress,'@/lib/studio/content':content,
@@ -137,7 +142,8 @@ function harness(owner:string,mode:'reject'|'timeout',initial:SavedLevel=complet
   for(const effect of effects.splice(0))effect();
  };
  return {
-  puts,reads,values,upload,uploads,
+  puts,reads,values,upload,uploads,gets,
+  get afterUnmountUpdates(){return afterUnmountUpdates;},
   async settle(){
    for(let i=0;i<30;i++){await Promise.resolve();if(pendingRender&&mounted)render();}
   },
@@ -147,6 +153,7 @@ function harness(owner:string,mode:'reject'|'timeout',initial:SavedLevel=complet
   renderOnce(){render();},
   setSave(save:SavedLevel){this.solo().props.external.onSave(save);},
   leave(){this.solo().props.onBack();this.close();},
+  replay(){this.solo().props.onNext();},
   mountSolo(){
    const solo=this.solo(),external=solo.props.external;
    // Solo.tsx calls onSave with its initial save once on mount; no new move.
@@ -164,31 +171,33 @@ function harness(owner:string,mode:'reject'|'timeout',initial:SavedLevel=complet
  };
 }
 
-describe('PublishedPlay cached completion after failed board fetch',()=>{
- for(const mode of ['reject','timeout'] as const){
-  it(`${mode}: uploads unchanged device completion and waits for acknowledgement`,async()=>{
-   const page=harness('alice',mode);
-   try{
-    await page.settle();
-    if(mode==='timeout'){
-     assert.equal(page.hasSolo(),false);
-     assert.doesNotMatch(page.text(),/Hesabında kayıtlı/);
-     page.expireLoad();await page.settle();
-    }
-    assert.equal(page.solo().props.external.save?.complete,true);
-    assert.doesNotMatch(page.text(),/Hesabında kayıtlı/);
-    page.mountSolo();await page.settle();
-    page.online();page.tick();await page.settle();
-    assert.equal(page.puts.length,1,'completion must upload without a new move');
-    assert.equal(page.puts[0]!.id,chapter.id);
-    assert.equal(JSON.stringify(page.puts[0]!.save),JSON.stringify(complete));
-    assert.doesNotMatch(page.text(),/Hesabında kayıtlı/,'PUT is still pending');
-    page.upload.resolve(response(complete));await page.settle();
-    assert.match(page.text(),/Hesabında kayıtlı/);
-    assert.equal(JSON.parse(page.values.get(cache.saveKey('alice'))!)[chapter.id].complete,true);
-   }finally{page.close();}
-  });
- }
+describe('PublishedPlay immediate cached startup and honest cold loading',()=>{
+ it('opens the unchanged device completion before any GET or PUT acknowledgement',async()=>{
+  const page=harness('alice','timeout');
+  try{
+   await page.settle();
+   assert.equal(page.gets.length,0,'a validated cached board must not wait for a GET');
+   assert.equal(page.solo().props.external.save?.complete,true);
+   assert.equal(page.puts.length,1,'one account-scoped background merge starts');
+   assert.equal(page.puts[0]!.expectedOwnerId,'alice');
+   assert.equal(JSON.stringify(page.puts[0]!.save),JSON.stringify(complete));
+   assert.doesNotMatch(page.text(),/Hesabında kayıtlı/);
+   page.mountSolo();page.online();page.tick();await page.settle();
+   assert.equal(page.puts.length,1,'bootstrap and timers share the same flight');
+   page.upload.resolve(response(complete));await page.settle();
+   assert.match(page.text(),/Hesabında kayıtlı/);
+   assert.equal(page.solo().props.external.resume?.complete,true);
+  }finally{page.close();}
+ });
+ it('does not open a missing board and exposes retry after a cold GET timeout',async()=>{
+  const page=harness('alice','timeout',complete,{cache:'missing'});
+  try{
+   await page.settle();assert.equal(page.hasSolo(),false);assert.equal(page.gets.length,1);
+   assert.equal(page.puts.length,0);page.expireLoad();await page.settle();
+   assert.equal(page.hasSolo(),false);assert.match(page.text(),/Yeniden dene/);
+   assert.doesNotMatch(page.text(),/Hesabında kayıtlı/);
+  }finally{page.close();}
+ });
  it('never reads another owner’s completion from the same cached board',async()=>{
   const page=harness('bob','reject');
   try{
@@ -320,7 +329,7 @@ describe('PublishedPlay device and connection status',()=>{
   }finally{page.close();}
  });
  it('keeps the latest snapshot locally while offline and sends it on reconnect',async()=>{
-  const page=harness('alice','reject',partial);
+  const page=harness('alice','reject',partial,{offline:true});
   try{
    await page.settle();page.offline();page.setSave(complete);page.tick();await page.settle();
    assert.equal(page.puts.length,0);assert.match(page.text(),/Cihazında kayıtlı/);
@@ -329,6 +338,59 @@ describe('PublishedPlay device and connection status',()=>{
    assert.equal(page.puts[0]!.save.complete,true);
    page.upload.resolve(response(complete));await page.settle();
    assert.match(page.text(),/Hesabında kayıtlı/);
+  }finally{page.close();}
+ });
+});
+
+
+describe('PublishedPlay live confirmation handoff',()=>{
+ it('merges delayed cloud words with newer local discoveries without changing the Solo key',async()=>{
+  const page=harness('alice','timeout',partial);
+  try{
+   await page.settle();const first=page.solo();
+   const local=progress.cleanSave({...partial,strokes:chapter.board.placements.slice(0,2),elapsed:30},chapter.board);
+   const remote=progress.cleanSave({...partial,strokes:[chapter.board.placements[2]!],elapsed:40},chapter.board);
+   page.setSave(local);await page.settle();page.upload.resolve(response(remote));await page.settle();
+   const resume=page.solo().props.external.resume!;
+   assert.equal(resume.strokes.length,3);assert.equal(resume.elapsed,40);
+   assert.equal(page.solo().props.external.save,first.props.external.save,'the run baseline is not replaced');
+   assert.equal(page.solo().key,first.key,'confirmation must not remount the active Solo');
+   assert.doesNotMatch(page.text(),/Hesabında kayıtlı/,'new local words still await their acknowledgement');
+   assert.equal(page.puts.length,2);assert.equal(page.puts[1]!.save.strokes.length,3);
+   page.uploads[1]!.resolve(response(page.puts[1]!.save));await page.settle();
+   assert.match(page.text(),/Hesabında kayıtlı/);
+  }finally{page.close();}
+ });
+ it('keeps an uncertain cached replay baseline separate and uses the confirmed best on the next replay',async()=>{
+  const old=progress.cleanSave({...complete,elapsed:60},chapter.board),best=progress.cleanSave({...complete,elapsed:20},chapter.board);
+  const page=harness('alice','timeout',old);
+  try{
+   await page.settle();page.replay();await page.settle();
+   assert.equal(page.solo().props.config.practice,true);
+   assert.equal(page.solo().props.external.personalBestKnown,false);
+   page.mountSolo();page.upload.resolve(response(best));await page.settle();
+   assert.equal(page.solo().props.external.resume?.elapsed,20);
+   assert.equal(page.solo().props.external.personalBestKnown,false,'the active run did not have a verified baseline');
+   page.replay();await page.settle();
+   assert.equal(page.solo().props.external.save?.elapsed,20);
+   assert.equal(page.solo().props.external.personalBestKnown,true);
+  }finally{page.close();}
+ });
+ it('does not emit a UI confirmation after leaving while the detached final save drains',async()=>{
+  const page=harness('alice','timeout',partial);
+  await page.settle();page.setSave(complete);await page.settle();page.leave();
+  page.upload.resolve(response(partial));await page.settle();
+  assert.equal(page.puts.length,2);page.uploads[1]!.resolve(response(complete));await page.settle();
+  assert.equal(page.afterUnmountUpdates,0);
+  assert.equal(JSON.parse(page.values.get(cache.saveKey('alice'))!)[chapter.id].complete,true);
+ });
+ it('rejects a mismatched cached hash and uses the existing cold board and owner-guarded read',async()=>{
+  const page=harness('alice','success',partial,{cache:'mismatch'});
+  try{
+   await page.settle();assert.equal(page.gets.length,2);
+   assert.equal(page.solo().props.external.board.size,chapter.board.size);
+   assert.match(page.gets[1]!,/expectedOwnerId=alice/);
+   assert.equal(page.solo().props.external.personalBestKnown,true);
   }finally{page.close();}
  });
 });
