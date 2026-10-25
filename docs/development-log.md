@@ -1,5 +1,14 @@
 # Geliştirme defteri
 
+## 25 Ekim 2026 · 0.12.0 · Dokunulan bir keşif
+
+Kullanıcının skill odaklı görsel/oynanış isteği: game-ui-ux ve layout-and-flow, game-feel ve feedback-recipes okunarak mevcut React/TypeScript SVG/CSS yüzeyinde uygulandı. Kalıcı skill push'ı önceki turda başarısız olduğundan korunmuş kaynak kopyaları çalışma rehberi olarak kullanıldı. Motor/dependency, hesap, kayıt, kelime, tohum ve ödül değişikliği yok.
+
+Ana sayfada gerçek yıldız/keşif/dünya birikimi, daha kısa resimli giriş ve doğrudan sıradaki bölüm eylemi. Oyun ekranında yeşim zemin, fildişi harf yüzeyi ve belirgin kontrast. Seçilen harfler aynı preview hücrelerinden türetilen renk/ölçek tepkisi verir; hit koordinatları değişmez. Normal buluşlar alt kenar bildirimi, son kelime büyük kutlama kullanır. Günlük buluş sesi yalnız başarılı sunucu yanıtından sonra çalar. Hareket azaltma, büyük yazıda doğal akış ve ipucu kartlarının iki yüzlü boyut koruması sürer.
+
+Tek sınırlı deneyim incelemesi: grid positioning ve Sprint başlık kontrastı bulguları düzeltildi. 178 test, TypeScript, 112 tahta/2240 alternatif, üretim derlemesi başarılı. Worker HTTP 200 kontrolü ve final paket doğrulaması yayın kaydında. Destekli preview yine ERR_CONNECTION_REFUSED; DOM, gerçek telefon, büyük yazı piksel ölçümü ve FPS gözlenmedi. Dünya standardı, retansiyon veya eğlence başarısı kanıtlanmış sayılmaz.
+
+
 ## 25 Ekim 2026 · 0.11.3 · Keşiflerine aynı yerden dön
 
 Güncel Sites helper `965a4bea9af80d347bfaab8cca630ba02a0c8bc1`, sürüm 20, owner/public erişimi ve GitHub main `8bf758e73367f9bb07dcac76e92c0164968997da` aynı tam ağaçla açıldı. Bugünün **Kıyıda bir gün** / **Efsanelerin kapısı** çifti zaten yayımlanmış; snapshot/kimlik/tohum/kelimeler değişmedi. Kök sözleşme, güncel README/sürüm/harita, öncelik ve son günlükten devam edildi.
