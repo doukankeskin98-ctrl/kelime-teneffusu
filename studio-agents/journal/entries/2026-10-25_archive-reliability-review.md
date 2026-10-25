@@ -1,0 +1,53 @@
+# Arşiv dönüşü güvenilirlik incelemesi · 25 Ekim 2026
+
+Başlangıç: koordinatörün açtığı güncel Sites `965a4be`, **0.11.2**. Kök AGENTS, ajan README/kayıt, rolün beş dosyası, güncel öncelikler, son clue-layout-validation ve ilgili ürün/sürüm bağlamı okundu. Kapsam: DailyDiscoveries → PublishedChapters/ReleaseAlbum → App/Pages → bölümden dönüş. Uygulama/test kaynağı salt okunur; tek yazılan dosya bu günlük. Yeni P0/P1 kayıt engeli saptanmadı; aşağıdakiler gezinme/katalog bağlamı sorunlarıdır, oyuncu ilerlemesinin silindiği iddiası değildir.
+
+## 1. Arşiv ve seçili Albüm tarihi dönüş hedefi olarak taşınmıyor
+
+**Öncelik P2. Kaynak:** `DailyDiscoveries.tsx:21,25`; `ReleaseAlbum.tsx:12,15`; `App.tsx:39–42,65,72–77`; `Pages.tsx:38,60`.
+
+- **Tetikleyici:** Ana sayfadaki arşiv penceresinden bölüm açıp geri dönmek; ya da Albümde bir tarihi seçip iki bölümden birini açmak.
+- **Gerçek:** DailyDiscoveries oynatmadan önce `archive=false` yapıyor. ReleaseAlbum da kart seçiminde `selectedDate=null` yapıyor. App `extra` açıkken ana uygulama ağacını erken return ile kaldırıyor; Explore/ProfilePage ve katalog örnekleri unmount oluyor. `openExtra`ya arşiv/tarih kökeni verilmediği için App yalnız mevcut nav/tema kimliğini biliyor. Dönüş `window.scrollTo(top:0)` yapıyor; Albümde ayrıca yalnız `kesif-damgalari` raf başlığına gider. Arşiv penceresi ve tarih penceresi yeniden açılmaz; yeni DailyDiscoveries içindeki `details` de varsayılan kapalıdır.
+- **Beklenen/etki:** Oyuncu açtığı arşive veya aynı tarih çiftine dönmeli; bugün yeniden menü açıp tarihi bulması gerekiyor. Ana sayfa doğrudan kartı ve tema penceresi kendi dönüş davranışını korumalı. Kaç oyuncunun etkilendiği ölçülmedi.
+- **Düşük riskli öneri:** App gibi bölüm ekranı sırasında yaşamaya devam eden bir üst sahibin elinde açık köken tut: `home | archive | album | theme`, seçili tarih/bölüm anchor'ı ve katalog görünümü. Arşiv/tarih penceresini oyun için kapatma ile kullanıcının gerçekten kapatmasını ayır; kapanış animasyonu gerekiyorsa dönüş snapshot'ı önce alınsın. Aynı bölümün replay'i veya sonuçtan ilgili bölüme geçiş ilk dönüş kökenini değiştirmesin.
+- **Kabul:** Gerçek App + DailyDiscoveries/ReleaseAlbum akışını yalıtılmış bileşen testinde çalıştır: arşivden → bölüm → back arşivi; Albümde tarih X → bölüm → back aynı X tarih penceresini açsın. İlgili diğer bölüme/replay'e gidip geri gelince de X/köken aynı kalsın. Doğrudan son bölüm kartından dönüş arşivi kendiliğinden açmasın; mevcut tema dönüşü korunsun.
+
+## 2. Unmount sonrası yüklenmiş sayfalar ve devam imleci geri gelmiyor
+
+**Öncelik P2; 24 üstü aralık için yalıtılmış fixture kanıtı. Kaynak:** `PublishedChapters.tsx:25–29,34`; `App.tsx:77`; `Pages.tsx:60`.
+
+- **Tetikleyici:** 24'ten fazla özetlik katalogda “Daha fazla keşif/Önceki hatıraları yükle” ile eski sayfaya ilerle, bölüm açıp geri dön.
+- **Gerçek:** `chapters`, `companions` ve `next` yalnız unmount olan katalogda. Cihaz cache'ine yalnız `offset=0` sayfası yazılıyor; mount cache'i ayrıca `slice(0,24)` ile kesip yeniden `load(0)` çalıştırıyor. App'te sayfa aralığına ait snapshot yok. Kullanıcının yüklediği eski tarihler ve `nextOffset` yeniden kurulmak zorunda. Albüm rafına scroll yapmak bunu geri getirmez.
+- **Kanıt sınırı/etki:** Güncel beş günlük kaynak katalog on bölüm içeriyor; bugün kullanıcıda 24 üstü kaynak sayfası yaşanmış gibi sunulmaz. Gerçek PublishedChapters gövdesi VM'de **30 sahte özetlik** yalıtılmış fixture ile çalıştırıldı: ilk 24 → daha fazla ile 30; unmount/remount sonrası **24**. Bu gelecek büyümeye yönelik gerçek bileşen arızasıdır; yalnız sunucu sayfalama teorisi değildir.
+- **Düşük riskli öneri:** Yüklü özet dizisi + companions + gerçek nextOffset üstte tutulan görünüm snapshot'ına dahil olsun; dönüşte aynı diziden başla ve ilk sayfa yüklemesiyle sıfırlama. Yalnız sayfa numarası saklayıp dönünce bütün sayfaları yeniden beklemek eski aralığa anında dönüş sağlamaz. View state için yeni kalıcı kayıt biçimi/DB gerekmez; aynı oturum belleği yeterlidir.
+- **Kabul:** 30–50 özetli fixture'da ikinci/üçüncü sayfadan bir bölüm seç, çık ve geri dön. Aynı eski tarih kartı ve yüklenen bütün kimlikler, companions ve gerçek devam imleci hazır olsun; gereksiz ilk-sayfa isteği bunları silmesin. Sonraki “daha fazla” doğru imleçten gelsin, yinelenen kart/eksik çift oluşmasın. Hata/offline dönüşte snapshot kaybolmasın. Mevcut `tests/releases.test.ts:29–36` sunucunun 24 üstü arşivini sınar; istemci dönüş state'ini sınamaz.
+
+## 3. Bağlantı yenilemesi görünür yüklü aralığı ayrıca sıfırlıyor
+
+**Öncelik P2; aynı fixture'da doğrulandı. Kaynak:** `PublishedChapters.tsx:28–29`.
+
+- **Tetikleyici:** Katalog açıkken ikinci sayfa yüklüdür; bağlantı geri gelir veya yeniden kontrol ilk-sayfa yüklemesini başlatır. Bölüme gitmek bile gerekmez.
+- **Gerçek:** `online` doğrudan `load()` çağırır; `offset=0` başarılı yanıtı eski diziyi birleştirmeden değiştirir ve `next`i ilk sayfa değerine döndürür. VM fixture'ında **30 → online olayı → 24** gözlendi. Sadece App'te snapshot saklamak, remount'ta/bağlantıda aynı `load(0)` snapshot'ı yeniden ezerse yeterli değildir. Sayfalama ve ilk-sayfa yanıtlarının yarışması da kaynakta istek nesliyle denetlenmiyor; bu son yarış ayrıca tekrar üretilmiş hata olarak sayılmadı.
+- **Düşük riskli öneri:** Restore edilmiş releases görünümünü sessiz ilk-sayfa yenilemesinden koru. En küçük yol: aynı açık/dönülen immutable katalog snapshot'ını tutmak ve açık “yenile” ile katalog sıfırlamayı ayrı yapmak; private kart ilerlemesi bağımsız yenilenebilir. Otomatik katalog yenilemesi korunacaksa eski aralık/imleç kaybı ve yeni içerik eklenmesinde boşluk yaratmama ayrıca tasarlanmalı. Her yanıt kendi collection/theme/presentation/istek nesline bağlı olsun; iptal edilen/eski görünüm yeni snapshot'ı güncellemesin.
+- **Kabul:** İkinci sayfa açıkken offline→online, ilk-sayfa gecikmesi ve daha-fazla yanıtını ters sırada tamamla. Yüklü tarih/kimlikler ve seçili tarih kaybolmasın; aktif kapsamın doğru nextOffset'i sürsün. Tema/köken değiştirdikten sonra eski yanıt yeni görünümü veya onun dönüş snapshot'ını değiştirmesin. Bu bir genel performans/CI taraması gerektirmez.
+
+## Ortak uygulama sınırı
+
+Önerilen üst snapshot anahtarı `owner + origin + collection + themeId + presentation` ayrımını taşımalıdır. **Yalnız public bölüm özetleri, companions, nextOffset ve gezinme tarihi/anchor'ı** saklansın; eski `useChapterCards` values/status, earned damga iddiası veya çevrimdışı hazır bayrağı taşınmasın. Kart ilerlemesi mevcut hesap ve doğrulanmış cihazdan yeniden türetilsin. Hesap değişince önceki sahibin dönüşü otomatik açılmamalı. Tema, Albüm ve ana sayfa arşivi birbirinin state'ini doldurmamalı.
+
+Seçili tarih/bölüm için sabit anchor, ilgili veri/pencere yeniden render edildikten sonra hedeflenmeli. `.modal` kendi scroll alanıdır (`app/quality.css:70`); yalnız sayfa `window.scrollTo` değeri aynı pencere konumunu geri getirmez. Kaynak/VM testinde doğru hedefe çağrı ve pencere state'i sınanabilir; piksel konumu, focus ve telefon scroll geometrisi gerçek DOM/cihaz gözlemi ister.
+
+**Doğrulama:** Yalnız kaynak incelemesi ve gerçek PublishedChapters TSX'inin bellek VM deneyi yapıldı; fake hook/JSX, bellek depolama ve 30 public özetlik sahte HTTP sayfaları kullanıldı. Bu günlük dışında dosya/test/uygulama yazılmadı; canlı ağ/oyuncu/DB, tüm test paketi veya build çalıştırılmadı. DOM/React eşzamanlı/StrictMode, fiziksel telefon, ekran okuyucu ve FPS doğrulanmadı; önizleme engeli aşılmadı. 0.11.2 kelime kartı ve önceki kayıt kuyruğu bu görevde değiştirilmez; kod ve yayın koordinatördedir.
+
+## Uygulama sonrası son dar inceleme
+
+Kabul kaynağı `2026-10-25_archive-decision.md`. App/DailyDiscoveries/Pages/PublishedChapters/ReleaseAlbum diff'i ile yeni `chapter-browse.ts`, `useChapterCatalogue.ts` ve `tests/chapter-browse.test.ts` okundu. **Son kaynakta kalan yeni somut yayın engeli saptanmadı; ilk üç bulgu bu uygulamada ele alınıyor.** Son tam test/tip/build/HTTP/CI ve aynı kaynakla yayın sonucu koordinatörün çıkış kapılarıdır.
+
+- `chapter-browse.ts:6–20`: dönüş yalnız public katalog/companion dizisi, nextOffset/hasPage ve seçili kart/tarihi tutuyor; owner/source/collection/theme ve seçili kimlik eşleşmeden restore edilmiyor. Kart ilerlemesi mevcut `useChapterCards(userId,chapters)` yolundan okunuyor, eski values/ödül/cihaz hazırlığı taşınmıyor.
+- `App.tsx:67,75,79`, DailyDiscoveries/Pages bağlantısı ve `ReleaseAlbum.tsx:11–15`: ilk açılışın kökeni üstte saklanıyor; related aynı kökeni koruyor; arşiv veya aynı Albüm tarih penceresi geri açılıyor. Normal ana sayfa kartı kökensiz kalıyor; dünya kendi tema kapsamını kullanıyor. İlk sayfa tamamlanmadan seçilmiş kart için `hasPage=false` dönüşte isteği tamamlatıyor.
+- `useChapterCatalogue.ts:24–25,38–40,48–59`: başarılı yüklü aralık ve devam imleci aynı oturum snapshot'ından ağ beklemeden geliyor. Hata aynı offset'te yeniden deneniyor; reconnect eski sayfaları silmiyor. Her yeni istek önceki controller'ı iptal ediyor, nesil/sinyal kontrolü eski yanıtı ve unmount sonrasını reddediyor.
+- Aynı hook `8–15`: yeni ön bölümlerin numeric offset kayması overlap ile düzeltiliyor; ilk sayfayla hiç overlap yoksa `page.nextOffset` üzerinden boşluğu dolduracak sayfalama sürüyor. Önceden bilinen `next=null` yeni aralık eksikken körlemesine korunmuyor. Public kart dizisi sıralanıp kimlik üzerinden birleştiriliyor.
+- İnceleme sırasında **eski dönüş niyetinin bağımsız oyun sonrası yeniden kullanılması** kaynakla erken bildirildi. Koordinatör `openSolo`, `openMystery`, Hızlı Tur ve bağımsız harita dönüşünde intent'i temizledi (`App.tsx:66,71–72,87`). Güncel gerçek App kabulü Solo/Mystery/Sprint turundan sonra intent'in undefined olduğunu ve related/dünya kökeninin korunduğunu kapsıyor (`chapter-browse.test.ts:133–150`). Bu düzeltme son incelemeye dahildir.
+- `PublishedChapters.tsx:28–32`: doğru seçili kart için RAF sonrası focus/nearest-scroll çağrısı var. `ReleaseAlbum` restore tarihiyle açılıyor, kullanıcının kapatması rafa döndürüyor. Bu çağrıların varlığı fiziksel focus/scroll konumunun veya CSS geometrisinin ölçüldüğü anlamına gelmez.
+
+Koordinatör **13 dar kabulün geçtiğini** bildirdi. Yeni testler restore/hasPage, iki sayfa/cursor, hata/retry, reconnect kayması/boşluğu, eski yanıt/abort, UI tarih/köken, private alan taşımama ve bağımsız oyun niyeti sınırlarını içeriyor; bu son aşamada bütün test veya build tekrar çalıştırılmadı. İnceleme sırasında güncellenen App gövdesini kullanan tek ek bellek denemesinde eski intent'in artık tutulmadığı görüldü; önceki davranışı bekleyen negatif kontrol bu nedenle başarısız oldu. Uygulama/test dosyasına yazılmadı. Gerçek DOM/React eşzamanlı/StrictMode, telefon, ekran okuyucu ve FPS sınırı aynen geçerlidir.

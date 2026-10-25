@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.11.3',date:'25 Ekim 2026',title:'Keşiflerine aynı yerden dön',items:[
+  {where:'Bölüm arşivi ve Albüm',detail:'Bir bölümden geri döndüğünde arşivin veya Albümde açtığın tarih yeniden açılır. Daha önce yüklediğin eski bölümler korunur; seçtiğin kart görünür alana getirilir.'},
+  {where:'Bağlantı ve yeniden deneme',detail:'Eski bölümler yüklenirken bağlantı kesilirse aralık kaybolmaz. Yeniden deneme kaldığı sayfayı ister. Yeni keşifler eklenirken de yüklediğin tarihler listede kalır.'},
+ ]},
  {version:'0.11.2',date:'25 Ekim 2026',title:'İpucu Avı kartları yerini korur',items:[
   {where:'İpucu Avı · kelime bulunduğunda',detail:'Tanım cevaba dönüşürken iki görünüm için ayrılan alan korunur. Kartların küçülüp tahtayı yeniden boyutlandırmasına yol açan yerleşim değişikliği giderildi.'},
   {where:'Uzun tanımlar ve büyük yazı',detail:'Metinler kırpılmaz; kartlar metnin ihtiyacı kadar yer ayırır. Bulunmamış cevaplar görünür metne veya erişilebilir kart adına eklenmez.'},

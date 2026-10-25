@@ -1,5 +1,19 @@
 # Geliştirme defteri
 
+## 25 Ekim 2026 · 0.11.3 · Keşiflerine aynı yerden dön
+
+Güncel Sites helper `965a4bea9af80d347bfaab8cca630ba02a0c8bc1`, sürüm 20, owner/public erişimi ve GitHub main `8bf758e73367f9bb07dcac76e92c0164968997da` aynı tam ağaçla açıldı. Bugünün **Kıyıda bir gün** / **Efsanelerin kapısı** çifti zaten yayımlanmış; snapshot/kimlik/tohum/kelimeler değişmedi. Kök sözleşme, güncel README/sürüm/harita, öncelik ve son günlükten devam edildi.
+
+Arşiv dönüşü, gerçek cihaz kanıtı ve yeni keşif odası adaylarından, açık öncelik ve doğrudan kaynak kanıtı nedeniyle ilk iş seçildi. Kabul uygulamadan önce `studio-agents/journal/entries/2026-10-25_archive-decision.md` içine yazıldı. Tek sınırlı güvenilirlik uzmanı ilk kaynak/VM incelemesini ve son diff kontrolünü yürüttü; uygulama ve yayın koordinatörde.
+
+**Oyuncunun gördüğü değişiklik:** Ana sayfadaki bölüm arşivinden açıp geri döndüğünde arşiv yeniden açılır; Albümde tarih seçip oynadıysa aynı tarih penceresi geri gelir. Dünya filtresi kendi temasında kalır. Yüklenen eski sayfalar ve çiftin companion özetleri aynı oturum belleğinde durur; ilk sayfa ağ yanıtı bunları silmez. Seçilen karta yeniden odak/nearest scroll istenir. Sonuçtan çiftin diğer bölümüne geçiş ilk dönüş hedefini korur. Doğrudan ana sayfa kartı arşiv açmaz; Solo, Gizli Tema, Hızlı Tur veya yeni gezinme eski dönüş niyetini temizler. Son nokta bağımsız incelemenin yakaladığı somut ek kusurdu ve kabul testine eklendi.
+
+**Katalog güvenilirliği:** Başarısız sayfa kendi offset'iyle denenir; başarılı aralık korunur. Reconnect ilk sayfayı birleştirir. Yeni ön bölümler sayısal offset'i kaydırmışsa overlap üzerinden düzeltilir; yeni ilk sayfayla hiç örtüşme yoksa yeni içerik boşluğu yüklenebilir kalır, eski kartlar yine kaybolmaz. İptal edilmiş/geç yanıtlar istek nesliyle yok sayılır. API'nin ilk sayfası gelmeden bir kart seçilmişse dönüşte görünür özetler korunur ve eksik ilk sayfa tamamlanır. Yeni kalıcı cache/DB biçimi yoktur; mevcut ilk-sayfa cihaz cache'i korunur.
+
+Taşınan snapshot yalnız public katalog metaverisi, köken/hesap/filtre ve dönüş hedefidir; private kart değerleri, earned bayrağı, playable tahta veya save taşınmaz. Sahip/köken/koleksiyon/tema/seçili kimlik uyuşmazlığı reddedilir; ilerleme mevcut sahibin hook'uyla yeniden okunur. Sekme yenilemesi veya OS kapanmasında gezinme konumu kalıcılığı iddia edilmez. Önceki kayıt kuyruğu, Solo birleşimi, rekor, ödül ve sabit atlas kümeleri değiştirilmedi.
+
+13 yeni gerçek hook/bileşen VM kabulü: iki sayfa ve devam imleci, çevrimdışı dönüş, ilk yanıt öncesi seçim, aynı sayfa retry, reconnect/ön ek/boşluk, stale/abort/unmount, eski cache, Albüm tarihi, sahip/filtre ayrımı, odak/scroll hedef çağrısı ve gerçek App related/doğrudan/dünya/bağımsız mod dönüşleri. Bunlar DOM, React concurrency/StrictMode veya telefon testi değildir. **178/178 test, 39 grup**, **112 tahta/2240 alternatif**, TypeScript, üretim build ve iki bağımsız oyuncuyla **200 Worker HTTP** geçti; kanıt son koordinatör kaydında tutulur; GitHub CI/tam ağaç eşleşmesi ve gerçek Sites yayın cevabı ayrıca gereklidir. Yeni ücret, hesap, bağımlılık, görsel üretimi veya zamanlayıcı yok. Sıradaki öncelik destekli gerçek cihaz/ilk açılış ve bu dönüşün büyük yazı/dokunma gözlemidir; preview toparlanma kanıtı bulunmadığından alternatif yol denenmedi.
+
 ## 25 Ekim 2026 · 0.11.2 · İpucu Avı kartlarının alanını koru
 
 Başlangıç güncel Sites helper kaynağı `bb33a116f8d7adb859890b5edbd8942d54526e60` / başarılı 19. sürüm ve public sahip erişimi; GitHub main `84cc59ea6cf970723f3464de6a047a243e472cb2`, eş ağaç `eaff7e5546b31b9fe371ba94ac8797955690b7eb`. Bugünün **Kıyıda bir gün** ve **Efsanelerin kapısı** çifti zaten yayında; yeni çift eklenmedi. Önceki kayıt/açılış düzeltmesi aynı kaldı.
