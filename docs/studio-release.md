@@ -12,6 +12,8 @@
 
 ## Uygulanan ürün akışları
 
+0.11.3: arşiv/Albüm/dünya listesi kökeni oyun içi geri dönüşte korunur. Yüklü public özetler, companions, imleç ve seçilen kart/tarih aynı oturum belleğinde taşınır; private ilerleme taşınmaz. İlgili bölüm zinciri ilk kökeni korur, bağımsız oyun yeni dönüş başlatır. Hatalı sayfa aynı offset ile tekrar edilir; reconnect eski aralığı silmez, yeni ön içerik imleci kaydırırsa düzeltilir ve büyük içerik farkının boşluğu yüklenebilir kalır. Sekme yenilemesi/OS kapanması konumu saklamaz. Odak/scroll hedef çağrısı testlidir; gerçek DOM/piksel/telefon sonucu ayrıca doğrulanmalıdır.
+
 0.11.2: İpucu Avı kartlarında tanım ve cevap aynı intrinsic alanda yer tutar; bulununca kart türü veya ayrılan metin alanı kaybolmaz. Gizli yüz görünür/erişilebilir cevap olarak sunulmaz; uzun metin ve büyük yazı kırpılmaz. Normal/parçalı/golden davranışları korunur. Kaynak/markup sözleşmesi doğrulandı; gerçek telefon ve CSS piksel sığması ayrıca gözlenmelidir.
 
 0.11.1: **Kıyıda bir gün** ve **Efsanelerin kapısı** tarihli bölümleri ana sayfa, arşiv ve ilgili dünyalara eklenir. Doğrulanmış cihaz tahtası ağ beklemeden açılır; hesap kaydı mevcut korumalı PUT'la arka planda birleştirilir. Geç onay aktif turdaki kelimeleri/süreyi korur; tekrar boş kalır. Belirsiz hesap başlangıcında kişisel rekor iddiası gösterilmez. İlk indirme hâlâ gerçek tahtayı bekler; fiziksel telefon/PWA ve FPS doğrulaması açık kalır.

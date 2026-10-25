@@ -19,6 +19,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 - Özgün SVG sahneler, isteğe bağlı ses/titreşim, büyük harf, kontrast ve azaltılmış hareket desteği.
 - Ana ekrana kurulabilen PWA. İlk başarılı indirmeden sonra solo oyunlar çevrimdışı açılır. API ve hesap yanıtları önbelleğe alınmaz.
 - Yönetim Atölyesi: yetkili ChatGPT hesabıyla taslak, oynanabilir önizleme, yayın, arşiv, gerçek kullanım verileri, hata sayımları ve işlem günlüğü. Panelden yayımlanan bölümler ayrı Yeni keşifler alanında açılır.
+- Arşivden veya Albümdeki bir tarihten açılan bölüm, oyun içi geri dönüşte aynı liste/tarih penceresine döner. Yüklenen aralık aynı oturum belleğinde korunur; seçilen karta odak/scroll istenir. Sekme yenilemesinde bu gezinme konumu saklanmaz.
 - Günlük iki kalıcı keşif: ana sayfada kolay ve orta bölüm kartları, sayfalı bölüm arşivi ve **Neler değişti?** penceresi. Kaynak yayın kaydı `content/releases/`, seçim ve doğrulama notları [geliştirme defterinde](docs/development-log.md).
 - Doğrulanmış cihaz tahtası bulunan tarihli/ek bölüm ağ yanıtı beklemeden açılır. Hesap kaydı arka planda birleştirilir; aktif keşif ve tekrar turu birbirinden ayrılır. İlk indirme internet gerektirir.
 - Tarihli/ek bölüm kaydı hesap ve bölüme bağlı gönderim kuyruğundadır. Oyun içinde geri dönüşte bekleyen kısmi kaydın ardından son tamamlama da gönderilir; hesap değişince eski istek yeni hesabı kilitlemez. Cihaz kaydı hemen tutulur, hata/sekme kapanmasında buluta teslim garantisi verilmez.
