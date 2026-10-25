@@ -41,7 +41,7 @@ describe('immutable daily releases and permanent archive',()=>{
  });
  it('opens source chapters without modifying the live editor catalogue or the five-chapter discovery groups',async()=>{
   const f=fixture(now),store=new ChapterStore(f.db,f.clock),map=discoveryState(emptyProgress());for(const batch of RELEASE_BATCHES)for(const {chapter} of batch.chapters)assert.deepEqual((await store.playable(chapter.id)).board,chapter.board);
-  assert.equal((await store.catalogue()).total,0);assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM studio_chapters').get()!['n'],0);assert.deepEqual(discoveryState(emptyProgress()),map);assert.deepEqual(map.map(m=>m.chapters.length),[5,5,5]);
+  assert.equal((await store.catalogue()).total,0);assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM studio_chapters').get()!['n'],0);assert.deepEqual(discoveryState(emptyProgress()),map);assert.deepEqual(map.slice(0,3).map(m=>m.chapters.length),[5,5,5]);assert(map.every(m=>m.chapters.length===5));
  });
  it('merges both devices, isolates accounts and keeps best completed source-chapter results without competitive awards',async()=>{
   const f=fixture(now),store=new ChapterStore(f.db,f.clock),chapter=releasedChapter(RELEASE_BATCHES[0]!.chapters[0]!.chapter.id,now)!;

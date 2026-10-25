@@ -17,7 +17,7 @@ describe('authored discoveries and compatibility',()=>{
   for(const [theme,level,seed,expected] of [['hababam',0,42,'8fce45e5e028722c19e35262429207614edaec963c1e1d906703c7daf8c52133'],['uzay',4,107,'e978656054aed0e0de39f60ef10b0769aa32c79c6f4945f6a87cbc3dfae8312f'],['turkiye',5,321,'cac8a39b93d6ab1b19318b1a556a207364bdf1ccab30f9aba88dd35a7b2374d9']] as const)assert.equal(createHash('sha256').update(JSON.stringify(makePuzzle(theme,level,seed))).digest('hex'),expected);
  });
  it('opens with a six-cell tutorial and places every authored target on both diagonal slopes',()=>{
-  assert.equal(TUTORIAL.size,6);assert.equal(JOURNEYS.length,15);assert.equal(MYSTERIES.length,6);
+  assert.equal(TUTORIAL.size,6);assert.equal(JOURNEYS.filter(j=>!j.id.includes('-atlas-')).length,15);assert.equal(JOURNEYS.length,80);assert.equal(MYSTERIES.length,6);
   for(const board of [TUTORIAL,...JOURNEYS.map(journeyBoard),...MYSTERIES.map(mysteryBoard)]){
    assert.equal(board.targets.length,board.placements.length);const slopes=new Set<number>();
    for(const p of board.placements){assert.equal(match(board,p.a,p.b)?.id,p.id);assert.equal(match(board,p.b,p.a)?.id,p.id);assert(exactLine(p.a,p.b,board.size));if(p.a[0]!==p.b[0]&&p.a[1]!==p.b[1])slopes.add(Math.sign((p.b[0]-p.a[0])*(p.b[1]-p.a[1])));}

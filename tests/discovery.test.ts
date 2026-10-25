@@ -11,7 +11,7 @@ function finish(p:Progress,theme:string,count:number,hints=0){for(const j of JOU
 
 describe('permanent discovery map and collection rewards',()=>{
  it('opens the first world and describes exactly what earns every piece without granting one on a partial board',()=>{
-  const p=emptyProgress(),states=discoveryState(p);assert.deepEqual(states.map(s=>s.unlocked),[true,false,false]);assert.equal(states[1]!.remaining,3);assert.equal(states[0]!.next!.id,'uzay-1');assert.equal(states[0]!.nextPiece,'İlk yıldız');assert.equal(recommendedExpedition(p).expedition.id,'uzay');
+  const p=emptyProgress(),states=discoveryState(p);assert.deepEqual(states.slice(0,3).map(s=>s.unlocked),[true,false,false]);assert.equal(states[1]!.remaining,3);assert.equal(states[0]!.next!.id,'uzay-1');assert.equal(states[0]!.nextPiece,'İlk yıldız');assert.equal(recommendedExpedition(p).expedition.id,'uzay');
   const b=journeyBoard(JOURNEYS.find(j=>j.id==='uzay-1')!);p.saves['route:uzay-1']=cleanSave({strokes:[b.placements[0]!],elapsed:10,hints:0,complete:false,stars:0},b);assert.equal(discoveryState(p)[0]!.pieces,0);assert.deepEqual(discoveryRewards(emptyProgress(),p),[]);
  });
  it('unlocks the next world at three completions even with all hints and the bonus only at five',()=>{

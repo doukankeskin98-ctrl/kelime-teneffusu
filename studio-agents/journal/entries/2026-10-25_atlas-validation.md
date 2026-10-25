@@ -1,0 +1,13 @@
+# 0.11.0 doğrulama kaydı
+
+Başlangıç: Sites 554ef25de5ba869bbcb078a5b07d741c610b5c51, GitHub main 28c669046432b0b1ed5bbd0eabd593655e728987, eş ağaç adf045d4104a5baeab762dbf556d163750a9793e. 17. kayıtlı sürüm, aynı public site. Kaynak helper ile açıldı. Kullanıcının bitmiş harita ve kalite isteği için atlas-intake kabulü, iki sınırlı inceleme, tek koordinatör uygulaması.
+
+13 yeni harita ve 78 sabit bölüm; 26 tanım tabanlı İpucu Avı. Yeni 5+1 dizileri 16 tema/96 haritalı bölüm ve koleksiyon parçasına ulaşır. Mevcut 18 journey board hash'leri önceki commit'ten çıkarıldı ve her biri birebir aynı. Yeni tüm kimlikler istemci/sunucu kayıt doğrulamasına dahil; ilk üçlü tamamlanmış fixture Fısıltı Ormanı'na önerilir. Bonus sonrası sonuç gerçek sıradaki dünyaya geçer, tekrar ödülü yok. Yeni içerik 78 farklı sabit tahtadır; temada kelimeler bazı son bölümlerde tekrar edebilir. Sonsuz içerik veya tüm tahtaların benzersiz sözlük iddiası yok.
+
+149/149 test, 33 grup geçti. Altı yeni regresyon eski tahta snapshotlarını, bitmiş atlas devamını, yeni içerik/ipuçlarının gizlenmesini, bonus ve sonraki dünya akışını, tüm yeni kayıtların yükleme/bulut birleşimi/hesap ayrımını, maksimum kaydın gövde boyutunu sınar. 198 tamamlanmış kayıt ve 3660 tarihli fixture 104915 byte; mevcut 150000 byte HTTP sınırına sığar. Eski testlerdeki toplam15rota/3harita beklentileri güncel80rota/16haritaya uyarlanırken eski15rota ve ilk üç beşli ayrıca korunur.
+
+110 düzenlenmiş tahta/2200 alternatif yerleşim içerik denetimi, TypeScript, son Sites üretim derlemesi ve git diff --check geçti. Son üretim paketinde iki bağımsız oyunculu 192 Worker HTTP kontrolü geçti. Yeni normal/İpucu Avı/final harita kayıtlarının sunucu doğrulaması, gerçek yıldız hesabı, son hedef ve diğer hesap izolasyonu HTTP ile doğrulandı. İki uzman incelemesinden sonra son güvenilirlik incelemesinde kritik somut kusur bulunmadı. Koordinatör son CSS importunu ve sayım testi uyarlamalarını dahil ederek yeniden derledi ve test etti.
+
+Kaynak referansları: https://www.dreamgames.com/games/royal-match ve https://www.peoplefun.com/games. Tutarlı sanat, açılan alanlar, kelime keşfi ve okunur bir sonraki hedef ilkeleri kullanıldı. Mevcut özgün SVG sistemi kullanıldı; yeni görsel üretim veya bağımlılık yok.
+
+Önceki destekli preview ERR_CONNECTION_REFUSED verdi; toparlanma kanıtı olmadan yeniden denenmedi veya alternatif browser yolu kullanılmadı. Gerçek telefon, DOM görsel sığma, ekran okuyucu, FPS ve oyuncu tutma/keyif etkisi ölçülmedi. Uluslararası en iyi stüdyo kalitesi veya App Store hazır oluşu iddia edilmez. GitHub CI/eş ağaç/birleştirme ve Site yayını bu kayıttan sonra gerçek servis yanıtlarıyla doğrulanır.

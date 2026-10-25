@@ -1,7 +1,8 @@
+import {ATLAS_JOURNEYS,ATLAS_REGIONS} from './atlas-content.ts';
 import {hash,makeCustomPuzzle} from './engine.ts';
 
 export interface Journey {
- id:string;themeId:string;title:string;subtitle:string;words:string[];size:number;difficulty:'Rahat'|'Dengeli'|'Ustalık';note:string;
+ id:string;themeId:string;title:string;subtitle:string;words:string[];size:number;difficulty:'Rahat'|'Dengeli'|'Ustalık';note:string;clues?:Record<string,string>;
 }
 const route=(themeId:string,items:[string,string,string,number,'Rahat'|'Dengeli'|'Ustalık',string][]):Journey[]=>items.map(([title,subtitle,words,size,difficulty,note],i)=>({id:`${themeId}-${i+1}`,themeId,title,subtitle,words:words.split('|'),size,difficulty,note}));
 export const JOURNEYS:Journey[]=[
@@ -33,6 +34,8 @@ export const JOURNEY_BONUSES:Journey[]=[
  {id:'turkiye-kartpostal',themeId:'turkiye',title:'Son kartpostal',subtitle:'Yol boyunca biriken renkleri bir araya getir.',words:['KERVAN','İPEK YOLU','KÖPRÜ','ÇİNİ','HAN','KİLİM'],size:8,difficulty:'Dengeli',note:'Bu kartpostalda yolun izleri var. Son parça Anadolu Defteri’ni tamamlayacak.'},
  {id:'hababam-yillik',themeId:'hababam',title:'Yıllıktaki son sayfa',subtitle:'Bir sınıf dolusu anı, bir son hatıra.',words:['YILLIK','DOSTLUK','HATIRA','MEZUNİYET','FOTOĞRAF','ŞAKACI'],size:9,difficulty:'Dengeli',note:'Son zilden sonra kalan şeyler. Son parça Sınıf Hatırası’nı tamamlayacak.'},
 ];
+JOURNEYS.push(...ATLAS_JOURNEYS.filter((_,i)=>i%6!==5));
+JOURNEY_BONUSES.push(...ATLAS_JOURNEYS.filter((_,i)=>i%6===5));
 export const ALL_JOURNEYS=[...JOURNEYS,...JOURNEY_BONUSES];
 export const journeyById=(id:string)=>ALL_JOURNEYS.find(j=>j.id===id);
 export const journeyBoard=(j:Journey)=>makeCustomPuzzle(j.words,hash('journey-v1:'+j.id),j.size);
@@ -50,6 +53,7 @@ export const mysteryBoard=(m:Mystery)=>makeCustomPuzzle([...m.words,m.bonus],has
 export const TUTORIAL=makeCustomPuzzle(['KELİME','MERAK','KEŞİF'],hash('first-discovery-v1'),6);
 
 export const ALBUMS=[
+ ...ATLAS_REGIONS.map(r=>({themeId:r.id,title:r.album,description:r.subtitle,stamp:'ALTI PARÇA, BİR YENİ DÜNYA'})),
  {themeId:'hababam',title:'Sınıf Hatırası',description:'Her teneffüste yeni bir anı.',stamp:'BİR SINIF DOLUSU ANI'},
  {themeId:'uzay',title:'Yörünge Günlüğü',description:'Merakın hep biraz daha uzağa.',stamp:'YILDIZLARIN İZİNDE'},
  {themeId:'turkiye',title:'Anadolu Defteri',description:'Her köşede bir keşif.',stamp:'YOLLAR VE KELİMELER'},

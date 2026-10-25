@@ -1,5 +1,15 @@
 # Geliştirme defteri
 
+## 25 Ekim 2026 · 0.11.0 · Keşif atlasının devamı
+
+Kullanıcı üç haritayı bitirdiğini bildirdi. 13 yeni temalı 5+1 harita, toplam 78 bölüm eklendi. İlk üçlü, kimlikler ve 18 mevcut tahta birebir korundu. İlerlemeyle yeni dünya açılır; bitmiş eski üçlü yeni ilk dünyaya önerilir. Yeni bölüm kayıtları v2 Progress ile yerel/bulut doğrulamaya dahildir. Toplam 16 harita, 96 parça/bölüm; sınırsız üretim veya gerçek oyuncu tutma artışı iddia edilmez.
+
+Yeni 26 İpucu Avı bölümü kısa tanım ve harf sayısından kelime bulmayı gerektirir. Tanım yalnız kabul edilmiş kelime bulununca cevaba döner; erişilebilir etiket cevabı sızdırmaz. Yeni tahtalar 6–9 hücre, dört ila altı hedeftir. Hareketli bulut/yıldız, hacimli duraklar, seçili hedef alanı ve koleksiyon göstergesiyle harita baştan düzenlendi, ana ekranın ilk oyun alanına taşındı. Bölüm sonu gerçek sıradaki keşfin adını gösterir ve gerektiğinde yeni dünyaya geçirir.
+
+Kabul edilmiş kelime tahtada adıyla kısa animasyon gösterir. Son kelimeden sonra 650ms görünürlük; azaltılmış harekette beklemeden sonuç. Daha önce bulunan çizgiler yüklenirken yeniden canlandırılmaz. Yeni mod yardımında tanım oyunu açıklanır. Tahta üzerindeki efekt yerleşim veya seçim koordinatlarını değiştirmez; hedefler açık kalır.
+
+Referans ilkeleri: Dream Games resmi Royal Match dünya/alan ilerlemesi ve tutarlı sanat; PeopleFun resmi Wordscapes kelime keşfi ve sakin sahneleri. Varlık kopyası veya yeni ücretli servis yok. Mevcut SVG sistemi, tek uygulama sahibi ve iki sınırlı ajan incelemesi kullanıldı. Kapsam ve kabul atlas-intake; kaynak/kayıt incelemesi atlas-reliability; doğrulama atlas-validation günlüğündedir.
+
 ## 25 Ekim 2026 · 0.10.0 · Oynanış, dünyalar ve arkadaşlar
 
 Önceki görsel yenilemenin ötesinde isteğe bağlı Hızlı Tur eklendi: 3 saniye hazırlık, 60 saniye oyun, 6×6 tahtada dört kelime, 7 saniye seri penceresi, en fazla ×3 çarpan, tamamlanan tahta için 100 puan ve yeni tahta. Yanlış seçim seriyi sıfırlar; süre arka planda devam eder. Sonuç gerçek puan, kelime, tahta ve en uzun seriyi gösterir. Cihaz rekoru hesap anahtarıyla ayrılır; bulut ilerlemesi, ödül veya rekabetçi derecelere yazılmaz.
