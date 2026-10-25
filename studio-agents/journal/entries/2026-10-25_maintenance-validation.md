@@ -1,0 +1,12 @@
+# Bakım doğrulaması · 0.11.1
+
+Başlangıç Sites `d3dfeb4a91453c56e15b1cf1a947434bc5a875f7`, 18. sürüm başarılı, public/sahip; GitHub `69d219b217d02764b8721bb674e9c4285aeda7db`. Kaynak helper ile güncellendi; eski 0.8.4 paketi yeniden yayımlanmadı. Uygulama öncesi kabul maintenance-decision; iki dar uzman ve son güvenilirlik incelemesi ilgili maintenance-* dosyalarında. Kod ve yayın tek koordinatörde.
+
+- 25 Ekim'e **Kıyıda bir gün** (Dünya Turu, 6×6, Rahat) ve **Efsanelerin kapısı** (Mitoloji, 8×8, Dengeli), kalıcı tarih/sıra kimlikleri ve tek immutable JSON snapshot eklendi. Katalog/dünya filtresi/arşiv/damga mevcut yollarla çalışır.
+- Doğrulanmış cihaz tahtası seri iki GET beklemeden açılır; mevcut sahip korumalı merge PUT'u hesabı arka planda eşitler. Gerçek onay aktif Solo'da key değiştirmeden birleşir; practice, iyi sonuç, yeni kelimeler/süre ve sahip sınırı korunur. Kesinleşmemiş başlangıçta kişisel rekor iddiası yoktur.
+- **161/161 test / 36 grup**, **112 tahta / 2240 alternatif**, TypeScript ve son üretim derlemesi geçti. Son üretim paketinde iki bağımsız oyunculu **200 Worker HTTP kontrolü** başarılı. API GET yanlış/boş beklenen sahipte özel veri döndürmez; doğru ve eski istemci yolları çalışır.
+- Önceki 12 kuyruk kabulü korunur; dört yeni PublishedPlay bağlantısı ve sekiz gerçek Solo VM senaryosu eklendi. Eski kaynağa karşı Solo'da beş, seçilmiş PublishedPlay'de iki başarısız kabul yeni davranışı yakaladı. Testlerin ilk taslağındaki footer/aside traversal eksikliği düzeltilip final testler geçti; uygulama hatası veya cihaz kanıtı gibi sunulmadı.
+- İlk tip kontrolünün Solo board union daraltması düzeltildi; final typecheck başarılı. Bağımsız son diff incelemesi engel bulmadı. Eski yayınlar, atlas/tahta/Progress/ödül kuralları ve DB/göç/manifest aynı; yeni ücret/servis/bağımlılık yok.
+- Erişilebilir üretim hata örneği boş; temsil edici oyuncu ölçümü yok. Ham istek/kimlik/IP verisi tutulmadı. Gerçek DOM/React StrictMode, telefon, ekran okuyucu, fiziksel PWA/offline ve FPS doğrulanmadı. Önizleme engeli aşılmadı; sekme/OS kapanışında garantili bulut teslimi iddiası yok.
+
+Sonraki küçük odak: İpucu Avı tanım→cevap geçişinde hedef/tahta yüksekliğini koruma; gerçek cihaz gözlemi ve arşiv dönüş bağlamı açık. Haftalık değerlendirme 24 Ekim kaydından devam eder, 31 Ekim'den önce tekrarlanmaz. Bu yerel kanıt kaydı tek başına yayın değildir; GitHub CI, tam ağaç eşleşmesi/birleştirme ve aynı adrese Sites yayını gerçek araç sonuçlarıyla ayrıca tamamlanır.

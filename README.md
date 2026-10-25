@@ -20,6 +20,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 - Ana ekrana kurulabilen PWA. İlk başarılı indirmeden sonra solo oyunlar çevrimdışı açılır. API ve hesap yanıtları önbelleğe alınmaz.
 - Yönetim Atölyesi: yetkili ChatGPT hesabıyla taslak, oynanabilir önizleme, yayın, arşiv, gerçek kullanım verileri, hata sayımları ve işlem günlüğü. Panelden yayımlanan bölümler ayrı Yeni keşifler alanında açılır.
 - Günlük iki kalıcı keşif: ana sayfada kolay ve orta bölüm kartları, sayfalı bölüm arşivi ve **Neler değişti?** penceresi. Kaynak yayın kaydı `content/releases/`, seçim ve doğrulama notları [geliştirme defterinde](docs/development-log.md).
+- Doğrulanmış cihaz tahtası bulunan tarihli/ek bölüm ağ yanıtı beklemeden açılır. Hesap kaydı arka planda birleştirilir; aktif keşif ve tekrar turu birbirinden ayrılır. İlk indirme internet gerektirir.
 - Tarihli/ek bölüm kaydı hesap ve bölüme bağlı gönderim kuyruğundadır. Oyun içinde geri dönüşte bekleyen kısmi kaydın ardından son tamamlama da gönderilir; hesap değişince eski istek yeni hesabı kilitlemez. Cihaz kaydı hemen tutulur, hata/sekme kapanmasında buluta teslim garantisi verilmez.
 - Ek bölüm kartlarında hesaba özel ilerleme, kaldığı yerden devam etme, kazanılmış yıldızlar ve en iyi süre. Tamamlanan karttan doğrudan tekrar oyun açılır; en iyi sonuç korunur.
 - Ana sayfa, arşiv ve Albümdeki bölüm kartlarında bu cihaza ait **Çevrimdışı hazır** bilgisi. Yalnız doğrulanmış yerel tahta hazır sayılır; çevrimdışıyken indirilmemiş kart bağlantı bekler. Bulut ilerlemesi ile cihaz hazırlığı birbirine karıştırılmaz.
@@ -56,7 +57,7 @@ pnpm build
 node scripts/verify-worker.mjs
 ```
 
-İçerik kontrolü, temel 24 düzenlenmiş bulmacayı ve 480 alternatif yerleşimini; ayrıca tarihli kaynak yayınlarının sabit tahtalarını ve bölüm başına 20 alternatifini doğrular. Birim/servis testleri 6.000 özgün ve klasik tahta, kayıt uyumluluğu, kimlik, eşzamanlı güncellemeler, derece, zaman sınırları, arkadaşlar ve gerçek kayıtlı performansları kapsar. Üretim Worker kontrolü iki bağımsız oturumla HTTP üzerinden misafir girişi, CSRF reddi, meydan okuma, arkadaş kabulü, canlı olay akışı, düello, özel ilerleme, çıkış ve PWA paketini sınar. Tarayıcı veya dokunmatik ekran testi değildir.
+İçerik kontrolü bütün düzenlenmiş rota/atlas ve Gizli Tema tahtalarını; ayrıca tarihli kaynak yayınlarının sabit tahtalarını ve bölüm başına 20 alternatifini doğrular. Birim/servis testleri 6.000 özgün ve klasik tahta, kayıt uyumluluğu, kimlik, eşzamanlı güncellemeler, derece, zaman sınırları, arkadaşlar ve gerçek kayıtlı performansları kapsar. Üretim Worker kontrolü iki bağımsız oturumla HTTP üzerinden misafir girişi, CSRF reddi, meydan okuma, arkadaş kabulü, canlı olay akışı, düello, özel ilerleme, çıkış ve PWA paketini sınar. Tarayıcı veya dokunmatik ekran testi değildir.
 
 `.openai/hosting.json` mevcut Site kimliğini ve `DB` bağlamasını korur. Şema `db/schema.ts`, değişmez SQL geçişleri `drizzle/` altındadır. Şemayı değiştirince `pnpm db:generate` çalıştırın ve yeni SQL ile Drizzle kayıtlarını birlikte ekleyin. Veritabanı istek sırasında oluşturulmaz. Sites, geçişleri yayımlarken uygular. Yayın için Sites kaynak/paketleme yardımcılarını kullanın.
 

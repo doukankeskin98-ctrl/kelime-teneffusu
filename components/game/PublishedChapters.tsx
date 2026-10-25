@@ -36,7 +36,7 @@ export function PublishedChapters({onPlay,userId,collection='studio',presentatio
 
 export function PublishedPlay({chapter:summary,userId,initialPractice=false,pair,onRelated,progress,onProgress,onBack}:{chapter:PublishedChapter;userId?:string;initialPractice?:boolean;pair?:ReleasePair;onRelated?:(chapter:PublishedChapter,pair:ReleasePair)=>void;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void}){
  const runPair=playableReleasePair(summary,pair),related=runPair?.chapters.filter(c=>c.id!==summary.id)??[],cards=useChapterCards(userId,related);
- const [loaded,setLoaded]=useState<{chapter:PlayableChapter;save:SavedLevel;queue:ChapterSaveQueue;owner?:string}|null>(null);
+ const [loaded,setLoaded]=useState<{chapter:PlayableChapter;save:SavedLevel;queue:ChapterSaveQueue;owner?:string;resume?:SavedLevel;personalBestKnown:boolean}|null>(null);
  const [loading,setLoading]=useState(true),[error,setError]=useState(''),[sync,setSync]=useState<ChapterSaveStatus>('local');
  const [run,setRun]=useState(0),[practice,setPractice]=useState(initialPractice),[retry,setRetry]=useState(0);
  const channel=useRef<ChapterSaveQueue|null>(null),generation=useRef(0),flushRef=useRef<()=>void>(()=>{});
@@ -47,7 +47,7 @@ export function PublishedPlay({chapter:summary,userId,initialPractice=false,pair
   const c=new AbortController(),timeout=setTimeout(()=>c.abort(),8000);
   let queue:ChapterSaveQueue|null=null;
   const current=()=>generation.current===currentGeneration;
-  const open=(chapter:PlayableChapter,save:SavedLevel,pending:boolean,status:ChapterSaveStatus)=>{
+  const open=(chapter:PlayableChapter,save:SavedLevel,pending:boolean,status:ChapterSaveStatus,personalBestKnown=false)=>{
    if(!current())return;
    const owner=userId,key=saveKey(owner);
    queue=new ChapterSaveQueue({board:chapter.board,save,pending,
@@ -65,13 +65,22 @@ export function PublishedPlay({chapter:summary,userId,initialPractice=false,pair
       values[chapter.id]=merged;localStorage.setItem(key,JSON.stringify(values));return {save:merged,ok:true};}
      catch{return {save:merged,ok:false};}
     },
-    onStatus:value=>{if(current())setSync(value);}
+    onStatus:value=>{if(current())setSync(value);},
+    onConfirmed:resume=>{if(current())setLoaded(existing=>existing?.queue===queue?{...existing,resume}:existing);}
    });
-   channel.current=queue;setSync(status);setLoaded({chapter,save,queue,owner});setLoading(false);
+   channel.current=queue;setSync(status);setLoaded({chapter,save,queue,owner,personalBestKnown});setLoading(false);
   };
   const start=async()=>{
-   let chapter=matchingCachedChapter(dictionary<PlayableChapter>(BOARD_KEY)[summary.id],summary);
+   let chapter:PlayableChapter|null=null;
+   const deviceSave=(value:PlayableChapter)=>{try{return cleanSave(dictionary<SavedLevel>(saveKey(userId))[value.id],value.board);}
+    catch{return cleanSave(undefined,value.board);}};
    try{
+    try{chapter=matchingCachedChapter(dictionary<PlayableChapter>(BOARD_KEY)[summary.id],summary);}catch{}
+    if(chapter){
+     open(chapter,deviceSave(chapter),true,navigator.onLine?'local':'offline');
+     void queue?.flush();
+     return;
+    }
     if(navigator.onLine){
      const response=await fetch('/api/chapters?id='+encodeURIComponent(summary.id),{cache:'no-store',signal:c.signal});
      if(!response.ok)throw new Error('Bu keşfe şu an ulaşılamıyor.');
@@ -80,19 +89,19 @@ export function PublishedPlay({chapter:summary,userId,initialPractice=false,pair
      chapter=candidate;rememberChapter(chapter);
     }
     if(!chapter)throw new Error('Bu bölüm henüz bu cihaza indirilmemiş. Bir kez internete bağlanarak açabilirsin.');
-    let save=cleanSave(dictionary<SavedLevel>(saveKey(userId))[chapter.id],chapter.board),pending=true;
+    let save=deviceSave(chapter),pending=true,personalBestKnown=false;
     let status:ChapterSaveStatus=navigator.onLine?'local':'offline';
     if(userId&&navigator.onLine){
      try{
-      const response=await memberFetch('/api/chapters?action=progress&id='+encodeURIComponent(chapter.id),{cache:'no-store',signal:c.signal});
+      const response=await memberFetch('/api/chapters?action=progress&id='+encodeURIComponent(chapter.id)+'&expectedOwnerId='+encodeURIComponent(userId),{cache:'no-store',signal:c.signal});
       if(response.ok){const cloud=await response.json() as {save:SavedLevel},result=chapterSyncResult(save,cloud.save,chapter.board);
-       save=result.save;pending=result.pending;status=pending?'local':'saved';}
+       save=result.save;pending=result.pending;personalBestKnown=true;status=pending?'local':'saved';}
      }catch{status='offline';}
     }
-    open(chapter,save,pending,status);
+    open(chapter,save,pending,status,personalBestKnown);
    }catch(e){
-    if(chapter)open(chapter,cleanSave(dictionary<SavedLevel>(saveKey(userId))[chapter.id],chapter.board),true,'offline');
-    else if(current()){setError((e as Error).message||'Bölüm açılamadı.');setLoading(false);}
+    if(chapter)open(chapter,deviceSave(chapter),true,'offline');
+    else if(current()){setError((e as Error).name==='AbortError'?'Bölüm zamanında yüklenemedi. Bağlantını kontrol edip yeniden dene.':(e as Error).message||'Bölüm açılamadı.');setLoading(false);}
    }finally{clearTimeout(timeout);}
   };
   void start();
@@ -109,5 +118,5 @@ export function PublishedPlay({chapter:summary,userId,initialPractice=false,pair
  const back=()=>{flushRef.current();onBack();};
  const opening=loading||!!loaded&&(loaded.owner!==userId||loaded.chapter.id!==summary.id);
  if(opening||!loaded)return <section className="published-play-loading"><button className="text-button" onClick={onBack}>Keşiflere dön</button>{opening?<p role="status"><LoaderCircle className="spin" size={24}/>Bölümün ve kayıtların hazırlanıyor…</p>:<><p className="error-box" role="alert">{error}</p><button className="button primary" onClick={()=>setRetry(n=>n+1)}><RefreshCw size={17}/>Yeniden dene</button></>}</section>;
- return <><div className={'published-save-status'+(sync==='storage-error'?' failed':'')} role="status">{sync==='storage-error'?<TriangleAlert size={14}/>:sync==='saved'?<Cloud size={14}/>:sync==='offline'?<CloudOff size={14}/>:sync==='syncing'?<LoaderCircle size={14} className="spin"/>:<Check size={14}/>} {saveMessage}{loaded.chapter.archived&&<span>Arşiv bölümü</span>}</div><Solo key={summary.id+':'+run} config={{themeId:loaded.chapter.spec.themeId,level:0,practice}} progress={progress} onProgress={onProgress} onBack={back} onMap={back} onNext={()=>{setLoaded(current=>current?{...current,save:current.queue.save}:current);setPractice(true);setRun(n=>n+1);}} external={{board:loaded.chapter.board,save:loaded.save,title:loaded.chapter.spec.title,note:loaded.chapter.spec.note,result:save=>{const result=releaseRunResult(runPair,loaded.chapter,save,cards.values,cards.status);return result?<ReleaseStampResult result={result} status={cards.status} saveMessage={saveMessage} saveError={sync==='storage-error'} onRetry={cards.retry} onNext={result.next&&onRelated&&runPair?()=>{flushRef.current();onRelated(result.next!,runPair);}:undefined}/>:null;},onSave:save=>{if(channel.current!==loaded.queue)return;loaded.queue.update(save);if(save.complete)queueMicrotask(()=>void loaded.queue.flush());}}}/></>;
+ return <><div className={'published-save-status'+(sync==='storage-error'?' failed':'')} role="status">{sync==='storage-error'?<TriangleAlert size={14}/>:sync==='saved'?<Cloud size={14}/>:sync==='offline'?<CloudOff size={14}/>:sync==='syncing'?<LoaderCircle size={14} className="spin"/>:<Check size={14}/>} {saveMessage}{loaded.chapter.archived&&<span>Arşiv bölümü</span>}</div><Solo key={summary.id+':'+run} config={{themeId:loaded.chapter.spec.themeId,level:0,practice}} progress={progress} onProgress={onProgress} onBack={back} onMap={back} onNext={()=>{setLoaded(current=>current?{...current,save:current.queue.save,resume:undefined,personalBestKnown:current.queue.acknowledged}:current);setPractice(true);setRun(n=>n+1);}} external={{board:loaded.chapter.board,save:loaded.save,resume:loaded.resume,personalBestKnown:loaded.personalBestKnown,title:loaded.chapter.spec.title,note:loaded.chapter.spec.note,result:save=>{const result=releaseRunResult(runPair,loaded.chapter,save,cards.values,cards.status);return result?<ReleaseStampResult result={result} status={cards.status} saveMessage={saveMessage} saveError={sync==='storage-error'} onRetry={cards.retry} onNext={result.next&&onRelated&&runPair?()=>{flushRef.current();onRelated(result.next!,runPair);}:undefined}/>:null;},onSave:save=>{if(channel.current!==loaded.queue)return;loaded.queue.update(save);if(save.complete)queueMicrotask(()=>void loaded.queue.flush());}}}/></>;
 }

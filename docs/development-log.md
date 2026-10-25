@@ -1,5 +1,32 @@
 # Geliştirme defteri
 
+## 25 Ekim 2026 · 0.11.1 · Beklemeden keşfe dön
+
+Başlangıç en güncel Sites kaynağı `d3dfeb4a91453c56e15b1cf1a947434bc5a875f7`, başarılı 18. sürüm, aynı public adres ve sahip erişimi; GitHub main `69d219b217d02764b8721bb674e9c4285aeda7db`. Eski yerel 0.8.4 paketi kullanılmadı. Güncel 0.9/0.10/0.11 mobil düzeni, Hızlı Tur ve atlas devamı korundu. Root sözleşmesi, rol ve son doğrulama/öncelikler okundu; iki sınırlı bağımsız inceleme yalnız ayrılmış günlüklerine yazdı. Uygulama/yayın tek koordinatörde kaldı.
+
+### İki kalıcı bölüm
+
+- **Kıyıda bir gün:** Dünya Turu, Rahat, 6×6; KUM, ADA, KIYI, DALGA. Tohum `2026102501`, kimlik `20261025-0001-4000-8000-000000000001`.
+- **Efsanelerin kapısı:** Mitoloji, Dengeli, 8×8; ZEUS, HERA, HERMES, ATHENA, APOLLON, ARTEMİS, ATLAS. Tohum `2026102502`, kimlik `20261025-0002-4000-8000-000000000001`.
+- `content/releases/2026-10-25.json` tek değişmez snapshot'tır. İki çapraz eğim, temizlenmiş spec/hash ve 20 alternatif kontrolü geçer. Mevcut ana sayfa, kalıcı arşiv, tarihli damga ve dünya filtresi bu çifti bulur. Önceki dört tarih dosyası ve harita kümeleri aynı kalır. Yeniden çalışmada mevcut çift çoğaltılmaz.
+
+### Seçim ve yapılan davranış
+
+Üç aday: doğrulanmış cihaz tahtasında ağ beklemesi; mobil hedef görünürlüğü/İpucu Avı kart yüksekliği; arşiv dönüş bağlamı. Kullanıcının iç kelime kaydırması şikayeti 0.9 kaynak düzeninde giderilmiş; aynı yenileme tekrarlanmadı ve cihazda doğrulanmış gibi sunulmadı. İki uzman da hâlâ açık indirilmiş bölüm bekleyişini önceliklendirdi. Uygulama öncesi kabul `studio-agents/journal/entries/2026-10-25_maintenance-decision.md` içinde.
+
+- **Çevrimdışı hazır → aç:** yalnız kimlik/hash/spec/yolları eşleşen cihaz tahtasıyla hemen Solo açılır; seri tahta/progress GET'leri atlanır. Hesap varsa mevcut beklenen sahip korumalı merge PUT'u arka planda başlar. İlk indirme/bozuk cache mevcut cold yol, açık hata ve yeniden denemede kalır. Cold özel okumada da beklenen sahip kontrolü vardır.
+- **Geç hesap onayı:** aynı kuyruk/nesil ayrı resume snapshot'ı verir. Solo key/tur sıfırlanmaz; functional merge ve functional yeni seçim yeni/diğer cihaz kelimelerini birlikte korur. Süre güncel state'e performans tick farkı eklediği için yüksek bulut süresinden geriye dönmez; Daily sunucu saati ayrı kalır.
+- **Tekrar / rekor / yardım:** tekrar turu tarihsel snapshot'ı almaz; eski iyi sonuç kuyruk/cihazda saklanır. İlk cached turda hesap tabanı kesin değilse yeni kişisel rekor iddiası kapalıdır; sonraki tekrar onaylı başlangıçla karşılaştırabilir. Yüklenen kelimeye sahte buluş animasyonu verilmez; yardım açıkken sonuç penceresi üstüne binmez.
+- **Korunanlar:** hesap değişimi iptali, geç eski yanıtı yok sayma, aynı sekmede son kayıt drain'i, token/HTTP/JSON deadline'ı, depolama uyarısı ve çevrimdışı yeniden deneme. Yeni endpoint, tablo, göç, bağımlılık, grafik üretimi, ücretli hizmet veya zamanlayıcı yok.
+
+### Kanıt ve sonraki iş
+
+**161/161 test, 36 grup**, **112 tahta / 2240 alternatif**, TypeScript, son Sites üretim derlemesi ve iki bağımsız oyuncuyla **200 Worker HTTP kontrolü** geçti. Dört yeni PublishedPlay bağlantı ve sekiz gerçek Solo gövdesi senaryosu eklendi; önceki 12 kuyruk kabulü korunarak eski cached bekleme varsayımı anında açılışa, cold timeout ayrı fixture'a taşındı. Yalıtılmış hook/IO/zamanlayıcı kabuğunda eski 0.11.0 Solo sekiz yeni kabulün beşinde, eski PublishedPlay seçilmiş iki açılış/birleşim kabulünün ikisinde başarısız oldu; düzeltilmiş kaynakta geçti. Bu VM'ler DOM, React eşzamanlı/StrictMode veya telefon kanıtı değildir.
+
+Worker yanlış/boş beklenen sahipte özel okumayı reddeder, doğru sahipte kayıt verir; eski istemci biçimleri çalışır. Yeni iki bölümün ana sayfa/arşiv/API/dünya filtresi, eski atlas snapshotları, hesap/misafir, bulut birleşimi, arkadaş/Arena, kayıt ve çevrimdışı regresyonları da geçti. Eski yayın dosyaları, motor/katalog/klasik/atlas içerik, ödül/harita/Progress kuralları, veritabanı/göçler ve hosting manifesti başlangıçla aynı. Son bağımsız dar inceleme yeni engel bulmadı.
+
+Erişilebilen üretim hata günlüğü örneği boş döndü; tüm oyuncu oturumları için hatasızlık kanıtı sayılmaz. Destekli preview ERR_CONNECTION_REFUSED sonrasında toparlanma kanıtı yok; başka browser/server denenmedi. Gerçek telefon, ekran okuyucu, fiziksel çevrimdışı PWA ve FPS doğrulanmadı. Cached açılış başına tek başlangıç PUT'u mevcut 40/dk sınırına tabidir; sekme/OS kapanışında buluta kesin teslim garantisi yoktur. Oyuncu tutma/keyif, gelir veya App Store hazır oluşu iddia edilmez. Sonraki öncelik İpucu Avı hedef/tahta yüksekliğini buluş sırasında sabit tutma ve destekli gerçek cihaz kontrolü; arşiv dönüş konumu açık. GitHub CI/tam ağaç eşleşmesi ve gerçek Sites yayın sonucu bu kayıttan sonra ayrıca doğrulanır.
+
 ## 25 Ekim 2026 · 0.11.0 · Keşif atlasının devamı
 
 Kullanıcı üç haritayı bitirdiğini bildirdi. 13 yeni temalı 5+1 harita, toplam 78 bölüm eklendi. İlk üçlü, kimlikler ve 18 mevcut tahta birebir korundu. İlerlemeyle yeni dünya açılır; bitmiş eski üçlü yeni ilk dünyaya önerilir. Yeni bölüm kayıtları v2 Progress ile yerel/bulut doğrulamaya dahildir. Toplam 16 harita, 96 parça/bölüm; sınırsız üretim veya gerçek oyuncu tutma artışı iddia edilmez.

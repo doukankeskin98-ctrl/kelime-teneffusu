@@ -9,6 +9,7 @@ type Options={
  send:(save:SavedLevel,signal:AbortSignal)=>Promise<SavedLevel>;
  persist:(save:SavedLevel)=>{save:SavedLevel;ok:boolean};
  onStatus:(status:ChapterSaveStatus)=>void;
+ onConfirmed?:(save:SavedLevel)=>void;
 };
 export const CHAPTER_SAVE_TIMEOUT=8000;
 
@@ -18,14 +19,17 @@ export class ChapterSaveQueue{
  private current:SavedLevel;
  private pending:boolean;
  private observer:Options['onStatus']|null;
+ private confirmedObserver:Options['onConfirmed']|null;
  private accepting=true;
  private cancelled=false;
  private flight:AbortController|null=null;
  private storageOK=true;
  constructor(private options:Options){
   this.current=options.save;this.pending=options.pending;this.observer=options.onStatus;
+  this.confirmedObserver=options.onConfirmed??null;
  }
  get save(){return this.current;}
+ get acknowledged(){return !this.pending&&!this.flight&&!this.cancelled;}
  private report(status:ChapterSaveStatus){this.observer?.(this.storageOK?status:'storage-error');}
  private persist(save:SavedLevel){
   const result=this.options.persist(save);this.current=result.save;this.storageOK=result.ok;
@@ -38,8 +42,8 @@ export class ChapterSaveQueue{
   if(!this.storageOK)this.report('storage-error');
   else this.report(this.pending?(this.flight?'syncing':this.options.canSend()?'local':'offline'):'saved');
  }
- detach(){this.accepting=false;this.observer=null;void this.flush();}
- cancel(){this.cancelled=true;this.accepting=false;this.observer=null;this.flight?.abort();}
+ detach(){this.accepting=false;this.observer=null;this.confirmedObserver=null;void this.flush();}
+ cancel(){this.cancelled=true;this.accepting=false;this.observer=null;this.confirmedObserver=null;this.flight?.abort();}
  async flush(){
   if(this.cancelled||this.flight||!this.pending||!this.options.canSend())return;
   const controller=new AbortController(),sent=this.current;
@@ -57,7 +61,7 @@ export class ChapterSaveQueue{
    if(this.cancelled||controller.signal.aborted)return;
    this.persist(chapterSyncResult(this.current,remote,this.options.board).save);
    this.pending=chapterSyncResult(this.current,remote,this.options.board).pending;
-   success=true;this.report(this.pending?'local':'saved');
+   success=true;this.confirmedObserver?.(this.current);this.report(this.pending?'local':'saved');
   }catch{
    if(!this.cancelled)this.report('offline');
   }finally{

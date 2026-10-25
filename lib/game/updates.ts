@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.11.1',date:'25 Ekim 2026',title:'Keşfine beklemeden dön',items:[
+  {where:'Bugünün iki keşfi',detail:'Kıyıda bir gün ile 6 × 6 kolay bir mola; Efsanelerin kapısı ile 8 × 8 dengeli bir keşif. Çapraz kelimeler, dünya seçicisi ve kalıcı arşivde yerlerini alırlar.'},
+  {where:'Çevrimdışı hazır bölümler',detail:'İndirilmiş bir bölümü açarken ağ yanıtını beklemezsin. Cihaz kaydınla başlarsın; bağlantı varken hesap kaydın arka planda birleştirilir.'},
+  {where:'Kaldığın yerden ve tekrar oyunu',detail:'Hesaptaki yeni kelimeler geldiğinde aktif keşfin sıfırlanmaz, süren geriye dönmez. Bir daha oyna seçeneği kendi boş turunu korur; eski iyi sonucun kaybolmaz.'},
+ ]},
  {version:'0.11.0',date:'25 Ekim 2026',title:'Yolculuğun devam ediyor',items:[
   {where:'13 yeni keşif haritası',detail:'78 yeni bölümle Fısıltı Ormanı, Tarçın Sokağı ve daha birçok yere yelken aç. Önceki haritaların ve hatıraların korunur.'},
   {where:'İpucu Avı',detail:'Yeni haritalardaki 26 bölümde kelimeyi kısa tanımından bul. Cevabı keşfedince tanım kelimeye dönüşür.'},
