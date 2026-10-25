@@ -26,8 +26,24 @@ export function useChime(enabled:boolean,haptics=false){
 export function Modal({title,onClose,children}:{title:string;onClose:()=>void;children:ReactNode}){const ref=useRef<HTMLDialogElement>(null),id=useId();useEffect(()=>{const d=ref.current;if(d&&!d.open)d.showModal();const old=document.body.style.overflow;document.body.style.overflow='hidden';return ()=>{d?.close();document.body.style.overflow=old;};},[]);return <dialog className="modal" ref={ref} onCancel={e=>{e.preventDefault();onClose();}} onClick={e=>{if(e.target===ref.current){const bounds=e.currentTarget.getBoundingClientRect();if(e.clientX<bounds.left||e.clientX>bounds.right||e.clientY<bounds.top||e.clientY>bounds.bottom)onClose();}}} aria-labelledby={id}><div className="modal-head"><h2 id={id}>{title}</h2><button className="icon-button" aria-label="Kapat" onClick={onClose}><X/></button></div>{children}</dialog>;}
 export function WordList({board,strokes,golden,clues}:{board:Pick<Puzzle,'targets'>;strokes:Stroke[];golden?:string|null;clues?:Record<string,string>}){
  const groups=[...new Set(board.targets.map(t=>t.group))];
- return <div className={'word-list'+(clues?' clue-list':'')} role="list" aria-label={clues?'Tanımlardan bulunacak kelimeler':'Bulunacak kelimeler'}>{groups.map(group=>{const parts=board.targets.filter(t=>t.group===group),done=parts.every(t=>strokes.some(s=>s.id===t.id)),split=parts.length>1,copy=wordCardCopy(parts[0]!,done,clues);return <div className={'word-tag'+(done?' found':'')+(copy.isClue?' clue-tag':'')+(parts.some(t=>t.id===golden)?' golden':'')} key={group} role="listitem" aria-label={copy.text+(copy.detail?' · '+copy.detail:'')+(done?' bulundu':' aranıyor')} style={done?{background:`color-mix(in srgb, ${strokeColor(parts[0]!.id)} 35%, transparent)`}:{}}><span>{done?<Check size={15}/>:<i/>}</span><div>{copy.text}{copy.detail&&<small>{copy.detail}</small>}{split&&<small>{parts.map(t=><span className={strokes.some(s=>s.id===t.id)?'part-found':''} key={t.id}>{t.text}</span>)}</small>}</div>{parts.some(t=>t.id===golden)&&<b>×2</b>}</div>;})}</div>;
+ return <div className={'word-list'+(clues?' clue-list':'')} role="list" aria-label={clues?'Tanımlardan bulunacak kelimeler':'Bulunacak kelimeler'}>{groups.map(group=>{
+  const parts=board.targets.filter(t=>t.group===group),target=parts[0]!,done=parts.every(t=>strokes.some(s=>s.id===t.id));
+  const split=parts.length>1,clue=clues?.[target.text],copy=wordCardCopy(target,done,clues);
+  return <div className={'word-tag'+(done?' found':'')+(clue?' clue-tag':'')+(parts.some(t=>t.id===golden)?' golden':'')}
+   key={group} role="listitem" aria-label={copy.text+(copy.detail?' · '+copy.detail:'')+(done?' bulundu':' aranıyor')}
+   style={done?{background:`color-mix(in srgb, ${strokeColor(target.id)} 35%, transparent)`}:{}}>
+   <span>{done?<Check size={15}/>:<i/>}</span>
+   <div className={clue?'clue-copy':undefined}>{clue?<>
+    <span className="clue-face clue-question" style={{visibility:done?'hidden':'visible'}} aria-hidden={done}>
+     {clue}<small>{target.text.length} harf</small>
+    </span>
+    <span className="clue-face clue-answer" style={{visibility:done?'visible':'hidden'}} aria-hidden={!done}>{target.label}</span>
+   </>:<>{copy.text}{copy.detail&&<small>{copy.detail}</small>}{split&&<small>{parts.map(t=><span className={strokes.some(s=>s.id===t.id)?'part-found':''} key={t.id}>{t.text}</span>)}</small>}</>}</div>
+   {parts.some(t=>t.id===golden)&&<b>×2</b>}
+  </div>;
+ })}</div>;
 }
+
 export function PlayLayout({title,kicker,onBack,board,strokes,paused,zoom,hint,onCommit,preview,onPreview,children,aside,footer,effect}:{title:string;kicker:string;onBack:()=>void;board:Pick<Puzzle,'size'|'grid'|'targets'>;strokes:Stroke[];paused:boolean;zoom:boolean;hint?:Cell|null;onCommit:(a:Cell,b:Cell)=>void;preview:string;onPreview:(s:string)=>void;children:ReactNode;aside:ReactNode;footer:ReactNode;effect?:ReactNode}){
  const screenRef=useRef<HTMLElement>(null),stageRef=useRef<HTMLDivElement>(null);
  useEffect(()=>{
