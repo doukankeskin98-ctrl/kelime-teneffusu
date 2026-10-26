@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-26",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261026-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Patili komşular",
+          "themeId": "hayvanlar",
+          "words": [
+            "KEDİ",
+            "KÖPEK",
+            "PATİ",
+            "YUVA"
+          ],
+          "size": 6,
+          "seed": 2026102601,
+          "difficulty": "Rahat",
+          "note": "Mahallenin küçük dostlarını bul. İlk harften son harfe kaydır veya iki uca dokun; çaprazlara da bak."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "G",
+              "V",
+              "Y",
+              "K",
+              "A",
+              "Ç"
+            ],
+            [
+              "L",
+              "P",
+              "P",
+              "Ö",
+              "V",
+              "M"
+            ],
+            [
+              "B",
+              "F",
+              "K",
+              "P",
+              "U",
+              "D"
+            ],
+            [
+              "R",
+              "G",
+              "A",
+              "E",
+              "Y",
+              "V"
+            ],
+            [
+              "C",
+              "T",
+              "S",
+              "K",
+              "D",
+              "Y"
+            ],
+            [
+              "İ",
+              "S",
+              "G",
+              "P",
+              "Ç",
+              "İ"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "KEDİ",
+              "text": "KEDİ",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "KÖPEK",
+              "text": "KÖPEK",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "PATİ",
+              "text": "PATİ",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "YUVA",
+              "text": "YUVA",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "1.0",
+              "label": "KÖPEK",
+              "text": "KÖPEK",
+              "group": 1,
+              "a": [
+                0,
+                3
+              ],
+              "b": [
+                4,
+                3
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "KEDİ",
+              "text": "KEDİ",
+              "group": 0,
+              "a": [
+                2,
+                2
+              ],
+              "b": [
+                5,
+                5
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "PATİ",
+              "text": "PATİ",
+              "group": 2,
+              "a": [
+                2,
+                3
+              ],
+              "b": [
+                5,
+                0
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "YUVA",
+              "text": "YUVA",
+              "group": 3,
+              "a": [
+                3,
+                4
+              ],
+              "b": [
+                0,
+                4
+              ]
+            }
+          ]
+        },
+        "contentHash": "3e7891c7e1a6bd13c252ba5fc6ae2ab1047a9a34526028fe969fd34c24e4e594",
+        "publishedAt": 1793001600000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261026-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Perde açılıyor",
+          "themeId": "sinema",
+          "words": [
+            "SENARYO",
+            "KAMERA",
+            "KURGU",
+            "SAHNE",
+            "AFİŞ",
+            "SEANS",
+            "REJİ"
+          ],
+          "size": 8,
+          "seed": 2026102602,
+          "difficulty": "Dengeli",
+          "note": "Bir film, pek çok küçük ayrıntı. Setten perdeye uzanan yedi kelimeyi yatay, dikey, çapraz ve tersten ara."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "Ş",
+              "A",
+              "R",
+              "E",
+              "M",
+              "A",
+              "K",
+              "L"
+            ],
+            [
+              "Ş",
+              "İ",
+              "B",
+              "K",
+              "İ",
+              "N",
+              "A",
+              "C"
+            ],
+            [
+              "G",
+              "Ğ",
+              "F",
+              "J",
+              "K",
+              "Ç",
+              "Ç",
+              "L"
+            ],
+            [
+              "E",
+              "G",
+              "E",
+              "A",
+              "U",
+              "S",
+              "O",
+              "Ğ"
+            ],
+            [
+              "N",
+              "R",
+              "A",
+              "S",
+              "E",
+              "A",
+              "N",
+              "S"
+            ],
+            [
+              "H",
+              "P",
+              "K",
+              "U",
+              "R",
+              "G",
+              "U",
+              "Y"
+            ],
+            [
+              "A",
+              "S",
+              "E",
+              "N",
+              "A",
+              "R",
+              "Y",
+              "O"
+            ],
+            [
+              "S",
+              "I",
+              "Y",
+              "Ç",
+              "Ç",
+              "M",
+              "J",
+              "S"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "SENARYO",
+              "text": "SENARYO",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "KAMERA",
+              "text": "KAMERA",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "KURGU",
+              "text": "KURGU",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "SAHNE",
+              "text": "SAHNE",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "AFİŞ",
+              "text": "AFİŞ",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "SEANS",
+              "text": "SEANS",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "REJİ",
+              "text": "REJİ",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "0.0",
+              "label": "SENARYO",
+              "text": "SENARYO",
+              "group": 0,
+              "a": [
+                6,
+                1
+              ],
+              "b": [
+                6,
+                7
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "KAMERA",
+              "text": "KAMERA",
+              "group": 1,
+              "a": [
+                0,
+                6
+              ],
+              "b": [
+                0,
+                1
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "KURGU",
+              "text": "KURGU",
+              "group": 2,
+              "a": [
+                5,
+                2
+              ],
+              "b": [
+                5,
+                6
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "SAHNE",
+              "text": "SAHNE",
+              "group": 3,
+              "a": [
+                7,
+                0
+              ],
+              "b": [
+                3,
+                0
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "SEANS",
+              "text": "SEANS",
+              "group": 5,
+              "a": [
+                4,
+                3
+              ],
+              "b": [
+                4,
+                7
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "AFİŞ",
+              "text": "AFİŞ",
+              "group": 4,
+              "a": [
+                3,
+                3
+              ],
+              "b": [
+                0,
+                0
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "REJİ",
+              "text": "REJİ",
+              "group": 6,
+              "a": [
+                4,
+                1
+              ],
+              "b": [
+                1,
+                4
+              ]
+            }
+          ]
+        },
+        "contentHash": "646a5fdbda440966ccb9f64f82eaedea61a7d98e03151b07aa2549225c6c2b5d",
+        "publishedAt": 1793001600000,
+        "archived": false
+      }
+    }
+  ]
+}
