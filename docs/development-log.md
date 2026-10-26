@@ -1,5 +1,31 @@
 # Geliştirme defteri
 
+## 26 Ekim 2026 · 0.12.1 · Aradan sonra temiz seçim
+
+Güncel Sites helper `7d06e7fc2f50a00fabe79b26e92b39cf00c88d8c`, başarılı 22. sürüm / package 0.12.0 ile başlandı. GitHub main `0a2d81092bc7fc1054da28595bb49a1f20be5b8a`, tam ağaç `9e7caf15901aa873dd3e6491e3cddba7a7cf52c8` eşleşir; owner/public erişimi ve aynı adres korunur. Eski yerel 0.11.3 tabanı kullanılmadı. Gece eklenen ana ekran/yeşim-fildişi tahta/seçili harf/kenar bildirimi ve onaylı günlük sesi değişmeden kalır. Başlangıç/kabul `studio-agents/journal/entries/2026-10-26_maintenance-intake.md`; tek odak uygulama öncesi maintenance-decision kaydında.
+
+### İki yeni kalıcı keşif
+
+- **Patili komşular:** Hayvanlar, Rahat, 6×6, KEDİ / KÖPEK / PATİ / YUVA; seed `2026102601`, ID `20261026-0001-4000-8000-000000000001`.
+- **Perde açılıyor:** Dünya Sineması, Dengeli, 8×8, SENARYO / KAMERA / KURGU / SAHNE / AFİŞ / SEANS / REJİ; seed `2026102602`, ID `20261026-0002-4000-8000-000000000001`.
+- `content/releases/2026-10-26.json` yeni tek snapshot; RELEASE_BATCHES'e yalnız bir giriş eklendi. İki çapraz eğim, spec/hash, seed/ID ve 20 alternatif yerleşim doğrulanır. Türkçe kelime ve tema uyumu kaynak incelemesiyle değerlendirildi; ölçülmüş oyuncu zorluğu iddia edilmez. Önceki beş tarih/tahta/kelime/seed dosyası aynı. Mevcut ana sayfa, kalıcı arşiv, dünya filtresi ve tarihli damga yolu çifti bulur; eski beşli harita kümeleri genişletilmez.
+
+### Seçilen iyileştirme
+
+Gerçek cihaz gözlemi, input yaşam döngüsü kusuru ve yeni kozmetik keşif odası adaylarından ikinci iş seçildi: doğrudan kaynak/VM kanıtı, düşük maliyet ve kayıt dışı dar etki. Tek sınırlı güvenilirlik uzmanı kendi günlüğünde eski Board gövdesinde global blur/hidden sonrası preview ve pointerup commit'ini doğruladı; son diff'i de inceledi. Bu native cancel üretmeyen kontrollü olay dizisi uygulamadaki eksik korumayı gösterir; fiziksel telefonda gözlenmiş arıza gibi sunulmaz.
+
+**Tahta → başka pencere/sekme/arka plan:** window blur veya yalnız hidden visibility olayı aynı clear yolunu çağırır. Drag, iki-uç ve klavye anchor'ı, bekleyen preview RAF'ı ve seçili harfler temizlenir; eski pointerup kelime göndermez. Yeniden seçim yeni girdiden başlar. Visible olayı tek başına aktif seçimi bozmaz. Listener'lar unmount'ta kaldırılır; ref üzerinden güncel onPreview kullanılır. Kabul edilmiş çizgiler, tahta rect/hit/ölçüleri, saat/ceza/skor/kayıt kuralları değiştirilmez. Günlük/Arena zamanı arada sürer.
+
+**Duraklatma → erişilebilir açıklama:** odak kalmış olsa bile paused etiketi gerçek cursor harfi yerine duraklamayı anlatır. Devamda normal konum/harf ve klavye talimatları döner. Görünür nokta yüzeyi ve tabIndex davranışı korunur; ekran okuyucu anonsu gözlenmedi.
+
+### Doğrulama ve sınırlar
+
+12 yeni gerçek Board TSX/snapLine VM kabulü; global iptaller, pending RAF/stale up, keyboard/tap anchor, visible event, latest callback/unmount, sekiz yön, ters çaprazlar, mouse/touch iki-uç, zoom pan, Escape/native cancel/blur/resize/signature ve paused ARIA. Aynı testler değiştirilmemiş 0.12.0 Board kaynağında **6 başarısız / 6 başarılı**, düzeltilmiş kaynakta **12/12 başarılı**. Bu karşılaştırma yalnız input/markup sözleşmesidir. Bütün paket **190/190 test, 41 grup**, **114 tahta / 2280 alternatif**, TypeScript ve üretim derlemesi geçti. İki bağımsız oyuncuyla **204 üretim Worker HTTP kontrolü** de geçti. CI ve tam kaynak/yayın kanıtı ayrı koordinatör kaydında tutulur.
+
+Destekli `sites-preview status` stopped döndürdü; önceki ERR_CONNECTION_REFUSED için somut repair/recovery kanıtı yoktu. Aynı tarayıcı denemesi veya alternatif server/browser tekrarlanmadı. DOM/native pointer sırası, React concurrency/StrictMode, gerçek telefon/büyük sistem yazısı, ekran okuyucu, fiziksel PWA ve FPS doğrulanmadı. Bu sınır açık cihaz önceliğidir; dünya standardı, eğlence/tutma, App Store hazır oluşu veya gelir sonucu iddia edilmez. Canlı log örneği 0 olaydır, bütün oturumlara genellenmez.
+
+Yeni ücret, servis, hesap, grafik üretimi, bağımlılık veya zamanlayıcı yok. Önceki bölüm/atlas/ödül, Solo/PublishedPlay ve save kuyruğu/merge, DB/göç/manifest/lock aynı kaldı. Sonraki öncelik destekli gerçek cihaz/önizleme erişimi ve ilk kelime/çapraz/duraklatma/arşiv dönüşü gözlemi; yeni büyük deneyim bunun önüne geçirilmez. Haftalık değerlendirme 24 Ekim kaydına göre 31 Ekim veya sonraki uygun çalışmada yapılır; bugün yinelenmedi.
+
 ## 25 Ekim 2026 · 0.12.0 · Dokunulan bir keşif
 
 Kullanıcının skill odaklı görsel/oynanış isteği: game-ui-ux ve layout-and-flow, game-feel ve feedback-recipes okunarak mevcut React/TypeScript SVG/CSS yüzeyinde uygulandı. Kalıcı skill push'ı önceki turda başarısız olduğundan korunmuş kaynak kopyaları çalışma rehberi olarak kullanıldı. Motor/dependency, hesap, kayıt, kelime, tohum ve ödül değişikliği yok.
