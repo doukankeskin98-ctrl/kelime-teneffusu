@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.12.1',date:'26 Ekim 2026',title:'Geri döndüğünde temiz bir seçim',items:[
+  {where:'Bugünün iki keşfi',detail:'Patili komşular ile 6 × 6 kolay bir mola; Perde açılıyor ile 8 × 8 dengeli bir sinema keşfi. İkisi de çapraz kelimeleriyle kendi dünyasında ve kalıcı arşivde.'},
+  {where:'Tahtadan kısa bir ara',detail:'Sekmeyi gizlediğinde veya oyun penceresi odağını kaybettiğinde yarım harf seçimi temizlenir. Geri döndüğünde yeni seçime başlarsın; bulduğun kelimeler korunur. Günlük ve Arena süreleri işlemeye devam eder.'},
+  {where:'Duraklatılmış tahta',detail:'Tahtanın erişilebilir açıklaması duraklama durumunu belirtir. Devam ettiğinde satır, sütun ve harf bilgisi yeniden kullanılabilir.'},
+ ]},
  {version:'0.11.3',date:'25 Ekim 2026',title:'Keşiflerine aynı yerden dön',items:[
   {where:'Bölüm arşivi ve Albüm',detail:'Bir bölümden geri döndüğünde arşivin veya Albümde açtığın tarih yeniden açılır. Daha önce yüklediğin eski bölümler korunur; seçtiğin kart görünür alana getirilir.'},
   {where:'Bağlantı ve yeniden deneme',detail:'Eski bölümler yüklenirken bağlantı kesilirse aralık kaybolmaz. Yeniden deneme kaldığı sayfayı ister. Yeni keşifler eklenirken de yüklediğin tarihler listede kalır.'},

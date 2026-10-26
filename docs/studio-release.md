@@ -12,6 +12,10 @@
 
 ## Uygulanan ürün akışları
 
+0.12.1: **Patili komşular** (Hayvanlar, Rahat 6×6) ve **Perde açılıyor** (Dünya Sineması, Dengeli 8×8) kalıcı kaynak çifti eklenir. Board pencere odağı kaybı ve gizli sekmede yarım drag/tap/klavye seçimini ortak iptal yoluyla temizler; native iptal gelmese bile eski pointerup gönderim yapmaz. Duraklatılmış erişilebilir açıklama harf yerine duraklama durumunu söyler. Kabul edilmiş kelimeler, sunucu saatleri, kayıt ve ödüller değişmez. Gerçek Board VM kabulleri vardır; bu, native olay sırasının, telefonun veya ekran okuyucu anonsunun ölçümü değildir.
+
+0.12.0 güncel kaynak korunur: daha kısa kişisel ana ekran/gerçek ilerleme, yeşim-fildişi tahta, preview hücrelerine bağlı seçili harf geri bildirimi, normal buluşlarda kenar bildirimi ve yalnız onaylı günlük cevabından sonra başarı sesi. Bu tur görsel kimlik yeniden tasarlanmadı; önceki destekli preview bağlantı engeli nedeniyle cihaz/görsel ölçüm sınırı devam eder.
+
 0.11.3: arşiv/Albüm/dünya listesi kökeni oyun içi geri dönüşte korunur. Yüklü public özetler, companions, imleç ve seçilen kart/tarih aynı oturum belleğinde taşınır; private ilerleme taşınmaz. İlgili bölüm zinciri ilk kökeni korur, bağımsız oyun yeni dönüş başlatır. Hatalı sayfa aynı offset ile tekrar edilir; reconnect eski aralığı silmez, yeni ön içerik imleci kaydırırsa düzeltilir ve büyük içerik farkının boşluğu yüklenebilir kalır. Sekme yenilemesi/OS kapanması konumu saklamaz. Odak/scroll hedef çağrısı testlidir; gerçek DOM/piksel/telefon sonucu ayrıca doğrulanmalıdır.
 
 0.11.2: İpucu Avı kartlarında tanım ve cevap aynı intrinsic alanda yer tutar; bulununca kart türü veya ayrılan metin alanı kaybolmaz. Gizli yüz görünür/erişilebilir cevap olarak sunulmaz; uzun metin ve büyük yazı kırpılmaz. Normal/parçalı/golden davranışları korunur. Kaynak/markup sözleşmesi doğrulandı; gerçek telefon ve CSS piksel sığması ayrıca gözlenmelidir.
