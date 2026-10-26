@@ -34,3 +34,12 @@ button,input,select{font:inherit}button{touch-action:manipulation}button:disable
 .app-shell:has(.arena-is-playing) .sidebar{display:none}.app-shell:has(.arena-is-playing) .main-area{margin-left:0}.app-shell:has(.arena-is-playing) .main-content{max-width:1120px}
 @media(max-width:650px){.word-tag{font-size:12px}.modal-head .icon-button{width:44px;min-width:44px;height:44px}.journey-list>button{min-height:65px}}
 @media(max-width:650px){.topbar{padding-top:env(safe-area-inset-top);height:calc(68px + env(safe-area-inset-top))}.game-app{padding-top:calc(19px + env(safe-area-inset-top))}.main-content.arena-is-playing{padding-top:calc(20px + env(safe-area-inset-top))}.app-shell>.offline-status{padding-top:calc(10px + env(safe-area-inset-top))}.app-shell:has(>.offline-status) .topbar{padding-top:0;height:68px}}
+
+/* Account changes are actionable in the shell and every game without an overlay. */
+.progress-account-notice{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:12px 0}
+.progress-account-notice>svg{flex-shrink:0}
+.progress-account-notice>div{flex:1;min-width:min(230px,100%)}
+.progress-account-notice b{font-size:14px;line-height:1.5}
+.progress-account-notice p{font-size:13px;line-height:1.7;margin:4px 0 0;overflow-wrap:anywhere}
+.progress-account-notice>.button{min-height:44px;white-space:normal}
+.progress-account-notice>small{display:block;flex-basis:100%;font-size:12px;line-height:1.7}
