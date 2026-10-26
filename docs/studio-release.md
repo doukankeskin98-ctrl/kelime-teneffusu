@@ -12,6 +12,8 @@
 
 ## Uygulanan ürün akışları
 
+0.12.2: ana ilerleme eşitlemesi yeni istemcide beklenen sahibi GET/PUT boyunca taşır. Uyuşmazlık yalnız `PROGRESS_OWNER_CHANGED` koduyla409 verir; normal eşzamanlı merge409'u retry yolunda kalır. Sync instance canlı owner/instance predicate'ine bağlı; eski owner cleanup öncesi yeni state/cache/status'a dokunmaz. Açık uyuşmazlık o bulut kanalını durdurur; yerel aynı-sahip kayıt sürer. Cihaz yazımı da bozuksa yenileme yerine yalnız persist tekrarı; sağlam ve oyun dışında ise profil yenileme vardır. Tüm game branch'lerinde bildirim görünür, aktif turda reload önerilmez. Eski alan içermeyen istemci biçimi uyumludur; korumanın o eski istemciye geriye dönük uygulandığı iddia edilmez. Gerçek provider/çok cihaz/concurrent React doğrulaması ayrıca açıktır.
+
 0.12.1: **Patili komşular** (Hayvanlar, Rahat 6×6) ve **Perde açılıyor** (Dünya Sineması, Dengeli 8×8) kalıcı kaynak çifti eklenir. Board pencere odağı kaybı ve gizli sekmede yarım drag/tap/klavye seçimini ortak iptal yoluyla temizler; native iptal gelmese bile eski pointerup gönderim yapmaz. Duraklatılmış erişilebilir açıklama harf yerine duraklama durumunu söyler. Kabul edilmiş kelimeler, sunucu saatleri, kayıt ve ödüller değişmez. Gerçek Board VM kabulleri vardır; bu, native olay sırasının, telefonun veya ekran okuyucu anonsunun ölçümü değildir.
 
 0.12.0 güncel kaynak korunur: daha kısa kişisel ana ekran/gerçek ilerleme, yeşim-fildişi tahta, preview hücrelerine bağlı seçili harf geri bildirimi, normal buluşlarda kenar bildirimi ve yalnız onaylı günlük cevabından sonra başarı sesi. Bu tur görsel kimlik yeniden tasarlanmadı; önceki destekli preview bağlantı engeli nedeniyle cihaz/görsel ölçüm sınırı devam eder.

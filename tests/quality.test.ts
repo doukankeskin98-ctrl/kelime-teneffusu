@@ -3,7 +3,7 @@ import {describe,it} from 'node:test';
 import {ALL_JOURNEYS,MYSTERIES,journeyById} from '../lib/game/content.ts';
 import {keepBestSave} from '../lib/game/discovery.ts';
 import {emptyProgress,loadProgress,mergeProgress,cleanSave,progressBoard,PROGRESS_KEY,type Progress} from '../lib/game/progress.ts';
-import {ProgressSync,type ProgressSaveStatus} from '../lib/game/progress-sync.ts';
+import {ProgressSync,ProgressOwnerChangedError,type ProgressSaveStatus} from '../lib/game/progress-sync.ts';
 import {nextDiscovery} from '../lib/game/next-discovery.ts';
 import {THEMES} from '../lib/game/catalog.ts';
 
@@ -12,12 +12,12 @@ function discover(p:Progress,key='uzay.0',count=1,elapsed=12,hints=0){
  const board=progressBoard(key)!;
  return {...p,saves:{...p.saves,[key]:cleanSave({strokes:board.placements.slice(0,count),elapsed,hints,complete:false,stars:0},board)}};
 }
-function harness(options:{owner?:string;online?:boolean;initial?:Progress;cache?:Map<string,string>;load?:(signal:AbortSignal)=>Promise<Progress>;save?:(p:Progress,signal:AbortSignal,keepalive:boolean)=>Promise<Progress>;storageFails?:boolean}={}){
+function harness(options:{isCurrent?:()=>boolean;owner?:string;online?:boolean;initial?:Progress;cache?:Map<string,string>;load?:(signal:AbortSignal)=>Promise<Progress>;save?:(p:Progress,signal:AbortSignal,keepalive:boolean)=>Promise<Progress>;storageFails?:boolean}={}){
  let current=options.initial??emptyProgress(),online=options.online??true,storageFails=options.storageFails??false;
  const owner=options.owner??'alice',cache=options.cache??new Map<string,string>(),statuses:ProgressSaveStatus[]=[],saved:Progress[]=[],writes:Progress[]=[];
- let loads=0,remote=emptyProgress();
- const sync=new ProgressSync({owner,storage:{getItem:key=>cache.get(key)??null,setItem:(key,value)=>{if(storageFails)throw new Error('Quota exceeded');cache.set(key,value);}},online:()=>online,read:()=>current,write:p=>{current=p;writes.push(p);},status:value=>statuses.push(value),load:async signal=>{loads++;return options.load?options.load(signal):remote;},save:async(p,signal,keepalive)=>{saved.push(p);remote=options.save?await options.save(p,signal,keepalive):mergeProgress(remote,p);return remote;}});
- return {sync,cache,statuses,saved,writes,get current(){return current;},get loads(){return loads;},change(p:Progress){current=p;sync.changed(p);},online(value:boolean){online=value;},storageFails(value:boolean){storageFails=value;},get local(){return loadProgress(cache.get(PROGRESS_KEY+':'+owner)??null);}};
+ let loads=0,reads=0,remote=emptyProgress();
+ const sync=new ProgressSync({owner,isCurrent:options.isCurrent,storage:{getItem:key=>cache.get(key)??null,setItem:(key,value)=>{if(storageFails)throw new Error('Quota exceeded');cache.set(key,value);}},online:()=>online,read:()=>{reads++;return current;},write:p=>{current=p;writes.push(p);},status:value=>statuses.push(value),load:async signal=>{loads++;return options.load?options.load(signal):remote;},save:async(p,signal,keepalive)=>{saved.push(p);remote=options.save?await options.save(p,signal,keepalive):mergeProgress(remote,p);return remote;}});
+ return {sync,cache,statuses,saved,writes,get current(){return current;},get loads(){return loads;},get reads(){return reads;},change(p:Progress){current=p;sync.changed(p);},online(value:boolean){online=value;},storageFails(value:boolean){storageFails=value;},get local(){return loadProgress(cache.get(PROGRESS_KEY+':'+owner)??null);}};
 }
 
 describe('immediate local saves and account-scoped cloud synchronization',()=>{
@@ -55,6 +55,24 @@ describe('immediate local saves and account-scoped cloud synchronization',()=>{
  it('retains discoveries after network failure and retries successfully',async()=>{
   let failed=true;const h=harness({save:async p=>{if(failed)throw new Error('Network unavailable');return p;}});await h.sync.connect();h.change(discover(h.current));await h.sync.flush();assert.equal(h.statuses.at(-1),'offline');assert.equal(h.local.saves['uzay.0']!.strokes.length,1);
   failed=false;await h.sync.flush();assert.equal(h.statuses.at(-1),'saved');assert.equal(h.saved.length,2);
+ });
+ it('stops mismatched-account GET retries while retaining new local discoveries',async()=>{
+  const h=harness({load:async()=>{throw new ProgressOwnerChangedError();}});await h.sync.connect();h.change(discover(h.current));
+  await h.sync.connect();await h.sync.flush();assert.equal(h.loads,1);assert.equal(h.saved.length,0);assert.equal(h.local.saves['uzay.0']!.strokes.length,1);assert.equal(h.statuses.at(-1),'account-changed');
+ });
+ it('retains a final local snapshot after mismatched PUT and never uploads that channel again',async()=>{
+  const response=deferred<Progress>(),h=harness({save:()=>response.promise});await h.sync.connect();h.change(discover(h.current));const pending=h.sync.flush();h.change(discover(h.current,'uzay.0',2));response.reject(new ProgressOwnerChangedError());await pending;
+  await h.sync.flush(true);await h.sync.connect();assert.equal(h.saved.length,1);assert.equal(h.local.saves['uzay.0']!.strokes.length,2);assert.equal(h.statuses.at(-1),'account-changed');
+ });
+ it('does not promise device persistence on owner mismatch until a local-only retry succeeds',async()=>{
+  const h=harness({storageFails:true,load:async()=>{throw new ProgressOwnerChangedError();}});await h.sync.connect();h.change(discover(h.current));assert.equal(h.statuses.at(-1),'account-changed-storage-error');
+  h.storageFails(false);await h.sync.flush();assert.equal(h.statuses.at(-1),'account-changed');assert.equal(h.local.saves['uzay.0']!.strokes.length,1);assert.equal(h.loads,1);assert.equal(h.saved.length,0);
+ });
+ for(const mode of ['GET','PUT'])it('ignores inactive '+mode+' and scheduled work before dispose',async()=>{
+  let active=true;const response=deferred<Progress>(),h=harness({isCurrent:()=>active,...(mode==='GET'?{load:()=>response.promise}:{save:()=>response.promise})});
+  const pending=mode==='GET'?h.sync.connect():(await h.sync.connect(),h.change(discover(h.current)),h.sync.flush());
+  const local=JSON.stringify(h.local),writes=h.writes.length,statuses=h.statuses.length,reads=h.reads;active=false;h.change(discover(emptyProgress(),'turkiye.0'));await h.sync.flush();await h.sync.connect();response.resolve(discover(emptyProgress(),'uzay.3',100));await pending;
+  assert.equal(h.reads,reads);assert.equal(JSON.stringify(h.local),local);assert.equal(h.writes.length,writes);assert.equal(h.statuses.length,statuses);
  });
  it('restores cloud preferences on a fresh device without overwriting choices made during load',async()=>{
   const response=deferred<Progress>(),h=harness({load:()=>response.promise});const pending=h.sync.connect();h.change({...h.current,palette:'orchid'});response.resolve({...emptyProgress(),palette:'ocean',zoom:true,sound:true});await pending;
