@@ -39,6 +39,8 @@ Kurulum ayrıntıları: [docs/email-membership.md](docs/email-membership.md). Gi
 
 Solo ilerleme cihazda hemen kaydedilir; bağlı profilin D1 kaydıyla eşitlenir. Farklı cihazların bulduğu kelimeler birleştirilir, daha iyi tamamlanmış sonuçlar korunur. Solo kayıtları rekabetçi puan veya derece vermez. Misafirden kalıcı hesaba geçerken solo ilerleme taşınır; bu aktarım dereceleri birleştirmez.
 
+0.12.2 istemcisi ana ilerleme GET/PUT isteğine beklediği hesap sahibini ekler; farklı/boş sahibi sunucu açık bir hesap-değişti koduyla reddeder. Eski istemci biçimi geriye uyumlu kalır; yeni guard olmayan eski sürümlere geriye dönük koruma iddia edilmez. İstemci bu durumda o bulut kanalını durdurur, aynı sahibin yerel kaydını sürdürür. Cihaz yazımı bozuksa önce yalnız kayıt tekrarı; sağlam ve oyun dışında ise profil yenileme sunulur. Bu, gerçek kimlik sağlayıcısında cihazlar arası yarışmanın test edildiği anlamına gelmez.
+
 Sites kimlik başlıkları bu platformun doğrulanmış erişim sınırında kullanılır. Başka bir hosta taşırken bu başlıklara doğrudan güvenmeyin; yerel kimlik sağlayıcısını ve güven sınırını yapılandırın.
 
 ## Geliştirme ve kontroller

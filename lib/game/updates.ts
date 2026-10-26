@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.12.2',date:'26 Ekim 2026',title:'Profil değişince güvenli eşitleme',items:[
+  {where:'Hesap ve ilerleme kaydı',detail:'Açık oturumun hesabı değişirse, eski profile ait ana ilerleme isteği diğer hesaba uygulanmaz. Eski oturumun bulut eşitlemesi durur; cihazdaki ilerleme kaydı sürer.'},
+  {where:'Hesap değişti bildirimi',detail:'Oyunun dışında güncel profilini yükleyebilirsin. Cihaz kaydı da başarısızsa önce yeniden kayıt denemesi sunulur. Devam eden turun ortasında sayfa yenilemeye yönlendirilmezsin.'},
+ ]},
  {version:'0.12.1',date:'26 Ekim 2026',title:'Geri döndüğünde temiz bir seçim',items:[
   {where:'Bugünün iki keşfi',detail:'Patili komşular ile 6 × 6 kolay bir mola; Perde açılıyor ile 8 × 8 dengeli bir sinema keşfi. İkisi de çapraz kelimeleriyle kendi dünyasında ve kalıcı arşivde.'},
   {where:'Tahtadan kısa bir ara',detail:'Sekmeyi gizlediğinde veya oyun penceresi odağını kaybettiğinde yarım harf seçimi temizlenir. Geri döndüğünde yeni seçime başlarsın; bulduğun kelimeler korunur. Günlük ve Arena süreleri işlemeye devam eder.'},
