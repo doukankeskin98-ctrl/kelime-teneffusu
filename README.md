@@ -11,6 +11,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 - İlk açılışta oynanabilir 6 × 6 öğrenme turu. Kaydırma, iki uca dokunma ve klavye kontrolü. Pencere odağı kaybolduğunda veya sekme gizlendiğinde yarım seçim temizlenir; bulunan kelimeler korunur. Günlük/Arena saatleri durdurulmaz.
 - Ana sayfanın ilk kartında kişisel sıradaki/yarım kalan keşif; haritaya, dünyalara ve arkadaş oyununa doğrudan geçiş. Günlük eklenen bölümler ilgili dünyanın bölüm seçicisine katılır; keşif atlası ana kartın hemen altındadır.
 - Keşif albümleri, rozetler, açılan renk paletleri, kişisel en iyi solo sonuçları ve tekrar oynama.
+- Tamamlanan Solo ve Gizli Tema tahtaları ayrı inceleme durumunda açık kalır: harfler/çizgiler, büyütme, ses ve yardım korunur; yeni hamle veya ipucu sunulmaz. Gizli Tema sonucunu kapatınca **Sonucu göster** ile yeniden açabilir, sonraki keşfe veya gerçek tekrar oyununa geçebilirsin. İnceleme kazanımları ve en iyi sonucu değiştirmez.
 - Her gün İstanbul saatine göre ortak bulmaca. Süre sunucuda, ipucu başına +15 saniye.
 - 120 saniyelik gerçek iki kişilik Arena. Özel odalar, paylaşım bağlantısı, ortak geri sayım, Altın Kelime, bağlantıdan dönüş ve karşılıklı rövanş.
 - Dereceli hızlı eşleşmede Elo, bekledikçe genişleyen beceri aralığı. Özel odalar dereceyi değiştirmez.
