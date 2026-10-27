@@ -1,5 +1,25 @@
 # Geliştirme defteri
 
+## 27 Ekim 2026 akşam · 0.12.4 · Biten keşfine yeniden bak
+
+Güncel Site25/0.12.3 helper `34fa40459d180ac0e893db6ccd85b7be4f49c49a`, GitHub main `79de8c94407d12a653b06f3412e96cab2f257c83`, eş tam ağaç `d84cb38403d7dd2c1d72f4334300a3782f2fdbd7`. Owner/public ve aynı URL doğrulandı; son kaynak, README/sürüm/harita/defter, rol/öncelik/son koordinatör kaydından devam edildi. **Mahalle maçı** ve **Sokakta doksanlar** sabah başarılı deployment ile yayımlanmıştı; bugün ikinci çift oluşturulmadı, yedi frozen kaynak dosyası ve RELEASE_BATCHES aynı kaldı.
+
+### Seçim ve gerçek davranış
+
+Gerçek cihaz/preview doğrulaması, bitmiş inceleme kontrolü ve günlük hamlede bekleme geri bildirimi karşılaştırıldı. Somut preview recovery kanıtı olmadığı için aynı başarısız browser yolu/alternatif sunucu denenmedi; açık cihaz önceliği korunur. Tek gerçek deneyim uzmanının iki kontrollü actual-source proof'u odak belirledi: bitmiş Solo'da Devam et ilk tıkta görünür tahtayı gizliyordu; bitmiş Gizli Tema sonucu kapatılınca yeniden sonuç eylemi yoktu. Kaynak/VM bulgusudur, gözlenmiş canlı oyuncu vakası değildir. Kabul uygulamadan önce `studio-agents/journal/entries/2026-10-27_evening-review-decision.md` içine yazıldı. Uzman yalnız kendi evening-experience-review günlüğüne ilk bulgu/son diff incelemesi yazdı; root kod/test/GitHub/Sites sahibi.
+
+**Bölüm sonu → tahtaya bak:** completed artık paused gibi sunulmaz. İşlevsiz Devam et ve ipucu yerine İnceleme bilgisi, çalışan büyütme/ses/yardım vardır. Harfler, bulunmuş çizgiler ve klavye cursor'ıyla harf incelemesi korunur. Yeni drag/tap/Enter/Space seçimi/commit yok; geç handler/RAF ve yarım anchor temizlenir. Normal boyutta review yüzeyi pan-x/pan-y bildirir, aktif tahtanın touchAction ve seçimleri değişmez. Bu native scroll ölçümü değildir. Paused hâlâ gerçek pause/hide durumudur; hesap merge'i paused oyunu bitirirse review görünür. Bir daha oyna yeni aktif turunu açar.
+
+**Gizli Tema → sonucu yeniden aç:** Sonucu göster ile X/Escape/backdrop kapatma niyetinden sonra sonuç, gerçek sonraki bölüm ve tekrar eylemlerine yeniden ulaşılır. Bağlantı kartı tamamlanmayı anlatır; bitmiş oyunda son kelimeyi tekrar istemez. Help/choose/result guard'ı aynı anda iki pencereyi önler. Ayrı connection flag'i eksik ama board kaydı tamamlanmış eski durumda bitmiş kart/tüm kelimeler görünür; yeni koleksiyon veya reward yazılmaz. Gerçek replay boş save/aktif kontrollerle başlar, kalıcı tamamlanmış best ve mysteries listesi korunur.
+
+### Kanıt ve sınırlar
+
+**234/234 test,50grup**, **116 düzenlenmiş tahta/2320 alternatif**, TypeScript ve final üretim build başarılı.11 yeni kabul:3 Board review/visible ink/pan/keyboard/stale handler/RAF/active reentry,2 actualSolo review/result/help/paused merge,6 ortak controls/layout+actualMystery resultreturn/helpstack/replay/missingflag. Önceki223 regresyon, owner/deadline/private merge/ödül/atlas/klasik ve bütün input yönleri korunur. İlk dar testte iki fixture varsayımı düzeltildi: VM array realm karşılaştırması ve text helper'ın aside prop'una bakmaması. Final35 dar kabul başarılı; ürün kusuru diye sayılmadı. Son Worker/CI/tam kaynak eşleşmesi ve yayın kanıtı evening-review-validation günlüğü/gerçek araç sonuçlarıyla ayrıca tutulur.
+
+Yedi release JSON ve26 korunan kaynak/veri dosyası byte karşılaştırması, schema/uygulanmış göç/manifest/lock korunur. Motor, kelime/seed/board, sabit5+1/ödül/best, progress/sync/cloud/queue/merge kuralları, App/account, PublishedPlay ve Sprint aynı. Yeni ücret/hesap/servis/bağımlılık/görsel/zamanlayıcı yok. Destekli gerçek telefon/DOM/yerleşim/büyük yazı/odak/native scroll/ekran okuyucu/FPS/provider ve fiziksel PWA doğrulanmadı. App Store hazır oluşu, ölçülmüş keyif/tutma veya dünya standardı başarısı iddia edilmez.
+
+Sonraki öncelik destekli cihaz/preview erişimi ve ilk kelime/bitmiş inceleme/arşiv/hesap geçişi gözlemi. Sıradaki kaynakta uygulanabilir aday: günlük hamle/hint isteği beklerken etkin görünen kontrol ve state geri bildirimi; bu tur tamamlanmış sayılmaz, ayrı deadline/reconcile kabulleri gerekir. Haftalık inceleme24Ekim→31Ekim/sonraki uygun mevcut çalışmada kalır.
+
 ## 27 Ekim 2026 · 0.12.3 · Bekleyen bulut kaydından geri dönüş
 
 En güncel Sites helper `258fe66fa71b4b834abf03b6e7699f56ca85a0e4`, Site24/0.12.2 ve GitHub main `00646a4c6d26ae8360e8a5d86149bd691ee75dac`; eş tam ağaç `2f00fe32f8f18845efdf122002f3463c946ea0e9` üzerinden devam. Owner/public ve aynı URL doğrulandı. README/sürüm/harita, rol/öncelikler/son koordinatör kaydı ve ortak bilgi okundu. Tek bağımsız güvenilirlik uzmanı sınırlı kaynak/probe ve son diff incelemesinde; kod/test/yayın koordinatörde. Uygulama öncesi adaylar, gerekçe ve kabul `studio-agents/journal/entries/2026-10-27_maintenance-decision.md` içindedir.

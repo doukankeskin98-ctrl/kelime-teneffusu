@@ -78,6 +78,9 @@ function harness({initial=saved([]),practice=false,known=false}:{initial?:SavedL
  const find=(type:string)=>{const node=nodes(tree).find(n=>n.type===type);assert.ok(node,type+' should be present');return node;};
  return {
   writes,
+  layout:()=>find('PlayLayout'),controls:()=>find('PlayControls'),
+  closeResult(){(find('Modal').props['onClose'] as ()=>void)();},
+  showResult(){const button=nodes(tree).find(n=>n.type==='button'&&/Sonucu göster/.test(textOf(n)));assert.ok(button);(button.props['onClick'] as ()=>void)();},
   async settle(){for(let i=0;i<25;i++){await Promise.resolve();if(pending)render();}},
   get save(){assert.ok(writes.length);return writes.at(-1)!;},
   setResume(value:SavedLevel){resume=value;pending=true;},
@@ -149,7 +152,7 @@ describe('Solo replay stays separate from account history',()=>{
  it('starts empty and ignores late completed history while keeping its own words and time',async()=>{
   const page=harness({initial:saved([0,1,2,3],60),practice:true});
   try{
-   await page.settle();assert.equal(page.save.strokes.length,0);assert.equal(page.save.complete,false);
+   await page.settle();assert.equal(page.save.strokes.length,0);assert.equal(page.save.complete,false);assert.equal(page.layout().props['readOnly'],false);assert.equal(page.controls().props['completed'],false);
    page.tick(5);page.commit(0);await page.settle();page.setResume(saved([0,1,2,3],20));await page.settle();
    assert.equal(page.save.strokes.length,1);assert.equal(page.save.complete,false);assert.equal(page.save.elapsed,5);
   }finally{page.close();}
@@ -161,6 +164,30 @@ describe('Solo replay stays separate from account history',()=>{
    for(let i=0;i<4;i++){page.commit(i);await page.settle();}
    page.expire();await page.settle();assert.equal(page.save.complete,true);assert.equal(page.save.elapsed,30);
    assert.equal(/Bu bölümde yeni kişisel en iyin/.test(page.text()),known);
+  }finally{page.close();}
+ });
+});
+
+
+describe('Solo completed board review',()=>{
+ it('keeps the board visible and read-only through result, help and result return without altering the saved best',async()=>{
+  const page=harness({initial:saved([0,1,2,3],18,1)});
+  try{
+   await page.settle();const before=JSON.stringify(page.save);assert.equal(page.controls().props['completed'],true);assert.equal(page.layout().props['readOnly'],true);
+   page.closeResult();await page.settle();assert.equal(page.has('Modal'),false);assert.equal(page.layout().props['paused'],false);assert.match(textOf(page.layout().props['aside']),/Bu keşif tamamlandı/);
+   page.pause();await page.settle();assert.equal(page.layout().props['paused'],false);assert.equal(page.controls().props['completed'],true);
+   page.help();await page.settle();assert.equal(page.has('Help'),true);assert.equal(page.has('Modal'),false);assert.equal(page.layout().props['paused'],true);
+   page.closeHelp();await page.settle();assert.equal(page.layout().props['paused'],false);page.showResult();await page.settle();assert.equal(page.has('Modal'),true);
+   page.tick(30);await page.settle();assert.equal(JSON.stringify(page.save),before);
+  }finally{page.close();}
+ });
+ it('releases an existing pause into visible review when an account merge completes the board',async()=>{
+  const page=harness({initial:saved([0],8)});
+  try{
+   await page.settle();page.pause();await page.settle();assert.equal(page.layout().props['paused'],true);
+   page.setResume(saved([0,1,2,3],20,1));await page.settle();page.expire();await page.settle();
+   assert.equal(page.save.complete,true);assert.equal(page.layout().props['readOnly'],true);assert.equal(page.layout().props['paused'],false);assert.equal(page.controls().props['completed'],true);
+   page.closeResult();await page.settle();page.tick(10);await page.settle();assert.equal(page.save.elapsed,20);
   }finally{page.close();}
  });
 });
