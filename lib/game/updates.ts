@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.12.4',date:'27 Ekim 2026',title:'Biten keşfine yeniden bak',items:[
+  {where:'Bölüm sonu · tahtayı inceleme',detail:'Tamamlanan tahtada harfler ve bulduğun çizgiler açık kalır. İnceleme sırasında işe yaramayan Devam et ve İpucu kontrolleri gösterilmez; büyütme, ses ve yardım kullanılabilir.'},
+  {where:'Gizli Tema · sonuçlarına dönüş',detail:'Sonuç penceresini kapattığında Sonucu göster ile yeniden açabilirsin. Bağlantı kartı keşfin tamamlandığını anlatır; yardım ile sonuç penceresi üst üste binmez. Önceki en iyi sonucun ve koleksiyonun korunur.'},
+ ]},
  {version:'0.12.3',date:'27 Ekim 2026',title:'Keşfin cihazında, eşitleme yeniden yolda',items:[
   {where:'Bugünün iki keşfi',detail:'Mahalle maçı ile 6 × 6 kolay bir futbol molası; Sokakta doksanlar ile 8 × 8 dengeli bir nostalji turu. İkisi de çapraz kelimeleriyle kendi dünyasında ve kalıcı arşivde.'},
   {where:'Yavaş bağlantıda ana ilerleme',detail:'Yanıt vermeyen bulut isteği artık eşitlemeyi süresiz bekletmez. Sekiz saniyede deneme durur; cihazındaki keşifler korunur ve sonraki denemede güncel ilerlemen birleştirilir.'},

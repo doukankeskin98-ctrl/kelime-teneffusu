@@ -1,0 +1,26 @@
+# 27 Ekim akşam · bitmiş keşfi inceleme · son doğrulama
+
+Başlangıç helper `34fa40459d180ac0e893db6ccd85b7be4f49c49a`, Site25/0.12.3 ve public owner erişimi; GitHub main `79de8c94407d12a653b06f3412e96cab2f257c83`, eş tam ağaç `d84cb38403d7dd2c1d72f4334300a3782f2fdbd7`. En güncel kaynaktan devam; README/sürüm/harita/son defter/rol/öncelik/günlük okundu. Sabahki başarılı0.12.3 yayını ve bugünün tek Mahalle maçı / Sokakta doksanlar çifti korunur; yedi frozen JSON ve RELEASE_BATCHES aynı.
+
+## Tek odak ve gerçek inceleme
+
+Uygulama öncesi aday/kabul evening-review-decision; tek bağımsız gerçek uzman yalnız evening-experience-review günlüğüne source/proof/son diff yazdı. Baseline actualSolo VM: bitmiş sonuçtan dönünce layout.paused=false/controls.paused=true, etiketli Devam et ilk tıkta layout.paused=true. Baseline actualMystery VM: bitmiş sonucu kapatınca modal yok ve aside içinde yeniden sonuç düğmesi yok. İkisi de exit0 kontrollü proof; canlı kullanıcı/telefon olayı değildir. Son runtime/test diff incelemesi yeni engel bulmadı; uzman root'un geçen testlerini sırf tekrar için yeniden çalıştırmadı. Kod/test/paket/GitHub/Sites root'ta kaldı.
+
+## Geçen final kapılar
+
+- **234/234 test,50grup**, önceki223 regresyon ve11 yeni anlamlı kabul. Yeni3 actualBoard: normal/zoom görünür harf+ink, readonly pan/tap/drag/Enter/Space engeli ve okla cursor, state geçişinde anchor/drag/RAF iptali, cleanup öncesi stale handler/ref ve gerçek active reentry.2 actualSolo: sonuç→review→yardım→sonuç kaydı değiştirmez, paused tur hesap merge'iyle bitince görünür readonly.6 ortak kontrol/layout ve actualMystery: kullanılabilir3 kontrol/callback/doğru talimat, sonucu yeniden açma ve gerçek next/back, help/result stack koruması, boş replay+kalıcı best/collection, ayrı flag eksikken eski tamamlanmayı doğru gösterip koleksiyon vermeme.
+- İlk dar testte iki fixture düzeltmesi: VM array realm'ini root array'e dönüştürme ve metin helper'ının aside prop'una açık bakma. Ürün kodunda bu nedenle davranış değişikliği yok; final35 dar kabul ve234 tam test geçer. Eski clue/sekiz yön/pause/zoom/owner/deadline/reward/atlas/account regresyonları da korunur.
+- **116 düzenlenmiş tahta /2320 alternatif**, TypeScript ve final production build başarılı. İçerik, Türkçe/tema/kimlik/hash/sabit board ve çapraz eğimler mevcut denetimlerden geçer; bugün yeni içerik yok.
+- Son build üzerinde iki bağımsız yalıtılmış oyuncuyla **221 üretim Worker HTTP kontrolü** geçti. Misafir/auth/owner/CSRF, özel progress/merge/best, kaynak ve editör bölümleri, arkadaş/kayıtlı rakip/oda/canlı SSE/Arena, atlas/damga/PWA/API regresyonları. Test DB üretimden ayrıdır. Checker aynı kaynaktır; challenge/room üretilen board targets sayısına göre claim döngüsü sayısı değişebilir, sayaç düşüşü kontrol silinmesi değildir. Native UI veya fiziksel telefon testi değildir.
+- **git diff --check** başarılı. Yedi release snapshot ve toplam26 korunan kaynak/veri dosyası byte karşılaştırması, schema/uygulanmış göç/manifest/lock aynı; ayrıca Worker checker diff'i yok. Engine/catalog/content/atlas/legacy/progress/sync/discovery/cloud, chapter queue/merge, useCloudProgress/PublishedPlay/App/Sprint değişmedi. Solo/Mystery değişiklikleri terminal render/kontrol/copy ile sınırlı; süre/save/reward/merge algoritmaları aynı.
+- Runtime/test mantığından sonra yalnız README/sürüm/defter/öncelik/günlük belgeleri değişti. Geçen app kapıları gereksiz yinelenmedi, dependency/lock değişmediği için yeniden install yok. GitHub CI gerekli kapıları ayrıca çalıştırır.
+
+## Oyuncunun gördüğü sonuç ve açık sınır
+
+Biten Solo/Gizli Tema, paused yerine açık inceleme durumundadır. Harfler/çizgiler korunur; yeni seçim/ipuçları yok, zoom/ses/yardım kalır. ReadOnly normal tahta pan yönlerini izinli bildirir; aktif seçim geometrisi ve clock değiştirilmez. Tamamlama paused halde gelirse harfler saklı kalmaz. Gizli Tema Sonucu göster ile sonuç/sonraki bölüm/gerçek replay'e yeniden ulaşır. Tamamlanmış kart ve görünür talimatlar yeni kelime istemez; help/result üst üste binmez. Ayrı flag'i eksik eski tamamlanma yalnız doğru gösterilir, koleksiyon eklenmez. Replay kalıcı iyi sonucu silmez; review aç/kapa yeni ödül vermez.
+
+Yakın production log örneği0 olay verdi; bütün oyuncu oturumlarının hatasızlığı iddiası değildir. Destekli preview önceki ERR_CONNECTION_REFUSED için somut repair/recovery kanıtı yok; aynı başarısız yol/alternatifserver/browser denenmedi, çalışan sürüm preview bypass olarak kullanılmadı. Gerçek telefon/DOM/yerleşim/büyük yazı/native scroll/odak/ekran okuyucu/FPS, iki gerçek cihaz/sağlayıcı ve fiziksel PWA açık kalır. App Store hazır oluşu veya ölçülmüş keyif/tutma/gelir/üstün stüdyo başarısı iddia edilmez.
+
+Sıradaki öncelik destekli cihaz/preview ve ilk açılış/bitmiş review/arşiv/hesap geçişi gözlemi. Kaynakta sıradaki sınırlı aday günlük claim/hint pendingstate ve hata/reconcile geri bildirimi; bu tur bitmiş sayılmaz. Haftalık inceleme24Ekim→31Ekim/sonraki uygun mevcut çalışma. Yeni grafik/hesap/ücret/servis/bağımlılık/otomasyon veya başka proje değişikliği yok.
+
+Bu kayıt final yerel doğrulamadır. Tam kaynak helper ile kaydedilip paketlenir; GitHub CI+tam ağaç/birleştirme ve aynı public URL'de gerçek Sites yayın sonucu araç metadata'sıyla ayrıca doğrulanır. Başarısız kapıyla yayın yapılmaz; başka güncelleme varsa zorla üzerine yazılmaz.
