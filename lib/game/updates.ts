@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.12.3',date:'27 Ekim 2026',title:'Keşfin cihazında, eşitleme yeniden yolda',items:[
+  {where:'Bugünün iki keşfi',detail:'Mahalle maçı ile 6 × 6 kolay bir futbol molası; Sokakta doksanlar ile 8 × 8 dengeli bir nostalji turu. İkisi de çapraz kelimeleriyle kendi dünyasında ve kalıcı arşivde.'},
+  {where:'Yavaş bağlantıda ana ilerleme',detail:'Yanıt vermeyen bulut isteği artık eşitlemeyi süresiz bekletmez. Sekiz saniyede deneme durur; cihazındaki keşifler korunur ve sonraki denemede güncel ilerlemen birleştirilir.'},
+  {where:'Albüm · kayıt durumu',detail:'Bulut eşitlemesi beklediğinde bunu açıkça görür, Yeniden eşitle ile tekrar deneyebilirsin. Hesap onayı gelmeden eşitlendi denmez; oyun sayfan yenilenmez.'},
+ ]},
  {version:'0.12.2',date:'26 Ekim 2026',title:'Profil değişince güvenli eşitleme',items:[
   {where:'Hesap ve ilerleme kaydı',detail:'Açık oturumun hesabı değişirse, eski profile ait ana ilerleme isteği diğer hesaba uygulanmaz. Eski oturumun bulut eşitlemesi durur; cihazdaki ilerleme kaydı sürer.'},
   {where:'Hesap değişti bildirimi',detail:'Oyunun dışında güncel profilini yükleyebilirsin. Cihaz kaydı da başarısızsa önce yeniden kayıt denemesi sunulur. Devam eden turun ortasında sayfa yenilemeye yönlendirilmezsin.'},
