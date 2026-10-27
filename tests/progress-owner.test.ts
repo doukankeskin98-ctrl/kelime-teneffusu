@@ -37,13 +37,13 @@ describe('progress route verifies the intended owner before store access',()=>{
 });
 
 type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
-function hook(mode:'owner-load'|'owner-save'|'conflict'|'ok'='ok',delay=false){
+function hook(mode:'owner-load'|'owner-save'|'conflict'|'load-failure'|'body-delay'|'ok'='ok',delay=false){
  const slots:Slot[]=[],effects:(()=>void)[]=[],exports:Record<string,any>={},requests:{url:string;init:RequestInit}[]=[],cache=new Map<string,string>(),gate=deferred<any>(),events=new EventTarget(),doc=Object.assign(new EventTarget(),{hidden:false}),timers=new Map<number,()=>void>();
  let cursor=0,dirty=true,id=0,owner='alice',value=emptyProgress(),status:sync.ProgressSaveStatus='local';
  const update=(next:Progress)=>{value=next;dirty=true;};
  const hooks={useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return [slot.value,(next:any)=>{const v=typeof next==='function'?next(slot.value):next;if(!Object.is(v,slot.value)){slot.value=v;dirty=true;}}];},useRef(initial:any){return (slots[cursor++]??={}).ref??={current:initial};},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((d,i)=>!Object.is(d,slot.deps![i]))){slot.deps=deps;effects.push(()=>{slot.cleanup?.();const clean=fn();slot.cleanup=typeof clean==='function'?clean:undefined;});}}};
  const response=(code?:string)=>code?{ok:false,status:409,json:async()=>({code})}:{ok:true,status:200,json:async()=>({progress:emptyProgress()})};
- const request=async(url:string,init:RequestInit)=>{requests.push({url,init});if(delay&&requests.length===1)return gate.promise;if((mode==='owner-load'&&!init.method)||(mode==='owner-save'&&init.method==='PUT'))return response('PROGRESS_OWNER_CHANGED');if(mode==='conflict'&&init.method==='PUT')return response('CONCURRENT_UPDATE');return response();};
+ const request=async(url:string,init:RequestInit)=>{requests.push({url,init});if(delay&&requests.length===1)return gate.promise;if(mode==='load-failure'&&requests.length===1)throw new Error('Controlled GET failure');if(mode==='body-delay'&&requests.length===1)return {ok:true,status:200,json:()=>gate.promise};if((mode==='owner-load'&&!init.method)||(mode==='owner-save'&&init.method==='PUT'))return response('PROGRESS_OWNER_CHANGED');if(mode==='conflict'&&init.method==='PUT')return response('CONCURRENT_UPDATE');if(init.method==='PUT')return {ok:true,status:200,json:async()=>({progress:JSON.parse(String(init.body)).progress})};return response();};
  const modules={'react':hooks,'@/lib/auth/firebase-client':{memberFetch:request},'@/lib/game/progress-sync':sync};
  vm.runInNewContext(compile('components/game/useCloudProgress.ts'),{exports,require:(n:string)=>modules[n as keyof typeof modules],window:events,document:doc,navigator:{onLine:true},localStorage:{getItem:(k:string)=>cache.get(k)??null,setItem:(k:string,v:string)=>cache.set(k,v)},setInterval:(fn:()=>void)=>{timers.set(++id,fn);return id;},clearInterval:(n:number)=>timers.delete(n)});
  const paint=(commit=true)=>{for(let i=0;dirty&&i<30;i++){dirty=false;cursor=0;status=exports['useCloudProgress'](owner,value,update,true);if(commit)while(effects.length)effects.shift()!();}return status;};
@@ -57,6 +57,16 @@ describe('actual cloud hook guards requests and preserves retry semantics',()=>{
  });
  it('handles owner mismatch on initial GET without attempting an upload',async()=>{const h=hook('owner-load');await h.settle();h.change(changed());h.retry();await h.settle();assert.equal(h.status,'account-changed');assert.equal(h.requests.length,1);assert.ok(h.cache.get(PROGRESS_KEY+':alice')?.includes('uzay.0'));h.unmount();});
  it('does not misclassify a normal concurrency409 and continues retrying',async()=>{const h=hook('conflict');await h.settle();h.change(changed());h.retry();await h.settle();assert.equal(h.status,'offline');const count=h.requests.length;h.retry();await h.settle();assert.equal(h.requests.length,count+1);assert.equal(sync.progressOwnerChanged(h.status),false);h.unmount();});
+ it('retries the initial failed GET immediately on the manual sync event',async()=>{
+  const h=hook('load-failure');await h.settle();assert.equal(h.status,'offline');assert.equal(h.requests.length,1);
+  h.change(changed());h.retry();await h.settle();assert.equal(h.requests.filter(r=>!r.init.method).length,2);assert.equal(h.requests.filter(r=>r.init.method==='PUT').length,1);assert.equal(h.status,'saved');assert.equal(h.value.saves['uzay.0']!.strokes.length,1);h.unmount();
+ });
+ it('retries a body timeout through the same hook and ignores its late response',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});const h=hook('body-delay');await h.settle();assert.equal(h.requests.length,1);assert.notEqual(h.status,'saved');
+  t.mock.timers.tick(sync.PROGRESS_SYNC_TIMEOUT);await h.settle();assert.equal(h.status,'offline');assert.equal(h.requests[0]!.init.signal!.aborted,true);
+  h.change(changed());h.retry();await h.settle();assert.equal(h.status,'saved');const state=JSON.stringify(h.value),count=h.requests.length;
+  h.gate.resolve({progress:{...emptyProgress(),sound:true}});await h.settle();assert.equal(JSON.stringify(h.value),state);assert.equal(h.status,'saved');assert.equal(h.requests.length,count);h.unmount();
+ });
  it('rejects a late old-owner response before passive cleanup and leaves the new render unchanged',async()=>{
   const h=hook('ok',true),bob={...emptyProgress(),contrast:true};const before=h.cache.get(PROGRESS_KEY+':alice');h.switchBeforeEffects('bob',bob);h.gate.resolve({ok:true,status:200,json:async()=>({progress:{...changed(),sound:true}})});await h.settle(false);
   assert.equal(h.value,bob);assert.equal(h.cache.get(PROGRESS_KEY+':alice'),before);assert.equal(h.cache.has(PROGRESS_KEY+':bob'),false);h.unmount();
@@ -76,4 +86,19 @@ describe('account-change recovery notice',()=>{
   assert.equal(nodes(n).some(n=>n.type==='button'),false);assert.match(text(n),/Oyundan çıktıktan sonra/);
  });
  it('offers local retry instead of refresh when storage failed, without claiming the save is safe',()=>{let refresh=0,retry=0;const n=noticeExports['ProgressAccountNotice']({status:'account-changed-storage-error',onRefresh:()=>refresh++,onRetry:()=>retry++});assert.doesNotMatch(text(n),/bu cihazda kayıtlı/);assert.match(text(n),/kayıt yapılamıyor/);nodes(n).find(n=>n.type==='button')!.props['onClick']();assert.equal(refresh,0);assert.equal(retry,1);});
+});
+
+const cloudExports:Record<string,any>={};
+vm.runInNewContext(compile('components/game/ProgressCloudStatus.tsx'),{exports:cloudExports,require:(n:string)=>n==='react/jsx-runtime'?{jsx,jsxs:jsx}:n==='@/lib/game/progress-sync'?sync:{BookOpen:'book',Cloud:'cloud',CloudOff:'cloud-off',RotateCw:'retry'}});
+describe('Album main progress recovery',()=>{
+ it('offers a working manual retry only for an unconfirmed cloud save',()=>{
+  let calls=0;const node=cloudExports['ProgressCloudStatus']({status:'offline',onRetry:()=>calls++}),button=nodes(node).find(n=>n.type==='button')!;
+  assert.match(text(node),/Bulut eşitlemesi bekliyor/);assert.match(text(node),/Ana ilerlemen bu cihazda kayıtlı/);assert.equal(button.props['type'],'button');assert.match(text(button),/Yeniden eşitle/);button.props['onClick']();assert.equal(calls,1);assert.equal(nodes(node).find(n=>n.type==='p')!.props['role'],'status');
+  for(const status of ['local','syncing','saved','storage-error','account-changed','account-changed-storage-error'])assert.equal(nodes(cloudExports['ProgressCloudStatus']({status,onRetry(){}})).some(n=>n.type==='button'),false);
+ });
+ it('does not claim device success in a storage error or cloud success while waiting',()=>{
+  const storage=cloudExports['ProgressCloudStatus']({status:'storage-error',onRetry(){}});assert.match(text(storage),/kayıt yapılamıyor/);assert.doesNotMatch(text(storage),/cihazda kayıtlı|bağlantını/i);
+  for(const status of ['local','syncing','offline','storage-error','account-changed','account-changed-storage-error'])assert.doesNotMatch(text(cloudExports['ProgressCloudStatus']({status,onRetry(){}})),/bulutla eşitlendi/);
+  assert.match(text(cloudExports['ProgressCloudStatus']({status:'saved',onRetry(){}})),/bulutla eşitlendi/);
+ });
 });

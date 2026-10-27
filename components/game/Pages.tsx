@@ -1,11 +1,12 @@
 'use client';
 import {useEffect,useMemo,useState,type CSSProperties} from 'react';
-import {ArrowRight,BookOpen,CalendarDays,Check,ChevronDown,Cloud,CloudOff,Compass,Flame,Lightbulb,LoaderCircle,LockKeyhole,Palette,Search,Settings,ShieldCheck,Smartphone,Sparkles,Star,Swords,Trophy,User,Volume2,VolumeX,WandSparkles,WifiOff,ZoomIn} from 'lucide-react';
+import {ArrowRight,BookOpen,CalendarDays,Check,ChevronDown,Compass,Flame,Lightbulb,LoaderCircle,LockKeyhole,Palette,Search,Settings,ShieldCheck,Smartphone,Sparkles,Star,Swords,Trophy,User,Volume2,VolumeX,WandSparkles,WifiOff,ZoomIn} from 'lucide-react';
 import {THEMES,findTheme,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
 import {JOURNEYS,MYSTERIES} from '@/lib/game/content';
 import {dailySpec,istanbulDay} from '@/lib/game/engine';
 import {collectionStats,streak,type Progress} from '@/lib/game/progress';
 import {Rankings} from './Arena';
+import {ProgressCloudStatus} from './ProgressCloudStatus';
 import {api} from './common';
 import {WorldArt} from './WorldArt';
 import {DiscoveryStart} from './DiscoveryStart';
@@ -15,7 +16,7 @@ import type {SoloConfig} from './Solo';
 import {PublishedChapters} from './PublishedChapters';
 import type {ReleaseSummary} from '@/lib/studio/releases';
 import {DailyDiscoveries} from './DailyDiscoveries';
-import {progressOwnerChanged,type ProgressSaveStatus} from '@/lib/game/progress-sync';
+import type {ProgressSaveStatus} from '@/lib/game/progress-sync';
 import type {ChapterBrowseReturn,ChapterSelection} from '@/lib/studio/chapter-browse';
 export type Account={authenticated:boolean;kind?:'guest'|'native'|'email';nativeSession?:boolean;needsUsername?:boolean;needsVerification?:boolean;username?:string;email?:string;profile?:{id:string;nickname:string};stats?:{played:number;wins:number;score:number};rating?:{value:number;played:number}};
 export function Explore({releases,releaseCounts={},onSprint,userId,progress,setTheme,openSolo,setNav,classic,onMystery,onChallenge,onExtra,browseReturn}:{releases:ReleaseSummary[];releaseCounts?:Record<string,number>;onSprint:()=>void;userId?:string;progress:Progress;setTheme:(t:Theme)=>void;openSolo:(c:SoloConfig)=>void;setNav:(n:'kesfet'|'arena'|'gunluk'|'profil')=>void;classic:()=>void;onMystery:(id:string)=>void;onChallenge:()=>void;onExtra:ChapterSelection;browseReturn?:ChapterBrowseReturn}){
@@ -55,7 +56,7 @@ export function ProfilePage({account,releases,onExtra,setAccount,onLogin,onLogou
  const stats=collectionStats(progress),series=streak(progress.days,istanbulDay()),[vibration,setVibration]=useState(false),[logoutError,setLogoutError]=useState('');
  useEffect(()=>setVibration(typeof navigator.vibrate==='function'),[]);
  const toggle=(key:'sound'|'haptics'|'zoom'|'contrast'|'analytics')=>onProgress({...progress,[key]:!progress[key]});
- return <section className="profile-page page-enter"><div className="section-intro"><span className="eyebrow">BULDUĞUN HER KELİME BİR HATIRA</span><h1>Senin keşif <em>albümün.</em></h1><p>Küçük molaların, biriken güzel keşiflerin.</p></div><div className="profile-header"><span className={'avatar large frame-'+progress.palette}>{account.profile?.nickname.slice(0,1)??'K'}</span><div><span className="eyebrow">{stats.completed>=48?'KELİME USTASI':stats.completed>=12?'MERAKLI GEZGİN':'YENİ BİR KAŞİF'}</span><h2>{account.profile?.nickname??'Kelime avcısı'}</h2>{account.username&&<div className="auth-profile-handle">@{account.username}</div>}<p className="cloud-status">{syncStatus==='saved'?<Cloud size={15}/>:syncStatus==='offline'?<CloudOff size={15}/>:<BookOpen size={15}/>} {progressOwnerChanged(syncStatus)?'Hesap değişti · Bulut eşitlemesi durduruldu':syncStatus==='storage-error'?'Cihaz kaydı kullanılamıyor. Bağlantını kontrol et.':syncStatus==='syncing'?'İlerlemen kaydediliyor…':syncStatus==='saved'?'Keşiflerin kaydedildi':syncStatus==='offline'?'Cihazında kayıtlı, bağlantıda eşitlenecek':'Bu cihazda kayıtlı'}</p></div>{!account.authenticated&&<button className="button secondary" onClick={onLogin}>Profil oluştur <ArrowRight size={17}/></button>}</div>
+ return <section className="profile-page page-enter"><div className="section-intro"><span className="eyebrow">BULDUĞUN HER KELİME BİR HATIRA</span><h1>Senin keşif <em>albümün.</em></h1><p>Küçük molaların, biriken güzel keşiflerin.</p></div><div className="profile-header"><span className={'avatar large frame-'+progress.palette}>{account.profile?.nickname.slice(0,1)??'K'}</span><div><span className="eyebrow">{stats.completed>=48?'KELİME USTASI':stats.completed>=12?'MERAKLI GEZGİN':'YENİ BİR KAŞİF'}</span><h2>{account.profile?.nickname??'Kelime avcısı'}</h2>{account.username&&<div className="auth-profile-handle">@{account.username}</div>}<ProgressCloudStatus status={syncStatus} onRetry={()=>window.dispatchEvent(new Event('kt-sync-now'))}/></div>{!account.authenticated&&<button className="button secondary" onClick={onLogin}>Profil oluştur <ArrowRight size={17}/></button>}</div>
  <div className="stat-cards"><div><BookOpen/><b>{stats.completed}</b><span>Tamamlanan keşif</span></div><div><Star/><b>{stats.stars}</b><span>Kazanılan yıldız</span></div><div><Compass/><b>{stats.worlds}</b><span>Uğradığın dünya</span></div><div><Trophy/><b>{account.stats?.wins??0}</b><span>Arena galibiyeti</span></div></div>
  <div className="league-card"><ShieldCheck/><div><b>{(account.rating?.played??0)<5?'Arena’da yerini bul':(account.rating?.value??1000)>=1500?'Kelime ustası':(account.rating?.value??1000)>=1200?'Keskin bakış':'Meraklı yarışmacı'}</b><small>{(account.rating?.played??0)<5?`${account.rating?.played??0}/5 başlangıç düellosu`:'Dereceli düellolarda seviyene yakın rakiplerle eşleşirsin.'}</small></div><strong>{account.rating?.value??1000}<small>Arena puanı</small></strong></div>
  <div className="section-title"><div><h2>Parça parça, senin hikâyen.</h2><p>Beş rota bölümü ve bir bonus. Altı parça, kalıcı bir hatıra.</p></div><BookOpen size={24}/></div><DiscoveryAlbums progress={progress} onMap={onMap}/>

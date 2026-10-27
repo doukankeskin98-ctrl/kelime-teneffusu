@@ -1,5 +1,25 @@
 # Geliştirme defteri
 
+## 27 Ekim 2026 · 0.12.3 · Bekleyen bulut kaydından geri dönüş
+
+En güncel Sites helper `258fe66fa71b4b834abf03b6e7699f56ca85a0e4`, Site24/0.12.2 ve GitHub main `00646a4c6d26ae8360e8a5d86149bd691ee75dac`; eş tam ağaç `2f00fe32f8f18845efdf122002f3463c946ea0e9` üzerinden devam. Owner/public ve aynı URL doğrulandı. README/sürüm/harita, rol/öncelikler/son koordinatör kaydı ve ortak bilgi okundu. Tek bağımsız güvenilirlik uzmanı sınırlı kaynak/probe ve son diff incelemesinde; kod/test/yayın koordinatörde. Uygulama öncesi adaylar, gerekçe ve kabul `studio-agents/journal/entries/2026-10-27_maintenance-decision.md` içindedir.
+
+### Bugünün kalıcı iki keşfi
+
+- **Mahalle maçı:** Futbol, Rahat6×6, KALE / FORMA / PAS / GOL; seed `2026102701`, ID `20261027-0001-4000-8000-000000000001`.
+- **Sokakta doksanlar:** 90’lar, Dengeli8×8, KASET / WALKMAN / BİLYE / JETON / MİSKET / SEKSEK / MEKTUP; seed `2026102702`, ID `20261027-0002-4000-8000-000000000001`.
+- Yeni tek `content/releases/2026-10-27.json` ve sona eklenen RELEASE_BATCHES girişi. Kimlik, spec/hash, sabit board, iki çapraz eğim ve20 alternatif kontrolü. Türkçe/tema/yük incelemesi kaynak düzeyinde; ölçülmüş oyuncu zorluğu iddiası yok. Aynı dosyayı yeniden çalışmada üzerine yazmak yerine mevcut snapshot/kayıt/yayından devam edilir. Ana sayfa/ilgili dünya/arşiv/tarihli damga yolları bu çifti bulur; eski beşli harita kümeleri genişlemez.
+
+### Seçilen davranış ve oyuncu faydası
+
+Gerçek cihaz gözlemi, yanıt vermeyen ana eşitleme ve yeni kozmetik oda karşılaştırıldı. Destekli preview'in önceki ERR_CONNECTION_REFUSED engelinde somut recovery kanıtı yok; alternatif server/browser denenmedi ve aynı başarısız deneme tekrarlanmadı. Doğrudan kanıtlı kayıt beklemesi seçildi. Uzmanın eski gerçek ProgressSync bellek probe'unda hiç çözülmeyen GET/PUT, üç yeni cycle sonrasında da sırasıyla loading/sending ve syncing durumunda kaldı; dispose sinyali iptal etse de callback yok sayınca public promise bitmedi. Bu kaynak kusurudur, canlı kullanıcı olayı veya sağlayıcı testi değildir.
+
+Her load/save callback'i artık8sn deneme sınırında: token/yenileme/HTTP/yanıt gövdesi dahil. Her deneme ayrı controller kullanır, instance dispose aktif attempt'i iptal eder, timer/listener temizlenir. Signal'i dinlemeyen callback bile race sonrası kanalı sürekli kilitlemez. Timeout loaded/ACK üretmez; son yerel kelime ve iyi sonuç korunur. Sonraki olağan veya manuel deneme güncel snapshot ve yeni signal kullanır; geç eski success veya owner-error yeni state/cache/status/ACK/account blokunu değiştirmez. HTTP iptali sunucunun yazıyı kesin geri aldığı anlamına gelmez; mevcut idempotent/best merge korunur. Yoğun anlık retry, çıkış veya reload eklenmez.
+
+**Albüm → ana kayıt satırı:** bulut onayı beklemesi fiziksel bağlantının kesin koptuğu diye anlatılmaz. Ana ilerlemenin cihazda kaldığı ve bulut eşitlemesinin beklediği görünür; **Yeniden eşitle** ilk GET başarısızlığını da anında tekrar dener. Cihaz yazımı başarısızsa sahte başarı yok; owner-blocked durumda bulut yeniden açılmaz ve mevcut local-only kurtarma kalır. Bu metin ayrı ek bölüm/Sprint/aktif tur kaydını kapsamış gibi sunulmaz. Min44px doğal sarılan düğme ve mevcut status alanı, yeni modal yok.
+
+Önceki owner/current/explicit409 ayrımı, cache/load/merge/ACK ve keepalive boyut sınırı korunur. Eski daily/atlas/engine/catalog/legacy, sabit5+1, reward/best, CloudProgress algoritması, DB/uygulanmış göç/manifest/lock aynı kalır. Yeni bağımlılık, ücret, hesap, hizmet, grafik veya zamanlayıcı yok. Son kapı sayıları ve gerçek GitHub/Sites yayın kanıtı `studio-agents/journal/entries/2026-10-27_maintenance-validation.md` içinde tamamlanır. Gerçek telefon/DOM/yerleşim/büyük yazı/ekran okuyucu/FPS/provider timing/concurrent React/iki cihaz/PWA doğrulanmış sayılmaz. App Store hazır veya ölçülmüş tutma/keyif iddiası yok. Haftalık inceleme24Ekim kaydına göre31Ekim/sonraki uygun çalışmada kalır.
+
 ## 26 Ekim 2026 · 0.12.2 · Ana ilerlemenin hesap sınırı
 
 Başlangıç güncel Sites helper `262c78ce48d0b2925b9a92bb754e9a6e0a845c62`, başarılı Site23 /0.12.1; owner/public, aynı URL, GitHub main `3e7f595dc8f8039ef7e013c1b7978498b839a1ea` tam ağaç `7686ef09d4ee04db6bd840d43b39ffeb812becba` ile eşleşti. README/sürüm/harita, çalışma sözleşmesi/rol kaydı/öncelikler ve son koordinatör kaydından devam edildi. **Patili komşular** ve **Perde açılıyor** zaten başarıyla yayımlanmıştı; yeni çift veya snapshot üretimi yok.

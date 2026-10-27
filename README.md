@@ -41,6 +41,8 @@ Solo ilerleme cihazda hemen kaydedilir; bağlı profilin D1 kaydıyla eşitlenir
 
 0.12.2 istemcisi ana ilerleme GET/PUT isteğine beklediği hesap sahibini ekler; farklı/boş sahibi sunucu açık bir hesap-değişti koduyla reddeder. Eski istemci biçimi geriye uyumlu kalır; yeni guard olmayan eski sürümlere geriye dönük koruma iddia edilmez. İstemci bu durumda o bulut kanalını durdurur, aynı sahibin yerel kaydını sürdürür. Cihaz yazımı bozuksa önce yalnız kayıt tekrarı; sağlam ve oyun dışında ise profil yenileme sunulur. Bu, gerçek kimlik sağlayıcısında cihazlar arası yarışmanın test edildiği anlamına gelmez.
 
+0.12.3 ana ilerlemenin her GET/PUT denemesini sekiz saniyelik istemci süre sınırına bağlar; token edinme/yenileme ve JSON okuma da bu sınırdadır. Yanıt vermeyen callback eşitlemeyi sürekli kilitlemez; son yerel keşifler ve iyi sonuçlar sonraki denemede birleştirilir. Albümde bekleyen eşitleme için **Yeniden eşitle** ilk okumayı da tekrar dener. Timeout sunucunun bir yazmayı kesinlikle yapmadığı veya sekme kapanışında buluta teslim garantisi anlamına gelmez. Cihaz/hesap onayları ayrıdır; eski owner, reward ve kayıt biçimi kuralları aynı kalır.
+
 Sites kimlik başlıkları bu platformun doğrulanmış erişim sınırında kullanılır. Başka bir hosta taşırken bu başlıklara doğrudan güvenmeyin; yerel kimlik sağlayıcısını ve güven sınırını yapılandırın.
 
 ## Geliştirme ve kontroller

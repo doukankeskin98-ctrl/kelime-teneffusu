@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-27",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261027-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Mahalle maçı",
+          "themeId": "futbol",
+          "words": [
+            "KALE",
+            "FORMA",
+            "PAS",
+            "GOL"
+          ],
+          "size": 6,
+          "seed": 2026102701,
+          "difficulty": "Rahat",
+          "note": "Mahallenin sahasında dört küçük keşif. İlk harften son harfe kaydır veya iki uca dokun; çaprazları da ara."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "U",
+              "E",
+              "E",
+              "L",
+              "O",
+              "D"
+            ],
+            [
+              "Ö",
+              "S",
+              "O",
+              "L",
+              "O",
+              "Y"
+            ],
+            [
+              "N",
+              "G",
+              "A",
+              "J",
+              "A",
+              "M"
+            ],
+            [
+              "G",
+              "K",
+              "G",
+              "P",
+              "K",
+              "K"
+            ],
+            [
+              "A",
+              "M",
+              "R",
+              "O",
+              "F",
+              "T"
+            ],
+            [
+              "Y",
+              "R",
+              "Y",
+              "U",
+              "D",
+              "Ç"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "KALE",
+              "text": "KALE",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "FORMA",
+              "text": "FORMA",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "PAS",
+              "text": "PAS",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "GOL",
+              "text": "GOL",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "1.0",
+              "label": "FORMA",
+              "text": "FORMA",
+              "group": 1,
+              "a": [
+                4,
+                4
+              ],
+              "b": [
+                4,
+                0
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "KALE",
+              "text": "KALE",
+              "group": 0,
+              "a": [
+                3,
+                5
+              ],
+              "b": [
+                0,
+                2
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "PAS",
+              "text": "PAS",
+              "group": 2,
+              "a": [
+                3,
+                3
+              ],
+              "b": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "GOL",
+              "text": "GOL",
+              "group": 3,
+              "a": [
+                2,
+                1
+              ],
+              "b": [
+                0,
+                3
+              ]
+            }
+          ]
+        },
+        "contentHash": "e0f05cd06b71ece792cba39e29260f45e568e64159b09ad7c684edc31ebff615",
+        "publishedAt": 1793088000000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261027-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Sokakta doksanlar",
+          "themeId": "doksanlar",
+          "words": [
+            "KASET",
+            "WALKMAN",
+            "BİLYE",
+            "JETON",
+            "MİSKET",
+            "SEKSEK",
+            "MEKTUP"
+          ],
+          "size": 8,
+          "seed": 2026102702,
+          "difficulty": "Dengeli",
+          "note": "Kasetin ritmi, kaldırımın oyunu, bir mektubun hatırası. Yedi kelimeyi yatay, dikey, çapraz ve tersten keşfet."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "D",
+              "M",
+              "E",
+              "K",
+              "T",
+              "U",
+              "P",
+              "C"
+            ],
+            [
+              "Ş",
+              "E",
+              "M",
+              "İ",
+              "S",
+              "K",
+              "E",
+              "T"
+            ],
+            [
+              "A",
+              "K",
+              "J",
+              "T",
+              "Ş",
+              "M",
+              "S",
+              "B"
+            ],
+            [
+              "N",
+              "K",
+              "Ğ",
+              "T",
+              "E",
+              "E",
+              "İ",
+              "C"
+            ],
+            [
+              "O",
+              "N",
+              "A",
+              "M",
+              "K",
+              "L",
+              "A",
+              "W"
+            ],
+            [
+              "T",
+              "I",
+              "E",
+              "S",
+              "Y",
+              "Y",
+              "Ğ",
+              "B"
+            ],
+            [
+              "E",
+              "F",
+              "E",
+              "E",
+              "E",
+              "Ş",
+              "D",
+              "H"
+            ],
+            [
+              "J",
+              "K",
+              "İ",
+              "Y",
+              "S",
+              "T",
+              "N",
+              "Z"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "KASET",
+              "text": "KASET",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "WALKMAN",
+              "text": "WALKMAN",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "BİLYE",
+              "text": "BİLYE",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "JETON",
+              "text": "JETON",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "MİSKET",
+              "text": "MİSKET",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "SEKSEK",
+              "text": "SEKSEK",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "MEKTUP",
+              "text": "MEKTUP",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "1.0",
+              "label": "WALKMAN",
+              "text": "WALKMAN",
+              "group": 1,
+              "a": [
+                4,
+                7
+              ],
+              "b": [
+                4,
+                1
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "MİSKET",
+              "text": "MİSKET",
+              "group": 4,
+              "a": [
+                1,
+                2
+              ],
+              "b": [
+                1,
+                7
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "SEKSEK",
+              "text": "SEKSEK",
+              "group": 5,
+              "a": [
+                2,
+                6
+              ],
+              "b": [
+                7,
+                1
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "MEKTUP",
+              "text": "MEKTUP",
+              "group": 6,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                0,
+                6
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "KASET",
+              "text": "KASET",
+              "group": 0,
+              "a": [
+                3,
+                1
+              ],
+              "b": [
+                7,
+                5
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "BİLYE",
+              "text": "BİLYE",
+              "group": 2,
+              "a": [
+                2,
+                7
+              ],
+              "b": [
+                6,
+                3
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "JETON",
+              "text": "JETON",
+              "group": 3,
+              "a": [
+                7,
+                0
+              ],
+              "b": [
+                3,
+                0
+              ]
+            }
+          ]
+        },
+        "contentHash": "400b64b87a98ed9ef8f2f97e52034e32c01c7345fa6c13bbc4fbb048fe4e1996",
+        "publishedAt": 1793088000000,
+        "archived": false
+      }
+    }
+  ]
+}

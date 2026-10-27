@@ -3,7 +3,7 @@ import {describe,it} from 'node:test';
 import {ALL_JOURNEYS,MYSTERIES,journeyById} from '../lib/game/content.ts';
 import {keepBestSave} from '../lib/game/discovery.ts';
 import {emptyProgress,loadProgress,mergeProgress,cleanSave,progressBoard,PROGRESS_KEY,type Progress} from '../lib/game/progress.ts';
-import {ProgressSync,ProgressOwnerChangedError,type ProgressSaveStatus} from '../lib/game/progress-sync.ts';
+import {ProgressSync,ProgressOwnerChangedError,PROGRESS_SYNC_TIMEOUT,type ProgressSaveStatus} from '../lib/game/progress-sync.ts';
 import {nextDiscovery} from '../lib/game/next-discovery.ts';
 import {THEMES} from '../lib/game/catalog.ts';
 
@@ -84,6 +84,51 @@ describe('immediate local saves and account-scoped cloud synchronization',()=>{
  });
  it('uses the bounded keepalive upload on page exit',async()=>{
   let keepalive=false;const h=harness({save:async(p,_signal,value)=>{keepalive=value;return p;}});await h.sync.connect();h.change(discover(h.current));await h.sync.flush(true);assert.equal(keepalive,true);assert.equal(h.statuses.at(-1),'saved');
+ });
+ it('releases a hung GET at its deadline, retries with a new signal and ignores the old result',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});const old=deferred<Progress>(),signals:AbortSignal[]=[];
+  const h=harness({load:async signal=>{signals.push(signal);return signals.length===1?old.promise:discover(emptyProgress(),'turkiye.1');}});
+  const first=h.sync.connect();h.change(discover(h.current));await h.sync.connect();assert.equal(h.loads,1);
+  t.mock.timers.tick(PROGRESS_SYNC_TIMEOUT-1);assert.equal(signals[0]!.aborted,false);assert.equal(h.statuses.at(-1),'local');
+  t.mock.timers.tick(1);await first;assert.equal(signals[0]!.aborted,true);assert.equal(h.statuses.at(-1),'offline');assert.equal(h.local.saves['uzay.0']!.strokes.length,1);
+  await h.sync.connect();await h.sync.flush();assert.equal(h.loads,2);assert.notEqual(signals[0],signals[1]);assert.equal(signals[1]!.aborted,false);assert.equal(h.statuses.at(-1),'saved');
+  const state=JSON.stringify(h.current),writes=h.writes.length,statuses=h.statuses.length;
+  old.resolve(discover(emptyProgress(),'uzay.3',100));for(let i=0;i<12;i++)await Promise.resolve();
+  assert.equal(JSON.stringify(h.current),state);assert.equal(h.local.saves['uzay.3'],undefined);assert.equal(h.writes.length,writes);assert.equal(h.statuses.length,statuses);
+  t.mock.timers.tick(PROGRESS_SYNC_TIMEOUT);assert.equal(signals[1]!.aborted,false);h.sync.dispose();assert.equal(signals[1]!.aborted,false);
+ });
+ it('retries a timed-out PUT with the latest discovery and does not acknowledge a late old save',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});const old=deferred<Progress>(),signals:AbortSignal[]=[];
+  const h=harness({save:async(p,signal)=>{signals.push(signal);return signals.length===1?old.promise:p;}});await h.sync.connect();h.change(discover(h.current));
+  const first=h.sync.flush();h.change(discover(h.current,'uzay.0',2));await h.sync.flush();assert.equal(h.saved.length,1);
+  t.mock.timers.tick(PROGRESS_SYNC_TIMEOUT);await first;assert.equal(signals[0]!.aborted,true);assert.equal(h.statuses.at(-1),'offline');assert.equal(h.local.saves['uzay.0']!.strokes.length,2);
+  await h.sync.flush();assert.equal(h.saved[1]!.saves['uzay.0']!.strokes.length,2);assert.notEqual(signals[0],signals[1]);assert.equal(h.statuses.at(-1),'saved');
+  const writes=h.writes.length,statuses=h.statuses.length;old.resolve(h.saved[0]!);for(let i=0;i<12;i++)await Promise.resolve();
+  assert.equal(h.writes.length,writes);assert.equal(h.statuses.length,statuses);await h.sync.flush();assert.equal(h.saved.length,2);assert.equal(h.current.saves['uzay.0']!.strokes.length,2);h.sync.dispose();
+ });
+ for(const mode of ['GET','PUT'])it('ignores a late owner rejection from timed-out '+mode+' without blocking a newer attempt',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});const old=deferred<Progress>();let calls=0;
+  const operation=async(p=emptyProgress())=>++calls===1?old.promise:p;
+  const h=harness(mode==='GET'?{load:()=>operation()}:{save:p=>operation(p)});
+  const first=mode==='GET'?h.sync.connect():(await h.sync.connect(),h.change(discover(h.current)),h.sync.flush());
+  t.mock.timers.tick(PROGRESS_SYNC_TIMEOUT);await first;
+  if(mode==='GET')await h.sync.connect();else await h.sync.flush();
+  old.reject(new ProgressOwnerChangedError());for(let i=0;i<12;i++)await Promise.resolve();
+  h.change(discover(h.current,'uzay.0',2));await h.sync.flush();assert.equal(h.statuses.at(-1),'saved');assert.equal(h.local.saves['uzay.0']!.strokes.length,2);h.sync.dispose();
+ });
+ for(const mode of ['GET','PUT'])it('settles signal-insensitive '+mode+' immediately on dispose without reporting a save',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});let signal:AbortSignal|undefined,settled=false;
+  const operation=(s:AbortSignal)=>{signal=s;return new Promise<Progress>(()=>{});};
+  const h=harness(mode==='GET'?{load:operation}:{save:(_p,s)=>operation(s)});
+  const pending=(mode==='GET'?h.sync.connect():(await h.sync.connect(),h.change(discover(h.current)),h.sync.flush())).then(()=>{settled=true;});
+  const writes=h.writes.length,statuses=h.statuses.length;h.sync.dispose();await pending;assert.equal(settled,true);assert.equal(signal!.aborted,true);
+  t.mock.timers.tick(PROGRESS_SYNC_TIMEOUT);assert.equal(h.writes.length,writes);assert.equal(h.statuses.length,statuses);
+ });
+ it('keeps a device-write error visible after a timeout and recovers both stores on retry',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});let calls=0;
+  const h=harness({storageFails:true,load:async()=>++calls===1?new Promise<Progress>(()=>{}):emptyProgress()});
+  const pending=h.sync.connect();h.change(discover(h.current));t.mock.timers.tick(PROGRESS_SYNC_TIMEOUT);await pending;assert.equal(h.statuses.at(-1),'storage-error');assert.equal(h.cache.has(PROGRESS_KEY+':alice'),false);
+  h.storageFails(false);await h.sync.connect();await h.sync.flush();assert.equal(h.statuses.at(-1),'saved');assert.equal(h.local.saves['uzay.0']!.strokes.length,1);h.sync.dispose();
  });
 });
 
