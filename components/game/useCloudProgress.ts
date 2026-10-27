@@ -13,7 +13,7 @@ export function useCloudProgress(userId:string|undefined,progress:Progress,setPr
    save:async(value,signal,keepalive)=>{const response=await memberFetch('/api/progress',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({progress:value,expectedOwnerId:userId}),signal,keepalive});await checkProgressResponse(response);return (await response.json() as {progress:Progress}).progress;},
   });session.current=sync;
   const cycle=async()=>{await sync.connect();await sync.flush();};void cycle();
-  const interval=setInterval(()=>void cycle(),8000),online=()=>void cycle(),flush=()=>{void sync.flush();},hide=()=>{if(document.hidden)void sync.flush(true);},pagehide=()=>{void sync.flush(true);};
+  const interval=setInterval(()=>void cycle(),8000),online=()=>void cycle(),flush=()=>{void cycle();},hide=()=>{if(document.hidden)void sync.flush(true);},pagehide=()=>{void sync.flush(true);};
   window.addEventListener('online',online);window.addEventListener('kt-sync-now',flush);window.addEventListener('pagehide',pagehide);document.addEventListener('visibilitychange',hide);
   return ()=>{sync.dispose();session.current=null;clearInterval(interval);window.removeEventListener('online',online);window.removeEventListener('kt-sync-now',flush);window.removeEventListener('pagehide',pagehide);document.removeEventListener('visibilitychange',hide);};
  },[userId,ready,setProgress]);
