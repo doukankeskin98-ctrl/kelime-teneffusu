@@ -35,6 +35,13 @@ describe('daily endpoint guards existing-attempt recovery and mutation intent',(
   assert.equal((await h.request('POST','','alice',{action:'dailyHint',id:h.initial.id})).status,200);assert.equal((await h.game.dailyState('alice',h.initial.id)).hints,2);
   assert.equal((await h.request('POST','','alice',{...payload,requestId:'bad'})).status,400);assert.equal((await h.request('POST','','alice',payload,'https://foreign')).status,403);assert.equal((await h.request('POST','',undefined,payload)).status,401);assert.equal((await h.request('POST','','alice',{action:'daily'})).status,200);
  });
+ it('returns explicit terminal codes while preserving accepted receipts and private HTTP responses',async()=>{
+  const h=await route(),payload={action:'dailyHint',id:h.initial.id,expectedOwnerId:'alice',requestId:key};await h.request('POST','','alice',payload);
+  for(let i=0;i<2;i++)await h.request('POST','','alice',{action:'dailyHint',id:h.initial.id});
+  const limit=await h.request('POST','','alice',{...payload,requestId:crypto.randomUUID()});assert.equal(limit.status,400);assert.equal((await limit.json() as any).code,'DAILY_HINT_LIMIT');
+  h.advance(86400001);const expired=await h.request('POST','','alice',{...payload,requestId:crypto.randomUUID()});assert.equal(expired.status,409);assert.equal((await expired.json() as any).code,'DAILY_EXPIRED');assert.equal(expired.headers.get('Cache-Control'),'no-store');
+  const receipt=await h.request('POST','','alice',payload);assert.equal(receipt.status,200);const body=await receipt.json() as any;assert.equal(body.hints,3);assert.equal('hintReceipts' in body,false);assert.equal('placements' in body.board,false);
+ });
 });
 
 describe('actual daily transport preserves id and owner through its auth boundary',()=>{

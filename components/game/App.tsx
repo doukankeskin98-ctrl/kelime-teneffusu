@@ -10,6 +10,8 @@ import {THEMES,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
 import {JOURNEYS} from '@/lib/game/content';
 import {dailySpec,istanbulDay} from '@/lib/game/engine';
 import {DAILY_REQUEST_TIMEOUT} from '@/lib/game/daily-action';
+import {dailyBoardSignature,readDailyPending} from '@/lib/game/daily-pending';
+import {requestDaily} from './daily-transport';
 import {emptyProgress,loadProgress,mergeProgress,PROGRESS_KEY,streak,collectionStats} from '@/lib/game/progress';
 import {SAVE_KEY,validateSave} from '@/lib/game/legacy';
 import type {DailyView} from '@/lib/game/server';
@@ -78,9 +80,11 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
   setBusy(true);setError('');let timer:ReturnType<typeof setTimeout>|undefined,onAbort=()=>{};
   const deadline=new Promise<never>((_yes,no)=>{onAbort=()=>no(new Error('Günün keşfi zamanında hazırlanamadı. Yeniden deneyebilirsin.'));launch.controller.signal.addEventListener('abort',onAbort,{once:true});timer=setTimeout(()=>launch.controller.abort(),DAILY_REQUEST_TIMEOUT);});
   try{
-   const d=await Promise.race([api<DailyView>('daily',{expectedOwnerId:owner},launch.controller.signal),deadline]);
+   const pending=readDailyPending(()=>sessionStorage,owner);
+   const d=await Promise.race([pending?requestDaily(pending.id,owner,null,launch.controller.signal):api<DailyView>('daily',{expectedOwnerId:owner},launch.controller.signal),deadline]);
    if(!isCurrent()||launch.controller.signal.aborted)return;
    if(!d||typeof d.id!=='string'||typeof d.day!=='string'||!d.board||!Array.isArray(d.strokes)||!Number.isFinite(d.serverNow)||!Number.isFinite(d.starts)||!Number.isFinite(d.duration)||!(d.finished===null||typeof d.finished==='number'&&Number.isFinite(d.finished)))throw new Error('Günlük kaydı doğrulanamadı. Yeniden deneyebilirsin.');
+   if(pending&&(pending.id!==d.id||pending.day!==d.day||pending.signature!==dailyBoardSignature(d.board)))throw new Error('Bekleyen günlük işlemi bu kayıtla eşleşmedi. Yeni oyun başlatılmadı.');
    setDaily(d);const spec=dailySpec(d.day);setSolo({themeId:spec.themeId,level:spec.level,run:Date.now()});window.scrollTo({top:0});
   }catch(e){if(isCurrent())setError(e instanceof Error?e.message:'Günün keşfi hazırlanamadı.');}
   finally{clearTimeout(timer);launch.controller.signal.removeEventListener('abort',onAbort);if(dailyLaunch.current===launch){dailyLaunch.current=null;setBusy(false);}}

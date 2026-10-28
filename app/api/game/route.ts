@@ -42,4 +42,4 @@ export async function POST(request:Request){try{
   default:throw new GameError('Bilinmeyen işlem.');
  }
 }catch(e){return failure(e);}}
-async function failure(e:unknown){if(e instanceof GameError||e instanceof IdentityError){if(e.status>=500)await recordOperationalFault(env.DB,'game');return json({error:e.message},e.status);}if(e instanceof SyntaxError)return json({error:'İstek okunamadı.'},400);await recordOperationalFault(env.DB,'game');return json({error:'Bağlantı kurulamadı. Tekrar dene.'},503);}
+async function failure(e:unknown){if(e instanceof GameError||e instanceof IdentityError){if(e.status>=500)await recordOperationalFault(env.DB,'game');return json({error:e.message,...(e instanceof GameError&&e.code?{code:e.code}:{})},e.status);}if(e instanceof SyntaxError)return json({error:'İstek okunamadı.'},400);await recordOperationalFault(env.DB,'game');return json({error:'Bağlantı kurulamadı. Tekrar dene.'},503);}
