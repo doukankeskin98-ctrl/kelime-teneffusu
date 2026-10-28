@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.12.5',date:'28 Ekim 2026',title:'Günlük keşfinde daha güvenli devam',items:[
+  {where:'Bugünün iki keşfi',detail:'Yazlık sinema ile 6 × 6 kolay bir Yeşilçam molası; Sette bir gün ile 8 × 8 dengeli bir dizi keşfi. Çapraz kelimeleriyle dünyalarında ve kalıcı arşivde.'},
+  {where:'Günlük oyun · sunucu onayı',detail:'Kelimen veya ipucun doğrulanırken bekleme açıkça görünür; tahta açık kalır, yeni hamle bekler. Süre devam eder. Yanıt gecikirse Kontrol et ve sürdür ile bekleyen işlemi yeniden kontrol edebilirsin.'},
+  {where:'İpucu ve hesap güvenliği',detail:'Aynı açık oyundaki bekleyen ipucu tekrar denendiğinde ikinci kez süre cezası eklenmez. Hesabın değişirse eski yanıt yeni profiline uygulanmaz; günlük sayfasından yeniden açabilirsin.'},
+ ]},
  {version:'0.12.4',date:'27 Ekim 2026',title:'Biten keşfine yeniden bak',items:[
   {where:'Bölüm sonu · tahtayı inceleme',detail:'Tamamlanan tahtada harfler ve bulduğun çizgiler açık kalır. İnceleme sırasında işe yaramayan Devam et ve İpucu kontrolleri gösterilmez; büyütme, ses ve yardım kullanılabilir.'},
   {where:'Gizli Tema · sonuçlarına dönüş',detail:'Sonuç penceresini kapattığında Sonucu göster ile yeniden açabilirsin. Bağlantı kartı keşfin tamamlandığını anlatır; yardım ile sonuç penceresi üst üste binmez. Önceki en iyi sonucun ve koleksiyonun korunur.'},

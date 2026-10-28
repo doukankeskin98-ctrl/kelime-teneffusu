@@ -10,6 +10,12 @@ async function service(){if(!env.DB)throw new GameError('Oyun sunucusu hazırlan
 export async function GET(request:Request){try{
  const url=new URL(request.url),action=url.searchParams.get('action');
  const game=await service();if(action==='rankings')return json(await game.rankings());
+ if(action==='dailyState'){
+  const member=await gameMember(request);if(!member)throw new GameError('Devam etmek için giriş yap.',401);
+  if(url.searchParams.get('expectedOwnerId')!==member.userId)return json({error:'Günlük oyunun hesabı değişti.',code:'DAILY_OWNER_CHANGED'},409);
+  await rateLimit(env.DB!,'game:'+member.userId,180);
+  return json(await game.dailyState(member.userId,url.searchParams.get('id')??''));
+ }
  const principal=await currentPrincipal(request);
  if(principal&&!principal.verified)return json({authenticated:false,needsVerification:true});
  if(principal&&!await accountStore().find(principal))return json({authenticated:false,needsUsername:true});
@@ -21,6 +27,7 @@ export async function POST(request:Request){try{
  const origin=request.headers.get('origin');if(origin!==new URL(request.url).origin)throw new GameError('İstek kaynağı doğrulanamadı.',403);
  const user=await gameMember(request);if(!user)throw new GameError('Devam etmek için giriş yap.',401);
  const data=await boundedJson(request,4096),game=await service(),id=typeof data['id']==='string'?data['id']:'';
+ if((data['action']==='daily'||data['action']==='dailyClaim'||data['action']==='dailyHint')&&Object.hasOwn(data,'expectedOwnerId')&&data['expectedOwnerId']!==user.userId)return json({error:'Günlük oyunun hesabı değişti.',code:'DAILY_OWNER_CHANGED'},409);
  await rateLimit(env.DB!,'game:'+user.userId,180);
  switch(data['action']){
   case 'rename':return json(await game.rename(user.userId,data['name']));
@@ -31,7 +38,7 @@ export async function POST(request:Request){try{
   case 'rematch':return json(await game.rematch(user.userId,id));
   case 'daily':return json(await game.daily(user.userId));
   case 'dailyClaim':return json(await game.dailyClaim(user.userId,id,data['a'],data['b']));
-  case 'dailyHint':return json(await game.dailyClaim(user.userId,id,null,null,true));
+  case 'dailyHint':return json(await game.dailyClaim(user.userId,id,null,null,true,data['requestId']));
   default:throw new GameError('Bilinmeyen işlem.');
  }
 }catch(e){return failure(e);}}

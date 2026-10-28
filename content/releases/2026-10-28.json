@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-28",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261028-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Yazlık sinema",
+          "themeId": "yesilcam",
+          "words": [
+            "PERDE",
+            "AFİŞ",
+            "BİLET",
+            "MISIR"
+          ],
+          "size": 6,
+          "seed": 2026102801,
+          "difficulty": "Rahat",
+          "note": "Açık havada küçük bir film molası. Dört kelimeyi ilk harften son harfe kaydırarak veya iki uca dokunarak bul; çaprazlara da bak."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "L",
+              "A",
+              "Ç",
+              "H",
+              "P",
+              "M"
+            ],
+            [
+              "U",
+              "Ö",
+              "F",
+              "E",
+              "B",
+              "I"
+            ],
+            [
+              "D",
+              "Ğ",
+              "R",
+              "İ",
+              "H",
+              "S"
+            ],
+            [
+              "Y",
+              "D",
+              "L",
+              "V",
+              "Ş",
+              "I"
+            ],
+            [
+              "E",
+              "E",
+              "Ğ",
+              "G",
+              "T",
+              "R"
+            ],
+            [
+              "T",
+              "Ü",
+              "P",
+              "K",
+              "E",
+              "Ş"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "PERDE",
+              "text": "PERDE",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "AFİŞ",
+              "text": "AFİŞ",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "BİLET",
+              "text": "BİLET",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "MISIR",
+              "text": "MISIR",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "0.0",
+              "label": "PERDE",
+              "text": "PERDE",
+              "group": 0,
+              "a": [
+                0,
+                4
+              ],
+              "b": [
+                4,
+                0
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "BİLET",
+              "text": "BİLET",
+              "group": 2,
+              "a": [
+                1,
+                4
+              ],
+              "b": [
+                5,
+                0
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "MISIR",
+              "text": "MISIR",
+              "group": 3,
+              "a": [
+                0,
+                5
+              ],
+              "b": [
+                4,
+                5
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "AFİŞ",
+              "text": "AFİŞ",
+              "group": 1,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                3,
+                4
+              ]
+            }
+          ]
+        },
+        "contentHash": "895f20b8279dbc98a3c0911eade383a6c57463ce30e36bda8a0c30d92389adc7",
+        "publishedAt": 1793174400000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261028-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Sette bir gün",
+          "themeId": "diziler",
+          "words": [
+            "DEKOR",
+            "KOSTÜM",
+            "PROVA",
+            "REPLİK",
+            "BÖLÜM",
+            "OYUNCU",
+            "SENARYO"
+          ],
+          "size": 8,
+          "seed": 2026102802,
+          "difficulty": "Dengeli",
+          "note": "Dekordan repliğe, bir bölümün perde arkasındaki yedi kelime. Yatay, dikey, çapraz ve ters yerleşimleri keşfet."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "F",
+              "D",
+              "Ç",
+              "L",
+              "M",
+              "A",
+              "S",
+              "Ö"
+            ],
+            [
+              "H",
+              "Ğ",
+              "E",
+              "Ü",
+              "İ",
+              "E",
+              "Z",
+              "Ö"
+            ],
+            [
+              "H",
+              "Ç",
+              "L",
+              "K",
+              "N",
+              "K",
+              "K",
+              "U"
+            ],
+            [
+              "T",
+              "Ö",
+              "İ",
+              "A",
+              "O",
+              "A",
+              "İ",
+              "C"
+            ],
+            [
+              "B",
+              "Y",
+              "R",
+              "S",
+              "V",
+              "R",
+              "L",
+              "N"
+            ],
+            [
+              "Ç",
+              "Y",
+              "T",
+              "O",
+              "Z",
+              "Ü",
+              "P",
+              "U"
+            ],
+            [
+              "O",
+              "Ü",
+              "R",
+              "S",
+              "O",
+              "V",
+              "E",
+              "Y"
+            ],
+            [
+              "M",
+              "P",
+              "E",
+              "Y",
+              "H",
+              "F",
+              "R",
+              "O"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "DEKOR",
+              "text": "DEKOR",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "KOSTÜM",
+              "text": "KOSTÜM",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "PROVA",
+              "text": "PROVA",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "REPLİK",
+              "text": "REPLİK",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "BÖLÜM",
+              "text": "BÖLÜM",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "OYUNCU",
+              "text": "OYUNCU",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "SENARYO",
+              "text": "SENARYO",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "6.0",
+              "label": "SENARYO",
+              "text": "SENARYO",
+              "group": 6,
+              "a": [
+                0,
+                6
+              ],
+              "b": [
+                6,
+                0
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "KOSTÜM",
+              "text": "KOSTÜM",
+              "group": 1,
+              "a": [
+                2,
+                5
+              ],
+              "b": [
+                7,
+                0
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "REPLİK",
+              "text": "REPLİK",
+              "group": 3,
+              "a": [
+                7,
+                6
+              ],
+              "b": [
+                2,
+                6
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "OYUNCU",
+              "text": "OYUNCU",
+              "group": 5,
+              "a": [
+                7,
+                7
+              ],
+              "b": [
+                2,
+                7
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "DEKOR",
+              "text": "DEKOR",
+              "group": 0,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                4,
+                5
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "PROVA",
+              "text": "PROVA",
+              "group": 2,
+              "a": [
+                7,
+                1
+              ],
+              "b": [
+                3,
+                5
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "BÖLÜM",
+              "text": "BÖLÜM",
+              "group": 4,
+              "a": [
+                4,
+                0
+              ],
+              "b": [
+                0,
+                4
+              ]
+            }
+          ]
+        },
+        "contentHash": "157591f31c1b3d9854e73cf53c2995f52b725a3531f58ab49c186e1543891a05",
+        "publishedAt": 1793174400000,
+        "archived": false
+      }
+    }
+  ]
+}

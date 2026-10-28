@@ -5,13 +5,14 @@ import fourthRelease from '../../content/releases/2026-10-24.json' with {type:'j
 import fifthRelease from '../../content/releases/2026-10-25.json' with {type:'json'};
 import sixthRelease from '../../content/releases/2026-10-26.json' with {type:'json'};
 import seventhRelease from '../../content/releases/2026-10-27.json' with {type:'json'};
+import eighthRelease from '../../content/releases/2026-10-28.json' with {type:'json'};
 import type {PlayableChapter} from './content.ts';
 import type {ReleaseSummary} from './release-identity.ts';
 export {releaseChapterId,type ReleaseSummary} from './release-identity.ts';
 
 export interface ReleaseBatch {date:string;chapters:{slot:number;chapter:PlayableChapter}[]}
 /** Append one immutable snapshot per UTC date. Never regenerate a published file. */
-export const RELEASE_BATCHES:readonly ReleaseBatch[]=[firstRelease as ReleaseBatch,secondRelease as ReleaseBatch,thirdRelease as ReleaseBatch,fourthRelease as ReleaseBatch,fifthRelease as ReleaseBatch,sixthRelease as ReleaseBatch,seventhRelease as ReleaseBatch];
+export const RELEASE_BATCHES:readonly ReleaseBatch[]=[firstRelease as ReleaseBatch,secondRelease as ReleaseBatch,thirdRelease as ReleaseBatch,fourthRelease as ReleaseBatch,fifthRelease as ReleaseBatch,sixthRelease as ReleaseBatch,seventhRelease as ReleaseBatch,eighthRelease as ReleaseBatch];
 export const reservedReleaseId=(id:unknown)=>RELEASE_BATCHES.some(batch=>batch.chapters.some(item=>item.chapter.id===id));
 function available(now:number){return RELEASE_BATCHES.filter(batch=>batch.date<=new Date(now).toISOString().slice(0,10)).flatMap(batch=>batch.chapters.filter(item=>item.chapter.publishedAt<=now).map(item=>({...item,releaseDate:batch.date}))).sort((a,b)=>b.releaseDate.localeCompare(a.releaseDate)||a.slot-b.slot);}
 export function releaseCatalogue(offset=0,now=Date.now(),themeId?:string){
