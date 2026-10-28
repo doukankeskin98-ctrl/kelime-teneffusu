@@ -75,3 +75,12 @@ describe('Mystery result return and completed review preserve achievements',()=>
   const h=mystery({solved:false});try{assert.equal(h.value.mysteries.length,0);h.closeResult();const aside=h.layout().props['aside'];assert.match(text(aside),new RegExp(h.spec.answer));assert.equal(nodes(aside).some(n=>n.type==='button'&&/Bağlantıyı bul/.test(text(n))),false);assert.equal(nodes(aside).find(n=>n.type==='WordList')!.props['board'].targets.length,h.board.targets.length);h.click('Sonucu göster');assert.equal(h.value.mysteries.length,0);}finally{h.close();}
  });
 });
+
+
+it('pending daily controls and layout expose actual waiting without a fake pause or completed board',()=>{
+ const actions={onHint(){},onPause(){},onZoom(){},onSound(){},onHelp(){}};
+ const controls=common['PlayControls']({...actions,paused:false,completed:false,canPause:false,blocked:true,busy:true,zoom:false,sound:false,hints:3});
+ const buttons=nodes(controls).filter(n=>n.type==='button'),hint=buttons.find(n=>/hint-button/.test(n.props['className']??''))!;assert.equal(buttons.length,4);assert.equal(hint.props['disabled'],true);assert.equal(hint.props['aria-busy'],true);assert.equal(buttons.filter(n=>!n.props['disabled']).length,3);assert.doesNotMatch(text(controls),/İnceleme/);
+ const tree=common['PlayLayout']({title:'Günlük',kicker:'GÜNLÜK',onBack(){},board:content.TUTORIAL,strokes:[],paused:false,readOnly:false,inputBlocked:true,busy:true,inputStatus:'Kelimen doğrulanıyor.',zoom:false,onCommit(){},preview:'BEKLİYOR',onPreview(){},children:null,aside:null,footer:null});
+ const board=nodes(tree).find(n=>n.type==='Board')!,note=nodes(tree).find(n=>String(n.props['className']??'').startsWith('selection-preview'))!;assert.equal(board.props['blocked'],true);assert.equal(board.props['busy'],true);assert.equal(board.props['paused'],false);assert.equal(board.props['readOnly'],false);assert.equal(text(note),'Kelimen doğrulanıyor.');
+});

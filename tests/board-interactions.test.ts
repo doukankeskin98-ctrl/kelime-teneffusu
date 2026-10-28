@@ -13,7 +13,7 @@ type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
 function nodes(value:unknown):Node[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object')return [];const n=value as Node;return [n,...nodes(n.props?.['children'])];}
 function text(value:unknown):string{if(typeof value==='string')return value;if(Array.isArray(value))return value.map(text).join('');return value&&typeof value==='object'?text((value as Node).props?.['children']):'';}
 const compiled=ts.transpileModule(readFileSync('components/game/Board.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
-function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;strokes?:Stroke[]}={}){
+function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
  const commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
@@ -26,7 +26,7 @@ function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;stroke
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,zoom:options.zoom??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word)};
+ const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word)};
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
   if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
   if(name==='@/lib/game/engine')return {snapLine};if(name==='@/lib/game/telemetry')return {track(){}};
@@ -136,4 +136,12 @@ describe('completed review is visible, scrollable and cannot select again',()=>{
   const h=harness();drag(h);const staleUp=h.boardNode().props['onPointerUp'],before=h.previews.length;h.setProps({readOnly:true},false);
   staleUp({pointerId:1,clientX:260,clientY:270});h.flush();assert.equal(h.commits.length,0);assert.equal(h.selected().length,0);assert.ok(h.previews.slice(before).every(word=>word===''));h.unmount();
  });
+});
+
+
+it('keeps pending server input visible and busy without claiming completion, then unlocks a fresh selection',()=>{
+ const h=harness({strokes:[TUTORIAL.placements[0]!]});drag(h);h.setProps({blocked:true,busy:true},false);h.flush();h.send('onPointerUp',b);h.tap(a);h.tap(b);h.key('Enter');
+ assert.equal(h.commits.length,0);assert.equal(h.selected().length,0);assert.equal(h.boardNode().props['aria-busy'],true);assert.match(h.boardNode().props['aria-label'],/Kelimen doğrulanıyor/);assert.doesNotMatch(h.boardNode().props['aria-label'],/tamamlandı|duraklatıldı/);assert.equal(h.boardNode().props['style'].touchAction,'pan-x pan-y');
+ assert.equal(nodes(h.tree).some(n=>n.props?.['className']==='board-paused'),false);assert.equal(nodes(h.tree).filter(n=>String(n.props?.['className']??'').startsWith('found-stroke')).length,1);
+ h.setProps({blocked:false,busy:false});h.tap(a);h.tap(b);assert.equal(h.commits.length,1);h.unmount();
 });

@@ -13,6 +13,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 - Keşif albümleri, rozetler, açılan renk paletleri, kişisel en iyi solo sonuçları ve tekrar oynama.
 - Tamamlanan Solo ve Gizli Tema tahtaları ayrı inceleme durumunda açık kalır: harfler/çizgiler, büyütme, ses ve yardım korunur; yeni hamle veya ipucu sunulmaz. Gizli Tema sonucunu kapatınca **Sonucu göster** ile yeniden açabilir, sonraki keşfe veya gerçek tekrar oyununa geçebilirsin. İnceleme kazanımları ve en iyi sonucu değiştirmez.
 - Her gün İstanbul saatine göre ortak bulmaca. Süre sunucuda, ipucu başına +15 saniye.
+- Günlük oyunda kelime/ipucu onayı beklenirken tahta açık kalır; yeni seçimler ve ipucu bekler, süre sürer. Sekiz saniyede yanıt alınamazsa **Kontrol et ve sürdür** aynı günlük kaydını kontrol eder; aynı açık oturumdaki bekleyen ipucunu tekrar cezalandırmadan sürdürür. Hesap değişirse eski yanıt uygulanmaz, günlük sayfasına dönüşte profil yeniden kontrol edilir.
 - 120 saniyelik gerçek iki kişilik Arena. Özel odalar, paylaşım bağlantısı, ortak geri sayım, Altın Kelime, bağlantıdan dönüş ve karşılıklı rövanş.
 - Dereceli hızlı eşleşmede Elo, bekledikçe genişleyen beceri aralığı. Özel odalar dereceyi değiştirmez.
 - Arkadaşının İzinde: gerçek, sunucuda kaydedilmiş bir performansa karşı aynı tahta. Canlı olmadığı açıkça gösterilir.
@@ -43,6 +44,8 @@ Solo ilerleme cihazda hemen kaydedilir; bağlı profilin D1 kaydıyla eşitlenir
 0.12.2 istemcisi ana ilerleme GET/PUT isteğine beklediği hesap sahibini ekler; farklı/boş sahibi sunucu açık bir hesap-değişti koduyla reddeder. Eski istemci biçimi geriye uyumlu kalır; yeni guard olmayan eski sürümlere geriye dönük koruma iddia edilmez. İstemci bu durumda o bulut kanalını durdurur, aynı sahibin yerel kaydını sürdürür. Cihaz yazımı bozuksa önce yalnız kayıt tekrarı; sağlam ve oyun dışında ise profil yenileme sunulur. Bu, gerçek kimlik sağlayıcısında cihazlar arası yarışmanın test edildiği anlamına gelmez.
 
 0.12.3 ana ilerlemenin her GET/PUT denemesini sekiz saniyelik istemci süre sınırına bağlar; token edinme/yenileme ve JSON okuma da bu sınırdadır. Yanıt vermeyen callback eşitlemeyi sürekli kilitlemez; son yerel keşifler ve iyi sonuçlar sonraki denemede birleştirilir. Albümde bekleyen eşitleme için **Yeniden eşitle** ilk okumayı da tekrar dener. Timeout sunucunun bir yazmayı kesinlikle yapmadığı veya sekme kapanışında buluta teslim garantisi anlamına gelmez. Cihaz/hesap onayları ayrıdır; eski owner, reward ve kayıt biçimi kuralları aynı kalır.
+
+0.12.5 günlük açılış/hamle/kontrol isteklerini de token/HTTP/JSON dahil sekiz saniyeyle sınırlar. Aynı açık oyundaki ipucu niyeti sunucuda tek işlem anahtarıyla doğrulanır; belirsiz ilk isteğin ardından gelen tekrar reddi anahtarı erken silmez. Salt okunur kontrol aynı owner/günlük kimliğine bakar, gece yarısından sonra başka gün başlatmaz. Yeni guard taşımayan eski istemciler uyumludur; onların ipucu tekrar davranışı değişmez. Bekleyen anahtar bu aşamada açık Solo oturumundadır; geri çıkış/yenileme sonrası tüm yollar için tek-ceza garantisi verilmez. Gerçek sağlayıcı/cihaz doğrulaması ayrıca açıktır.
 
 Sites kimlik başlıkları bu platformun doğrulanmış erişim sınırında kullanılır. Başka bir hosta taşırken bu başlıklara doğrudan güvenmeyin; yerel kimlik sağlayıcısını ve güven sınırını yapılandırın.
 
