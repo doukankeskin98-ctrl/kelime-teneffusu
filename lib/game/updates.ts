@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.12.6',date:'28 Ekim 2026',title:'Günlük keşfine aynı sekmede dön',items:[
+  {where:'Günlük oyun · geri dönüş ve yenileme',detail:'Onayı bekleyen kelime veya ipucun aynı sekmede korunur. Günlük oyunu yeniden açtığında önce o işlem kontrol edilir; ipucu için Kontrol et ve sürdür aynı isteği kullanır. Sekme kapandıktan sonra koruma garantisi verilmez.'},
+  {where:'İşlem kaydı · güvenli yeniden deneme',detail:'Bu sekmede işlem kaydı tutulamıyorsa yeni hamle sessizce gönderilmez. Kaydı yeniden dene ile kontrol edebilir veya günlük sayfasına dönebilirsin. Eski günün bekleyen işlemi yeni güne karıştırılmaz.'},
+  {where:'Süresi dolan günlük deneme',detail:'Eski denemenin güvenli kapanışı doğrulandığında günlük sayfasından güncel keşfe geçebilirsin. Önceden onaylanmış ipucun ikinci süre cezası oluşturmaz.'},
+ ]},
  {version:'0.12.5',date:'28 Ekim 2026',title:'Günlük keşfinde daha güvenli devam',items:[
   {where:'Bugünün iki keşfi',detail:'Yazlık sinema ile 6 × 6 kolay bir Yeşilçam molası; Sette bir gün ile 8 × 8 dengeli bir dizi keşfi. Çapraz kelimeleriyle dünyalarında ve kalıcı arşivde.'},
   {where:'Günlük oyun · sunucu onayı',detail:'Kelimen veya ipucun doğrulanırken bekleme açıkça görünür; tahta açık kalır, yeni hamle bekler. Süre devam eder. Yanıt gecikirse Kontrol et ve sürdür ile bekleyen işlemi yeniden kontrol edebilirsin.'},

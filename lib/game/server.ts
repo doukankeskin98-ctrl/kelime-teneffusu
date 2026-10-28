@@ -3,7 +3,7 @@ import { THEMES } from './catalog.ts';
 
 export interface Statement { bind(...values: unknown[]): Statement; first<T=Record<string,unknown>>(): Promise<T|null>; all<T=Record<string,unknown>>(): Promise<{results:T[]}>; run():Promise<{meta:{changes:number}}> }
 export interface Database {prepare(sql:string):Statement;batch(statements:Statement[]):Promise<{meta:{changes:number}}[]>}
-export class GameError extends Error {constructor(message:string,public status=400){super(message);}}
+export class GameError extends Error {constructor(message:string,public status=400,public code?:string){super(message);}}
 export interface DuelPlayer { id:string; name:string; ready:boolean; strokes:Stroke[]; score:number; seen:number; lastFind:number; rematch:boolean }
 export interface Room {id:string;code:string;kind:'quick'|'friend';phase:'waiting'|'ready'|'active'|'finished'|'cancelled';themeId:string;level:number;seed:number;starts:number|null;ends:number|null;winner:string|null;reason:string;players:DuelPlayer[];round:number;queuedAt?:number}
 interface RoomRow {id:string;data:string;revision:number;expires:number}
@@ -174,9 +174,14 @@ export class GameService {
      const receipt=hint&&typeof requestId==='string'?d.hintReceipts?.find(r=>r.id===requestId):undefined;
      if(receipt)return {...this.dailyView(d),hintCell:receipt.cell};
      if(d.finished!==null)return this.dailyView(d);
-     if(this.clock()-d.starts>86400000)throw new GameError('Bu günlük oyunun süresi doldu. Yeni güne geçebilirsin.',409);
+     if(this.clock()-d.starts>86400000){
+       // Fence out a pre-expiry writer before declaring its unknown operation closed.
+       const fenced=await this.q('UPDATE dailies SET revision=revision+1 WHERE id=? AND revision=?',id,row.revision).run();
+       if(fenced.meta.changes)throw new GameError('Bu günlük oyunun süresi doldu. Yeni güne geçebilirsin.',409,'DAILY_EXPIRED');
+       continue;
+     }
      const spec=dailySpec(d.day),board=makePuzzle(spec.themeId,spec.level,spec.seed);let hintCell:Cell|null=null;
-     if(hint){if(d.hints>=3)throw new GameError('Üç ipucunu da kullandın.');const remaining=board.placements.find(t=>!d.strokes.some(s=>s.id===t.id));if(remaining){d.hints++;hintCell=remaining.a;if(typeof requestId==='string')d.hintReceipts=[...(d.hintReceipts??[]),{id:requestId,cell:hintCell}].slice(-3);}}
+     if(hint){if(d.hints>=3)throw new GameError('Üç ipucunu da kullandın.',400,'DAILY_HINT_LIMIT');const remaining=board.placements.find(t=>!d.strokes.some(s=>s.id===t.id));if(remaining){d.hints++;hintCell=remaining.a;if(typeof requestId==='string')d.hintReceipts=[...(d.hintReceipts??[]),{id:requestId,cell:hintCell}].slice(-3);}}
      else{const target=match(board,a,b);if(!target)throw new GameError('Bu seçim listedeki bir kelimeyi oluşturmuyor.');if(!d.strokes.some(s=>s.id===target.id))d.strokes.push({id:target.id,a:a as Cell,b:b as Cell});}
      if(d.strokes.length===board.targets.length){d.finished=this.clock();d.duration=Math.max(1,d.finished-d.starts)+d.hints*15000;}
      const r=await this.q('UPDATE dailies SET data=?,revision=revision+1,completed=?,duration=? WHERE id=? AND revision=?',JSON.stringify(d),d.finished!==null?1:0,d.duration,id,row.revision).run();

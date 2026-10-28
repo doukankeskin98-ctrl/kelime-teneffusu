@@ -2,20 +2,23 @@ import {match,type Cell,type Stroke} from './engine.ts';
 import type {DailyView} from './server.ts';
 export type DailyReply=DailyView&{hintCell?:Cell|null};
 export type DailyIntent={kind:'claim';stroke:Stroke;label:string}|{kind:'hint';requestId:string};
-export type DailyActionPhase='idle'|'sending'|'checking'|'uncertain'|'account-changed'|'unavailable';
+export type DailyActionPhase='idle'|'sending'|'checking'|'uncertain'|'storage-error'|'expired'|'account-changed'|'unavailable';
 export interface DailyActionState {phase:DailyActionPhase;intent:DailyIntent|null;message?:string}
 export class DailyRequestError extends Error {constructor(message:string,public status:number,public code?:string){super(message);}}
+export class DailyPersistenceError extends Error {}
+export interface DailyPersistence {read:()=>DailyIntent|null;save:(intent:DailyIntent)=>void;clear:(intent:DailyIntent)=>void}
 export const DAILY_REQUEST_TIMEOUT=8000;
 interface Options {
  id:string;day:string;board:DailyView['board'];isCurrent:()=>boolean;
  request:(intent:DailyIntent|null,signal:AbortSignal)=>Promise<DailyReply>;
  receive:(reply:DailyReply)=>void;state:(state:DailyActionState)=>void;
  confirmed:(intent:DailyIntent,reply:DailyReply)=>void;
+ persistence?:DailyPersistence;
 }
 /** One owner and one existing daily attempt. An uncertain hint keeps its original key. */
 export class DailyActionSession {
  private stopped=false;private halted=false;private running=false;private flight:AbortController|null=null;
- private pending:{intent:DailyIntent;rejected:boolean;uncertainMutation:boolean}|null=null;
+ private pending:{intent:DailyIntent;rejected:boolean;uncertainMutation:boolean;saved:boolean}|null=null;
  constructor(private options:Options){}
  private active(){return !this.stopped&&this.options.isCurrent();}
  private report(phase:DailyActionPhase,message?:string){if(this.active())this.options.state({phase,intent:this.pending?.intent??null,...(message?{message}:{})});}
@@ -37,35 +40,55 @@ export class DailyActionSession {
    return reply;
   }finally{clearTimeout(timer);controller.signal.removeEventListener('abort',onAbort);if(this.flight===controller)this.flight=null;}
  }
+ async restore(){
+  if(!this.active()||this.halted||this.running||this.pending)return;
+  try{const intent=this.options.persistence?.read();if(!intent){this.report('idle');return;}this.pending={intent,rejected:false,uncertainMutation:true,saved:true};await this.perform(true,false);}
+  catch(e){if(this.active())this.report('storage-error',e instanceof Error?e.message:'Bekleyen işlem kaydı okunamadı.');}
+ }
  async act(intent:DailyIntent){
   if(!this.active()||this.halted||this.running||this.pending)return;
-  this.pending={intent,rejected:false,uncertainMutation:false};await this.perform(false);
+  try{const stored=this.options.persistence?.read();if(stored){this.pending={intent:stored,rejected:false,uncertainMutation:true,saved:true};await this.perform(true,false);return;}}
+  catch(e){this.report('storage-error',e instanceof Error?e.message:'Bekleyen işlem kaydı okunamadı.');return;}
+  this.pending={intent,rejected:false,uncertainMutation:false,saved:false};await this.perform(false);
  }
- async retry(){if(!this.active()||this.halted||this.running||!this.pending)return;await this.perform(true);}
- private async perform(check:boolean){
+ async retry(){if(!this.active()||this.halted||this.running)return;if(!this.pending){await this.restore();return;}await this.perform(true);}
+ private clear(){if(this.pending)this.options.persistence?.clear(this.pending.intent);this.pending=null;}
+ private async perform(check:boolean,send=true){
   const pending=this.pending;if(!pending)return;const intent=pending.intent;this.running=true;let mutationAttempted=false;
   try{
+   if(!pending.saved){this.options.persistence?.save(intent);pending.saved=true;}
    if(check){
     this.report('checking');const current=await this.attempt(null);if(!current||!this.active())return;
     this.options.receive(current);
     const found=intent.kind==='claim'&&current.strokes.some(s=>s.id===intent.stroke.id);
     if(pending.rejected||current.finished!==null||found){
-     this.pending=null;this.report('idle');
+     this.clear();this.report('idle');
      if(!pending.rejected&&found&&this.active())this.options.confirmed(intent,current);
      return;
     }
+    if(!send){this.report('uncertain','Bu sekmede bekleyen önceki işlemin bulundu.');return;}
    }
    this.report('sending');mutationAttempted=true;const reply=await this.attempt(pending.intent);if(!reply||!this.active())return;
    if(intent.kind==='claim'&&!reply.strokes.some(s=>s.id===intent.stroke.id))throw new DailyRequestError('Kelime onayı doğrulanamadı.',503);
-   this.options.receive(reply);this.pending=null;this.report('idle');if(this.active())this.options.confirmed(pending.intent,reply);
+   this.options.receive(reply);this.clear();this.report('idle');if(this.active())this.options.confirmed(pending.intent,reply);
   }catch(e){
    if(!this.active())return;
    const error=e instanceof Error?e.message:'Günlük kaydına ulaşılamadı.';
-   if(e instanceof DailyRequestError&&(e.code==='DAILY_OWNER_CHANGED'||e.status===401||e.status===403)){this.report('account-changed',error);this.halted=true;}
+   if(e instanceof DailyPersistenceError){if(mutationAttempted)pending.uncertainMutation=true;this.report('storage-error',error);}
+   else if(e instanceof DailyRequestError&&mutationAttempted&&e.status===409&&e.code==='DAILY_EXPIRED'){
+    try{this.clear();this.report('expired',error);this.halted=true;}catch(f){this.report('storage-error',f instanceof Error?f.message:'Bekleyen kayıt temizlenemedi.');}
+   }
+   else if(e instanceof DailyRequestError&&(e.code==='DAILY_OWNER_CHANGED'||e.status===401||e.status===403)){this.report('account-changed',error);this.halted=true;}
    else if(e instanceof DailyRequestError&&e.status===404){this.report('unavailable',error);this.halted=true;}
    else{
     // A retry's rejection cannot disprove a still-running, earlier mutation.
-    if(mutationAttempted){const rejected=e instanceof DailyRequestError&&[400,409,429].includes(e.status);if(rejected&&!pending.uncertainMutation)pending.rejected=true;else if(!rejected)pending.uncertainMutation=true;}
+    if(mutationAttempted){
+     const rejected=e instanceof DailyRequestError&&[400,409,429].includes(e.status),limit=intent.kind==='hint'&&e instanceof DailyRequestError&&e.status===400&&e.code==='DAILY_HINT_LIMIT';
+     if((rejected&&!pending.uncertainMutation)||limit){
+      pending.rejected=true;
+      try{this.options.persistence?.clear(intent);}catch(f){this.report('storage-error',f instanceof Error?f.message:'Bekleyen kayıt temizlenemedi.');return;}
+     }else if(!rejected)pending.uncertainMutation=true;
+    }
     this.report('uncertain',error);
    }
   }finally{this.running=false;}
