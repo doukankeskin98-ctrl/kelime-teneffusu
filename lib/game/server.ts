@@ -154,20 +154,29 @@ export class GameService {
      room.players=room.players.map(x=>player(x.id,x.name,this.clock()));
    }
  });}
- private dailyView(d:Daily){const spec=dailySpec(d.day);return {...d,serverNow:this.clock(),board:publicBoard(makePuzzle(spec.themeId,spec.level,spec.seed))};}
+ private dailyView(d:Daily&{hintReceipts?:{id:string;cell:Cell}[]}){const {hintReceipts:_receipts,...view}=d,spec=dailySpec(d.day);return {...view,serverNow:this.clock(),board:publicBoard(makePuzzle(spec.themeId,spec.level,spec.seed))};}
+ async dailyState(userId:string,id:string){
+   const row=await this.q('SELECT data FROM dailies WHERE id=? AND user_id=?',id,userId).first<{data:string}>();
+   if(!row)throw new GameError('Günlük oyun bulunamadı.',404);
+   return this.dailyView(JSON.parse(row.data));
+ }
  async daily(userId:string){
    const day=istanbulDay(this.clock()),now=this.clock(),p=await this.profile(userId);const id=crypto.randomUUID();
    const data:Daily={id,day,starts:now,strokes:[],hints:0,finished:null,duration:0};
    await this.q('INSERT OR IGNORE INTO dailies(id,user_id,nickname,day,data,created) VALUES(?,?,?,?,?,?)',id,userId,p.nickname,day,JSON.stringify(data),now).run();
    const row=await this.q('SELECT id,data,revision FROM dailies WHERE user_id=? AND day=?',userId,day).first<DailyRow>();if(!row)throw new GameError('Günlük hazırlanamadı.',503);return this.dailyView(JSON.parse(row.data));
  }
- async dailyClaim(userId:string,id:string,a:unknown,b:unknown,hint=false){
+ async dailyClaim(userId:string,id:string,a:unknown,b:unknown,hint=false,requestId?:unknown){
+   if(hint&&requestId!==undefined&&(typeof requestId!=='string'||! /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)))throw new GameError('İpucu işlemi doğrulanamadı.');
    for(let tries=0;tries<8;tries++){
      const row=await this.q('SELECT id,data,revision FROM dailies WHERE id=? AND user_id=?',id,userId).first<DailyRow>();if(!row)throw new GameError('Günlük oyun bulunamadı.',404);
-     const d=JSON.parse(row.data) as Daily;if(d.finished!==null)return this.dailyView(d);
+     const d=JSON.parse(row.data) as Daily&{hintReceipts?:{id:string;cell:Cell}[]};
+     const receipt=hint&&typeof requestId==='string'?d.hintReceipts?.find(r=>r.id===requestId):undefined;
+     if(receipt)return {...this.dailyView(d),hintCell:receipt.cell};
+     if(d.finished!==null)return this.dailyView(d);
      if(this.clock()-d.starts>86400000)throw new GameError('Bu günlük oyunun süresi doldu. Yeni güne geçebilirsin.',409);
      const spec=dailySpec(d.day),board=makePuzzle(spec.themeId,spec.level,spec.seed);let hintCell:Cell|null=null;
-     if(hint){if(d.hints>=3)throw new GameError('Üç ipucunu da kullandın.');const remaining=board.placements.find(t=>!d.strokes.some(s=>s.id===t.id));if(remaining){d.hints++;hintCell=remaining.a;}}
+     if(hint){if(d.hints>=3)throw new GameError('Üç ipucunu da kullandın.');const remaining=board.placements.find(t=>!d.strokes.some(s=>s.id===t.id));if(remaining){d.hints++;hintCell=remaining.a;if(typeof requestId==='string')d.hintReceipts=[...(d.hintReceipts??[]),{id:requestId,cell:hintCell}].slice(-3);}}
      else{const target=match(board,a,b);if(!target)throw new GameError('Bu seçim listedeki bir kelimeyi oluşturmuyor.');if(!d.strokes.some(s=>s.id===target.id))d.strokes.push({id:target.id,a:a as Cell,b:b as Cell});}
      if(d.strokes.length===board.targets.length){d.finished=this.clock();d.duration=Math.max(1,d.finished-d.starts)+d.hints*15000;}
      const r=await this.q('UPDATE dailies SET data=?,revision=revision+1,completed=?,duration=? WHERE id=? AND revision=?',JSON.stringify(d),d.finished!==null?1:0,d.duration,id,row.revision).run();

@@ -1,5 +1,35 @@
 # Geliştirme defteri
 
+## 28 Ekim 2026 · 0.12.5 · Günlük oyunda açık ve güvenli bekleme
+
+Başlangıç güncel Site26/0.12.4, owner/public ve aynı adres; helper `072f4283d98ae0389ba89a05479fc5df27ca4bef`, GitHub main `a0b20a620736cbac93f29200458715c34ef8ec33`, eş tam ağaç `60bbbc3094f8bb801d01c4c585fdb0b3ba9f492a`. Güncel README/sürüm/harita/defter, kök sözleşme, rol kaydı/öncelik ve son koordinatör günlüğü okundu. Aynı talebin tekrarı mevcut çalışmaya dahil edildi; ikinci içerik veya yayın akışı açılmadı.
+
+### İki yeni kalıcı keşif
+
+- **Yazlık sinema:** Yeşilçam, Rahat6×6, PERDE / AFİŞ / BİLET / MISIR; seed `2026102801`, ID `20261028-0001-4000-8000-000000000001`.
+- **Sette bir gün:** Diziler, Dengeli8×8, DEKOR / KOSTÜM / PROVA / REPLİK / BÖLÜM / OYUNCU / SENARYO; seed `2026102802`, ID `20261028-0002-4000-8000-000000000001`.
+- Yeni tek `content/releases/2026-10-28.json`, kayıt dizisine yalnız sona ekleme. Kalıcı spec/hash/board, iki çapraz eğim ve20 alternatif doğrulanır. Kaynak Türkçe/tema incelemesi; ölçülmüş oyuncu zorluğu değildir. Yeniden çalışmada var olan tarih dosyası üzerine yazılmaz; eksik doğrulama/yayın sürdürülür. Mevcut ana sayfa, ilgili dünya, arşiv ve tarihli damga çifti bulur; eski sabit5+1 kümeleri büyümez.
+
+### Seçim, davranış ve bağımsız inceleme
+
+Cihaz/preview doğrulaması, günlük claim/hint beklemesi ve yeni oda/kozmetik karşılaştırıldı; önceki açık kuyruk ve doğrudan kaynak kanıtı nedeniyle günlük akış seçildi. Kabul uygulamadan önce `2026-10-28_maintenance-decision.md` içine yazıldı. Tek gerçek güvenilirlik uzmanı yalnız kendi daily-action-review günlüğüne yazdı; root uygulama/test/GitHub/Sites sahibi. Önceki preview ERR_CONNECTION_REFUSED için somut repair/recovery kanıtı yok; aynı başarısız yol veya alternatif sunucu/browser denenmedi, cihaz önceliği korunur.
+
+**Günlük → hamle/ipucu:** bekleme gerçek pause veya bitmiş inceleme değildir. Harfler/kabul edilmiş çizgiler görünür; yeni seçim ve ipucu engellenir, zoom/ses/yardım kalır. Sunucu saati devam eder; onay gelmeden hint hakkı, buluş sesi, günlük tamamlama veya ödül üretilmez. Bekleme/check metni ve gerçek busy semantiği, timeout sonrası **Kontrol et ve sürdür** ve günlük sayfasına dönüş sunulur. Cream/forest kimliği, doğal satır sarma ve44px eylemler korunur. Normal Solo/review varsayılanları değişmez.
+
+**Sınırlı ve sahip korumalı istek:** açılış ve her mutation/check token/HTTP/JSON dahil8sn yarışında; sinyal yok sayılırsa bile arayüz süresiz kilitlenmez. Tek synchronous pending guard aynı event turunda ikinci claim/hint'i düşürür. Her deneme yeni controller, temiz timer/listener; unmount, owner/instance değişimi ve render'daki tek yönlü retirement geç yanıtı yok sayar. A→B→A cleanup öncesinde de eski oyuna geri canlanmaz. Gecikmiş sonuç yeni sahibin günlerine eklenmez. Yeni istemci açılış/claim/hint beklenen owner'ı taşır; mismatch açık kod409, legacy guard'sız istek uyumlu. Günlükten geri dönüş mevcut auth güncelleme olayını tetikler; yeni profil okunur. Gerçek sağlayıcı testi değildir; yenileme bitmeden çok hızlı açış owner guard ile yine güvenle reddedilebilir.
+
+**Aynı belirsiz ipucunu kurtarma:** ilk GET aynı owner+daily-id durumunu okur, current-day daily() çağırıp gece yarısından sonra yeni oyun başlatmaz. Hint'e özgün UUID verilir, aynı açık oturumdaki retry onu korur. Sunucu ceza+private receipt'i mevcut daily JSON revision CAS içinde atomik saklar; aynı key quota/expiry/finished kontrolünden önce güncel snapshot ve özgün hücreyi döndürür. Receipt/çözümler public yanıta çıkmaz. Eski JSON optional alan olmadan okunur, legacy no-key davranışı korunur; SQL göçü yok. Bilinen ilk400/409/429 reddi yalnız read ile uzlaştırılır. Önceki belirsiz mutation'dan sonra gelen retry reddi ilk isteğin gerçekleşmediğini kanıtlamaz; sticky uncertainty key'in erken temizlenmesini önler. Aggregate hint sayısından işlem başarı tahmini yapılmaz.
+
+Uzman bu son uç durumu gerçek helper+SQLite'da yeniden üretti: ilk belirsiz istek→GET0→retry429→GET0 pending'i temizliyor, yeni UUID ve sonradan ilk commit iki ceza yaratıyordu. Dar düzeltmeden sonra bağımsız probe `newKeyBlocked=true,reusedOriginalKey=true,confirmed=1,finalHints=1`; gerçek regresyon eklendi. Aktif oturum dışına key taşıma uygulanmadı: uncertain geri çıkış/reload sonrası tüm yollarda tek-ceza garantisi yoktur; ayrı sonraki aşama olarak açık kaldı.
+
+### Geçen kapılar ve sonraki iş
+
+**261/261 test,57grup**, önceki234 ve27 yeni kabul. Gerçek servis/SQLite CAS, expiry/midnight/same-id/owner/private receipt, route/transport/legacy, kontrollü deadline/reconcile/late result; actual Solo/App/notice ve Board/shared blocked davranışları sınandı. TypeScript, **118 düzenlenmiş tahta /2360 alternatif**, final production build ve iki yalıtılmış oyuncuyla **247 üretim Worker HTTP kontrolü** geçti. Kontrol sayısı mevcut challenge/room target döngüsüne bağlı değişebilir; mevcut kontroller kaldırılmadı. Başlangıçtaki pnpm dosyasını doğrudan çağırma126 yalnız komut izin hatasıydı; node üzerinden aynı CLI ile bütün kapılar başarılı. Test fixture'ında spread ile getter sabitleme ve ilk nav sonrası profil okuma sayısı varsayımları düzeltildi; ürün clock/provider kusuru diye sayılmadı.
+
+Yedi eski release snapshot dahil32 korunan kaynak/veri dosyası byte karşılaştırmasında aynı. Engine/catalog/content/atlas/discovery/legacy/progress/sync/cloud/chapter queue/schema/uygulanmış göç/manifest/lock korunur; hint dedup dışında sunucu süre/15sn/3hak/rank/best kuralları aynı. Yeni hesap/ücret/servis/bağımlılık/grafik/zamanlayıcı veya başka proje değişikliği yok. Yakın production log örneği0 olaydır, bütün oyuncuların hatasızlığı iddia edilmez.
+
+Son yerel kanıt `studio-agents/journal/entries/2026-10-28_maintenance-validation.md`; tam kaynak helper ile paketlenir, GitHub gerekli CI+tam ağaç/birleştirme ve aynı URL'de Sites yayın sonucu gerçek araç makbuzlarıyla ayrıca doğrulanır. Gerçek telefon/DOM/piksel/büyük sistem yazısı/native scroll/ekran okuyucu/FPS/React concurrency/iki gerçek hesap-provider/fiziksel PWA hâlâ açık. App Store hazır oluşu, ölçülmüş keyif/tutma/gelir veya üstün stüdyo iddiası yok. Sonraki öncelik destekli cihaz erişimi ve ardından owner+daily kimliğiyle mount dışına belirsiz işlem taşıma. Haftalık inceleme24Ekim→31Ekim/sonraki uygun mevcut çalışma.
+
 ## 27 Ekim 2026 akşam · 0.12.4 · Biten keşfine yeniden bak
 
 Güncel Site25/0.12.3 helper `34fa40459d180ac0e893db6ccd85b7be4f49c49a`, GitHub main `79de8c94407d12a653b06f3412e96cab2f257c83`, eş tam ağaç `d84cb38403d7dd2c1d72f4334300a3782f2fdbd7`. Owner/public ve aynı URL doğrulandı; son kaynak, README/sürüm/harita/defter, rol/öncelik/son koordinatör kaydından devam edildi. **Mahalle maçı** ve **Sokakta doksanlar** sabah başarılı deployment ile yayımlanmıştı; bugün ikinci çift oluşturulmadı, yedi frozen kaynak dosyası ve RELEASE_BATCHES aynı kaldı.

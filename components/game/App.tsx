@@ -9,6 +9,7 @@ import {signOutMember} from '@/lib/auth/firebase-client';
 import {THEMES,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
 import {JOURNEYS} from '@/lib/game/content';
 import {dailySpec,istanbulDay} from '@/lib/game/engine';
+import {DAILY_REQUEST_TIMEOUT} from '@/lib/game/daily-action';
 import {emptyProgress,loadProgress,mergeProgress,PROGRESS_KEY,streak,collectionStats} from '@/lib/game/progress';
 import {SAVE_KEY,validateSave} from '@/lib/game/legacy';
 import type {DailyView} from '@/lib/game/server';
@@ -43,6 +44,10 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  const [browseReturn,setBrowseReturn]=useState<ChapterBrowseReturn|undefined>(undefined);
  const [sprint,setSprint]=useState(false);
  const [mapReturn,setMapReturn]=useState(false),[albumReturn,setAlbumReturn]=useState(false);
+ const liveAccountOwner=useRef(account.profile?.id),dailyLaunch=useRef<{owner:string;controller:AbortController;retired:boolean}|null>(null);liveAccountOwner.current=account.profile?.id;if(dailyLaunch.current&&dailyLaunch.current.owner!==account.profile?.id)dailyLaunch.current.retired=true;
+ const cancelDailyLaunch=()=>{const launch=dailyLaunch.current;dailyLaunch.current=null;launch?.controller.abort();setBusy(false);};
+ useEffect(()=>{if(dailyLaunch.current?.retired)cancelDailyLaunch();},[account.profile?.id]);
+ useEffect(()=>()=>{const launch=dailyLaunch.current;dailyLaunch.current=null;launch?.controller.abort();},[]);
  const authenticated=account.authenticated,syncStatus=useCloudProgress(account.profile?.id,progress,setProgress,ready);
  const openAuth=(mode:AuthMode='signin')=>{if(account.kind==='guest'){try{sessionStorage.setItem('kt-upgrade-progress',JSON.stringify(progress));}catch{}}const url=new URL(location.href);url.searchParams.set('sekme',nav);if(nav==='arena'&&arenaTab!=='live')url.searchParams.set('mod',arenaTab==='challenge'?'meydan':'arkadaslar');setAuthReturn(safeReturnTo(url.pathname+url.search));setAuthMode(mode);};
  useEffect(()=>{
@@ -63,10 +68,23 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
   return ()=>c.abort();
  },[membership.revision,nav]);
  const {stars}=collectionStats(progress),dailyStreak=streak(progress.days,istanbulDay());
- const selectNav=(next:Nav)=>{setBrowseReturn(undefined);setNav(next);setError('');setPlaying(false);const url=new URL(location.href);url.searchParams.set('sekme',next);if(next!=='arena'){for(const key of ['oda','meydan','arkadas','mod'])url.searchParams.delete(key);setInvites({challenge:'',friend:''});}history.replaceState(null,'',url.pathname+url.search);window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));};
+ const selectNav=(next:Nav)=>{cancelDailyLaunch();setBrowseReturn(undefined);setNav(next);setError('');setPlaying(false);const url=new URL(location.href);url.searchParams.set('sekme',next);if(next!=='arena'){for(const key of ['oda','meydan','arkadas','mod'])url.searchParams.delete(key);setInvites({challenge:'',friend:''});}history.replaceState(null,'',url.pathname+url.search);window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));};
  const openSolo=(config:SoloConfig)=>{setBrowseReturn(undefined);setTheme(null);setMystery(null);setSolo({...config,run:Date.now()});setDaily(null);window.scrollTo({top:0});};
- const back=()=>{if(themeReturn.current){setTheme(THEMES.find(t=>t.id===themeReturn.current)??null);themeReturn.current=null;}if(extra){setBrowseReturn(extraOrigin.current);if(nav==='profil'&&extraOrigin.current?.source!=='album')setAlbumReturn(true);}if(solo?.tutorial)setProgress(p=>({...p,tutorialDone:true}));setExtra(null);setSolo(null);setDaily(null);setMystery(null);window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));};
- const startDaily=async()=>{if(!authenticated){openAuth();return;}setBusy(true);setError('');try{const d=await api<DailyView>('daily');setDaily(d);const s=dailySpec(d.day);setSolo({themeId:s.themeId,level:s.level,run:Date.now()});window.scrollTo({top:0});}catch(e){setError((e as Error).message);}finally{setBusy(false);}};
+ const back=()=>{if(themeReturn.current){setTheme(THEMES.find(t=>t.id===themeReturn.current)??null);themeReturn.current=null;}if(extra){setBrowseReturn(extraOrigin.current);if(nav==='profil'&&extraOrigin.current?.source!=='album')setAlbumReturn(true);}if(solo?.tutorial)setProgress(p=>({...p,tutorialDone:true}));setExtra(null);setSolo(null);setDaily(null);setMystery(null);window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));if(daily)window.dispatchEvent(new Event('kt-auth-updated'));};
+ const startDaily=async()=>{
+  const owner=account.profile?.id;if(!authenticated||!owner){openAuth();return;}
+  cancelDailyLaunch();const launch={owner,controller:new AbortController(),retired:false};dailyLaunch.current=launch;
+  const isCurrent=()=>dailyLaunch.current===launch&&!launch.retired&&liveAccountOwner.current===owner;
+  setBusy(true);setError('');let timer:ReturnType<typeof setTimeout>|undefined,onAbort=()=>{};
+  const deadline=new Promise<never>((_yes,no)=>{onAbort=()=>no(new Error('Günün keşfi zamanında hazırlanamadı. Yeniden deneyebilirsin.'));launch.controller.signal.addEventListener('abort',onAbort,{once:true});timer=setTimeout(()=>launch.controller.abort(),DAILY_REQUEST_TIMEOUT);});
+  try{
+   const d=await Promise.race([api<DailyView>('daily',{expectedOwnerId:owner},launch.controller.signal),deadline]);
+   if(!isCurrent()||launch.controller.signal.aborted)return;
+   if(!d||typeof d.id!=='string'||typeof d.day!=='string'||!d.board||!Array.isArray(d.strokes)||!Number.isFinite(d.serverNow)||!Number.isFinite(d.starts)||!Number.isFinite(d.duration)||!(d.finished===null||typeof d.finished==='number'&&Number.isFinite(d.finished)))throw new Error('Günlük kaydı doğrulanamadı. Yeniden deneyebilirsin.');
+   setDaily(d);const spec=dailySpec(d.day);setSolo({themeId:spec.themeId,level:spec.level,run:Date.now()});window.scrollTo({top:0});
+  }catch(e){if(isCurrent())setError(e instanceof Error?e.message:'Günün keşfi hazırlanamadı.');}
+  finally{clearTimeout(timer);launch.controller.signal.removeEventListener('abort',onAbort);if(dailyLaunch.current===launch){dailyLaunch.current=null;setBusy(false);}}
+ };
  const classic=()=>{let level=0;try{level=validateSave(JSON.parse(localStorage.getItem(SAVE_KEY)??'null'))?.round??0;}catch{}openSolo({themeId:'hababam',level,classic:true});};
  const openChallenge=()=>{selectNav('arena');setArenaTab('challenge');};
  const openMystery=(id:string)=>{setBrowseReturn(undefined);setMystery(id);setTheme(null);window.scrollTo({top:0});};
@@ -79,7 +97,7 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  const wrap=' '+(progress.contrast?'contrast-mode':'');
  if(sprint&&ready)return <div className={'game-app sprint-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<Sprint key={account.profile?.id??'device'} owner={account.profile?.id} progress={progress} onProgress={setProgress} onBack={()=>setSprint(false)}/></div>;
  if(extra&&ready)return <div className={'game-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<PublishedPlay key={extra.id} initialPractice={extraPractice} pair={extraPair} onRelated={(chapter,pair)=>openExtra(chapter,false,pair)} chapter={extra} userId={account.profile?.id} progress={progress} onProgress={setProgress} onBack={back}/></div>;
- if(solo&&ready)return <div className={'game-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<Solo key={`${solo.run}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} progress={progress} onProgress={setProgress} onBack={solo.journey?returnToMap:back} onMap={returnToMap} onNext={openSolo} daily={daily??undefined}/></div>;
+ if(solo&&ready)return <div className={'game-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<Solo key={`${solo.run}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} ownerId={account.profile?.id} progress={progress} onProgress={setProgress} onBack={solo.journey?returnToMap:back} onMap={returnToMap} onNext={openSolo} daily={daily??undefined}/></div>;
  if(mystery&&ready)return <div className={'game-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<Mystery key={mystery} id={mystery} progress={progress} onProgress={setProgress} onBack={back} onNext={openMystery}/></div>;
  return <div className={'app-shell'+wrap} data-palette={progress.palette}>
   <Platform consent={progress.analytics} playing={playing}/>
