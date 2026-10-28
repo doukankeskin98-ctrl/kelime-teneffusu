@@ -69,8 +69,15 @@ try{
  const currentHint=await json('/api/game',{cookie:aCookie,method:'POST',body:hintBody});check(currentHint.strokes.length===1&&currentHint.hints===1,'hint receipt replay returns current confirmed words rather than an old snapshot');
  await json('/api/game',{cookie:aCookie,method:'POST',body:{...hintBody,requestId:crypto.randomUUID()}});
  await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'dailyHint',id:dailyGame.id}});
- await request('/api/game',{cookie:aCookie,method:'POST',body:{...hintBody,requestId:crypto.randomUUID()},expected:400});
+ const hintLimit=await json('/api/game',{cookie:aCookie,method:'POST',body:{...hintBody,requestId:crypto.randomUUID()},expected:400});check(hintLimit.code==='DAILY_HINT_LIMIT','terminal hint limit distinguishes a closed unknown key from a transient rejection');
  const cappedRetry=await json('/api/game',{cookie:aCookie,method:'POST',body:hintBody});check(cappedRetry.hints===3&&cappedRetry.strokes.length===1&&!('hintReceipts' in cappedRetry),'old hint receipts remain recoverable at the quota while legacy requests and private state remain compatible');
+ // Isolated integration DB only: simulate an old attempt; production player data is untouched.
+ const oldDailyRow=await db.prepare('SELECT data FROM dailies WHERE id=?').bind(dailyGame.id).first();
+ const oldDaily=JSON.stringify({...JSON.parse(oldDailyRow.data),starts:Date.now()-86400001});
+ await db.prepare('UPDATE dailies SET data=?,revision=revision+1 WHERE id=?').bind(oldDaily,dailyGame.id).run();
+ const ended=await json('/api/game',{cookie:aCookie,method:'POST',body:{...hintBody,requestId:crypto.randomUUID()},expected:409});check(ended.code==='DAILY_EXPIRED','expired unresolved intent receives an explicit CAS-fenced terminal result');
+ const endedRow=await db.prepare('SELECT data FROM dailies WHERE id=?').bind(dailyGame.id).first();check(endedRow.data===oldDaily,'expiry fence preserves daily JSON, hints, confirmed words and scores');
+ const endedReceipt=await json('/api/game',{cookie:aCookie,method:'POST',body:hintBody});check(endedReceipt.hints===3&&endedReceipt.strokes.length===1&&!('hintReceipts' in endedReceipt)&&!('placements' in endedReceipt.board),'an accepted original hint remains recoverable after expiry without an extra penalty');
  const sourceChapter=releasedChapter(released.chapters[0].id);await request('/api/chapters?action=progress&id='+sourceChapter.id,{expected:401});
  await request('/api/chapters',{cookie:bCookie,method:'PUT',body:{id:sourceChapter.id,expectedOwnerId:a.profile.id,save:{strokes:sourceChapter.board.placements,elapsed:20,hints:0}},expected:409});
  await request('/api/chapters',{cookie:bCookie,method:'PUT',body:{id:sourceChapter.id,expectedOwnerId:'',save:{}},expected:409});
