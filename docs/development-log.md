@@ -1,3 +1,15 @@
+## 29 Ekim 2026 · 0.13.1 · Arena bitiş tahtası incelemesi
+
+**Aday ve seçim:** Canlı yayın kontrolünde uygulama istisnası bulunmadı; iki iptal edilmiş bölüm isteği tarayıcı önizleme istemcisine, `/robots.txt` ve `/sitemap.xml` 404'leri tarayıcıya aitti. Arama yardımcıları yerine açık kuyruktaki oyuncu görünür Arena kusuru seçildi: `finished` tahtası `paused` kaldığından Board harfleri noktayla örtüyordu. Tek güvenilirlik uzmanı kaynak ve mevcut sunucu korumalarını salt okunur inceledi; koordinatör uygulama, test ve yayının tek sahibidir. Kabul ölçütü koddan önce `2026-10-29_arena-terminal-decision.md` kaydına yazıldı.
+
+**Oyuncunun gördüğü değişiklik:** Düello sonucu ilk bitişte açılır. Pencere kapatılınca aynı tahta açık harfleri ve yalnız sunucudan onaylı oyuncu çizgilerini gösterir; salt okunur durumda yeni seçim göndermez. Arena'ya özgü “Düello tamamlandı · Tahtanı inceleyebilirsin.” metni görünür. Sağ paneldeki **Düello sonucu** aynı skor ve rövanş eylemlerini yeniden açar. Countdown kapalı, aktif tur oynanabilir, süresi sıfırlanmış fakat terminal revizyonu henüz gelmemiş tur kilitli kalır.
+
+**Korunan sınır:** `commit` faz ve sunucu zamanı kapısı, server claim/settle, skor, Elo, round'a bağlı tekil sonuç, karşılıklı rövanş, ayrılma ve canlı bağlantı kodu değişmedi. Şema/göç, içerik, tahta, kimlik, kayıt, ödül ve ödeme yok. 29 Ekim'in **Bayram sabahı / Bilim sergisi** çifti zaten yayında; yeniden eklenmedi.
+
+**Doğrulama:** Gerçek Arena caller'ını kontrollü sunucu durumuyla çalıştıran test sonuç aç→kapat→salt okunur tahta→sonucu yeniden aç akışını, eski onCommit'in claim üretmemesini ve countdown/active/terminal-bekleme ayrımını doğrular. Board ve server testleri harf/çizgi görünürlüğü, girdi kilidi, süre, skor, sonuç tekilleştirme ve rövanşı korur. Tam kapı sonuçları `2026-10-29_arena-terminal-validation.md` kaydında tamamlanır.
+
+**Sınır ve sıradaki iş:** Destekli preview/gerçek cihaz bulunmadığı için iPhone/Safari dokunma, kaydırma, odak, büyük yazı, ekran okuyucu, iki gerçek hesap ve PWA doğrulanmış sayılmaz. Bu kanıt birinci sırada; cold-start/cihazlar arası bekleyen günlük niyet ayrıca tasarım ister. Ölçülmüş eğlence, tutma veya App Store hazır iddiası yoktur.
+
 # Geliştirme defteri
 
 ## 29 Ekim 2026 · 0.13.0 · Hedef, oyun ve gerçek kazanım

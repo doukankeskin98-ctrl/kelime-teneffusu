@@ -16,7 +16,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 - Tamamlanan Solo ve Gizli Tema tahtaları ayrı inceleme durumunda açık kalır: harfler/çizgiler, büyütme, ses ve yardım korunur; yeni hamle veya ipucu sunulmaz. Gizli Tema sonucunu kapatınca **Sonucu göster** ile yeniden açabilir, sonraki keşfe veya gerçek tekrar oyununa geçebilirsin. İnceleme kazanımları ve en iyi sonucu değiştirmez.
 - Her gün İstanbul saatine göre ortak bulmaca. Süre sunucuda, ipucu başına +15 saniye.
 - Günlük oyunda kelime/ipucu onayı beklenirken tahta açık kalır; yeni seçimler ve ipucu bekler, süre sürer. Sekiz saniyede yanıt alınamazsa **Kontrol et ve sürdür** aynı günlük kaydını kontrol eder. Bekleyen kelime/ipucu aynı sekmede geri dönüş ve sayfa yenileme boyunca korunur; günlük oyunu yeniden açınca önce bu işlem kontrol edilir. İpucu aynı anahtarla tekrar cezalandırmadan sürer. Sekme kapanışı veya cihazlar arası koruma garantisi verilmez. Hesap değişirse eski yanıt uygulanmaz, günlük sayfasına dönüşte profil yeniden kontrol edilir.
-- 120 saniyelik gerçek iki kişilik Arena. Özel odalar, paylaşım bağlantısı, ortak geri sayım, Altın Kelime, bağlantıdan dönüş ve karşılıklı rövanş.
+- 120 saniyelik gerçek iki kişilik Arena. Özel odalar, paylaşım bağlantısı, ortak geri sayım, Altın Kelime, bağlantıdan dönüş ve karşılıklı rövanş. Biten düelloda sonuç penceresini kapatınca harfler ve onaylı çizgiler salt okunur kalır; sonucu yeniden açabilirsin.
 - Dereceli hızlı eşleşmede Elo, bekledikçe genişleyen beceri aralığı. Özel odalar dereceyi değiştirmez.
 - Arkadaşının İzinde: gerçek, sunucuda kaydedilmiş bir performansa karşı aynı tahta. Canlı olmadığı açıkça gösterilir.
 - Onayla kabul edilen arkadaş davetleri, haftalık arkadaş sıralaması ve maç geçmişi.

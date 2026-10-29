@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.13.1',date:'29 Ekim 2026',title:'Biten düellonu incele',items:[
+  {where:'Arena · düello sonucu',detail:'Sonuç penceresini kapattığında harfler ve bulduğun çizgiler açık kalır. Tahta salt okunurdur; yeni hamle göndermez.'},
+  {where:'Sonuca geri dön',detail:'Tahtanı inceledikten sonra Düello sonucu ile aynı skoru yeniden açabilir, rövanş isteyebilir veya Arena’ya dönebilirsin.'},
+ ]},
  {version:'0.13.0',date:'29 Ekim 2026',title:'Her keşfin görünen bir hedefi var',items:[
   {where:'Keşfet · sıradaki hedef',detail:'Harita keşfinin kazanılacak parçası, altı parçalık albümü ve sıradaki açılış koşulu artık ana kartta. Keşfe başla düğmesi koleksiyon ayrıntılarından önce geliyor.'},
   {where:'Oyun · ilerlemeni gör',detail:'Kısa solo kelime listeleri tahtayla aynı alanda açık duruyor. Bulunan ve kalan kelimeler, yıldız hedefi ve keşfin parçası görünür; uzun listelere Kelimeler düğmesiyle ulaşabilirsin.'},
