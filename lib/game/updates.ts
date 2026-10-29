@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.12.7',date:'29 Ekim 2026',title:'Kelimeler artık tahtanın hemen yanında',items:[
+  {where:'Tahta · Kelimeler',detail:'Tahtanın yanındaki Kelimeler düğmesiyle güncel listeyi aç, Tahtaya dön ile devam et. Uzun isimler, İpucu Avı tanımları ve bulunanlar burada da görünür. Süre işlemeye devam eder.'},
+  {where:'Doğru hedefler, doğru durum',detail:'Sunucu onayı bekleyen kelime bulunmuş sayılmaz. Parçalı adlar tüm parçalarıyla tamamlanır; gizli bonus veya tanım cevabı erken açılmaz. Liste yardım, sonuç ve yeni tahta geçişinde kapanır.'},
+  {where:'Bugünün iki keşfi',detail:'Bayram sabahı ile 6 × 6 rahat bir Türkiye molası; Bilim sergisi ile 8 × 8 dengeli bir merak turu. Çapraz kelimeleriyle dünyalarında ve kalıcı arşivde.'},
+ ]},
  {version:'0.12.6',date:'28 Ekim 2026',title:'Günlük keşfine aynı sekmede dön',items:[
   {where:'Günlük oyun · geri dönüş ve yenileme',detail:'Onayı bekleyen kelime veya ipucun aynı sekmede korunur. Günlük oyunu yeniden açtığında önce o işlem kontrol edilir; ipucu için Kontrol et ve sürdür aynı isteği kullanır. Sekme kapandıktan sonra koruma garantisi verilmez.'},
   {where:'İşlem kaydı · güvenli yeniden deneme',detail:'Bu sekmede işlem kaydı tutulamıyorsa yeni hamle sessizce gönderilmez. Kaydı yeniden dene ile kontrol edebilir veya günlük sayfasına dönebilirsin. Eski günün bekleyen işlemi yeni güne karıştırılmaz.'},

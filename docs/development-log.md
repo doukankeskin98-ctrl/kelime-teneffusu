@@ -1,5 +1,39 @@
 # Geliştirme defteri
 
+## 29 Ekim 2026 · 0.12.7 · Kelimeler tahtanın hemen yanında
+
+Başlangıç güncel Site28/0.12.6, owner/public ve aynı URL; helper `b9969c10fcc9236c5ac303b9060f86eb78355827`, GitHub main `232629509f8b75dd75f1b0a861c157a46e0493c6`, eş tam ağaç `905ff88778ea9bfa110b516f17ba888819a61206`. Son0.12.6 başarılı yayını `appgdep_6ae25bdbbb888191bc90fecff35afb72`,28Ekim20:32:48Z. Güncel sözleşme/README/sürüm/harita/registry/öncelik/son koordinatör kaydından devam. Eski yerel sürüm temel alınmadı.
+
+### İki yeni kalıcı keşif
+
+- **Bayram sabahı:** Türkiye, Rahat6×6; BAYRAK / YURT / COŞKU / TÖREN. Seed `2026102901`, ID `20261029-0001-4000-8000-000000000001`.
+- **Bilim sergisi:** Bilim, Dengeli8×8; DENEY / ÖLÇÜM / ATOM / ENERJİ / GÖZLEM / MERCEK / BULUŞ. Seed `2026102902`, ID `20261029-0002-4000-8000-000000000001`.
+- Yeni tek `content/releases/2026-10-29.json` ve RELEASE_BATCHES'e sona tek ekleme. Kimlik/spec hash/frozen board, iki çapraz eğim ve20 alternatif doğrulandı. Türkçe/tema uygunluğu kaynak incelemesidir; ölçülmüş oyuncu zorluğu değildir. Aynı tarih dosyası varsa üzerine yazmadan kalan doğrulama/yayın sürdürülür. Ana sayfa/ilgili dünya/kalıcı arşiv/tarihli damga yolları mevcut sözleşmeyi kullanır; eski5+1 kümeleri büyütülmez, sekiz eski snapshot korunur.
+
+### Kanıt ve tek odak
+
+Gerçek cihaz/preview, tahta yanından hedef erişimi ve Arena bitmiş inceleme adayları karşılaştırıldı. Kullanıcının kelimeler için yukarı kaydırma şikâyeti ile source'taki mobil order:-1 hedef paneli, doğrudan erişim adayını öne çıkardı. Tek gerçek experience uzmanı kendi role/shared dosyalarını okuyup yalnız mobile-words-review günlüğüne yazdı; root uygulama/test/GitHub/Sites sahibi. Kabul koddan önce mobile-words-decision kaydına yazıldı. Arena finished'ın hâlâ paused kalması ayrı kaynak adayıdır; bu tur sessizce tamamlanmış sayılmadı.
+
+Yeni salt okunur Sites DB yeteneğiyle yalnız opt-in toplu metrics81 satırı4 sınırlı sayfada ve operational_faults0 satır okundu. Accounts/players/sessions/özel oyun kayıtları okunmadı.28/29Ekim1'er app_open güncel kelime deneyimini ölçmek için yetersiz.25Ekim client_error7 sayımı mesaj/stack içermez; yeni0.12.6 arızası veya neden diye sunulmaz. Sayımlar benzersiz kullanıcı veya retention/FPS/UX başarısı değildir; nedensellik çıkarılmaz. Son180dk Worker error log örneği0 olaydır, bütün oturumlara genellenmez. Karar kullanıcı geri bildirimi ve kaynak kanıtından gelir.
+
+### Gerçek değişen davranış
+
+**Tahta → Kelimeler:** selection-preview ile board-stage arasındaki normal akış44px düğme, güncel listeyi native dialog içinde açar. Harflerin üstüne bindirilmiş sabit/floating yüzey yok. Tahtaya dön/X/Escape/backdrop aynı close yolundadır. Mevcut listeler yerinde kalır; yeni yüzey aynı WordList verisini kullanır. Uzun etiketler/tanımlar doğal sarılır, pasif bulunan kartlar yeniden kutlama animasyonu başlatmaz. Açık liste güncel confirmed strokes ve golden değişimini alır. Minimum hücre/zoom/hit fonksiyonları değişmez; mevcut ResizeObserver fitter ek normal akış yüksekliğini hesaba katar. Bütün telefonlarda scrollsuzluk iddiası yoktur.
+
+**Doğru veri:** Solo/Günlük save.strokes ve journey.clues; Arena room.you.strokes/golden; kayıtlı meydan okumada view.strokes; Mystery yalnız visibleBoard; Sprint gerçek round/strokes. Optimistic Board çizgisi yeni listede bulunmuş sayılmaz. Sayaç liste gruplarını sayar; uzun ad ancak tüm parçaları bulununca tamamdır. İpucu Avı cevabı görünür/erişilebilir ada erken sızmaz, Mystery bonusu doğru aşamaya kadar listelenmez. Tek data objesi hem aside hem yakın listeyi besler.
+
+**Geri dönüş ve durumlar:** paused/readOnly/inputBlocked veya caller'ın yardım/exit/choose/result engelinde BoardWords subtree renderdan çıkar; yeni board/room/view key'i eski popup state'ini taşımaz. Close bağlı opener'a preventScroll focus talep eder; detached opener'a fokus yok, unmount'ta bekleyen RAF iptal edilir. Board subtree/zoom scroll ayarı değiştirilmez ve pencere scroll reset çağrısı eklenmez. Listeyi aç/kapa claim/hint/pause/score/save/seed/ödül dispatch'i üretmez; Solo/Günlük ve yarışmalı modların mevcut saatleri sürer. Bu kaynak sözleşmesi gerçek native odak/scroll veya React subtree davranışı ölçümü değildir.
+
+### Son kapılar ve sınırlar
+
+**293/293 test,61grup**, önceki279 +14 yeni kabul:12 word-access +1 daily actualSolo +1 actualMystery. Split group/duplicate/unknown stroke/empty state, orijinal Board props ve dışındaki kontrol, guard/key değişimi, open/live data/close/focus talebi/cleanup, clue görünürlük+ARIA ve native Modal handler/body cleanup sözleşmesi. Actual Arena/Challenge/Sprint/Solo timer/data/guard gövdeleri ayrı kontrollü BoardWords VM'iyle sınanır; gerçek React ağacında modal unmount/stacking veya native dialog/focus/scroll testi değildir. Daily pending ink vs confirmed ve help engeli; Mystery hiddenbonus/choose geçişi kapsanır. İlk dar testte yanlış CSS class seçicisi düzeltildi; uygulama kusuru diye sayılmadı. Son dar paket37 kabulü geçti, empty/key/baseline güçlendirmeleri tam pakette geçti. Bağımsız uzman son source/test kapsamını okuyup engel bildirmedi; geçen testler root'un kendi araç kanıtıdır.
+
+**120 tahta /2400 alternatif**, TypeScript ve final production build başarılı;22 versioned offline asset hazırlandı. Son build ile **258 üretim Worker HTTP kontrolü** iki yalıtılmış oyuncuyla geçti. Mevcut checker/regresyonlar kaldırılmadı; yeni tarihin ana sayfa/dünya/arşiv/damga yolları aynı checker tarafından sınanır. HTTP sayaç, mevcut challenge/room target/claim döngüsüne göre değişebilir.38 korunan dosya byte aynı:8 eski release snapshot, engine/catalog/content/atlas/discovery/legacy/progress/cloud/sync/server/daily-action+pending+transport/App/chapter queue+progress, şema/tüm uygulanmış göç/manifest/lock/hosting. Kaynak kayıt dizisinde yalnız9.tarih append; eski ID/kelime/seed/board/best/ödül/5+1 ve günlük idempotency/owner kuralları korunur.
+
+Cloud Environment yönergesi ve networking referansı okundu; environment_status aracı ve policy JSON'u sunulmadı, genel readiness varsayılmadı veya ağ/izin değiştirilmedi. Mevcut source/node/hosting yolu gerçek sonuçlarla çalışır. Destekli preview status yeniden salt okunur sorguda stopped; önceki ERR_CONNECTION_REFUSED için somut recovery yok. Aynı başarısız browser veya alternatif server/izin yolu denenmedi. Gerçek telefon/DOM/piksel/büyük sistem yazısı/native storage/dialog/scroll/odak/ekran okuyucu/FPS/concurrentReact/provider/iki cihaz/fiziksel PWA açıktır. App Store hazır veya ölçülmüş keyif/tutma/gelir/üstün stüdyo başarısı iddiası yok.
+
+Son yerel kanıt mobile-words-validation günlüğünde; tam kaynak helper ile kaydedilip paketlenir, GitHub gerekli CI+tam ağaç/birleştirme ve aynı public URL Sites sonucu gerçek araç makbuzuyla ayrıca doğrulanır. Runtime/test sonrasında yalnız kaynak belgeleri güncellenir; geçen kapılar gereksiz yinelenmez. Yeni ücret/hesap/servis/bağımlılık/raster grafik/zamanlayıcı veya başka proje değişikliği yok. Sıradaki öncelik destekli cihaz gözlemi, sonra ayrı Arena terminal-review kabulü; haftalık inceleme24Ekim→31Ekim/sonraki uygun mevcut çalışmada kalır.
+
 ## 28 Ekim 2026 akşam · 0.12.6 · Aynı sekmede günlük keşfine dönüş
 
 Güncel Site27/0.12.5, owner/public ve aynı URL; helper `7cb1daa40fc73744e3379ffba8efdbe29cd6cca9`, GitHub main `a2e9ce907c5f083268602b46392afcdbeced89c0`, tam eş ağaç `fbc124658a1b58f19c08fc3345193ae1bb89cbd5`. Sözleşme/rol kaydı/README/sürüm/harita/son defter/öncelik/son koordinatör kaydından devam. Sabahın başarılı Site27 yayını ve **Yazlık sinema / Sette bir gün** çifti korunur; yeni tarih JSON'u veya ikinci çift yok. Sekiz eski dosya ve RELEASE_BATCHES aynıdır.
