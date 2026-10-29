@@ -60,6 +60,9 @@ describe('actual daily Solo pending and lifetime UI',()=>{
    assert.equal(h.layout().props['inputBlocked'],true);assert.equal(h.notice().props['state'].phase,'account-changed');assert.equal(h.layout().props['readOnly'],false);assert.equal(h.sounds.length,0);assert.equal(h.writes.length,0);assert.equal(h.value.days.length,0);
   }finally{h.close();}
  });
+ it('keeps pending daily ink out of the word list and hides its popup during help',async()=>{
+  const h=await solo();try{h.commit();await h.settle();assert.equal(h.layout().props['strokes'].length,1);assert.equal(h.layout().props['wordList'].strokes.length,0);const p=h.board.placements[0]!;h.gate.resolve(await h.f.game.dailyClaim('alice',h.initial.id,p.a,p.b));await h.settle();assert.equal(h.layout().props['wordList'].strokes.length,1);h.controls().props['onHelp']();await h.settle();assert.equal(h.layout().props['wordListUnavailable'],true);assert.equal(h.layout().props['paused'],false);}finally{h.close();}
+ });
  it('aborts on unmount and ignores a later response without writing a day or changing UI',async()=>{
   const h=await solo();h.hint();await h.settle();h.close();assert.equal(h.calls[0].signal.aborted,true);h.gate.resolve({...h.initial,hints:1,hintCell:[0,0]});await h.settle(false);assert.equal(h.afterUnmount,0);assert.equal(h.writes.length,0);assert.equal(h.sounds.length,0);
  });

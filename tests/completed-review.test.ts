@@ -66,6 +66,9 @@ describe('Mystery result return and completed review preserve achievements',()=>
  it('does not stack help and result even if a queued result action arrives while help is open',()=>{
   const h=mystery();try{h.closeResult();h.help();assert.equal(h.has('Help'),true);assert.equal(h.has('Modal'),false);h.click('Sonucu göster');assert.equal(h.has('Help'),true);assert.equal(h.has('Modal'),false);h.closeHelp();assert.equal(h.has('Help'),false);assert.equal(h.has('Modal'),true);assert.equal(h.layout().props['paused'],false);}finally{h.close();}
  });
+ it('gives nearby words only visible Mystery targets and closes access for connection choice',()=>{
+  const h=mystery({complete:false,solved:false});try{const initial=h.layout().props['wordList'];assert.equal(initial.board.targets.length,h.spec.words.length);assert.equal(initial.strokes.length,0);assert.equal(initial.board, nodes(h.layout().props['aside']).find(n=>n.type==='WordList')!.props['board']);for(let i=0;i<3;i++)h.commit(i);h.click('Bağlantıyı bul');assert.equal(h.layout().props['wordListUnavailable'],true);h.click(h.spec.answer);assert.equal(h.layout().props['wordListUnavailable'],false);assert.equal(h.layout().props['wordList'].board.targets.length,h.board.targets.length);}finally{h.close();}
+ });
  it('starts a real empty replay while retaining the permanent completed best and collection',()=>{
   const h=mystery();try{
    const best=JSON.stringify(h.value.saves[h.key]),collection=[...h.value.mysteries];h.click('Bir daha keşfet');assert.equal(h.has('Modal'),false);assert.equal(h.layout().props['readOnly'],false);assert.equal(h.controls().props['completed'],false);assert.equal(h.layout().props['strokes'].length,0);h.commit(0);assert.equal(h.layout().props['strokes'].length,1);assert.equal(JSON.stringify(h.value.saves[h.key]),best);assert.deepEqual([...h.value.mysteries],collection);
