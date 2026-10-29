@@ -1,0 +1,96 @@
+/* The same real goal connects the home card, board and earned keepsake. */
+.quest-start{position:relative;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(220px,.8fr);margin:0 0 26px;overflow:hidden;border:1px solid #d8e2ce;border-radius:28px;background:#fffcf2;box-shadow:0 14px 38px #193e2b10;color:#244a39}
+.quest-copy{grid-column:1;grid-row:1;padding:30px;min-width:0}
+.quest-eyebrow{display:block;font-size:12px;font-weight:750;line-height:1.5;letter-spacing:.5px;color:#58704e}
+.quest-copy h2{font-family:var(--serif);font-size:clamp(32px,4vw,46px);font-weight:400;line-height:1.1;letter-spacing:-1px;margin:10px 0 12px;color:#244a39;overflow-wrap:anywhere}
+.quest-promise{display:flex;align-items:flex-start;gap:8px;font-size:14px;line-height:1.65;color:#536749;margin:0 0 20px}
+.quest-promise svg{flex:0 0 auto;margin-top:3px;color:#98712e}
+.quest-art{grid-column:2;grid-row:1;position:relative;align-self:stretch;display:grid;place-items:center;background:linear-gradient(145deg,#dce9d2,#f0e9d0);min-height:240px;overflow:hidden}
+.quest-art>.world-art{width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
+.quest-art-seal{position:absolute;right:20px;bottom:20px;width:52px;height:52px;display:grid;place-items:center;border-radius:50%;background:#fff7df;color:#8b6929;border:4px solid #ffffffb3;box-shadow:0 5px 20px #203f3022;rotate:-12deg}
+.quest-collection{padding:14px 16px;background:#eef3e5;border:1px solid #dce5cf;border-radius:15px;margin:18px 0 0}
+.quest-collection>div{display:flex;justify-content:space-between;gap:10px;line-height:1.5;font-size:12px;color:#526849}
+.quest-collection>div>b{white-space:nowrap;color:#315c42}
+.quest-collection>p{font-size:12px;line-height:1.5;margin:8px 0 0;color:#435f3e;font-weight:650}
+.piece-trail{display:flex;align-items:center;list-style:none;padding:0;margin:12px 0 0;gap:7px}
+.piece-trail li{position:relative;flex:1;min-width:0;display:flex;justify-content:center}
+.piece-trail li:not(:last-child):after{content:'';position:absolute;height:2px;left:70%;right:-30%;top:15px;background:#cbd6bd}
+.piece-trail li>span{position:relative;z-index:1;display:grid;place-items:center;width:31px;height:31px;border-radius:50%;border:1px solid #c7d2b9;background:#f9fbf2;color:#637654;font-size:12px;font-weight:750}
+.piece-trail li.earned>span{background:#315f47;color:#fff5d8;border-color:#315f47}
+.piece-trail li.current>span{background:#f5dc99;border:2px solid #8a6828;color:#4e3b19;outline:3px solid #eadbb5;outline-offset:2px}
+.quest-launch{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.quest-launch>span{display:flex;flex-direction:column;gap:5px;min-width:0}
+.quest-launch small{font-size:10px;letter-spacing:.8px;font-weight:700;color:#68765d}
+.quest-launch b{font-size:16px;line-height:1.3;overflow-wrap:anywhere}
+.quest-launch em{font-size:12px;font-style:normal;color:#617158;line-height:1.4}
+.quest-launch>.button{flex:0 0 auto;min-height:52px;box-shadow:0 4px 0 #153c29;background:#316247;border-radius:14px;gap:10px;font-size:15px;white-space:normal;text-align:left}
+.quest-launch>.button:active{transform:translateY(2px);box-shadow:0 2px 0 #153c29}
+.quest-reassurance{display:block;margin-top:16px;font-size:11px;line-height:1.6;color:#637257}
+.quest-shortcuts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;background:#f1f5e9;border-top:1px solid #dce5cf}
+.quest-shortcuts :is(a,button){display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 8px;min-height:48px;background:transparent;border:0;color:#385b42;font-size:13px;font-weight:650;text-decoration:none;line-height:1.5}
+.quest-shortcuts :is(a,button):not(:last-child){border-right:1px solid #dce5cf}
+.quest-shortcuts :is(a,button):hover{background:#e5edd9}
+.quest-start :is(a,button):focus-visible{outline:3px solid #ac8438;outline-offset:-4px}
+/* Short, readable target lists share the board surface instead of a second panel. */
+.journey-objective{display:flex;align-items:center;gap:10px;min-width:0;padding:9px 13px;margin:0 0 10px;border:1px solid #fff1bf38;border-radius:14px;background:#ffffff0b;color:#fff3ce}
+.objective-icon{flex:0 0 auto;display:grid;place-items:center;width:32px;height:32px;border:1px solid #f4d49466;border-radius:10px;color:#f4d494;background:#f4d49412}
+.journey-objective>div{min-width:0;flex:1}.journey-objective small{display:block;font-size:9px;letter-spacing:.8px;line-height:1.5;color:#c8d8ba}.journey-objective strong{font-size:15px;font-weight:650;line-height:1.3;overflow-wrap:anywhere}
+.objective-fraction{font-size:20px;font-variant-numeric:tabular-nums;font-weight:750}.objective-fraction>small{display:inline;font-size:12px;letter-spacing:0;margin-left:2px}
+.solo-hud{display:flex;align-items:center;gap:12px;min-width:0;margin:6px 0 4px;color:#f8efd4;font-variant-numeric:tabular-nums}
+.solo-found{display:flex;align-items:center;gap:9px;flex:0 0 auto}.solo-found>b{font-size:25px;line-height:1;font-weight:750;animation:count-arrive .22s ease-out}.solo-found small{font-size:14px;font-weight:450;color:#c7dbbc;margin-left:2px}.solo-found>span{max-width:88px;font-size:11px;line-height:1.4;color:#e0e9cf}
+.solo-meter{flex:1;min-width:20px;height:7px;border-radius:9px;background:#ffffff24;overflow:hidden}.solo-meter>i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#c0dfa0,#f5d48b);transition:width .25s ease}
+.solo-star-goal{display:flex;align-items:center;gap:5px;font-size:15px;color:#f6d78f;font-weight:750}.solo-clock{display:flex;gap:5px;align-items:center;font-size:12px;color:#e0e9cf;white-space:nowrap}
+.inline-targets{padding:3px 0 10px;min-width:0}.game-app .inline-targets .word-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0;max-height:none;overflow:visible}
+.game-app .inline-targets .word-tag{display:flex;min-width:0;min-height:34px;padding:6px 9px;border-radius:10px;font-size:13px;line-height:1.4;color:#294e3c;background:#f0f4e6;border:1px solid #dbe5cb;transition:background .18s,border-color .18s;box-shadow:none}
+.game-app .inline-targets .word-tag>div{min-width:0;overflow-wrap:anywhere}.game-app .inline-targets .word-tag>span{flex:0 0 16px}.game-app .inline-targets .word-tag.found{background:#e1edcf!important;border-color:#bdcdb0;animation:none}.game-app .inline-targets .word-tag.found>div{color:#526648;text-decoration:line-through;text-decoration-thickness:1px}
+.game-app .inline-targets .clue-tag>div{font-size:12px}.game-app .inline-targets .word-tag small{font-size:11px!important;line-height:1.5}.game-app .inline-targets .clue-tag.found>div{text-decoration:none}
+.focused-play .game-message{min-height:18px;margin:4px 0 8px}.focused-play .play-heading{margin-bottom:12px}.focused-play .selection-preview{margin-bottom:7px}
+/* A real, earned keepsake is the centre of the finale. */
+.modal.achievement-modal{padding:22px;width:min(520px,calc(100% - 24px));border-radius:26px;background:#fffcf1}
+.achievement-modal .modal-head{margin-bottom:10px}.achievement-modal .modal-head h2{font-size:21px;color:#3b5b43}.achievement-modal .modal-head .icon-button{min-width:44px;min-height:44px}
+.victory-keepsake{text-align:center;padding:12px 15px 18px;border-radius:20px;background:radial-gradient(ellipse at 50% 40%,#f3e4b655,transparent 70%),#f2f5e9;border:1px solid #d9e3c9}
+.victory-eyebrow{display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:1.1px;font-size:10px;font-weight:800;color:#5e7147;line-height:1.6}
+.victory-keepsake h3{font-family:var(--serif);font-size:clamp(27px,6vw,37px);font-weight:400;letter-spacing:-.6px;line-height:1.15;margin:7px 0;color:#274d38;overflow-wrap:anywhere}
+.achievement-modal .victory-keepsake>p{font-size:13px;color:#5e6d4f;margin:0 0 12px;line-height:1.5}
+.victory-scene{position:relative;width:min(100%,280px);margin:15px auto 18px;border:5px solid #fffcf1;border-radius:17px;box-shadow:0 6px 20px #36492724;rotate:-2deg}
+.victory-scene .collection-scene{width:100%;height:auto;aspect-ratio:16/9;border:0;border-radius:12px;margin:0}.victory-scene .collection-scene>svg{width:100%;height:100%}
+.victory-scene .collection-mosaic .revealed{animation:none}.victory-scene .collection-ribbon{font-size:10px}
+.victory-seal{position:absolute;bottom:-15px;right:-10px;display:grid;place-items:center;width:46px;height:46px;background:#315f47;border:4px solid #fffcf1;border-radius:50%;color:#f8e5a3;rotate:10deg;box-shadow:0 3px 8px #26453225}
+.victory-keepsake.is-new .victory-scene{animation:keepsake-arrive .5s cubic-bezier(.2,.7,.3,1) both}.victory-keepsake .piece-trail{max-width:290px;margin:20px auto 12px}.victory-keepsake .victory-caption{max-width:330px;margin:0 auto!important;font-size:12px!important;line-height:1.65!important}
+.victory-simple{padding:20px 16px}.victory-medal{display:grid;place-items:center;width:80px;height:80px;margin:0 auto 16px;border:6px double #bf9b52;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff1b9,#e5c778);color:#74511e;box-shadow:0 7px 0 #c5ad7025}
+.victory-unlocks{list-style:none;margin:13px 0;padding:0;display:grid;gap:8px}.victory-unlocks li{display:flex;align-items:center;gap:11px;padding:13px;border:1px solid #d9c48e;border-radius:14px;background:#fbf1d4;color:#5f4b25}.victory-unlocks li>span{display:grid;place-items:center;width:36px;height:36px;flex:0 0 auto;background:#f1e0ad;border-radius:10px}.victory-unlocks li>div{flex:1;min-width:0}.victory-unlocks small{display:block;font-size:9px;letter-spacing:.7px;line-height:1.6}.victory-unlocks b{font-size:15px;line-height:1.4;overflow-wrap:anywhere}.victory-unlocks li>svg{flex-shrink:0}
+.victory-mastery{display:grid;justify-items:center;gap:4px;margin:18px 0}.victory-stars{display:flex;align-items:center;gap:8px;color:#d4d5c6}.victory-stars svg{width:30px;height:30px}.victory-stars svg:nth-child(2){width:38px;height:38px}.victory-stars .earned{color:#ad7b27;filter:drop-shadow(0 2px 0 #f7e5b2)}.victory-mastery>strong{font-size:15px;color:#3d5e43}.victory-mastery>span{font-size:11px;color:#66735a}
+.victory-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid #e1e7d5;border-radius:14px;padding:12px 0;background:#f5f7ec}.victory-stats>div{text-align:center;padding:0 7px}.victory-stats>div+div{border-left:1px solid #dde5ce}.victory-stats b{display:block;font-size:19px;color:#31573f;font-variant-numeric:tabular-nums}.victory-stats span{font-size:11px;color:#647356}
+.achievement-modal .victory-record{display:flex;justify-content:center;gap:7px;align-items:center;font-size:13px;color:#73531c;background:#f9edc7;border-radius:12px;padding:11px;margin:12px 0}
+.achievement-modal .victory-best{font-size:12px;line-height:1.7;color:#607052;text-align:center;margin:12px 0}.victory-best b{white-space:nowrap}
+.mastery-explainer{margin:8px 0;color:#5c6d50}.mastery-explainer>summary{min-height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;text-decoration:underline;text-underline-offset:3px;list-style:none}.mastery-explainer>summary::-webkit-details-marker{display:none}.achievement-modal .mastery-explainer>p{font-size:12px;line-height:1.7;padding:0 10px;margin:0 0 12px}
+.next-journey-preview{display:flex;align-items:flex-start;gap:11px;padding:15px;margin:14px 0 2px;border:1px solid #d5dfc5;border-radius:14px;background:#eef4e3;color:#3c5e40}.next-journey-preview>span{display:grid;place-items:center;flex:0 0 auto;width:34px;height:34px;background:#dfeacc;border-radius:10px}.next-journey-preview>div{min-width:0}.next-journey-preview small{font-size:9px;letter-spacing:1px;line-height:1.5}.next-journey-preview strong{display:block;font-size:15px;line-height:1.4;margin:4px 0;overflow-wrap:anywhere}.achievement-modal .next-journey-preview p{font-size:12px;line-height:1.6;margin:3px 0 0;color:#556c49}
+.achievement-modal .modal-actions>.button.primary{min-height:52px;border-radius:14px;font-size:15px;white-space:normal;line-height:1.5;box-shadow:0 4px 0 #183e2c;text-align:left;justify-content:space-between}
+.achievement-modal .modal-actions .text-button{min-height:44px;font-size:13px;white-space:normal}.achievement-modal .modal-actions .button.secondary{min-height:46px;white-space:normal;font-size:13px}
+.achievement-modal :is(button,summary):focus-visible{outline:3px solid #9c7529;outline-offset:3px}
+@keyframes keepsake-arrive{from{opacity:0;transform:translateY(12px) scale(.9);rotate:3deg}to{opacity:1;transform:none;rotate:-2deg}}
+@keyframes count-arrive{from{transform:scale(.9)}to{transform:scale(1)}}
+@media(max-width:780px){
+ .quest-start{grid-template-columns:1fr;border-radius:23px;margin-bottom:22px}.quest-art{grid-column:1;grid-row:1;min-height:0;height:130px}.quest-art>.world-art{width:100%;height:100%;max-width:460px}.quest-art-seal{right:17px;bottom:10px;width:42px;height:42px}.quest-copy{grid-row:2;padding:20px}.quest-copy h2{font-size:34px;margin:7px 0 9px}.quest-eyebrow{font-size:11px}.quest-promise{font-size:13px;margin-bottom:15px}.quest-collection{padding:12px 14px;margin:16px 0 0}.quest-launch b{font-size:15px}.quest-launch>.button{font-size:14px;padding:12px 15px;min-height:50px}.quest-reassurance{margin-top:13px}.quest-shortcuts :is(a,button){font-size:12px;gap:6px}
+ .focused-play .play-columns{display:flex;flex-direction:column;gap:12px}.focused-play .board-panel{order:0}.focused-play .targets-panel{order:1}.focused-play .targets-panel:has(>.game-note){padding:0 4px}.focused-play .targets-panel>.game-note{display:flex;margin:0;font-size:12px;line-height:1.6}.focused-play .targets-panel>.game-note>p{margin:0}.focused-play .panel-heading{margin-bottom:10px}.focused-play .play-heading h1{font-size:22px}.focused-play .play-heading .eyebrow{font-size:10px}
+ .solo-hud{gap:8px}.solo-found{gap:6px}.solo-found>b{font-size:23px}.solo-found>span{font-size:10px;max-width:70px}.solo-clock{font-size:11px}.solo-star-goal{font-size:14px}.journey-objective{margin-bottom:8px;padding:8px 10px}.journey-objective strong{font-size:14px}
+ .modal.achievement-modal{padding:16px}.achievement-modal .modal-head h2{font-size:20px}.victory-keepsake{padding:12px}.victory-scene{width:min(85%,250px)}.victory-keepsake h3{font-size:31px}
+}
+@media(max-width:360px){.quest-copy{padding:16px}.quest-launch{flex-direction:column;align-items:stretch;gap:12px}.quest-launch>.button{justify-content:space-between}.quest-shortcuts :is(a,button){flex-direction:column;gap:4px;font-size:11px}.solo-clock>svg{display:none}.solo-found>span{max-width:60px}.solo-hud{flex-wrap:wrap}.solo-meter{min-width:35px}.journey-objective strong{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.victory-keepsake.is-new .victory-scene,.solo-found>b{animation:none}.solo-meter>i,.game-app .inline-targets .word-tag{transition:none}.quest-launch>.button:active{transform:none}}
+.contrast-mode .quest-start,.contrast-mode .quest-collection,.contrast-mode .victory-keepsake,.contrast-mode .victory-stats,.contrast-mode .next-journey-preview{border-color:#617d54}
+.contrast-mode :is(.quest-eyebrow,.quest-promise,.quest-reassurance,.victory-eyebrow,.victory-caption,.victory-best,.mastery-explainer){color:#34502f}
+.contrast-mode .game-app .inline-targets .word-tag,.game-app.contrast-mode .inline-targets .word-tag{color:#183c29;border-color:#6e8b61}.contrast-mode .piece-trail li>span{border-color:#536e47}
+.inline-target-play .play-columns{grid-template-columns:minmax(0,1fr)}
+.inline-target-play .board-panel{width:100%;max-width:630px;margin-inline:auto}
+.inline-target-play .targets-panel{width:100%;max-width:630px;margin-inline:auto;padding:0 8px!important;border:0!important;background:transparent!important}
+
+/* The outcome can scroll while the next/replay/review actions stay in the dialog layout. */
+.modal.achievement-modal[open]{display:flex;flex-direction:column;max-height:calc(100dvh - 32px);overflow:hidden;scrollbar-gutter:auto}
+.achievement-modal>.modal-head,.achievement-modal>.modal-actions{flex:0 0 auto}
+.achievement-modal>.modal-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:0 3px 4px}
+.achievement-modal>.modal-actions{border-top:1px solid #dce5ce;margin-top:10px;padding-top:10px;background:#fffcf1}
+.achievement-modal .modal-actions>.button.full{margin-top:0;width:100%}
+.achievement-secondary{display:flex;flex-wrap:wrap;gap:2px 12px;justify-content:center;margin-top:5px}
+.achievement-secondary>.text-button{flex:1 1 130px;justify-content:center;min-height:44px;padding:8px 4px;line-height:1.5}
+@media(max-height:500px){.modal.achievement-modal[open]{display:block;overflow-y:auto}.achievement-modal>.modal-content{overflow:visible}.achievement-modal>.modal-actions{position:static}}

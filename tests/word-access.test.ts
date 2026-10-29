@@ -1,3 +1,5 @@
+import * as achievementView from '../lib/game/achievement-view.ts';
+import * as goalWordCard from '../lib/game/word-card.ts';
 // Actual shared/caller component bodies with controlled hooks and clocks.
 // Not DOM, native focus/scroll, physical phone, concurrent React or FPS evidence.
 import assert from 'node:assert/strict';
@@ -5,6 +7,7 @@ import {readFileSync} from 'node:fs';
 import {describe,it} from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import * as legacy from '../lib/game/legacy.ts';
 import * as content from '../lib/game/content.ts';
 import * as engine from '../lib/game/engine.ts';
 import * as progress from '../lib/game/progress.ts';
@@ -20,21 +23,21 @@ const visible=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v)
 const jsx=(type:any,props:Record<string,unknown>,key?:unknown)=>({type,props,key}),icons=new Proxy({},{get:(_t,k)=>String(k)});
 function deferred<T>(){let resolve!:(r:T)=>void;const promise=new Promise<T>(yes=>{resolve=yes;});return{promise,resolve};}
 function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown){
- const exports:Record<string,any>={},slots:Slot[]=[],effects:(()=>void)[]=[],intervals=new Map<number,()=>void>(),frames=new Map<number,()=>void>(),document=Object.assign(new EventTarget(),{hidden:false,body:{style:{overflow:''}}});
+ const exports:Record<string,any>={},slots:Slot[]=[],effects:(()=>void)[]=[],intervals=new Map<number,()=>void>(),timeouts=new Map<number,()=>void>(),frames=new Map<number,()=>void>(),document=Object.assign(new EventTarget(),{hidden:false,body:{style:{overflow:''}}});
  let cursor=0,id=0,dirty=true,tree:any,render:()=>any,now=10000;
  const changed=(s:Slot,d:unknown[])=>!s.deps||s.deps.length!==d.length||d.some((v,i)=>!Object.is(v,s.deps![i]));
  const hooks={useState(initial:any){const i=cursor++,s=slots[i]??={value:i===0&&seedFirst!==undefined?seedFirst:typeof initial==='function'?initial():initial};return[s.value,(n:any)=>{const v=typeof n==='function'?n(s.value):n;if(!Object.is(v,s.value)){s.value=v;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useId(){return(slots[cursor++]??={value:'id-'+(++id)}).value;},useMemo(fn:()=>any,deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;s.value=fn();}return s.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;effects.push(()=>{s.cleanup?.();const clean=fn();s.cleanup=typeof clean==='function'?clean:undefined;});}},useReducer(reducer:any,arg:any,init:any){const [v,set]=hooks.useState(()=>init(arg));return[v,(event:any)=>set((s:any)=>reducer(s,event))];}};
  class Clock extends Date{static override now(){return now;}}
  const source=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText+(file.endsWith('Sprint.tsx')?'\nexports.__SprintRun=SprintRun;':'');
- vm.runInNewContext(source,{exports,require:(name:string)=>name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:()=>null,setItem(){}},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:()=>++id,clearTimeout(){},setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)});
+ vm.runInNewContext(source,{exports,require:(name:string)=>name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:()=>null,setItem(){}},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void)=>{timeouts.set(++id,fn);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)});
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<50;i++){if(dirty){dirty=false;cursor=0;tree=render();}if(commit)while(effects.length)effects.shift()!();}return tree;};
- return{exports,document,slots,frames,start(name:string,props:any,commit=true){render=()=>exports[name](props);return paint(commit);},paint,update(name:string,props:any){render=()=>exports[name](props);dirty=true;return paint();},find(type:string){const n=walk(tree).find(n=>n.type===type||typeof n.type==='function'&&n.type.name===type);assert.ok(n,type);return n;},async settle(){for(let i=0;i<30;i++){await Promise.resolve();paint();}},time(value:number){now=value;for(const fn of [...intervals.values()])fn();paint();},frame(){const f=[...frames.values()];frames.clear();for(const fn of f)fn();paint();},get tree(){return tree;},close(){for(const s of slots)s.cleanup?.();frames.clear();intervals.clear();}};
+ return{exports,document,slots,frames,start(name:string,props:any,commit=true){render=()=>exports[name](props);return paint(commit);},paint,update(name:string,props:any){render=()=>exports[name](props);dirty=true;return paint();},find(type:string){const n=walk(tree).find(n=>n.type===type||typeof n.type==='function'&&n.type.name===type);assert.ok(n,type);return n;},async settle(){for(let i=0;i<30;i++){await Promise.resolve();paint();}},time(value:number){now=value;for(const fn of [...intervals.values()])fn();paint();},expire(){const f=[...timeouts.values()];timeouts.clear();for(const fn of f)fn();paint();},frame(){const f=[...frames.values()];frames.clear();for(const fn of f)fn();paint();},get tree(){return tree;},close(){for(const s of slots)s.cleanup?.();frames.clear();intervals.clear();timeouts.clear();}};
 }
 const base={title:'Keşif',kicker:'KELİMELER',onBack(){},board:content.TUTORIAL,strokes:[],paused:false,zoom:false,onCommit(){},preview:'',onPreview(){},children:null,aside:null,footer:null};
 function shared(props:any){const h=view('components/game/common.tsx');h.start('PlayLayout',{...base,...props});return h;}
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
 const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
-const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/telemetry':{track(){}}};
+const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
  it('does not offer an empty word dialog',()=>{
@@ -99,6 +102,35 @@ describe('caller wiring keeps timers, hidden targets and pending claims separate
   const h=view('components/game/Sprint.tsx',{...modules,'./common':commonStubs});try{
    h.start('__SprintRun',{seed:914,progress:progress.emptyProgress(),onProgress(){},onBack(){},onReplay(){}});const start=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'))!;start.props['onClick']();h.paint();h.time(14000);let layout=h.find('PlayLayout');assert.equal(layout.props['wordListUnavailable'],false);assert.equal(layout.props['wordList'].board,layout.props['board']);const sheet=openWords(layout.props['wordList']),before=text(h.tree);h.time(16000);assert.notEqual(text(h.tree),before);sheet.find('Modal').props['onClose']();sheet.paint();sheet.close();
    const board=layout.props['board'];for(let i=0;i<board.placements.length;i++){const p=board.placements[i];h.time(16100+i*100);h.find('PlayLayout').props['onCommit'](p.a,p.b);h.paint();}assert.equal(h.find('PlayLayout').props['wordListUnavailable'],true);h.time(20000);layout=h.find('PlayLayout');assert.equal(layout.props['wordListUnavailable'],false);assert.notEqual(layout.props['board'],board);h.time(90000);assert.equal(h.find('PlayLayout').props['wordListUnavailable'],true);assert.equal(h.find('Modal').props['title'],'Güzel bir turdu!');
+  }finally{h.close();}
+ });
+});
+
+
+describe('achievement loop uses real Solo results and compact target access',()=>{
+ it('keeps result actions outside the scrolling content and preserves native close callbacks',()=>{
+  let continued=0,closed=0;const h=view('components/game/common.tsx');try{
+   h.start('Modal',{title:'Keşif tamamlandı',className:'achievement-modal',children:jsx('p',{children:'Gerçek kazanım'}),footer:jsx('button',{children:'Sıradaki keşif',onClick:()=>continued++}),onClose:()=>closed++});
+   const body=walk(h.tree).find(n=>n.props['className']==='modal-content')!,footer=walk(h.tree).find(n=>n.type==='footer')!;assert.match(text(body),/Gerçek kazanım/);assert.doesNotMatch(text(body),/Sıradaki keşif/);assert.equal(footer.props['aria-label'],'Sonuç eylemleri');walk(footer).find(n=>n.type==='button')!.props['onClick']();assert.equal(continued,1);assert.equal(closed,0);h.find('dialog').props['onCancel']({preventDefault(){}});assert.equal(closed,1);
+  }finally{h.close();}
+ });
+ it('shows one confirmed inline list outside the board, with no duplicate popup',()=>{
+  const pending=[content.TUTORIAL.placements[0]!],words={board:content.TUTORIAL,strokes:[]},h=shared({wordList:words,strokes:pending,inlineTargets:true,focused:true});try{
+   assert.match(h.tree.props['className'],/focused-play inline-target-play/);assert.equal(walk(h.tree).filter(n=>typeof n.type==='function'&&n.type.name==='WordList').length,1);assert.equal(walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='BoardWords'),false);assert.equal(h.find('WordList').props['strokes'],words.strokes);assert.equal(h.find('Board').props['strokes'],pending);assert.equal(walk(walk(h.tree).find(n=>n.props['className']==='board-stage')).some(n=>typeof n.type==='function'&&n.type.name==='WordList'),false);
+  }finally{h.close();}
+ });
+ it('carries one real route goal through confirmed completion and the existing next/replay callbacks',async()=>{
+  const p=progress.emptyProgress();for(const id of ['uzay-1','uzay-2']){const b=content.journeyBoard(content.journeyById(id)!);p.saves['route:'+id]=progress.cleanSave({strokes:b.placements,hints:0,elapsed:30,complete:false,stars:0},b);}
+  const before=JSON.stringify(p),calls:any[]=[],h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{
+   h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-3'},progress:p,onProgress(){},onBack(){},onMap(){},onNext:(c:any)=>calls.push(c)});assert.equal(h.find('JourneyObjective').props['goal'].chapter.id,'uzay-3');const layout=h.find('PlayLayout');assert.equal(layout.props['inlineTargets'],true);assert.equal(walk(layout.props['aside']).some(n=>n.type==='WordList'),false);
+   for(const stroke of layout.props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();const result=h.find('VictorySummary').props;assert.equal(result['goal'].chapter.id,'uzay-3');assert.equal(result['goal'].state.pieces,3);assert.equal(result['rewards'].filter((r:any)=>r.kind==='piece').length,1);assert.equal(result['rewards'].filter((r:any)=>r.kind==='world').length,1);
+   const next=h.find('NextJourneyPreview').props['goal'];walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).startsWith('Sıradaki:'))!.props['onClick']();assert.equal(calls[0].journey,next.chapter.id);walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).includes('Bir daha oyna'))!.props['onClick']();assert.equal(calls[1].journey,'uzay-3');assert.equal(calls[1].practice,true);assert.equal(JSON.stringify(p),before);
+  }finally{h.close();}
+ });
+ it('never shows a standard Hababam best on a completed classic board',async()=>{
+  const p=progress.emptyProgress(),b=engine.makePuzzle('hababam',0,engine.hash('campaign-v2:hababam:0'));p.saves['hababam.0']=progress.cleanSave({strokes:b.placements,hints:0,elapsed:1,complete:false,stars:0},b);const before=JSON.stringify(p);
+  const h=view('components/game/Solo.tsx',{...modules,'@/lib/game/legacy':legacy,'./common':commonStubs});try{
+   h.start('Solo',{config:{themeId:'hababam',level:0,classic:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});assert.equal(h.find('PlayLayout').props['inlineTargets'],false);for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();assert.equal(h.find('VictorySummary').props['best'],undefined);assert.equal(h.find('VictorySummary').props['improved'],false);assert.equal(h.find('VictorySummary').props['goal'],null);assert.equal(JSON.stringify(p),before);
   }finally{h.close();}
  });
 });

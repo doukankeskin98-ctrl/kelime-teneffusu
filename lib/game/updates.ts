@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.13.0',date:'29 Ekim 2026',title:'Her keşfin görünen bir hedefi var',items:[
+  {where:'Keşfet · sıradaki hedef',detail:'Harita keşfinin kazanılacak parçası, altı parçalık albümü ve sıradaki açılış koşulu artık ana kartta. Keşfe başla düğmesi koleksiyon ayrıntılarından önce geliyor.'},
+  {where:'Oyun · ilerlemeni gör',detail:'Kısa solo kelime listeleri tahtayla aynı alanda açık duruyor. Bulunan ve kalan kelimeler, yıldız hedefi ve keşfin parçası görünür; uzun listelere Kelimeler düğmesiyle ulaşabilirsin.'},
+  {where:'Sonuç · başarın ve devamı',detail:'Gerçek kazanılan parça, yeni dünya ve bonus açılışları öne çıktı. Sonraki keşif, tekrar ve tahta inceleme eylemleri ayrı alt alanda. Bu turun sonucu ile korunan kişisel en iyin açıkça ayrılıyor.'},
+ ]},
  {version:'0.12.7',date:'29 Ekim 2026',title:'Kelimeler artık tahtanın hemen yanında',items:[
   {where:'Tahta · Kelimeler',detail:'Tahtanın yanındaki Kelimeler düğmesiyle güncel listeyi aç, Tahtaya dön ile devam et. Uzun isimler, İpucu Avı tanımları ve bulunanlar burada da görünür. Süre işlemeye devam eder.'},
   {where:'Doğru hedefler, doğru durum',detail:'Sunucu onayı bekleyen kelime bulunmuş sayılmaz. Parçalı adlar tüm parçalarıyla tamamlanır; gizli bonus veya tanım cevabı erken açılmaz. Liste yardım, sonuç ve yeni tahta geçişinde kapanır.'},

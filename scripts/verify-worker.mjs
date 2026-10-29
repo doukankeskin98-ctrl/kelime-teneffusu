@@ -35,11 +35,12 @@ try{
  check(home.includes('id="discovery-start-title"')&&home.includes('id="fresh-discoveries-title"')&&home.indexOf('id="discovery-start-title"')<home.indexOf('id="fresh-discoveries-title"'),'personal starting point precedes the daily catalogue');
  check(home.includes('href="#kesif-haritasi"')&&home.includes('href="#dunyalar"')&&home.includes('id="kesif-haritasi"')&&home.includes('id="dunyalar"'),'home shortcuts point to existing map and world sections');
  check(home.includes('kesif-haritasi')&&home.includes('Yıldız İskelesi')&&home.includes('Yolculuğun devam ediyor.')&&home.includes('atlas-node')&&EXPEDITIONS.length===16,'public illustrated atlas renders with sixteen registered destinations');
+ check(home.includes('quest-start')&&home.includes('İlk yıldız')&&home.includes('İpuçlarıyla da parçanı kazanırsın.'),'home presents the actual initial route reward without a star requirement');
  const released=releaseCatalogue();check(home.includes('fresh-discoveries-title')&&home.includes('Neler değişti?')&&released.chapters.slice(0,2).every(c=>home.includes(c.spec.title)),'home visibly presents the new chapters and in-game release notes');
  check(home.includes('İki keşif, bir hatıra')&&home.includes('İki bölümü de tamamla.')&&!home.includes('Damganı gör'),'home presents the stamp condition without awarding an unauthenticated visitor');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
- check(home.includes('Hızlı Tur')&&home.includes('/art/discovery-island.webp'),'home includes the playable sprint entry and original island artwork');
+ check(home.includes('Hızlı Tur')&&/<div class="quest-art"[^>]*><svg[^>]*class="world-art /.test(home),'home includes the playable sprint entry and the current goal’s theme artwork');
  const themeId=released.chapters[0].spec.themeId,themeArchive=await json('/api/chapters?collection=releases&theme='+themeId);
  check(themeArchive.total===archive.themeCounts[themeId]&&themeArchive.chapters.every(c=>c.spec.themeId===themeId),'world catalogue filters before pagination and counts all releases in that world');
  check(themeArchive.companions.every(c=>!('board' in c))&&themeArchive.chapters.every(c=>releasePairs([...themeArchive.chapters,...themeArchive.companions]).some(p=>p.chapters.some(member=>member.id===c.id))),'world catalogue retains complete stamp pairs without exposing board paths');
