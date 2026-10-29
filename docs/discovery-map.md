@@ -39,3 +39,10 @@ Fısıltı Ormanı, Tarçın Sokağı, Melodi Koyu, Rüzgâr Limanı, Merak Vadi
 `JOURNEYS` ve `JOURNEY_BONUSES` yeni kayıtları içerir; `ALL_JOURNEYS` üzerinden istemci ve sunucu aynı tahtayı doğrular. Yeni ID biçimi `<theme>-atlas-<1..6>`, kayıt anahtarı yine `route:<id>`. İlk 18 board SHA snapshot testiyle korunur. Bütün mevcut/yeni tamamlamalar ve 3660 günlük geçmiş, mevcut 150000 byte HTTP sınırına sığar. Yeni göç yoktur.
 
 Ana sayfada kişisel kartın hemen altında etkileşimli yol haritası bulunur. Bölüm düğmeleri durum, gerçek yıldız, hedef ve kazanılacak parçayı gösterir. Bütün haritalar penceresi eski ve yeni bölgeleri seçtirir. Sonuç ana eylemi önce aynı haritanın kalan bölümünü, sonra açık sıradaki dünyayı açar; eski üçlü tamamlandığında öneri Fısıltı Ormanı olur. Ödüller aynı doğrulanmış kayıttan türetilir, tekrar kazanılmaz.
+
+
+## 0.13.0 · Hedefi ve kazanımı aynı yolculukta görmek
+
+Ana kart, oynanacak gerçek önerinin journey kimliğinden parça/konum/albüm/açılış hedefi çıkarır. Aynı bilgi Solo başında görünür. Sonuçta mevcut discoveryRewards ve doğrulanmış saves üzerinden yeni parça/dünya/bonus/albüm; yeni ödül yoksa açık tekrar metni gösterilir. Sonraki hedef mevcut nextJourneyAfter fonksiyonundan gelir, oyuncu eylemi olmadan oyun açılmaz. Standart bölüm, günlük veya tutorial için harita ödülü uydurulmaz. Altılı sahneler ve 3/5/6 kuralları, eski dünyaya erişim istisnası ve tam katalog davranışı değişmez.
+
+Sunum yardımcıları achievement-view ve AchievementLoop içindedir; bunlar kayıt veya ödül yazmaz. SSR ve actual Solo kontrollü kabul testleri hedef eşleşmesini, açılışları, tekrar/rekor ayrımını ve buton callback'lerini kapsar. Kısa hedef listesinde yalnız confirmed grup tamamlamaları vardır; parçalı uzun adlar eski kelime motoruyla kalır. Gerçek cihaz/piksel/odak-kaydırma doğrulaması ayrıca gerekir.
