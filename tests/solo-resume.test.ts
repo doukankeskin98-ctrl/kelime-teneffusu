@@ -1,3 +1,5 @@
+import * as achievementView from '../lib/game/achievement-view.ts';
+import * as goalWordCard from '../lib/game/word-card.ts';
 // Executes the real Solo logic. Minimal queued hooks/JSX/clock substitute for IO;
 // this does not validate a DOM, concurrent React/StrictMode or a physical phone.
 import assert from 'node:assert/strict';
@@ -55,10 +57,10 @@ function harness({initial=saved([]),practice=false,known=false}:{initial?:SavedL
  const modules:Record<string,unknown>={
   react:hooks,'react/jsx-runtime':{jsx:(type:unknown,props:Record<string,unknown>)=>({type,props}),jsxs:(type:unknown,props:Record<string,unknown>)=>({type,props}),Fragment:'Fragment'},
   '@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
-  '@/lib/game/progress':progress,'@/lib/game/discovery':discovery,
+  '@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,
   '@/lib/studio/chapter-progress':chapterProgress,'@/lib/game/telemetry':{track(){}},
   './common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}},
-  './Discovery':{DiscoveryResult:'DiscoveryResult'}
+  './AchievementLoop':{JourneyObjective:'JourneyObjective',VictorySummary:'VictorySummary',NextJourneyPreview:'NextJourneyPreview'}
  };
  const exports:Record<string,unknown>={};
  vm.runInNewContext(compiled,{exports,require:(name:string)=>modules[name]??{},
@@ -78,7 +80,7 @@ function harness({initial=saved([]),practice=false,known=false}:{initial?:SavedL
  const find=(type:string)=>{const node=nodes(tree).find(n=>n.type===type);assert.ok(node,type+' should be present');return node;};
  return {
   writes,
-  layout:()=>find('PlayLayout'),controls:()=>find('PlayControls'),
+  layout:()=>find('PlayLayout'),controls:()=>find('PlayControls'),result:()=>find('VictorySummary'),
   closeResult(){(find('Modal').props['onClose'] as ()=>void)();},
   showResult(){const button=nodes(tree).find(n=>n.type==='button'&&/Sonucu göster/.test(textOf(n)));assert.ok(button);(button.props['onClick'] as ()=>void)();},
   async settle(){for(let i=0;i<25;i++){await Promise.resolve();if(pending)render();}},
@@ -163,7 +165,8 @@ describe('Solo replay stays separate from account history',()=>{
    await page.settle();page.tick(30);await page.settle();
    for(let i=0;i<4;i++){page.commit(i);await page.settle();}
    page.expire();await page.settle();assert.equal(page.save.complete,true);assert.equal(page.save.elapsed,30);
-   assert.equal(/Bu bölümde yeni kişisel en iyin/.test(page.text()),known);
+   assert.equal(page.result().props['improved'],known);
+   assert.equal(!!page.result().props['best'],known);
   }finally{page.close();}
  });
 });

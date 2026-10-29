@@ -1,36 +1,24 @@
 'use client';
-import {ArrowRight,Compass,Grid2X2,Sparkles,Swords} from 'lucide-react';
+import {ArrowRight,Compass,Grid2X2,Gift,Star,Swords} from 'lucide-react';
 import type {nextDiscovery} from '@/lib/game/next-discovery';
+import type {Progress} from '@/lib/game/progress';
+import {journeyGoal} from '@/lib/game/achievement-view';
+import {PieceTrail} from './AchievementLoop';
 import {WorldArt} from './WorldArt';
 
-/** One clear starting point, using the existing validated solo recommendation. */
-export function DiscoveryStart({recommendation,onPlay,onArena}:{
- recommendation:ReturnType<typeof nextDiscovery>;
- onPlay:()=>void;
- onArena:()=>void;
+export function DiscoveryStart({recommendation,progress,onPlay,onArena}:{
+ recommendation:ReturnType<typeof nextDiscovery>;progress:Progress;onPlay:()=>void;onArena:()=>void;
 }){
- const continuing=recommendation.mode==='continue';
- const replay=recommendation.mode==='replay';
- return <section className="discovery-start island-start" aria-labelledby="discovery-start-title"><div className="island-scene" aria-hidden="true"><img src="/art/discovery-island.webp" alt="" width="1280" height="853" fetchPriority="high"/><i>✦</i><i>✦</i><i>✦</i></div>
-  <div className="start-intro">
-   <div className="start-intro-copy">
-    <span className="eyebrow"><Sparkles size={14}/>KENDİ TEMPONDA KEŞFET</span>
-    <h2 id="discovery-start-title">Merakına<br/><em>bir kapı aç.</em></h2>
-    <p>Kelimeleri bul, kendi dünyanı keşfet.</p>
-   </div>
-   <div className="start-world-art" aria-hidden="true"><WorldArt themeId={recommendation.config.themeId} crop/><span className="floating-letter letter-k">K</span><span className="floating-letter letter-t">T</span><span className="art-spark">✦</span></div>
+ const continuing=recommendation.mode==='continue',replay=recommendation.mode==='replay',goal=journeyGoal(progress,recommendation.config.journey);
+ return <section className="quest-start" aria-labelledby="discovery-start-title">
+  <div className="quest-art" aria-hidden="true"><WorldArt themeId={recommendation.config.themeId}/><span className="quest-art-seal"><Compass size={27}/></span></div>
+  <div className="quest-copy"><span className="quest-eyebrow">{goal?`${goal.state.expedition.title} · ${goal.position+1}. durak`:continuing?'Kaldığın yerden':replay?'Kendi en iyinin peşinde':'Yeni bir keşif'}</span>
+   <h2 id="discovery-start-title">{goal&&!goal.earned?goal.piece:continuing?'Yarım kalan keşfin seni bekliyor.':'Bir sonraki başarın burada.'}</h2>
+   <p className="quest-promise">{goal&&!goal.earned?<><Gift size={17}/>Bu keşfi tamamla, parçayı albümüne ekle.</>:<><Star size={17}/>Kelimeleri bul, kendi en iyi sonucunu geliştir.</>}</p>
+   <div className="quest-launch"><span id="discovery-start-detail"><small>{continuing?'DEVAM EDEN KEŞFİN':'OYNAYACAĞIN BÖLÜM'}</small><b>{recommendation.title}</b><em>{recommendation.theme}{continuing?' · Devam eden keşif':''}</em></span><button className="button primary" onClick={onPlay} aria-describedby="discovery-start-detail">{continuing?'Devam et':replay?'Tekrar oyna':'Keşfe başla'}<ArrowRight size={19}/></button></div>
+   {goal&&<div className="quest-collection"><div><span>{goal.state.album.title}</span><b>{goal.state.pieces}/6 parça</b></div><PieceTrail earned={goal.state.earned} current={goal.position}/><p>{goal.milestone.label}</p></div>}
+   <small className="quest-reassurance">{replay?'En iyi sonucun korunur.':goal?'İpuçlarıyla da parçanı kazanırsın. Kendi temponda oyna.':'Süre baskısı yok. İstediğin zaman ara ver.'}</small>
   </div>
-  <div className="start-route">
-   <span className="eyebrow">{continuing?'KALDIĞIN YERDEN':replay?'BİR KEZ DAHA KEŞFET':'SIRADAKİ KÜÇÜK ADIM'}</span>
-   <h3>{recommendation.title}</h3>
-   <p id="discovery-start-detail">{recommendation.theme}{continuing?` · ${recommendation.found} kelime bulundu`:''}</p>
-   <button className="button primary" onClick={onPlay} aria-describedby="discovery-start-detail">{recommendation.label}<ArrowRight size={18}/></button>
-   <small>{replay?'En iyi sonucun korunur.':'Süre baskısı yok. İstediğin zaman ara ver.'}</small>
-  </div>
-  <nav className="start-shortcuts" aria-label="Keşif kısayolları">
-   <a href="#kesif-haritasi"><Compass size={18}/><span>Harita</span></a>
-   <a href="#dunyalar"><Grid2X2 size={18}/><span>Dünyalar</span></a>
-   <button onClick={onArena}><Swords size={18}/><span>Arkadaşla oyna</span></button>
-  </nav>
+  <nav className="quest-shortcuts" aria-label="Keşif kısayolları"><a href="#kesif-haritasi"><Compass size={18}/>Harita</a><a href="#dunyalar"><Grid2X2 size={18}/>Dünyalar</a><button onClick={onArena}><Swords size={18}/>Arkadaşla oyna</button></nav>
  </section>;
 }
