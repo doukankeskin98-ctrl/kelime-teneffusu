@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-29",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261029-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Bayram sabahı",
+          "themeId": "turkiye",
+          "words": [
+            "BAYRAK",
+            "YURT",
+            "COŞKU",
+            "TÖREN"
+          ],
+          "size": 6,
+          "seed": 2026102901,
+          "difficulty": "Rahat",
+          "note": "Bayraklar, coşku ve küçük bir kelime molası. Dört kelimeyi kaydırarak veya iki ucuna dokunarak bul; çaprazlara da bak."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "B",
+              "D",
+              "T",
+              "Ş",
+              "O",
+              "U"
+            ],
+            [
+              "N",
+              "A",
+              "Ç",
+              "R",
+              "K",
+              "Ü"
+            ],
+            [
+              "E",
+              "Y",
+              "Y",
+              "Ş",
+              "U",
+              "E"
+            ],
+            [
+              "R",
+              "Y",
+              "O",
+              "R",
+              "S",
+              "Y"
+            ],
+            [
+              "Ö",
+              "C",
+              "Ğ",
+              "L",
+              "A",
+              "Y"
+            ],
+            [
+              "T",
+              "I",
+              "R",
+              "V",
+              "F",
+              "K"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "BAYRAK",
+              "text": "BAYRAK",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "YURT",
+              "text": "YURT",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "COŞKU",
+              "text": "COŞKU",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "TÖREN",
+              "text": "TÖREN",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "0.0",
+              "label": "BAYRAK",
+              "text": "BAYRAK",
+              "group": 0,
+              "a": [
+                0,
+                0
+              ],
+              "b": [
+                5,
+                5
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "COŞKU",
+              "text": "COŞKU",
+              "group": 2,
+              "a": [
+                4,
+                1
+              ],
+              "b": [
+                0,
+                5
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "TÖREN",
+              "text": "TÖREN",
+              "group": 3,
+              "a": [
+                5,
+                0
+              ],
+              "b": [
+                1,
+                0
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "YURT",
+              "text": "YURT",
+              "group": 1,
+              "a": [
+                3,
+                5
+              ],
+              "b": [
+                0,
+                2
+              ]
+            }
+          ]
+        },
+        "contentHash": "5ed8e327a2d8cee67aefc270d4b4297d6a64cb7c1f2a3b714a4ecc8726c09469",
+        "publishedAt": 1793260800000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261029-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Bilim sergisi",
+          "themeId": "bilim",
+          "words": [
+            "DENEY",
+            "ÖLÇÜM",
+            "ATOM",
+            "ENERJİ",
+            "GÖZLEM",
+            "MERCEK",
+            "BULUŞ"
+          ],
+          "size": 8,
+          "seed": 2026102902,
+          "difficulty": "Dengeli",
+          "note": "Bir sergide merakın izini sür. Yedi bilim kelimesi yatay, dikey, çapraz veya tersten seni bekliyor."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "L",
+              "E",
+              "N",
+              "E",
+              "R",
+              "J",
+              "İ",
+              "Ş"
+            ],
+            [
+              "Ö",
+              "O",
+              "İ",
+              "M",
+              "V",
+              "G",
+              "M",
+              "U"
+            ],
+            [
+              "L",
+              "İ",
+              "E",
+              "I",
+              "J",
+              "Ö",
+              "E",
+              "L"
+            ],
+            [
+              "Ç",
+              "U",
+              "Ş",
+              "N",
+              "D",
+              "Z",
+              "R",
+              "U"
+            ],
+            [
+              "Ü",
+              "C",
+              "A",
+              "E",
+              "R",
+              "L",
+              "C",
+              "B"
+            ],
+            [
+              "M",
+              "B",
+              "N",
+              "T",
+              "R",
+              "E",
+              "E",
+              "Ğ"
+            ],
+            [
+              "J",
+              "E",
+              "P",
+              "Ğ",
+              "O",
+              "M",
+              "K",
+              "K"
+            ],
+            [
+              "Y",
+              "I",
+              "Ş",
+              "E",
+              "U",
+              "M",
+              "A",
+              "D"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "DENEY",
+              "text": "DENEY",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "ÖLÇÜM",
+              "text": "ÖLÇÜM",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "ATOM",
+              "text": "ATOM",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "ENERJİ",
+              "text": "ENERJİ",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "GÖZLEM",
+              "text": "GÖZLEM",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "MERCEK",
+              "text": "MERCEK",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "BULUŞ",
+              "text": "BULUŞ",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "3.0",
+              "label": "ENERJİ",
+              "text": "ENERJİ",
+              "group": 3,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                0,
+                6
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "GÖZLEM",
+              "text": "GÖZLEM",
+              "group": 4,
+              "a": [
+                1,
+                5
+              ],
+              "b": [
+                6,
+                5
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "MERCEK",
+              "text": "MERCEK",
+              "group": 5,
+              "a": [
+                1,
+                6
+              ],
+              "b": [
+                6,
+                6
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "DENEY",
+              "text": "DENEY",
+              "group": 0,
+              "a": [
+                3,
+                4
+              ],
+              "b": [
+                7,
+                0
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "ÖLÇÜM",
+              "text": "ÖLÇÜM",
+              "group": 1,
+              "a": [
+                1,
+                0
+              ],
+              "b": [
+                5,
+                0
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "BULUŞ",
+              "text": "BULUŞ",
+              "group": 6,
+              "a": [
+                4,
+                7
+              ],
+              "b": [
+                0,
+                7
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "ATOM",
+              "text": "ATOM",
+              "group": 2,
+              "a": [
+                4,
+                2
+              ],
+              "b": [
+                7,
+                5
+              ]
+            }
+          ]
+        },
+        "contentHash": "2a4d47eaa9cfe5f1d9c1fd9c0ccbadb446a6225c4f43789c9cc4cef7ed86affa",
+        "publishedAt": 1793260800000,
+        "archived": false
+      }
+    }
+  ]
+}
