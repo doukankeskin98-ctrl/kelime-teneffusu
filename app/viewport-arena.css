@@ -24,7 +24,7 @@
 @media(max-height:700px){.viewport-play{gap:3px!important}.viewport-play .game-message:not(.error-box){position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden;white-space:nowrap}.viewport-play .journey-objective{display:none}.viewport-play .play-hud .solo-hud{min-height:34px;padding:4px 8px}.viewport-play .play-heading .eyebrow{font-size:9px}.viewport-play .play-heading h1{font-size:19px}.viewport-play .board-panel{gap:3px}.viewport-play .viewport-targets[data-many] .word-tag{font-size:12px;line-height:1.2;padding:3px 4px;min-height:24px}}
 @media(orientation:landscape) and (max-height:600px){.viewport-play .play-columns,.game-app .viewport-play .play-columns{grid-template-columns:minmax(0,1fr) minmax(220px,.8fr)}.viewport-play .play-heading{min-height:44px}.viewport-play .targets-panel{padding:6px!important}.viewport-play .selection-preview{display:none}.viewport-play .targets-panel>.game-note,.viewport-play .targets-panel>.golden-note{display:none}.viewport-play .play-hud{font-size:12px}.viewport-play .connection-card{padding:6px;margin:0}.viewport-play .connection-card>p,.viewport-play .connection-icon{display:none}}
 /* Deliberate magnification keeps panning available; never clip letters or force zoom off. */
-.viewport-play.is-zoomed .board-scroll{width:100%;height:100%;overflow:auto}.viewport-play.is-zoomed .letter-board{min-height:0}.viewport-play.is-zoomed .letter-grid span{font-size:24px}
+.viewport-play.is-zoomed .board-scroll{width:100%;height:100%;overflow:auto}.viewport-play.is-zoomed .letter-board{min-height:0}.viewport-play.is-zoomed .letter-grid span{font-size:var(--board-letter-size,24px)}
 .contrast-mode .arena-roster li,.contrast-mode .viewport-play .targets-panel{border-color:#5e7b4d}
 
 /* Intrinsic square and explicit edges survive Safari without aspect-ratio/inset/cqw. */
@@ -47,3 +47,23 @@
    does not change the space reserved above the board. Large text can still grow. */
 .viewport-play .selection-preview{font-size:14px;line-height:1.5;min-height:26px}
 .viewport-play .selection-preview>b{font-size:inherit;line-height:inherit}
+/* Active Arena layout does not depend on :has support in older tablet Safari. */
+.app-shell.arena-session .sidebar{display:none}.app-shell.arena-session .main-area{margin-left:0}.app-shell.arena-session .main-content{max-width:1120px}
+.board-input-tools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;flex:0 0 auto}
+.board-input-mode{display:flex;border:1px solid #cbd8bf;border-radius:10px;background:#f2f5e9;overflow:hidden}
+.board-input-mode>button{border:0;border-radius:0;padding:7px 10px;min-height:44px;font:inherit;font-size:12px;color:#3c6048;background:transparent}
+.board-input-mode>button[aria-pressed=true]{background:#315f44;color:#fffdf2}.board-input-mode>button:focus-visible{outline:3px solid #b68b32;outline-offset:-3px}
+@media(max-width:1100px) and (orientation:portrait){
+ .viewport-play .play-columns,.game-app .viewport-play .play-columns{display:flex;flex-direction:column;gap:0}
+ .viewport-play .board-panel,.game-app .viewport-play .board-panel{order:1;flex:0 0 auto;width:100%;padding:6px}
+ .viewport-play .targets-panel,.game-app .viewport-play .targets-panel{order:0;flex:0 0 auto;padding:0!important;gap:4px;border:0!important;background:transparent!important;margin-bottom:6px}
+ .viewport-play .targets-panel>.game-note,.viewport-play .targets-panel>.golden-note{display:none}
+}
+@media(min-width:600px) and (max-width:1100px) and (orientation:portrait){
+ .viewport-play .viewport-targets .word-list,.game-app .viewport-play .viewport-targets .word-list{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .viewport-play .viewport-targets .word-tag,.game-app .viewport-play .viewport-targets .word-tag{font-size:15px;min-height:34px}
+}
+.arena-series{margin:12px 0;border:1px solid #d7dfcc;border-radius:13px;background:#f5f6eb;text-align:left}
+.arena-series>summary{cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;min-height:52px;color:#365d43;font-weight:700;font-size:15px}
+.arena-series summary small{display:block;font-size:12px;line-height:1.5;font-weight:400;color:#5d7053}.arena-series>p{font-size:12px;line-height:1.6;padding:0 12px 8px;color:#5d7053}
+.arena-series>ol{list-style:none;margin:0;padding:0 10px}.arena-series li{display:grid;grid-template-columns:25px minmax(0,1fr) auto;align-items:center;gap:8px;padding:9px 5px;border-top:1px solid #e0e5d7;font-size:14px;min-height:52px}.arena-series li.is-you{background:#e7efda}.arena-series li strong{overflow-wrap:anywhere}.arena-series li small{display:block;font-size:11px;font-weight:400;line-height:1.5;color:#5d7053}.arena-series li>b{text-align:right;font-size:23px;color:#315c41}.arena-series nav{display:flex;align-items:center;justify-content:center;gap:12px;padding:5px}

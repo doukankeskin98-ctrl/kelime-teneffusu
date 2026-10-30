@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.16.0',date:'30 Ekim 2026',title:'Daha rahat tahta, birlikte devam eden rekabet',items:[
+  {where:'Telefon ve tablet',detail:'Büyük tahtada da parmağınla kelime çiz. Tahtayı taşımak için ayrı Tahtayı kaydır kontrolü var. Tabletlerde tahta daha geniş alan kullanır; büyük harf modu tahtayı küçültmez.'},
+  {where:'Arena · Hızlı eşleş',detail:'Ana eylem açık grup lobisine katılır. İkinci oyuncuda lobi kapanmaz; herkes hazır olunca oda sahibi başlatır. İki kişilik dereceli düello ayrı eylemde durur.'},
+  {where:'Arena · Oda serisi',detail:'Lobide ve sonuçta bu odadaki gerçek galibiyetlerini, beraberlikleri ve oynanan maçları gör. Yeni tura geçmek veya yenilemek galibiyeti sıfırlamaz ya da çoğaltmaz.'},
+ ]},
  {version:'0.15.2',date:'30 Ekim 2026',title:'Kaydırarak seçim onarıldı',items:[
   {where:'Kelime tahtası',detail:'Seçilen harfler yazılırken ekran yeniden ölçülse de kaydırman kesilmez. Parmağını bıraktığın son harf hızlı kaydırmalarda da değerlendirilir.'},
   {where:'Telefon ve Safari',detail:'İlk dokunuş ile seçilen kelime aynı satır yüksekliğini kullanır. Ekranı döndürme, duraklatma ve arka plana alma yarım seçimi güvenle temizlemeye devam eder.'},

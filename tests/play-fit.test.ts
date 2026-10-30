@@ -28,6 +28,12 @@ function fixture(width=384,height=628,stacked=true){
  return {...b,screen,stage,columns,targets,heading,hud,preview,controls,words,panel};
 }
 describe('complete board fits measured browser space',()=>{
+ it('uses tablet portrait space and does not make enlarged boards smaller than their viewport',()=>{
+  for(const [w,h] of [[744,1000],[796,1100],[810,1180],[1000,1300]]){const f=fixture(w,h,true),r=measurePlayFrame(f.screen,f.stage,6,false,f.view);assert(r.boardSize>=650);assert(r.boardSize+r.overhead<=r.height);}
+  const b=browser(),parent=element(710,500),board=element(706,0);parent.css.paddingLeft=parent.css.paddingRight='2';board.parentElement=parent;
+  board.getBoundingClientRect=()=>({width:Number.parseFloat(board.style.getPropertyValue('width'))||706,height:Number.parseFloat(board.style.getPropertyValue('height'))||706,top:0,left:0});
+  const stop=attachBoardSize(board,6,true,()=>{},b.view);assert.equal(board.style.getPropertyValue('width'),'706px');assert.equal(board.style.getPropertyValue('height'),'706px');assert.equal(board.style.getPropertyValue('--board-letter-size'),'48px');stop();
+ });
  it('does not derive the new budget from an already stretched Safari stage',()=>{
   const f=fixture(),a=measurePlayFrame(f.screen,f.stage,12,false,f.view);assert(a.boardSize+a.overhead<=a.height);assert.equal(a.overflow,false);
   f.screen.rect.height=20000;f.stage.rect.height=19000;const b=measurePlayFrame(f.screen,f.stage,12,false,f.view);assert.deepEqual(b,a);
@@ -73,7 +79,7 @@ describe('legacy iOS input and results keep the same game',()=>{
   send(node,'touchstart',[touch(1)]);const moved=send(node,'touchmove',[touch(1,40,50)]);send(node,'touchend',[],[touch(1,40,50)]);assert.deepEqual(calls,['down','move','up']);assert(moved.defaultPrevented);
   pan=true;send(node,'touchstart',[touch(2)]);assert.equal(send(node,'touchmove',[touch(2,50,60)]).defaultPrevented,false);send(node,'touchstart',[touch(2),touch(3)]);assert.equal(calls[calls.length-1],'cancel');
   stop();const before=calls.length;send(node,'touchstart',[touch(4)]);assert.equal(calls.length,before);
-  view.PointerEvent=class{};const modern=attachLegacyTouch(node,()=>({down:()=>calls.push('duplicate'),move(){},up(){},cancel(){},pan:()=>false}),view);send(node,'touchstart',[touch(5)]);assert.equal(calls.length,before);modern();
+  view.PointerEvent=class{};const modern=attachLegacyTouch(node,()=>({down:()=>calls.push('native-modern'),move(){},up(){},cancel(){},pan:()=>false}),view);send(node,'touchstart',[touch(5)]);assert.equal(calls.at(-1),'native-modern');modern();
  });
  it('opens and bounds the same result content without native dialog, traps focus and restores it on close',()=>{
   const {view}=browser(520),dialog=element(360,400),old=element(),first=element(),last=element();let closed=0,restored=0;

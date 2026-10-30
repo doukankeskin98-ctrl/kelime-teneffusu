@@ -12,7 +12,7 @@ test('short viewport and enlarged text preserve legible cells with natural overf
  assert.equal(fittedBoardSize(345,-10,6),132);
 });
 test('desktop board remains comfortably bounded; fractional sizes cannot overflow',()=>{
- assert.equal(fittedBoardSize(900,900,13),520);
+ assert.equal(fittedBoardSize(900,900,13),720);
  assert.equal(fittedBoardSize(344.8,301.7,10),301);
  assert.equal(fittedBoardSize(0,500,10),0);
 });

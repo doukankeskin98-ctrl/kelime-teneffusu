@@ -18,7 +18,7 @@ function text(value:unknown):string{if(typeof value==='string')return value;if(A
 const NOW=2_000_000;
 const publicBoard=(({placements:_placements,...board})=>board)(TUTORIAL);
 function room(phase:RoomView['phase'],starts:number|null,ends:number|null):RoomView{return {revision:3,id:'arena-1',code:'ABCDEFGH',kind:'friend',phase,themeId:'uzay',starts,ends,winner:phase==='finished'?'alice':null,reason:phase==='finished'?'Süre doldu':'',round:1,serverNow:NOW,board:publicBoard,golden:null,you:{id:'alice',name:'Alice',ready:true,strokes:[TUTORIAL.placements[0]!],score:140,rematch:false},opponent:{name:'Bora',ready:true,count:1,score:120,online:true,rematch:false}};}
-function harness(initial:RoomView,claim?:(action?:string)=>Promise<RoomView>,get?:()=>Promise<RoomView|null>){
+function harness(initial:RoomView|null,claim?:(action?:string)=>Promise<RoomView>,get?:()=>Promise<RoomView|null>){
  const sounds:unknown[]=[];let live:(room:RoomView,sourceId?:string)=>void=()=>{};
  const slots:Slot[]=[],effects:(()=>void)[]=[],apiCalls:{action:string;data:unknown}[]=[];let cursor=0,pending=true,tree:unknown;
  const changed=(slot:Slot,deps:unknown[])=>!slot.deps||slot.deps.length!==deps.length||deps.some((v,i)=>!Object.is(v,slot.deps![i]));
@@ -37,6 +37,9 @@ function harness(initial:RoomView,claim?:(action?:string)=>Promise<RoomView>,get
 }
 
 describe('Arena terminal board review',()=>{
+ it('opens quick groups from the main action and retains a separate ranked duel action',async()=>{
+  for(const [button,group] of [[/Hızlı eşleş/,true],[/Dereceli düello · 2 kişi/,false]] as const){const h=harness(null,async()=>room('ready',null,null));try{await h.settle();h.click(button);await h.settle();assert.equal(h.apiCalls.length,1);const data=h.apiCalls[0]!.data as {kind:string;mode?:string};assert.equal(data.kind,'quick');assert.equal(data.mode,group?'group':undefined);}finally{h.close();}}
+ });
  it('opens the result first, then preserves a visible read-only board and can reopen the same result',async()=>{
   const h=harness(room('finished',NOW-121_000,NOW-1_000));
   try{await h.settle();assert.equal(h.layout().props['readOnly'],true);assert.equal(h.layout().props['paused'],false);assert.match(h.layout().props['reviewStatus'],/Düello tamamlandı/);assert.equal(h.has('Modal'),true);h.closeModal();await h.settle();assert.equal(h.has('Modal'),false);assert.equal(h.layout().props['readOnly'],true);assert.equal(h.layout().props['strokes'].length,1);h.layout().props['onCommit'](TUTORIAL.placements[1]!.a,TUTORIAL.placements[1]!.b);await h.settle();assert.equal(h.apiCalls.length,0);h.click(/Düello sonucu/);await h.settle();assert.equal(h.has('Modal'),true);assert.match(text(h.layout().props['aside']),/Düello sonucu/);}finally{h.close();}
@@ -48,7 +51,7 @@ function deferredRoom(){let resolve!:(v:RoomView)=>void,reject!:(e:Error)=>void;
 describe('Arena sound follows confirmed events',()=>{
  it('keeps pending/rejected words silent and plays an accepted word once',async()=>{
   for(const ok of [false,true]){const initial=room('active',NOW-1_000,NOW+119_000),gate=deferredRoom(),h=harness(initial,()=>gate.promise),target=TUTORIAL.placements[1]!;
-   try{await h.settle();h.layout().props['onCommit'](target.a,target.b);await h.settle();assert.equal(h.sounds.length,0);if(ok)gate.resolve({...initial,revision:4,you:{...initial.you,strokes:[...initial.you.strokes,target]}});else gate.reject(new Error('Claim rejected'));await h.settle();assert.deepEqual(h.sounds,ok?[false]:[]);if(ok){h.layout().props['onCommit'](target.a,target.b);await h.settle();assert.equal(h.apiCalls.length,1);assert.equal(h.sounds.length,1);}}finally{h.close();}
+   try{await h.settle();h.layout().props['onCommit'](target.a,target.b);await h.settle();assert.equal(h.sounds.length,0);assert.equal(h.layout().props['inputBlocked'],true);assert.equal(h.layout().props['busy'],true);if(ok)gate.resolve({...initial,revision:4,you:{...initial.you,strokes:[...initial.you.strokes,target]}});else gate.reject(new Error('Claim rejected'));await h.settle();assert.deepEqual(h.sounds,ok?[false]:[]);assert.equal(h.layout().props['inputBlocked'],false);assert.equal(h.layout().props['busy'],false);if(ok){h.layout().props['onCommit'](target.a,target.b);await h.settle();assert.equal(h.apiCalls.length,1);assert.equal(h.sounds.length,1);}}finally{h.close();}
   }
  });
  it('plays terminal result once and suppresses an older claim ACK after SSE finish',async()=>{
