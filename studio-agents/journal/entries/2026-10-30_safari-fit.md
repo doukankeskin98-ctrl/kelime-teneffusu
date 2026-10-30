@@ -1,0 +1,11 @@
+# Safari son satır · 0.15.1
+
+Başlangıç Site34 / `cb4b5ad84e4f369f49a42a7f39b92705eb27e2c5`, GitHub `5c66add2be243a8e7401bd40575fda9e158ad456`; aynı ağaç `26f2efeae48f589a195aa42af44bc55f36eba2eb`. Kullanıcı iPhone 6 Plus/Safari son satır kesilmesini bildirdi. Tek koordinatör; odak ve kod öncesi kabul geliştirme defterinin başında.
+
+Gerçek ölçülen header/HUD/targets/controls, padding/border/margin ve visual viewport ile bağımsız bütçe. CSS aspect-ratio/cqw/:has/flex-gap zorunluluğu yok. Kare/harf piksel ölçüsü; ResizeObserver yokken ilk fit ve resize/orientation/pageshow/scroll/MutationObserver; üstteki hesap/çevrimdışı bildirimi yeniden ölçülür, harf seçimi mutation'ları fit tetiklemez. Büyük yazıda doğal taşma; pinch/tahta zoom korunur. Eski iOS için aynı Board üzerinde Touch Events, aynı Modal için native dialog alternatifi, eksik Array.at/allSettled/cryptographic UUID ve Safari 12 istemci target. Üretim build'i istemci + kopyalanan SW sözdizimini denetler; ilk denetim SW'de dört modern operatörü buldu, davranışı koruyarak giderildi.
+
+388/388 test (81 grup), son 56 hedefli kontrol, TypeScript, 120 tahta/2.400 alternatif geçti. Son satır native Touch Events seçimi, modern pointer/klavye/paused/review, 414 tabanlı dar/geniş telefon bütçeleri, yatay/tablet/masaüstü, toolbar/offset, 200% benzeri artan metin kutuları, stale stretched stage, gözlem API'siz başlangıç, restore/notice/zoom, dialog focus ve eksik API'ler kapsanır. Bunlar kontrollü kutu/bileşen testidir; fiziksel Safari veya DOM piksel kanıtı değildir. Son paket build/Worker/CI/yayın gerçek araç sonucuyla ayrıca kesinleşir.
+
+İçerik/motor/kayıt/ödül/Arena protokolü/DB/göç değişmedi. Önceki destekli browser routing engelinde toparlanma kanıtı yok; başarısız URL tekrar edilmedi, alternatif tarayıcı/ağ yolu kullanılmadı. Fiziksel iPhone 6 Plus/iOS 12, yeni iPhone/Android ve gerçek sağlayıcı girişi hâlâ ölçülmedi; tüm cihazlar garantisi yok. İlk sıradaki kontrol bunların adres çubuğu, son satır, döndürme, büyük yazı ve sonuç akışıdır.
+
+Birincil uyumluluk kaynakları: https://webkit.org/blog/10247/new-webkit-features-in-safari-13-1/ ; https://webkit.org/blog/11648/new-webkit-features-in-safari-14-1/ ; https://webkit.org/blog/11989/new-webkit-features-in-safari-15/ ; https://webkit.org/blog/12445/new-webkit-features-in-safari-15-4/ ; https://support.apple.com/en-us/103015 .
