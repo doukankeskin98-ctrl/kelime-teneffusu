@@ -1,5 +1,6 @@
 import * as viewport from '../lib/game/viewport.ts';
 import * as legacyUI from '../lib/game/legacy-ui.ts';
+import * as gestures from '../lib/game/input-gesture.ts';
 // Actual Board TSX with controlled hooks, pointer coordinates, global events and RAF.
 // This is not a DOM/native event ordering, screen-reader, phone or FPS test.
 import assert from 'node:assert/strict';
@@ -11,21 +12,23 @@ import {snapLine,type Cell,type Stroke} from '../lib/game/engine.ts';
 import {TUTORIAL} from '../lib/game/content.ts';
 
 type Node={type:unknown;props:Record<string,any>};
-type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
+type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void;setup?:()=>void|(()=>void)};
 function nodes(value:unknown):Node[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object')return [];const n=value as Node;return [n,...nodes(n.props?.['children'])];}
 function text(value:unknown):string{if(typeof value==='string')return value;if(Array.isArray(value))return value.map(text).join('');return value&&typeof value==='object'?text((value as Node).props?.['children']):'';}
 const compiled=ts.transpileModule(readFileSync('components/game/Board.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
 function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
- let selections=0;
+ let selections=0,renders=0;
+ const dom=new Map<string,any>();
+ const mount=(node:Node)=>{const r=node.props?.['ref'];if(!r)return;if(node.props['role']==='application'){r.current=element;return;}const key=node.props['data-cell']??node.props['className']??'selection-line';let el=dom.get(key);if(!el){const names=new Set<string>();el={attributes:new Map(),classList:{add:(v:string)=>names.add(v),remove:(v:string)=>names.delete(v),contains:(v:string)=>names.has(v)},setAttribute(k:string,v:string){this.attributes.set(k,v);}};dom.set(key,el);}if(typeof r==='function')r(el);else r.current=el;};
  const commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
  let cursor=0,dirty=true,mounted=true,afterUnmount=0,frameId=0,tree:unknown,resize=()=>{},width=600,height=600,left=10,top=20;
  const element=Object.assign(new EventTarget(),{style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left,top,width,height}),setPointerCapture(_id:number){}});
  const hooks={
   useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return [slot.value,(next:any)=>{if(!mounted)afterUnmount++;const value=typeof next==='function'?next(slot.value):next;if(!Object.is(value,slot.value)){slot.value=value;dirty=true;}}];},
   useRef(initial:any){return (slots[cursor++]??={}).ref??={current:initial};},
-  useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.length!==slot.deps.length||deps.some((d,i)=>!Object.is(d,slot.deps![i]))){slot.deps=deps;effects.push(()=>{slot.cleanup?.();const cleanup=fn();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;});}},
+  useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.length!==slot.deps.length||deps.some((d,i)=>!Object.is(d,slot.deps![i]))){slot.deps=deps;slot.setup=fn;effects.push(()=>{slot.cleanup?.();const cleanup=fn();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;});}},
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
@@ -33,13 +36,13 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  if(options.legacy)delete (element as any).setPointerCapture;
  Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
-  if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
+  if(name==='@/lib/game/input-gesture')return gestures;if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
   if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
   if(name==='@/lib/game/engine')return {snapLine};if(name==='@/lib/game/telemetry')return {track(){}};
   throw new Error('Unexpected module: '+name);
  },window:windowTarget,document:documentTarget,performance:{now:()=>100},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id),ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}}});
  const boardNode=()=>{const n=nodes(tree).find(n=>n.props?.['role']==='application');assert.ok(n);return n;};
- const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);boardNode().props['ref'].current=element;}if(commit)while(effects.length)effects.shift()!();}return tree;};
+ const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);renders++;for(const node of nodes(tree))mount(node);}if(commit)while(effects.length)effects.shift()!();}return tree;};
  const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
  return {commits,previews,accepted,props,paint,boardNode,send,
@@ -56,11 +59,11 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   blur(){boardNode().props['onBlur']();paint();},
   key(key:string){boardNode().props['onKeyDown']({key,preventDefault(){}});paint();},
   tap(cell:Cell,extra:Record<string,unknown>={}){send('onPointerDown',cell,extra);send('onPointerUp',cell,extra);},
-  selected(){return nodes(tree).filter(n=>n.props?.['className']==='letter-selected').map(n=>n.props['data-cell']);},
+  selected(){return [...dom].filter(([key,el])=>/^\d+,\d+$/.test(key)&&el.classList.contains('letter-selected')).map(([key])=>key);},get renders(){return renders;},ink(){return dom.get('selection-line')?.attributes;},
   setProps(next:Partial<typeof props>,commit=true){Object.assign(props,next);dirty=true;paint(commit);},
   resize(changed=true){if(changed){width+=10;height+=10;(windowTarget as any).innerWidth+=10;}windowTarget.dispatchEvent(new Event('resize'));paint();},
   unmount(){mounted=false;for(const slot of slots)slot.cleanup?.();},
-  get afterUnmount(){return afterUnmount;},get tree(){return tree;}
+  strictReplay(){for(const slot of slots)slot.cleanup?.();for(const slot of slots)if(slot.setup){const cleanup=slot.setup();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;}paint();},get afterUnmount(){return afterUnmount;},get tree(){return tree;}
  };
 }
 const cells=(a:Cell,b:Cell)=>snapLine(a,b,TUTORIAL.size).map(([r,c])=>`${r},${c}`).sort();
@@ -225,3 +228,21 @@ describe('touch drawing across devices and enlarged boards',()=>{
   h.native('touchstart',[a]);h.native('touchmove',[b]);h.native('touchcancel',[]);h.native('touchend',[],[b]);assert.equal(h.commits.length,1);h.unmount();
  });
 });
+
+describe('locked imperative selection',()=>{
+ it('does not render React during a drag or RAF paint, even with many move events',()=>{
+  const h=harness(),before=h.renders;h.send('onPointerDown',a);for(let i=0;i<100;i++){h.send('onPointerMove',[i%5+1,i%5+1]);h.flush();}h.send('onPointerMove',b);h.flush();assert.equal(h.renders,before);assert.equal(h.selections,1);assert.deepEqual(h.selected().sort(),cells(a,b));assert.equal(h.ink().get('x2'),'2.5');h.unmount();
+ });
+ it('keeps a locked horizontal line through cross-axis drift and can shorten before RAF',()=>{
+  const h=harness();h.send('onPointerDown',[2,0]);h.send('onPointerMove',[2,1]);h.send('onPointerMove',[3,3]);h.flush();assert.deepEqual(h.selected().sort(),cells([2,0],[2,1]));h.send('onPointerMove',[2,4]);h.send('onPointerUp',[2,2]);assert.deepEqual(h.commits,[{a:[2,0],b:[2,2]}]);h.flush();assert.equal(h.selected().length,0);h.unmount();
+ });
+ it('preserves imperative ink and selected letters across an unrelated parent render',()=>{
+  const h=harness();drag(h);h.flush();h.setProps({busy:true});assert.deepEqual(h.selected().sort(),cells(a,b));assert.equal(h.ink().get('x2'),'2.5');h.send('onPointerUp',b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();
+ });
+});
+
+it('pulses only a confirmed new stroke and does not repeat it after pause',()=>{
+ const h=harness(),stroke=TUTORIAL.placements[0]!;h.setProps({strokes:[stroke],busy:true,blocked:true});let line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.match(line.props['className'],/is-pending/);assert.doesNotMatch(line.props['className'],/is-new/);h.setProps({busy:false,blocked:false});line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.match(line.props['className'],/is-new/);h.setProps({paused:true});h.setProps({paused:false});line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.equal(line.props['className'],'found-stroke');h.unmount();
+});
+
+it('allows a fresh swipe after Strict Mode cleanup/setup without reviving a cancelled gesture',()=>{const h=harness();drag(h);h.strictReplay();h.send('onPointerUp',b);assert.equal(h.commits.length,0);drag(h);h.flush();h.send('onPointerUp',b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();});

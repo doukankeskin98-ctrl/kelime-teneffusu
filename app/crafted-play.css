@@ -14,9 +14,9 @@
 .game-app:not(.sprint-app) .game-status{color:#f4e8c7}.game-app:not(.sprint-app) .game-message{color:#d4e5d1}.game-app:not(.sprint-app) .progress-track{background:#ffffff24}.game-app:not(.sprint-app) .progress-track i{background:linear-gradient(90deg,#f4d88b,#a5d9a3)}
 .game-app .board-panel{padding:16px;background:#fffdf3;border:1px solid #fff7da;border-radius:28px;box-shadow:0 8px 0 #0c292930,0 24px 55px #071f2b30}
 .game-app .letter-board{background:#fcf9ec;border:1px solid #e5e0cd;border-radius:18px;box-shadow:inset 0 2px 8px #534e2910;overflow:hidden}
-.letter-grid span{position:relative;transition:color .12s,scale .12s;text-shadow:0 1px 0 #fff8;isolation:isolate}
+.letter-grid span{position:relative;transition:transform .12s;text-shadow:0 1px 0 #fff8;isolation:isolate}
 .letter-grid span:before{content:'';position:absolute;inset:9%;border-radius:24%;background:#fffef9;box-shadow:0 2px 0 #d8d2ba60;z-index:-1;opacity:.58}
-.letter-grid span.letter-selected{color:#0b5a40;scale:1.15;text-shadow:0 1px 0 #fff}.letter-grid span.letter-selected:before{background:#d6f0ac;opacity:.85;box-shadow:0 2px 0 #9abc70}
+.letter-grid span.letter-selected{color:#0b5a40;transform:scale(1.04);text-shadow:0 1px 0 #fff}.letter-grid span.letter-selected:before{background:#d6f0ac;opacity:.85;box-shadow:0 2px 0 #9abc70}
 .board-ink{z-index:1}.letter-grid{z-index:2}.letter-grid span:before{mix-blend-mode:multiply}.letter-board.has-found .letter-grid span:before{opacity:.22}
 .game-app:not(.sprint-app) .targets-panel{background:#ffffff0c;border:1px solid #ffffff24;color:#f8f5df}.game-app:not(.sprint-app) .panel-heading b{color:#f2d28b}.game-app:not(.sprint-app) .panel-heading .eyebrow{color:#c7dfc4}
 .game-app .word-tag{border-color:#e9e4d3;box-shadow:none;background:#fffdf1;color:#31473b}.game-app .word-tag.found{color:#e5f5d6;border-color:#a6caaa;background:#c4e8b8!important}.game-app .word-tag.found>div{color:#244a33}.game-app:not(.sprint-app) .game-note{color:#c8ddc8}.game-app:not(.sprint-app) .game-note p{color:inherit}
@@ -34,4 +34,14 @@
  .game-app .board-panel{padding:9px;border-radius:22px}.game-app:not(.sprint-app) .targets-panel{background:transparent;border:0}.game-app .word-tag{font-size:12px;min-height:30px}.game-app:not(.sprint-app) .panel-heading .eyebrow{font-size:10px!important}.game-app .game-message{font-size:12px}.game-app .play-heading h1{font-size:24px}.game-app .play-heading .eyebrow{font-size:10px}.game-app .clue-list .clue-tag>div{font-size:12px}.game-app .clue-list .clue-tag small{font-size:10px}
 }
 @media(max-width:360px){.island-start .start-route{grid-template-columns:1fr}.island-start .start-route>.button{grid-column:1;grid-row:auto;width:100%;max-width:none}.island-start .start-shortcuts :is(a,button){flex-direction:column}}
-@media(prefers-reduced-motion:reduce){.letter-grid span{transition:none}.letter-grid span.letter-selected{scale:1}.word-success-burst.word-toast{animation:none}.word-success-burst.final-discovery{backdrop-filter:none}.theme-card:active{transform:none}}
+@media(prefers-reduced-motion:reduce){.letter-grid span{transition:none}.letter-grid span.letter-selected{transform:none}.word-success-burst.word-toast{animation:none}.word-success-burst.final-discovery{backdrop-filter:none}.theme-card:active{transform:none}}
+
+.word-tag.found>div{text-decoration:line-through;text-decoration-thickness:1px}
+.board-ink .found-stroke.is-pending{stroke:var(--selection);opacity:.55;animation:none}
+/* Phase 1: a persistent ink layer; JS changes endpoints once per animation frame. */
+.board-ink .active-selection{opacity:0;transition:opacity 120ms ease-out;pointer-events:none;transform-box:fill-box;transform-origin:center}
+.board-ink .active-selection[data-active=true]{opacity:1;animation:selection-arrive 100ms cubic-bezier(.2,.8,.2,1)}
+.board-ink .found-stroke.is-new{animation:selection-confirm 220ms cubic-bezier(.2,.8,.2,1);transform-box:fill-box;transform-origin:center}
+@keyframes selection-arrive{from{transform:scale(.96);opacity:.4}to{transform:scale(1);opacity:1}}
+@keyframes selection-confirm{0%{transform:scale(1);opacity:.7}55%{transform:scale(1.04);opacity:1}100%{transform:scale(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){.board-ink .active-selection,.board-ink .found-stroke.is-new{animation:none;transition:none}}
