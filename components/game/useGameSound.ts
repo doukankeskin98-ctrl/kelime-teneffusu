@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useRef} from 'react';
 import {GameSound,type SoundCue} from '@/lib/game/sound';
+import {playHaptic} from '@/lib/game/haptics';
 export type SoundAction=SoundCue|boolean|'enable'|'mute';
 // The document keeps one audio context across Solo/Arena/settings transitions.
 // Closing it on every component unmount loses iOS activation and races the next screen.
@@ -28,9 +29,7 @@ export function useChime(enabled:boolean,haptics=false){
   if(action==='enable')settings.current.enabled=true; // Only explicit sound-toggle/preview handlers use this.
   const cue:SoundCue=action==='enable'?'start':typeof action==='boolean'?(action?'complete':'word'):action;
   if(document.hidden||!pageActive.current)return;
-  if(settings.current.haptics&&(cue==='word'||cue==='complete'||cue==='reveal')){
-   try{if(typeof navigator.vibrate==='function')navigator.vibrate(cue==='word'?9:[12,45,18]);}catch{}
-  }
+  if(cue==='select'||cue==='word'||cue==='complete'||cue==='reveal')playHaptic(cue==='select'?'selection':cue==='word'?'word':'complete',settings.current.haptics);
   if(settings.current.enabled){const sound=get();if(action==='enable')sound.unlock();sound.play(cue);}
  };
 }

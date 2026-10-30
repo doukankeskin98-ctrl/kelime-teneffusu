@@ -196,3 +196,14 @@ describe('actual numbered Solo completes, advances and replays without new award
   const r=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{r.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:resumed,onProgress(){},onBack(){},onMap(){},onNext(){}});assert.equal(r.find('PlayLayout').props['strokes'].length,1);assert.equal(r.find('PlayControls').props['hints'],2);}finally{r.close();}
  });
 });
+
+describe('imperative selection label owns its mode transitions',()=>{
+ it('updates the word and loupe without parent callbacks, then restores blocked/review/pause messages',()=>{
+  const upstream:string[]=[],props={...base,board:{...content.TUTORIAL,size:10},onPreview:(s:string)=>upstream.push(s)},h=view('components/game/common.tsx');h.start('PlayLayout',props);
+  const slots=new Map<string,{textContent:string;hidden:boolean}>();for(const key of ['message','word','count','loupe'])slots.set('[data-selection-'+key+']',{textContent:'',hidden:true});
+  const root={classList:{toggle(){}},querySelector:(s:string)=>slots.get(s)};const preview=walk(h.tree).find(n=>String(n.props['className']??'').startsWith('selection-preview'))!;preview.props['ref'].current=root;
+  const before=upstream.length;h.find('Board').props['onPreview']('KELİME');assert.equal(upstream.length,before);assert.equal(slots.get('[data-selection-word]')!.textContent,'KELİME');assert.equal(slots.get('[data-selection-loupe]')!.textContent,'E');assert.equal(slots.get('[data-selection-message]')!.hidden,true);
+  for(const [mode,message] of [['inputBlocked','Sunucu onayı bekleniyor.'],['readOnly','Keşif tamamlandı'],['paused','Oyun duraklatıldı.']]){h.update('PlayLayout',{...props,[mode!]:true});assert.equal(slots.get('[data-selection-message]')!.hidden,false);assert.ok(slots.get('[data-selection-message]')!.textContent.startsWith(message!));for(const key of ['word','count','loupe'])assert.equal(slots.get('[data-selection-'+key+']')!.hidden,true);h.update('PlayLayout',props);h.find('Board').props['onPreview']('YENİ');}
+  h.close();
+ });
+});

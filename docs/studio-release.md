@@ -1,5 +1,7 @@
 # Studio sürümü: teslim ve doğrulama
 
+0.17.0: kullanıcının açık yayın isteğiyle Faz 1 mevcut 0.16.2 kaynağına birleştirildi. Sekiz yön kilidi/geri dönüş, merkez ağırlıklı isabet, imperative RAF izi/harf/üst yazı ve büyük tahtada seçili harf büyüteci; kısa ve azaltılmış harekete duyarlı geri bildirim. Önceki içerik/özgünlük kapısı, kayıt/ödül/Arena/göçler korunur. Son birleşim kapıları phase1-publication günlüğünde; fiziksel cihaz/FPS ve görsel kabul tamamlanmış değildir.
+
 0.16.2: **Kahvaltı sofrası** (4 kelime, Rahat 6×6) ve **Orkestra provası** (7 kelime, Dengeli 8×8) 30 Ekim için tek append kaydıdır. Ana sayfa/dünya/arşiv ve tarihli damga mevcut yolları kullanır. İçerik denetimi artık farklı kimlik/tohumla tekrarlanan normalize kelime kümesini ve gerçek grid'i reddeder. Oynanış/kayıt/ödül/Arena ve eski yayınlar değişmez. Kabul, doğrulama ve fiziksel cihaz sınırı `studio-agents/journal/entries/2026-10-30_daily-originality.md` kaydındadır. Faz 1 seçme hissi değişiklikleri görsel kabul bekleyen taslak PR36'da kalır, bu bakımla yayımlanmaz.
 
 0.16.1: Oda galibiyetleri lobide ve sonuçta doğrudan görünür. Tek belge ses motoru, native Touch aktivasyonu, 400ms ile sınırlı tek taze uyanma sesi, kesinti/arka plan/mute iptali ve onaylı Hazırım motifi. 0.16.0 GitHub PR34 başarıyla birleştirildi ve Site37 aynı adrese yayımlandı. 424 test, tip, 120/2.400 içerik, üretim build/Safari sözdizimi ve 469 Worker HTTP kapısı geçti. Yeni ses turunun kanıtı ve fiziksel cihaz sınırı `studio-agents/journal/entries/2026-10-30_sound-session.md` kaydında.

@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.17.0',date:'30 Ekim 2026',title:'Daha tutarlı kelime çizimi',items:[
+  {where:'Kelime tahtası',detail:'İlk ilerleyişte yön sabitlenir; aynı çizgide geri dönüp seçimini kısaltabilirsin. Seçim izi ve harf vurgusu doğrudan çizilir. Sunucu onayını bekleyen çizgi, doğru kelime kutlaması yapmaz.'},
+  {where:'Büyük tahtalar',detail:'Seçtiğin son harf üst satırda büyütülerek görünür. Kısa ekranlarda okunurluğu koruyan tahta alt sınırı yükseltildi.'},
+  {where:'Kısa geri bildirim',detail:'Doğru kelimeye kısa bir vurgu; iptal edilen seçime yumuşak sönme. Bölüm bitişi tek sonuç kutlamasına geçer. Hareketi azalt tercihi korunur.'},
+ ]},
  {version:'0.16.2',date:'30 Ekim 2026',title:'Sofradan sahneye iki yeni keşif',items:[
   {where:'Keşfet · Yeni bölümler',detail:'Kahvaltı sofrası: 6×6 tahtada dört tanıdık tat. Orkestra provası: 8×8 tahtada yedi müzik kelimesi. İki bölüm de ilgili dünyasında ve kalıcı arşivde durur.'},
   {where:'Albüm · Tarihli damga',detail:'30 Ekim’in iki bölümünü tamamlayarak o günün kalıcı damgasını aç. Süre veya ipucu şartı yok; daha sonra da tamamlayabilirsin.'},
