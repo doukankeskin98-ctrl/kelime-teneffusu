@@ -1,3 +1,7 @@
+# 30 Ekim 2026 · Faz 1 · İnceleme dalı
+
+Tek hedef mevcut kelime çiziminin hissi ve güvenilirliği. Yön ekseni, merkez ağırlıklı isabet, imperative RAF izi/harfler ve üst satır büyüteci aynı Board/PlayLayout üzerinde; mevcut liste, mod, sunucu claim ve kayıt değişmez. İlk statik Faz 0 incelemesi görsel kapıda açık kalır. Önceki taban 0.16.1; 0.17.0 henüz inceleme sürümüdür, canlı yayın/cihaz/FPS kabulü yapılmadı. Dar bağımsız inceleme ve gerçek test kanıtı `studio-agents/journal/entries/2026-10-30_phase1-selection.md` kaydında. Faz 2–4'e veya yeni özelliğe otomatik geçilmez.
+
 # 30 Ekim 2026 · 0.16.1 · Görünür oda galibiyetleri ve ses sürekliliği
 
 Mevcut kayıtlı sonuç tablosu lobide/sonuçta açık gösterilir. Ses kusurları: yalnız pointer/click aktivasyonu, asenkron resume sırasında düşen ilk cue ve ekran değişimlerinde kapanan AudioContext. Tek belge motoru, touchstart/end/pointerup, kısa taze cue penceresi ve pagehide/interruption temizliği seçildi. Yeni hazır motifi yalnız sunucu onayında. Ücret, DB/göç, kayıt, kelime/tahta ve ödül değişmez. Önceki 0.16.0 doğrulanarak canlıya alındı. Dar kabul/son kanıt ses-session günlüğünde; fiziksel hoparlör/Safari/cihaz kanıtı ayrı sınırdır.

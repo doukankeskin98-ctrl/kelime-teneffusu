@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.17.0',date:'30 Ekim 2026',title:'Daha tutarlı kelime çizimi',items:[
+  {where:'Kelime tahtası',detail:'İlk ilerleyişte yön sabitlenir; aynı çizgide geri dönüp seçimini kısaltabilirsin. Seçim izi ve harf vurgusu doğrudan çizilir. Sunucu onayını bekleyen çizgi, doğru kelime kutlaması yapmaz.'},
+  {where:'Büyük tahtalar',detail:'Seçtiğin son harf üst satırda büyütülerek görünür. Kısa ekranlarda okunurluğu koruyan tahta alt sınırı yükseltildi.'},
+  {where:'Kısa geri bildirim',detail:'Doğru kelimeye kısa bir vurgu; iptal edilen seçime yumuşak sönme. Bölüm bitişi tek sonuç kutlamasına geçer. Hareketi azalt tercihi korunur.'},
+ ]},
  {version:'0.16.1',date:'30 Ekim 2026',title:'Odandaki galibiyetler, daha kararlı sesler',items:[
   {where:'Arena · Oda galibiyetleri',detail:'Kim kaç maç kazandı, lobide ve sonuçta doğrudan gör. Yeni turlar ve sayfa yenilemesi aynı odanın gerçek galibiyetlerini korur.'},
   {where:'Oyun sesleri',detail:'Dokunma ile ses açılışı ve ekranlar arası ses sürekliliği güçlendirildi. Arka plandaki eski sesler sonradan çalmaz. Hazırım onayı için kısa, yumuşak bir tını eklendi; sessize alma ve cihaz ses düzeyi tercihlerin korunur.'},

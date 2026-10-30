@@ -1,5 +1,7 @@
 # Öncelikler
 
+30 Ekim 2026, Faz 1 inceleme dalı / 0.17.0: kullanıcı sonraki faza geçiş istedi. Bu iterasyon yalnız mevcut seçim etkileşimi; kabul/kanıt `../journal/entries/2026-10-30_phase1-selection.md`. Canlı taban 0.16.1 korunur. Faz 0 ve Faz 1'in ekran görüntüsü, fiziksel 20 deneme ve iPhone SE2 FPS/<100ms kapıları açık; kaynak/VM/HTTP testleri bunların yerine yazılmaz. Görsel onay olmadan bu dalı rutin içerik yayınına karıştırma. Faz 2–4 bu çalışmada tamamlanmış sayılmaz.
+
 30 Ekim 2026, 0.16.1: Kullanıcının oda galibiyeti/ses kararlılığı isteği. 0.16.0 bekleyen CI başarıları doğrulandı, PR34 merge ve Site37 yayını başarılı. Bu tur görünür oda tablosu ve tek belge ses yaşam döngüsüne sınırlı; yeni büyük özellik/araştırma/ajan yok. Kabul ve son kanıt `../journal/entries/2026-10-30_sound-session.md`. İlk doğrulama sınırı fiziksel Safari/tablet, ses sessiz anahtarı/arama kesintisi ve iki gerçek provider hesabıdır.
 
 30 Ekim 2026, 0.16.0: gerçek tablet/kaydırma bildirimi ve açık grup/oda serisi. Büyütmede çizim ile taşıma ayrıldı, Touch/Pointer sahipliği tekilleştirildi, portre tablet alanı ve zoom alt sınırı onarıldı. Grup kuyruğu eski dereceli düellodan ayrıdır; galibiyet/beraberlik results makbuzundan snapshot sınırıyla türetilir. Tek gerçek bağımsız güvenilirlik incelemesi stale slot ve çevrimdışı host engelini buldu, fix/probe ile kapattı. Koordinatör son kanıtı `../journal/entries/2026-10-30_stability-series.md`. İlk açık iş destekli gerçek iPad/iPhone/Android/kalem ve provider/çok cihaz doğrulamasıdır; sıfır hata/kapasite vaadi yok.
