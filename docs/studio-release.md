@@ -1,5 +1,7 @@
 # Studio sürümü: teslim ve doğrulama
 
+0.15.2: Kullanıcının canlı kaydırma regresyonu. Seçim önizlemesinin kendi yeniden ölçümü sırasında genel clear yerine koordinat güncelleme, tutarlı önizleme satırı ve hızlı bırakmanın son koordinatı; isteğe bağlı pointer capture reddi oyunu durdurmaz. Gerçek viewport/döndürme, blur/hidden, pause, büyütülmüş pan ve salt okunur durumlar korunur. Beş yeni kontrol önce hatayı üretti; 394/394 test (82 grup), 40 hedefli kontrol, TypeScript, 120 tahta/2.400 alternatif, üretim derlemesi, Safari istemci sözdizimi ve 339 Worker HTTP kontrolü geçti. CI/kaynak eşleşmesi/yayın native sonuçlarla ayrıca izlenir. Gerçek telefon/Safari ve DOM piksel kanıtı hâlâ yok; mevcut destekli browser erişim engeli aşılmadı.
+
 0.15.1: Safari görünür alanı, içerikten türetilmiş bütçe, piksel kare/harf, API gözlemi olmayan tarayıcı için yeniden ölçüm, eski Touch Events/dialog yolları ve Safari 12 istemci sözdizimi kapısı. Kayıt/içerik/ödül/şema aynı kalır. Sayısal kutu, gerçek bileşen ve derlenmiş çıktı denetimleri fiziksel Safari testi değildir.
 
 0.6.0 ile günlük kaynak bölümleri, kalıcı arşiv ve uygulama içi sürüm notları eklendi. Güncel kapsam, kabul ölçütleri ve doğrulama sınırları: [geliştirme defteri](development-log.md). Önceki tarayıcı kontrolü ifadeleri bu sürüm için yeni bir görsel test yapıldığı anlamına gelmez.
