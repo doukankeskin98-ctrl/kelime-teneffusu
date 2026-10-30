@@ -4,6 +4,10 @@ export const GAME_UPDATES=[
   {where:'Büyük tahtalar',detail:'Seçtiğin son harf üst satırda büyütülerek görünür. Kısa ekranlarda okunurluğu koruyan tahta alt sınırı yükseltildi.'},
   {where:'Kısa geri bildirim',detail:'Doğru kelimeye kısa bir vurgu; iptal edilen seçime yumuşak sönme. Bölüm bitişi tek sonuç kutlamasına geçer. Hareketi azalt tercihi korunur.'},
  ]},
+ {version:'0.16.2',date:'30 Ekim 2026',title:'Sofradan sahneye iki yeni keşif',items:[
+  {where:'Keşfet · Yeni bölümler',detail:'Kahvaltı sofrası: 6×6 tahtada dört tanıdık tat. Orkestra provası: 8×8 tahtada yedi müzik kelimesi. İki bölüm de ilgili dünyasında ve kalıcı arşivde durur.'},
+  {where:'Albüm · Tarihli damga',detail:'30 Ekim’in iki bölümünü tamamlayarak o günün kalıcı damgasını aç. Süre veya ipucu şartı yok; daha sonra da tamamlayabilirsin.'},
+ ]},
  {version:'0.16.1',date:'30 Ekim 2026',title:'Odandaki galibiyetler, daha kararlı sesler',items:[
   {where:'Arena · Oda galibiyetleri',detail:'Kim kaç maç kazandı, lobide ve sonuçta doğrudan gör. Yeni turlar ve sayfa yenilemesi aynı odanın gerçek galibiyetlerini korur.'},
   {where:'Oyun sesleri',detail:'Dokunma ile ses açılışı ve ekranlar arası ses sürekliliği güçlendirildi. Arka plandaki eski sesler sonradan çalmaz. Hazırım onayı için kısa, yumuşak bir tını eklendi; sessize alma ve cihaz ses düzeyi tercihlerin korunur.'},

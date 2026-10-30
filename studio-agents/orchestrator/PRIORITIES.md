@@ -1,6 +1,8 @@
 # Öncelikler
 
-30 Ekim 2026, Faz 1 inceleme dalı / 0.17.0: kullanıcı sonraki faza geçiş istedi. Bu iterasyon yalnız mevcut seçim etkileşimi; kabul/kanıt `../journal/entries/2026-10-30_phase1-selection.md`. Canlı taban 0.16.1 korunur. Faz 0 ve Faz 1'in ekran görüntüsü, fiziksel 20 deneme ve iPhone SE2 FPS/<100ms kapıları açık; kaynak/VM/HTTP testleri bunların yerine yazılmaz. Görsel onay olmadan bu dalı rutin içerik yayınına karıştırma. Faz 2–4 bu çalışmada tamamlanmış sayılmaz.
+30 Ekim 2026, 0.17.0: kullanıcı Faz 1 için açık canlı yayın talimatı verdi. İnceleme dalı güncel 0.16.2 içerik/özgünlük kapısıyla birleştirilir, toplu kapılar yeni kaynakta yenilenir. Kabul/kanıt `../journal/entries/2026-10-30_phase1-publication.md`. Gerçek Safari/tablet, 20 el denemesi/ekran kaydı ve iPhone SE2 FPS/<100ms ile görsel kabul ilk açık iştir. Faz 0 ve Faz 2–4 tamamlanmış sayılmaz; yeni geliştirme turu bu yayın görevinin kapsamında değildir.
+
+30 Ekim 2026, 0.16.2: eksik **Kahvaltı sofrası / Orkestra provası** çifti ve tarihli içerik özgünlüğü kapısı. Eski dokuz snapshot, kayıt/ödül/oynanış/göçler korunur. Tek koordinatör; kabul ve son kanıt `../journal/entries/2026-10-30_daily-originality.md`. Faz 1 çalışması PR36'da taslak, bu bakımdan ayrıdır. İlk açık iş destekli gerçek Safari/tablet/telefon, büyük yazı, ses kesintisi, iki gerçek hesap ve PWA doğrulamasıdır; yeni kozmetik özellik bunları geçmez. Haftalık inceleme 31 Ekim/ilk uygun mevcut turdur.
 
 30 Ekim 2026, 0.16.1: Kullanıcının oda galibiyeti/ses kararlılığı isteği. 0.16.0 bekleyen CI başarıları doğrulandı, PR34 merge ve Site37 yayını başarılı. Bu tur görünür oda tablosu ve tek belge ses yaşam döngüsüne sınırlı; yeni büyük özellik/araştırma/ajan yok. Kabul ve son kanıt `../journal/entries/2026-10-30_sound-session.md`. İlk doğrulama sınırı fiziksel Safari/tablet, ses sessiz anahtarı/arama kesintisi ve iki gerçek provider hesabıdır.
 
