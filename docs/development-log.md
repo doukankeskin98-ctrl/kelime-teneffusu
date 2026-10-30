@@ -1,3 +1,17 @@
+# 30 Ekim 2026 · 0.15.0 · Ekrana uyum ve kesintisiz grup Arena
+
+Kullanıcının üç somut isteği birlikte uygulandı. Önceden alınan odak/kabul kararı `studio-agents/journal/entries/2026-10-30_arena-fit-decision.md`. Adaylar: yalnız tahta küçültme (yetersiz), yalnız oyuncu limitini kaldırma (iki kişilik protokol nedeniyle hatalı), ölçülen ortak çerçeve + grup protokolü + kalıcı gerçek içerik seçimi (seçildi). Mevcut çalışan motor, D1/CAS, SSE, WordList ve Modal yeniden kullanıldı; ücret/bağımlılık/entegrasyon eklenmedi.
+
+Oyuncuya değişen davranış: normal oyunda tek hedef listesi; ekran yüksekliğinden HUD ve kontroller çıkarıldıktan sonra kalan alana tahta; özel odada dört/üstü kişi, herkes hazırken host başlangıcı; tek ortak sonuç; Yeni oyun oyna ile aynı oda, yeni içerik ve önceki sonucu açabilme. Gerçek konfor veya oyuncu tutma artışı ölçülmedi.
+
+İki uzman incelemesinin somut düzeltmeleri: sığmayan adayın allocator'ı kilitlememesi; deadline→next öncesi sonuç kaydı; terminal sıralamanın ayrılmayla değişmemesi; süresi dolmuş üyeliğin dirilmemesi; 16 hazır isteğinin kaybolmaması; eski tur/owner talepleri; quick queue oda transferi; stale recovery/ACK; tek modal; stretched hedef panelinde küçülme; ayrılma/rövanş yarışı. Ayrıntı ve bağımsız kanıt `arena-final-*` günlüklerinde.
+
+Doğrulama: 362 test/74 grup başlangıç son kapısı; 4/8/16 aynı oda katılımı, hazır/başlat/hamle/sonuç; 16 oyuncu ve eşzamanlı yeni tur bağımsız probe; üç ardışık tur; aynı hesap/server instance geçmişi; kelime/grid imzası, havuzun ilk geçişinden sonra üretim, gerçek tükenme ve transaction rollback. Geometri testleri 320×568–430×932 ve tablet/masaüstü bütçelerini, sıfır/kısa stage ve büyütülmüş metin fallback'ini kapsar, DOM/piksel kanıtı değildir. Üretim Worker, CI ve yayın sonucu son doğrulama günlüğünde kesinleştirilecek.
+
+Sınırlar: destekli preview eski süreç kilidi giderildikten sonra healthy, CUA tam URL'de ERR_CONNECTION_REFUSED. Gerçek telefon/dokunma/sistem yazısı/sağlayıcı ile yeniden giriş doğrulanmadı. HTTP trusted test kimliği gerçek provider girişi diye raporlanmaz. 16 servis oyuncusu ve sekiz Worker HTTP oturumu üretim kapasitesi garantisi değildir. 1.600.508 altılı adayın tamamı yayımlanabilir/oynanmış sayılmaz; seçilen her tahta doğrulanır. Eski tamamlanmış Arena turlarında içerik geçmişi yok; yeni altılı alanı bu sürümden itibaren kalıcı izlenir, geçmiş veri uydurulmaz.
+
+Sıradaki öncelik: destekli gerçek iPhone/Android ekran/çentik/araç çubuğu ve 4+ gerçek cihaz oyunu; sağlayıcıyla aynı hesaba dönüş; D1/SSE dağıtık yük ölçümü. Var olan kayıt/çevrimdışı/PWA kuyruğu korunur, yeni kozmetik özellikler bu kanıtları atlamaz. Tarihli içerik bu doğrudan düzeltme turunda değiştirilmedi.
+
 ## 29 Ekim 2026 · 0.13.1 · Arena bitiş tahtası incelemesi
 
 

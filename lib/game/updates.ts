@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.15.0',date:'30 Ekim 2026',title:'Aynı odada, yeni kelimelerle',items:[
+  {where:'Oyun alanı',detail:'Hedefler tek listede, tahta ve temel kontroller ekranın kalan yüksekliğine göre yerleşir. Büyük yazı ve olağan dışı kısa ekranlarda okunurluk korunur; büyütme seçeneği yerinde.'},
+  {where:'Arena · özel oda',detail:'Dört veya daha fazla arkadaş aynı tahtada yarışabilir. Herkes hazır olunca oda sahibi başlatır; ortak süre, gerçek puanlar ve sayfalı sıralama kullanılır.'},
+  {where:'Sonuç · Yeni oyun oyna',detail:'Ana menüye dönmeden aynı odada yeni maça hazırlan. Önceki sonuç lobiden açılabilir. Katılan profillerin kalıcı geçmişine göre daha önce gösterilmemiş kelime kümesi ve tahta seçilir.'},
+ ]},
  {version:'0.14.0',date:'30 Ekim 2026',title:'Keşfinin yumuşak bir sesi var',items:[
   {where:'Tahta · keşif sesleri',detail:'Seçime hafif bir tını, doğru kelimeye küçük bir melodi. İpucu, gizli bağlantı ve bitiş için aynı aileden farklı sesler. Hızlı Tur ve Arena başlangıcı ile bitişi de duyulur; son saniyelerde alarm yok.'},
   {where:'Albüm · Oyun hissi',detail:'Sesleri aç, Hafif / Dengeli / Belirgin düzeylerinden seç ve Sesi dene ile dinle. Düzey bu cihazda saklanır. Oyun içindeki hoparlör sesi hemen kapatır; titreşim ayrı tercihtir.'},

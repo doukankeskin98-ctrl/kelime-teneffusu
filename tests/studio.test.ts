@@ -75,7 +75,7 @@ describe('real asynchronous challenges',()=>{
 });
 describe('friend consent, ranked fairness and live revisions',()=>{
  it('attributes a delayed timeout result to its actual deadline across the Istanbul weekly boundary',async()=>{
-  const s=fixture(Date.parse('2026-10-25T20:57:00Z')),social=new SocialService(s.db,s.clock),room=await s.game.enter('alice','friend');assert(room);await s.game.enter('bob','friend',room.code);await s.game.ready('alice',room.id);const active=await s.game.ready('bob',room.id);s.advance(240000);await s.game.state('bob',room.id);
+  const s=fixture(Date.parse('2026-10-25T20:57:00Z')),social=new SocialService(s.db,s.clock),room=await s.game.enter('alice','friend');assert(room);await s.game.enter('bob','friend',room.code);await s.game.ready('alice',room.id,1);const active=await s.game.ready('bob',room.id,1);s.advance(240000);await s.game.state('bob',room.id);
   const result=s.sqlite.prepare('SELECT created FROM results WHERE user_id=?').get('alice') as {created:number};assert.equal(result.created,active.ends);assert.equal((await social.overview('alice')).weekly[0]!.played,0);
  });
  it('adds friends only after acceptance and keeps history and weekly scores scoped to the viewer',async()=>{
@@ -83,12 +83,12 @@ describe('friend consent, ranked fairness and live revisions',()=>{
  });
  it('applies Elo once per ranked round, never changes it for private rooms, and never ranks an unfinished run',async()=>{
   const s=fixture();assert.equal(eloChange(1000,1000,1),16);assert.equal(eloChange(1000,1000,0),-16);assert.equal(eloChange(1000,1000,.5),0);
-  const waiting=await s.game.enter('alice','quick');assert(waiting);await s.game.enter('bob','quick');await s.game.ready('alice',waiting.id);await s.game.ready('bob',waiting.id);s.advance(4000);const board=s.puzzle(waiting.id);for(const p of board.placements)await s.game.claim('alice',waiting.id,p.a,p.b);
+  const waiting=await s.game.enter('alice','quick');assert(waiting);await s.game.enter('bob','quick');await s.game.ready('alice',waiting.id,1);await s.game.ready('bob',waiting.id,1);s.advance(4000);const board=s.puzzle(waiting.id);for(const p of board.placements)await s.game.claim('alice',waiting.id,p.a,p.b,1);
   await Promise.all([s.game.state('alice',waiting.id),s.game.state('bob',waiting.id)]);assert.deepEqual({...await s.game.rating('alice')},{value:1016,played:1});assert.deepEqual({...await s.game.rating('bob')},{value:984,played:1});assert.equal((await s.game.rankings()).arena[0]!.rating,1016);assert.equal((await s.game.rankings()).arena.length,2);
-  await s.game.leave('alice',waiting.id);await s.game.leave('bob',waiting.id);const privateRoom=await s.game.enter('alice','friend');assert(privateRoom);await s.game.enter('bob','friend',privateRoom.code);await s.game.ready('alice',privateRoom.id);await s.game.ready('bob',privateRoom.id);s.advance(124000);await s.game.state('bob',privateRoom.id);assert.equal((await s.game.rating('alice')).played,1);
+  await s.game.leave('alice',waiting.id,1);await s.game.leave('bob',waiting.id,1);const privateRoom=await s.game.enter('alice','friend');assert(privateRoom);await s.game.enter('bob','friend',privateRoom.code);await s.game.ready('alice',privateRoom.id,1);await s.game.ready('bob',privateRoom.id,1);s.advance(124000);await s.game.state('bob',privateRoom.id);assert.equal((await s.game.rating('alice')).played,1);
  });
  it('widens skill matching by actual queue age and returns monotonic room revisions to members only',async()=>{
   const s=fixture();await s.game.profile('alice');s.sqlite.prepare('INSERT INTO ratings(user_id,value,played,updated) VALUES(?,2200,20,?)').run('alice',s.clock());const a=await s.game.enter('alice','quick'),b=await s.game.enter('bob','quick');assert(a&&b);assert.notEqual(a.id,b.id);s.advance(61000);await s.game.state('alice',a.id);const joined=await s.game.state('bob',b.id);assert(joined);assert.equal(joined.phase,'ready');assert.equal((await s.game.state('alice'))?.id,joined.id);
-  const before=await s.game.watch('alice',joined.id);await s.game.ready('alice',joined.id);const after=await s.game.watch('alice',joined.id);assert(after.revision>before.revision);assert.equal(after.view.revision,after.revision);await assert.rejects(()=>s.game.watch('mallory',joined.id),e=>e instanceof GameError&&e.status===403);
+  const before=await s.game.watch('alice',joined.id);await s.game.ready('alice',joined.id,1);const after=await s.game.watch('alice',joined.id);assert(after.revision>before.revision);assert.equal(after.view.revision,after.revision);await assert.rejects(()=>s.game.watch('mallory',joined.id),e=>e instanceof GameError&&e.status===403);
  });
 });
