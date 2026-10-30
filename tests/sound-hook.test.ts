@@ -6,13 +6,13 @@ import vm from 'node:vm';
 import ts from 'typescript';
 const compiled=ts.transpileModule(readFileSync('components/game/useGameSound.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
 function setup(){
- const slots:any[]=[],effects:(()=>void)[]=[],listeners=new Map<string,Set<(event:any)=>void>>(),engines:FakeSound[]=[],vibrations:unknown[]=[];let cursor=0;
- class FakeSound{enabled=false;visible=true;disposed=false;unlocks=0;played:unknown[]=[];stops=0;constructor(){engines.push(this);}setEnabled(v:boolean){this.enabled=v;if(!v)this.stops++;}setVisible(v:boolean){this.visible=v;if(!v)this.stops++;}stop(){this.stops++;}unlock(){if(this.enabled&&this.visible)this.unlocks++;}play(v:unknown){if(this.enabled&&this.visible&&!this.disposed)this.played.push(v);}dispose(){this.disposed=true;}}
+ const slots:any[]=[],effects:(()=>void)[]=[],listeners=new Map<string,Set<(event:any)=>void>>(),engines:FakeSound[]=[],vibrations:unknown[]=[];let cursor=0,level=.3;
+ class FakeSound{enabled=false;visible=true;disposed=false;unlocks=0;played:unknown[]=[];stops=0;volumes:number[]=[];refreshVolume(){this.volumes.push(level);}constructor(){engines.push(this);}setEnabled(v:boolean){this.enabled=v;if(!v)this.stops++;}setVisible(v:boolean){this.visible=v;if(!v)this.stops++;}stop(){this.stops++;}unlock(){if(this.enabled&&this.visible)this.unlocks++;}play(v:unknown){if(this.enabled&&this.visible&&!this.disposed)this.played.push(v);}dispose(){this.disposed=true;}}
  const doc={hidden:false,addEventListener(type:string,fn:(e:any)=>void){if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type)!.add(fn);},removeEventListener(type:string,fn:(e:any)=>void){listeners.get(type)?.delete(fn);}};
  const hooks={useRef(value:unknown){return slots[cursor++]??={current:value};},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((v,i)=>!Object.is(v,slot.deps[i]))){slot.deps=deps;slot.setup=fn;effects.push(()=>{slot.cleanup?.();slot.cleanup=fn();});}}};
- const exports:Record<string,any>={};vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='react'?hooks:name==='@/lib/game/haptics'?{playHaptic:(cue:string,enabled:boolean)=>{if(enabled)vibrations.push(cue);}}:{GameSound:FakeSound},document:doc,window:doc,navigator:{vibrate:(v:unknown)=>vibrations.push(v)}});
+ const exports:Record<string,any>={};vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='react'?hooks:name==='@/lib/game/haptics'?{playHaptic:(cue:string,enabled:boolean)=>{if(enabled)vibrations.push(cue);}}:{GameSound:FakeSound,readSoundLevel:()=>level,setSoundLevel:(value:number)=>{level=value;},DEFAULT_SOUND_LEVEL:.3,SOUND_LEVEL_EVENT:'kt-sound-level'},document:doc,window:doc,navigator:{vibrate:(v:unknown)=>vibrations.push(v)}});
  const render=(enabled:boolean,haptics=false)=>{cursor=0;const play=exports['useChime'](enabled,haptics);while(effects.length)effects.shift()!();return play;};
- return {engines,vibrations,doc,render,emit(type:string,trusted=true){for(const fn of listeners.get(type)??[])fn({isTrusted:trusted});},close(){for(const slot of slots)slot.cleanup?.();},remount(){for(const slot of slots)slot.cleanup?.();slots.length=0;},strictReplay(){for(const slot of slots)slot.cleanup?.();for(const slot of slots)if(slot.setup)slot.cleanup=slot.setup();},listenerCount:()=>[...listeners.values()].reduce((n,set)=>n+set.size,0)};
+ return {engines,vibrations,doc,render,setLevel:(value:number)=>{level=value;},get level(){return level;},emit(type:string,trusted=true){for(const fn of listeners.get(type)??[])fn({isTrusted:trusted});},close(){for(const slot of slots)slot.cleanup?.();},remount(){for(const slot of slots)slot.cleanup?.();slots.length=0;},strictReplay(){for(const slot of slots)slot.cleanup?.();for(const slot of slots)if(slot.setup)slot.cleanup=slot.setup();},listenerCount:()=>[...listeners.values()].reduce((n,set)=>n+set.size,0)};
 }
 describe('audio hook lifecycle and preference authority',()=>{
  it('arms trusted keyboard, pointer and assistive clicks without synthetic activation',()=>{
@@ -39,4 +39,7 @@ describe('native touch, page restoration and screen transitions',()=>{
  it('blocks background-page callbacks even before document.hidden changes and restores without replay',()=>{
   const h=setup(),play=h.render(true,true);h.emit('touchend');h.emit('pagehide');play(true);assert.equal(h.engines[0]!.played.length,0);assert.equal(h.vibrations.length,0);h.emit('pageshow');assert.equal(h.engines[0]!.played.length,0);h.emit('touchend');play(false);assert.deepEqual(h.engines[0]!.played,['word']);h.close();assert.equal(h.listenerCount(),0);
  });
+});
+it('applies a live volume event to the shared engine and explicit unmute recovers a zero slider',()=>{
+ const h=setup(),play=h.render(true);h.emit('touchstart');h.setLevel(.73);h.emit('kt-sound-level');assert.deepEqual(h.engines[0]!.volumes,[.73]);h.setLevel(0);play('mute');play('enable');assert.equal(h.level,.3);assert.equal(h.engines.length,1);h.close();
 });

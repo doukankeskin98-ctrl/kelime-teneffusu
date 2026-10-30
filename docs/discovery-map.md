@@ -10,7 +10,7 @@ Her rota bölümünün belirli bir koleksiyon parçası vardır. Beş ana bölü
 - Haritanın beşli bölüm kümeleri sabit kimliklerle tanımlıdır. Aynı temaya daha sonra eklenen içerik bu kümeleri büyütmez; kazanılmış dünya ve bonus açılışlarını geri kilitlemez.
 - Eski bir rotaya daha önce başlamış oyuncu o dünyaya haritadan da erişebilir. Eski tamamlamalar parçalarını otomatik verir. Beş bölümün rota hatırası korunur; yeni altıncı parça ek bir bonus hedeftir.
 - Yeni bonuslar `JOURNEY_BONUSES` içindedir. Kimlikleri `uzay-gozlemevi`, `turkiye-kartpostal`, `hababam-yillik`; kayıt anahtarları `route:<id>` olarak kalır. Kaynakta bu kimlikleri veya yayımlanmış bulmacaların kelimelerini/tohumlarını değiştirmeyin.
-- `ALL_JOURNEYS` kayıt doğrulamasına bonusları da dahil eder. Eski `Progress.v = 2` biçimi, yerel anahtarlar ve bulut birleştirme sürer. Veritabanı göçü gerekmez.
+- `PLAYABLE_JOURNEYS`, değişmeyen `ALL_JOURNEYS` ana atlası ve 32 yeni isteğe bağlı İpucu Avı bölümünü kayıt doğrulamasına dahil eder. Yeni bölümler ana sıra, beşli kümeler ve altılı albümlere eklenmez. Eski `Progress.v = 2` biçimi, yerel anahtarlar ve bulut birleştirme sürer. Veritabanı göçü gerekmez.
 - Tekrar oyununda mevcut en iyi yıldız/süre korunur. Aynı parçanın yeniden kazanıldığı söylenmez. Bölüm sonu ekranı o oyunda gerçekten yeni açılan parça, dünya, bonus ve tamamlanan sahneyi gösterir.
 - Solo açılışlar sunucu rekabet derecesine katkı yapmaz. Haritadaki kilitler bu ek yolculuğun sunumudur; bir hile önleme veya hesap yetkilendirme sınırı değildir.
 

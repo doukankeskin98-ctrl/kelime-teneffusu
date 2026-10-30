@@ -1,3 +1,4 @@
+import * as riddleContent from '../lib/game/riddle-content.ts';
 import * as mainJourney from '../lib/game/main-journey.ts';
 // Real goal data and stateless component SSR. This is not browser/device geometry QA.
 import assert from 'node:assert/strict';
@@ -24,7 +25,7 @@ const art={WorldArt:({themeId}:{themeId:string})=>React.createElement('svg',{'da
 function component(file:string,imports:Record<string,unknown>){
  const exports:Record<string,any>={};
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
- const modules:Record<string,unknown>={react:React,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,...imports};
+ const modules:Record<string,unknown>={react:React,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,'@/lib/game/riddle-content':riddleContent,...imports};
  vm.runInNewContext(code,{exports,require:(name:string)=>modules[name]??{}});return exports;
 }
 const collection=component('components/game/Discovery.tsx',{'./WorldArt':art});
@@ -89,7 +90,8 @@ describe('real home and victory markup',()=>{
 });
 
 // New home/result render actual collection pieces; these assertions are not pixel QA.
-const numberedHome=component('components/game/JourneyHome.tsx',{'./WorldArt':art,'./AchievementLoop':loop});
+const riddleShelf=component('components/game/RiddleShelf.tsx',{});
+const numberedHome=component('components/game/JourneyHome.tsx',{'./WorldArt':art,'./AchievementLoop':loop,'./RiddleShelf':riddleShelf});
 const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery':collection,'./AchievementLoop':loop});
 describe('numbered journey home and real result',()=>{
  it('shows one primary action, the correct chapter and nearby reward without mode cards',()=>{

@@ -1,4 +1,5 @@
 'use client';
+import {isRiddleChapter} from '@/lib/game/riddle-content';
 import '@/lib/game/browser-compat';
 import {useEffect,useRef,useState} from 'react';
 import {ArrowRight,BookOpen,CalendarDays,Check,ChevronRight,Compass,Flame,HelpCircle,House,LoaderCircle,Sparkles,Star,Swords,User} from 'lucide-react';
@@ -101,7 +102,7 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  const wrap=' '+(progress.contrast?'contrast-mode':'');
  if(sprint&&ready)return <div className={'game-app sprint-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<Sprint key={account.profile?.id??'device'} owner={account.profile?.id} progress={progress} onProgress={setProgress} onBack={()=>setSprint(false)}/></div>;
  if(extra&&ready)return <div className={'game-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<PublishedPlay key={extra.id} initialPractice={extraPractice} pair={extraPair} onRelated={(chapter,pair)=>openExtra(chapter,false,pair)} chapter={extra} userId={account.profile?.id} progress={progress} onProgress={setProgress} onBack={back}/></div>;
- if(solo&&ready)return <div className={'game-app'+(solo.campaign?' journey-session':'')+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<Solo key={`${solo.run}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} ownerId={account.profile?.id} progress={progress} onProgress={setProgress} onBack={solo.campaign?back:solo.journey?returnToMap:back} onMap={solo.campaign?back:returnToMap} onNext={openSolo} daily={daily??undefined}/></div>;
+ if(solo&&ready)return <div className={'game-app'+(solo.campaign?' journey-session':'')+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<Solo key={`${solo.run}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} ownerId={account.profile?.id} progress={progress} onProgress={setProgress} onBack={solo.campaign||isRiddleChapter(solo.journey)?back:solo.journey?returnToMap:back} onMap={solo.campaign||isRiddleChapter(solo.journey)?back:returnToMap} onNext={openSolo} daily={daily??undefined}/></div>;
  if(mystery&&ready)return <div className={'game-app'+wrap} data-palette={progress.palette}><Platform consent={progress.analytics} playing/>{saveWarning}<Mystery key={mystery} id={mystery} progress={progress} onProgress={setProgress} onBack={back} onNext={openMystery}/></div>;
  return <div className={'app-shell'+(playing?' arena-session':'')+wrap} data-palette={progress.palette}>
   <Platform consent={progress.analytics} playing={playing}/>

@@ -1,20 +1,21 @@
 import { dailySpec, goldenId, hash, istanbulDay, makePuzzle, match, pointsFor, type Cell, type Puzzle, type Stroke } from './engine.ts';
 import { THEMES } from './catalog.ts';
-import {ARENA_POOL_SIZE,arenaPuzzle,arenaWordKey,arenaGridKey} from './arena-content.ts';
+import {ARENA_POOL_SIZE,ARENA_RIDDLE_POOL_SIZE,arenaPuzzle,arenaRiddlePuzzle,hasArenaRiddles,nextArenaKind,arenaWordKey,arenaGridKey,type ArenaRoundKind} from './arena-content.ts';
 
 export interface Statement { bind(...values: unknown[]): Statement; first<T=Record<string,unknown>>(): Promise<T|null>; all<T=Record<string,unknown>>(): Promise<{results:T[]}>; run():Promise<{meta:{changes:number}}> }
 export interface Database {prepare(sql:string):Statement;batch(statements:Statement[]):Promise<{meta:{changes:number}}[]>}
 export class GameError extends Error {constructor(message:string,public status=400,public code?:string){super(message);}}
 export interface DuelPlayer { id:string; name:string; ready:boolean; strokes:Stroke[]; score:number; seen:number; lastFind:number; rematch:boolean;left?:boolean }
-export interface Room {id:string;code:string;kind:'quick'|'friend';phase:'waiting'|'ready'|'active'|'finished'|'cancelled';themeId:string;level:number;seed:number;starts:number|null;ends:number|null;winner:string|null;reason:string;players:DuelPlayer[];round:number;queuedAt?:number;mode?:'group';protocol?:2;puzzle?:Puzzle;contentOrdinal?:number;writeToken?:string;ranks?:Record<string,number>;lastResult?:ArenaResult}
+export interface Room {id:string;code:string;kind:'quick'|'friend';phase:'waiting'|'ready'|'active'|'finished'|'cancelled';themeId:string;level:number;seed:number;starts:number|null;ends:number|null;winner:string|null;reason:string;players:DuelPlayer[];round:number;queuedAt?:number;mode?:'group';protocol?:2;puzzle?:Puzzle;roundKind?:ArenaRoundKind;clues?:Record<string,string>;usedRiddleIds?:string[];contentOrdinal?:number;writeToken?:string;ranks?:Record<string,number>;lastResult?:ArenaResult}
 interface RoomRow {id:string;data:string;revision:number;expires:number}
 interface Daily {id:string;day:string;starts:number;strokes:Stroke[];hints:number;finished:number|null;duration:number}
 interface DailyRow {id:string;data:string;revision:number}
 export interface ArenaParticipant {id:string;name:string;ready:boolean;count:number;score:number;online:boolean;rematch:boolean;left:boolean;rank:number}
-export interface ArenaResult {round:number;winner:string|null;reason:string;players:ArenaParticipant[]}
+export interface ArenaResult {round:number;roundKind?:ArenaRoundKind;winner:string|null;reason:string;players:ArenaParticipant[]}
 export interface ArenaSeriesPlayer {id:string;name:string;played:number;wins:number;draws:number;score:number;rank:number;active:boolean}
 export interface ArenaSeries {rounds:number;players:ArenaSeriesPlayer[]}
-export interface RoomView {series?:ArenaSeries;lastResult?:ArenaResult;mode?:'group'|'duel';hostId?:string;canStart?:boolean;players?:ArenaParticipant[];contentOrdinal?:number;revision:number;id:string;code:string;kind:string;phase:Room['phase'];themeId:string;starts:number|null;ends:number|null;winner:string|null;reason:string;round:number;serverNow:number;board:Omit<Puzzle,'placements'>|null;golden:string|null;you:{id:string;name:string;ready:boolean;strokes:Stroke[];score:number;rematch:boolean};opponent:{name:string;ready:boolean;count:number;score:number;online:boolean;rematch:boolean}|null}
+export interface RoomView {roundKind?:ArenaRoundKind;nextRoundKind?:ArenaRoundKind;clues?:Record<string,string>;roundUnavailable?:string;series?:ArenaSeries;lastResult?:ArenaResult;mode?:'group'|'duel';hostId?:string;canStart?:boolean;players?:ArenaParticipant[];contentOrdinal?:number;revision:number;id:string;code:string;kind:string;phase:Room['phase'];themeId:string;starts:number|null;ends:number|null;winner:string|null;reason:string;round:number;serverNow:number;board:Omit<Puzzle,'placements'>|null;golden:string|null;you:{id:string;name:string;ready:boolean;strokes:Stroke[];score:number;rematch:boolean};opponent:{name:string;ready:boolean;count:number;score:number;online:boolean;rematch:boolean}|null}
+interface ArenaAllocation {poolId:string;from:number;next:number}
 export interface DailyView extends Daily {serverNow:number;board:Omit<Puzzle,'placements'>}
 export const publicBoard=({placements:_placements,...board}:Puzzle)=>board;
 const clampName=(name:unknown)=>typeof name==='string'?name.normalize('NFC').replace(/[^\p{L}\p{N} _.-]/gu,'').trim().slice(0,20):'';
@@ -40,17 +41,17 @@ export class GameService {
    await this.q('UPDATE members SET active=0 WHERE user_id=? AND active=1 AND room_id IN (SELECT id FROM rooms WHERE expires<?)',userId,this.clock()).run();
    const found=await this.q('SELECT r.id,r.data,r.revision,r.expires FROM rooms r JOIN members m ON m.room_id=r.id WHERE m.user_id=? AND m.active=1',userId).first<RoomRow>();return found;
  }
- private async save(row:RoomRow,room:Room,allocation?:{from:number;next:number},actor?:string){
+ private async save(row:RoomRow,room:Room,allocation?:ArenaAllocation,actor?:string){
    const now=this.clock(),resultAt=room.ends!==null?Math.min(now,room.ends):now;const next=row.revision+1,token=crypto.randomUUID();room.writeToken=token;
    if(room.phase==='finished'&&!room.ranks)room.ranks=this.ranks(room);
    const lease=actor?" AND expires>=? AND EXISTS(SELECT 1 FROM members WHERE room_id=rooms.id AND user_id=? AND active=1)":'',leaseArgs=actor?[now,actor]:[];
    const guard="EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND json_extract(data,'$.writeToken')=?)";
    const statements:Statement[]=[];
-   if(allocation)statements.push(this.q("UPDATE arena_pool SET next=?,claim=? WHERE id='arena-v1' AND next=? AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=?"+lease+")",allocation.next,token,allocation.from,room.id,row.revision,...leaseArgs));
+   if(allocation)statements.push(this.q("UPDATE arena_pool SET next=?,claim=? WHERE id=? AND next=? AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=?"+lease+")",allocation.next,token,allocation.poolId,allocation.from,room.id,row.revision,...leaseArgs));
    const updateIndex=statements.length;statements.push(this.q('UPDATE rooms SET data=?,phase=?,revision=?,updated=?,expires=CASE WHEN expires>=? THEN MAX(expires,?) ELSE expires END WHERE id=? AND revision=?'+lease,JSON.stringify(room),room.phase,next,now,now,now+30*60000,room.id,row.revision,...leaseArgs));
    if(allocation){
     // A failed allocator CAS must not publish a board. The batch rolls back on a receipt conflict.
-    statements[updateIndex]=this.q("UPDATE rooms SET data=?,phase=?,revision=?,updated=?,expires=CASE WHEN expires>=? THEN MAX(expires,?) ELSE expires END WHERE id=? AND revision=? AND EXISTS(SELECT 1 FROM arena_pool WHERE id='arena-v1' AND claim=?)"+lease,JSON.stringify(room),room.phase,next,now,now,now+30*60000,room.id,row.revision,token,...leaseArgs);
+    statements[updateIndex]=this.q("UPDATE rooms SET data=?,phase=?,revision=?,updated=?,expires=CASE WHEN expires>=? THEN MAX(expires,?) ELSE expires END WHERE id=? AND revision=? AND EXISTS(SELECT 1 FROM arena_pool WHERE id=? AND claim=?)"+lease,JSON.stringify(room),room.phase,next,now,now,now+30*60000,room.id,row.revision,allocation.poolId,token,...leaseArgs);
     const board=roomPuzzle(room);for(const p of room.players)statements.push(this.q('INSERT INTO arena_seen(user_id,words_key,grid_key,room_id,round,created) SELECT ?,?,?,?,?,? WHERE '+guard,p.id,arenaWordKey(board),arenaGridKey(board),room.id,room.round,now,room.id,next,token));
    }
    const removed=this.parse(row).players.filter(p=>!room.players.some(current=>current.id===p.id));
@@ -80,7 +81,11 @@ export class GameService {
    const ranks=room.ranks??this.ranks(room),sorted=[...room.players].sort((a,b)=>ranks[a.id]!-ranks[b.id]!||a.id.localeCompare(b.id));
    const participants=sorted.map(p=>({id:p.id,name:p.name,ready:p.ready,count:p.strokes.length,score:p.score,online:!p.left&&now-p.seen<15000,rematch:p.rematch,left:!!p.left,rank:ranks[p.id]!}));
    const starters=this.starters(room);
-   return {lastResult:room.lastResult,revision,id:room.id,code:room.code,kind:room.kind,mode:room.mode??'duel',hostId:starters[0]?.id,canStart:starters.length>=2&&starters.every(p=>p.ready),players:participants,contentOrdinal:room.contentOrdinal,phase:room.phase,themeId:room.themeId,starts:room.starts,ends:room.ends,winner:room.winner,reason:room.reason,round:room.round,serverNow:now,board:puzzle?publicBoard(puzzle):null,golden:puzzle&&room.starts!==null?goldenId(puzzle.targets,room.starts,now):null,you:{id:you.id,name:you.name,ready:you.ready,strokes:you.strokes,score:you.score,rematch:you.rematch},opponent:other?{name:other.name,ready:other.ready,count:other.strokes.length,score:other.score,online:!other.left&&now-other.seen<15000,rematch:other.rematch}:null};
+   const roundKind=room.mode==='group'?(room.roundKind??'words'):'words',nextRoundKind=room.mode==='group'?nextArenaKind(roundKind):'words';
+   const roundUnavailable=room.mode==='group'&&roundKind==='clue'&&['waiting','ready'].includes(room.phase)&&!hasArenaRiddles(room.usedRiddleIds??[])?'Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.':'',clues=roundKind==='clue'?room.clues:undefined;
+   // Older clients already render target.label. Mask answers there too, until confirmed.
+   const board=puzzle?{...publicBoard(puzzle),targets:puzzle.targets.map(t=>({...t,label:clues?.[t.text]&&!you.strokes.some(s=>s.id===t.id)?clues[t.text]!:t.label}))}:null;
+   return {roundKind,nextRoundKind,clues:clues?{...clues}:undefined,roundUnavailable:roundUnavailable||undefined,lastResult:room.lastResult,revision,id:room.id,code:room.code,kind:room.kind,mode:room.mode??'duel',hostId:starters[0]?.id,canStart:!roundUnavailable&&starters.length>=2&&starters.every(p=>p.ready),players:participants,contentOrdinal:room.contentOrdinal,phase:room.phase,themeId:room.themeId,starts:room.starts,ends:room.ends,winner:room.winner,reason:room.reason,round:room.round,serverNow:now,board,golden:puzzle&&room.starts!==null?goldenId(puzzle.targets,room.starts,now):null,you:{id:you.id,name:you.name,ready:you.ready,strokes:you.strokes,score:you.score,rematch:you.rematch},opponent:other?{name:other.name,ready:other.ready,count:other.strokes.length,score:other.score,online:!other.left&&now-other.seen<15000,rematch:other.rematch}:null};
  }
  private fence(room:Room,expectedRound?:unknown){if(expectedRound===undefined&&!room.mode&&!room.protocol)return;if(!Number.isSafeInteger(expectedRound)||expectedRound!==room.round)throw new GameError('Maç değişti. Güncel odayı yeniden kontrol et.',409,'ARENA_ROUND_CHANGED');}
  private async publicView(room:Room,userId:string,revision=0):Promise<RoomView>{
@@ -102,18 +107,21 @@ export class GameService {
    return {...view,series:{rounds:receipts[0]?.rounds??0,players}};
  }
  private async allocate(room:Room){
-   await this.q("INSERT OR IGNORE INTO arena_pool(id,next,claim) VALUES('arena-v1',0,'')").run();
-   const cursor=await this.q("SELECT next FROM arena_pool WHERE id='arena-v1'").first<{next:number}>();const from=cursor!.next;
-   for(let ordinal=from;ordinal<Math.min(from+128,ARENA_POOL_SIZE);ordinal++){
-    const candidate=arenaPuzzle(ordinal);if(!candidate)continue;
+   const clue=room.mode==='group'&&room.roundKind==='clue',used=room.usedRiddleIds??[],poolId=clue?'arena-riddle-v1':'arena-v1',limit=clue?ARENA_RIDDLE_POOL_SIZE:ARENA_POOL_SIZE;
+   if(clue&&!hasArenaRiddles(used))throw new GameError('Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.',409,'ARENA_RIDDLES_EXHAUSTED');
+   await this.q('INSERT OR IGNORE INTO arena_pool(id,next,claim) VALUES(?,0,\'\')',poolId).run();
+   const cursor=await this.q('SELECT next FROM arena_pool WHERE id=?',poolId).first<{next:number}>();const from=cursor!.next;
+   for(let ordinal=from;ordinal<Math.min(from+128,limit);ordinal++){
+    const riddle=clue?arenaRiddlePuzzle(ordinal,used):null,candidate=clue?riddle:arenaPuzzle(ordinal);if(!candidate)continue;
     const seen=await this.q('SELECT 1 AS seen FROM arena_seen WHERE user_id IN (SELECT value FROM json_each(?)) AND (words_key=? OR grid_key=?) LIMIT 1',JSON.stringify(room.players.filter(p=>!p.left).map(p=>p.id)),candidate.wordsKey,candidate.gridKey).first();
     if(seen)continue;
-    room.puzzle=candidate.board;room.themeId=candidate.themeId;room.seed=candidate.seed;room.contentOrdinal=ordinal;return {from,next:ordinal+1};
+    if(riddle){room.clues=riddle.clues;room.usedRiddleIds=[...new Set([...used,...riddle.riddleIds])];}else delete room.clues;
+    room.puzzle=candidate.board;room.themeId=candidate.themeId;room.seed=candidate.seed;room.contentOrdinal=ordinal;return {poolId,from,next:ordinal+1};
    }
    // A bounded scan must make progress even when every candidate is invalid or previously seen.
-   const next=Math.min(from+128,ARENA_POOL_SIZE);
-   await this.q("UPDATE arena_pool SET next=? WHERE id='arena-v1' AND next=?",next,from).run();
-   if(next>=ARENA_POOL_SIZE)throw new GameError('Benzersiz Arena havuzu tükendi. Önceki bölüm yeniden açılmadı; yeni içerik hazırlanması gerekiyor.',409,'ARENA_CONTENT_UNAVAILABLE');
+   const next=Math.min(from+128,limit);
+   await this.q('UPDATE arena_pool SET next=? WHERE id=? AND next=?',next,poolId,from).run();
+   if(next>=limit)throw new GameError('Benzersiz Arena havuzu tükendi. Önceki bölüm yeniden açılmadı; yeni içerik hazırlanması gerekiyor.',409,'ARENA_CONTENT_UNAVAILABLE');
    throw new GameError('Yeni içerik seçimi tamamlanamadı. Eski bölüm açılmadı; biraz sonra yeniden dene.',503,'ARENA_CONTENT_UNAVAILABLE');
  }
  private async pairWaiting(row:RoomRow):Promise<string>{
@@ -194,7 +202,7 @@ export class GameService {
     // The existing room revision + membership transaction owns each real join.
     const bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('kt:quick-group:'+Math.floor(now/60000)+':'+slot))).slice(0,16);
     bytes[6]=(bytes[6]!&15)|128;bytes[8]=(bytes[8]!&63)|128;const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(''),id=hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
-    const room:Room={id,code:code(),kind:'quick',mode:'group',protocol:2,phase:'waiting',themeId:THEMES[hash(id)%THEMES.length]!.id,level:2,seed:hash(id),starts:null,ends:null,winner:null,reason:'',players:[],round:1,queuedAt:now};
+    const room:Room={id,code:code(),kind:'quick',mode:'group',roundKind:'clue',protocol:2,phase:'waiting',themeId:THEMES[hash(id)%THEMES.length]!.id,level:2,seed:hash(id),starts:null,ends:null,winner:null,reason:'',players:[],round:1,queuedAt:now};
     await this.q('INSERT OR IGNORE INTO rooms(id,code,kind,phase,data,revision,expires,updated) VALUES(?,?,?,?,?,0,?,?)',id,room.code,room.kind,room.phase,JSON.stringify(room),now+30*60000,now).run();
     const row=await this.row(id),joined=await attempt(row);if(joined)return joined;
    }
@@ -212,7 +220,7 @@ export class GameService {
      }
    }
    const now=this.clock();const id=crypto.randomUUID();const themeId=THEMES[hash(id)%THEMES.length]!.id;
-   const room:Room={protocol:2,...(kind==='friend'&&group?{mode:'group' as const}:{}),id,code:code(),kind,phase:'waiting',themeId,level:2,seed:hash(crypto.randomUUID()),starts:null,ends:null,winner:null,reason:'',players:[player(userId,(await this.profile(userId)).nickname,now)],round:1,queuedAt:now};
+   const room:Room={protocol:2,...(kind==='friend'&&group?{mode:'group' as const,roundKind:'clue' as const}:{}),id,code:code(),kind,phase:'waiting',themeId,level:2,seed:hash(crypto.randomUUID()),starts:null,ends:null,winner:null,reason:'',players:[player(userId,(await this.profile(userId)).nickname,now)],round:1,queuedAt:now};
    try{await this.db.batch([
      this.q('INSERT INTO rooms(id,code,kind,phase,data,revision,expires,updated) VALUES(?,?,?,?,?,0,?,?)',id,room.code,kind,room.phase,JSON.stringify(room),now+30*60000,now),
      this.q('INSERT INTO members(room_id,user_id,active) VALUES(?,?,1)',id,userId)
@@ -251,7 +259,8 @@ export class GameService {
     if(p.left)throw new GameError('Bu odadan ayrıldın.',409);
     if(room.round>Number(expectedRound))return;
     this.fence(room,expectedRound);if(room.phase!=='finished')throw new GameError('Maç henüz bitmedi.',409);
-    room.lastResult={round:room.round,winner:room.winner,reason:room.reason,players:this.view(room,userId).players!};
+    room.lastResult={round:room.round,roundKind:room.roundKind??'words',winner:room.winner,reason:room.reason,players:this.view(room,userId).players!};
+    if(room.mode==='group')room.roundKind=nextArenaKind(room.roundKind??'words');delete room.clues;
     room.protocol=2;room.round++;room.starts=null;room.ends=null;room.winner=null;room.reason='';delete room.puzzle;delete room.contentOrdinal;delete room.ranks;
     room.players=room.players.filter(x=>!x.left).map(x=>player(x.id,x.name,this.clock()));room.phase=room.players.length>1?'ready':'waiting';
    });
@@ -262,7 +271,7 @@ export class GameService {
    return this.mutate(userId,id,(room,p)=>{
     this.fence(room,expectedRound);if(room.players.some(x=>x.left))throw new GameError('Bir oyuncu odadan ayrıldı. Yeni bir oda açabilirsin.',409);if(room.mode)throw new GameError('Güncel Yeni oyun oyna eylemini kullan.',409);
     if(room.phase!=='finished')throw new GameError('Düello henüz bitmedi.',409);p.rematch=true;p.seen=this.clock();
-    if(room.players.every(x=>x.rematch)){room.lastResult={round:room.round,winner:room.winner,reason:room.reason,players:this.view(room,userId).players!};room.protocol=2;room.round++;room.seed=hash(crypto.randomUUID());room.starts=null;room.ends=null;room.winner=null;room.reason='';room.phase='ready';delete room.puzzle;delete room.contentOrdinal;delete room.ranks;room.players=room.players.map(x=>player(x.id,x.name,this.clock()));}
+    if(room.players.every(x=>x.rematch)){room.lastResult={round:room.round,roundKind:room.roundKind??'words',winner:room.winner,reason:room.reason,players:this.view(room,userId).players!};room.protocol=2;room.round++;room.seed=hash(crypto.randomUUID());room.starts=null;room.ends=null;room.winner=null;room.reason='';room.phase='ready';delete room.puzzle;delete room.contentOrdinal;delete room.ranks;room.players=room.players.map(x=>player(x.id,x.name,this.clock()));}
    });
  }
  private dailyView(d:Daily&{hintReceipts?:{id:string;cell:Cell}[]}){const {hintReceipts:_receipts,...view}=d,spec=dailySpec(d.day);return {...view,serverNow:this.clock(),board:publicBoard(makePuzzle(spec.themeId,spec.level,spec.seed))};}

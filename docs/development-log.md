@@ -1,3 +1,7 @@
+# 31 Ekim 2026 · 0.18.0 · Ses ve dönüşümlü grup turları
+
+Kullanıcının dört somut isteği tek geçişte: kalıcı %0–100 ortak ses çubuğu, her yeni harfe kuyruksuz tını, Arena/uzun metin sarmalama ve 144 tanım/32 ek İpucu Avı bölümüyle sunucuda dönüşümlü grup turları. Mevcut motor, Board, kayıt doğrulaması ve oda CAS’ı yeniden kullanıldı; yeni altyapı/göç/ekonomi yok. Adaylar, uygulama öncesi kabul ve son kanıt `studio-agents/journal/entries/2026-10-31_audio-riddle-decision.md` kaydında. İki sınırlı uzman yalnız kendi günlüklerine yazdı. Eski ana sıra/tahtalar/ödüller korunur. İlk açık kanıt gerçek Safari/tablet ekranı, hoparlör/kulaklık ve provider hesabıyla yeniden giriş; kontrollü testler bunların yerine geçmez. Diğer fazlara veya yeni geliştirme turuna geçilmez.
+
 # 30 Ekim 2026 · 0.17.0 · Faz 1 yayın birleşimi
 
 Kullanıcının açık canlı yayın isteğiyle PR36'nın seçme hissi değişiklikleri güncel 0.16.2'ye birleştirildi. Altı sürüm/not çakışması her iki değişiklik grubunu koruyarak çözüldü; oynanış kodunda çakışma yok. 30 Ekim çifti, özgünlük denetimi, eski kayıt/ödül/Arena ve göçler korunur. Yeni özellik veya sonraki faz eklenmez. Son birleşim kabulleri ve gerçek doğrulama sınırı phase1-publication günlüğündedir; fiziksel/görsel kabul tamamlanmış sayılmaz.

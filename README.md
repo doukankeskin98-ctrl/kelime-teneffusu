@@ -4,6 +4,8 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 
 ## Oyun
 
+- 0.18.0: cihazda kalıcı, anında uygulanan %0–100 Oyun sesi; güçlendirilmiş ve sınırlanmış ortak ses çıkışı, her yeni harfe kısa değişken tını ve ayrı yumuşak yanlış deneme sesi. 144 yeni tanım-cevap, ana sayfa/Keşfet’te 32 ek İpucu Avı bölümü; eski 96 bölümlük ana sıra ve albümler değişmez. Yeni grup odası ipucu turuyla başlar, normal turla dönüşümlü sürer. Tür, tanımlar ve kullanılan bilmeceler sunucuda aynı oda kaydıyla korunur; tükenmede açık uyarı vardır. Uzun Arena metinleri ve kontroller satır kırar. Fiziksel dinleme ve gerçek telefon ekran kontrolü aşağıdaki doğrulama sınırında açıktır.
+
 - 0.17.0 · Faz 1: sekiz yön kilidi ve aynı çizgide geri düzeltme, doğrudan çizilen seçim izi, kısa buluş vurgusu, büyük tahtada seçili harf büyüteci ve tek sonuç geçişi. 0.16.2 içeriği ve kayıtlar korunur. Gerçek cihaz/FPS ve görsel kabul hâlâ açıktır; Faz 0 ve Faz 2–4 tamamlanmış sayılmaz.
 
 - 0.16.2: **Kahvaltı sofrası** (Rahat 6×6) ve **Orkestra provası** (Dengeli 8×8), 30 Ekim'in sabit kaynak çifti; ilgili dünya, ana sayfa ve kalıcı arşivden erişilir. İçerik kapısı yeni kimlik/tohum altında tekrarlanan normalize kelime kümesini veya aynı gerçek tahtayı reddeder. Bu bakım sürümü Faz 1'i içermiyordu.
@@ -27,7 +29,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 - Dereceli hızlı eşleşmede Elo, bekledikçe genişleyen beceri aralığı. Özel odalar dereceyi değiştirmez.
 - Arkadaşının İzinde: gerçek, sunucuda kaydedilmiş bir performansa karşı aynı tahta. Canlı olmadığı açıkça gösterilir.
 - Onayla kabul edilen arkadaş davetleri, haftalık arkadaş sıralaması ve maç geçmişi.
-- Özgün SVG sahneler, isteğe bağlı ses/titreşim, büyük harf, kontrast ve azaltılmış hareket desteği. 0.14.0: kısa ahşap tınılı seçim/kelime/ipucu/bağlantı/başlangıç/bitiş sesleri; Albümde üç cihaz ses düzeyi ve örnek dinleme. Varsayılan sessiz, tek ses grubu ve tekrar sınırı, gizli sekmede iptal; ağ oyunlarında yalnız onaylı kelimeye başarı sesi. Müzik döngüsü, son saniye alarmı ve ses dosyası indirmesi yok.
+- Özgün SVG sahneler, isteğe bağlı ses/titreşim, büyük harf, kontrast ve azaltılmış hareket desteği. Kısa ahşap tınılı seçim/kelime/ipucu/bağlantı/başlangıç/bitiş sesleri, %0–100 cihaz ses çubuğu ve örnek dinleme. Varsayılan sessiz; sınırlı, kuyruksuz harf tınısı ve motif öncelikleri, gizli sekmede iptal; ağ oyunlarında yalnız onaylı kelimeye başarı sesi. Müzik döngüsü, son saniye alarmı ve ses dosyası indirmesi yok.
 - Ana ekrana kurulabilen PWA. İlk başarılı indirmeden sonra solo oyunlar çevrimdışı açılır. API ve hesap yanıtları önbelleğe alınmaz.
 - Yönetim Atölyesi: yetkili ChatGPT hesabıyla taslak, oynanabilir önizleme, yayın, arşiv, gerçek kullanım verileri, hata sayımları ve işlem günlüğü. Panelden yayımlanan bölümler ayrı Yeni keşifler alanında açılır.
 - Arşivden veya Albümdeki bir tarihten açılan bölüm, oyun içi geri dönüşte aynı liste/tarih penceresine döner. Yüklenen aralık aynı oturum belleğinde korunur; seçilen karta odak/scroll istenir. Sekme yenilemesinde bu gezinme konumu saklanmaz.

@@ -29,3 +29,17 @@
 @media(prefers-reduced-motion:reduce){.journey-home,.journey-result-scene .collection-mosaic .revealed{animation:none}.journey-play.button:active{transform:none}.journey-session .word-success-burst{animation:none}.journey-session .letter-grid span{transition:none}}
 
 .game-app.journey-session.contrast-mode .letter-grid span{color:#123520;font-weight:800}.game-app.journey-session.contrast-mode .word-tag{border-color:#658253;color:#173c27}
+.riddle-shelf{padding:20px;border:1px solid var(--line);border-radius:16px;background:#f7f7ef;min-width:0;margin-top:20px;overflow-wrap:anywhere}
+.riddle-shelf>header{display:flex;align-items:center;flex-wrap:wrap;gap:8px;color:#244c3e}.riddle-shelf h2{font-size:20px;margin:0;flex:1;min-width:0}.riddle-shelf>header>span{font-size:14px;font-variant-numeric:tabular-nums}
+.riddle-shelf>p{font-size:14px;line-height:1.6;margin:12px 0}.riddle-shelf>.button{min-height:52px;white-space:normal;gap:12px;text-align:left;justify-content:space-between}
+.riddle-shelf>.button>span{min-width:0}.riddle-shelf .button small{display:block;font-size:12px;line-height:1.5;font-weight:400;margin-top:4px}
+.riddle-shelf summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;min-height:48px;cursor:pointer;font-size:14px}
+.riddle-chapter-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.riddle-chapter-list>button{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;min-width:0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fffdf6;color:#244c3e;text-align:left;white-space:normal;font:inherit}
+.riddle-chapter-list>button>span{min-width:0;overflow-wrap:anywhere}.riddle-chapter-list b{display:block;font-size:14px;line-height:1.5}.riddle-chapter-list small{display:block;font-size:12px;line-height:1.5}.riddle-chapter-list>button>span:last-child{display:flex;align-items:center;gap:6px;font-size:12px;flex:0 0 88px}
+.riddle-complete{display:flex;align-items:center;gap:8px}
+.profile-columns>section,.theme-card,.theme-info,.theme-title-row>h3,.theme-progress>span,.setting-row>span{min-width:0;overflow-wrap:anywhere}
+.theme-progress,.setting-row small{white-space:normal}.setting-row{min-height:56px}.setting-row>svg,.setting-row>.switch{flex-shrink:0}
+.welcome-row,.discovery-heading,.page-footer,.button-row{flex-wrap:wrap;gap:12px}.welcome-row>div,.discovery-heading>div{min-width:0;overflow-wrap:anywhere}
+.journey-home .journey-chapter-name,.journey-home-note,.journey-home .journey-milestone span,.journey-near-reward>div{min-width:0;overflow-wrap:anywhere}
+@media(max-width:600px){.riddle-chapter-list{grid-template-columns:minmax(0,1fr)}.riddle-shelf{padding:16px}}

@@ -33,7 +33,7 @@ function harness(initial:RoomView|null,claim?:(action?:string)=>Promise<RoomView
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};if(name==='lucide-react')return icons;if(name==='@/lib/game/catalog')return {findTheme:()=>({title:'Uzay'})};if(name==='@/lib/game/engine')return engine;if(name==='@/lib/game/telemetry')return {track(){}};if(name==='./common')return common;if(name==='./useLiveRoom')return {useLiveRoom:(_id:string,accept:(room:RoomView,sourceId:string)=>void)=>{live=(room,sourceId=_id)=>accept(room,sourceId);return 'connected';}};return {};},location:{search:'',origin:'https://example.test',href:'https://example.test/',pathname:'/'},history:{replaceState(){}},URL,URLSearchParams,Event,AbortController,Date:{now:()=>NOW},setInterval:()=>1,clearInterval(){},setTimeout,clearTimeout});
  const render=()=>{pending=false;cursor=0;for(const slot of slots)for(const update of slot.updates?.splice(0)??[])slot.value=typeof update==='function'?update(slot.value):update;tree=exports['Arena']({authenticated:true,onLogin(){},progress:progress.emptyProgress(),onProgress(){},practice(){}});for(const effect of effects.splice(0))effect();};
  const find=(type:string)=>{const found=nodes(tree).find(n=>n.type===type);assert.ok(found,type+' should exist');return found;};
- return {apiCalls,sounds,modalCount:()=>nodes(tree).filter(n=>n.type==='Modal').length,push:(next:RoomView,sourceId?:string)=>live(next,sourceId),layout:()=>find('PlayLayout'),has:(type:string)=>nodes(tree).some(n=>n.type===type),click(label:RegExp){const button=nodes(tree).find(n=>n.type==='button'&&label.test(text(n)));assert.ok(button,label+' should exist');button.props['onClick']();},closeModal(){find('Modal').props['onClose']();},async settle(){for(let i=0;i<20;i++){await Promise.resolve();if(pending)render();}},close(){for(const slot of slots)slot.cleanup?.();}};
+ return {apiCalls,sounds,copy:()=>text(tree),modalCount:()=>nodes(tree).filter(n=>n.type==='Modal').length,push:(next:RoomView,sourceId?:string)=>live(next,sourceId),layout:()=>find('PlayLayout'),has:(type:string)=>nodes(tree).some(n=>n.type===type),click(label:RegExp){const button=nodes(tree).find(n=>n.type==='button'&&label.test(text(n)));assert.ok(button,label+' should exist');button.props['onClick']();},closeModal(){find('Modal').props['onClose']();},async settle(){for(let i=0;i<20;i++){await Promise.resolve();if(pending)render();}},close(){for(const slot of slots)slot.cleanup?.();}};
 }
 
 describe('Arena terminal board review',()=>{
@@ -108,4 +108,13 @@ describe('visible room win table',()=>{
 
 it('plays the ready cue only after a newly ready state is accepted, never on failure',async()=>{
  for(const accepted of [false,true]){const initial={...room('ready',null,null),you:{...room('ready',null,null).you,ready:false}},gate=deferredRoom(),h=harness(initial,()=>gate.promise);try{await h.settle();h.click(/Hazırım/);await h.settle();assert.deepEqual(h.sounds,[]);if(accepted)gate.resolve({...initial,revision:4,you:{...initial.you,ready:true}});else gate.reject(new Error('Ready rejected'));await h.settle();assert.deepEqual(h.sounds,accepted?['ready']:[]);}finally{h.close();}}
+});
+
+
+it('shows current/next group mode, passes frozen clues and never names an unconfirmed golden answer',async()=>{
+ const active:RoomView={...room('active',NOW-1000,NOW+119000),mode:'group',roundKind:'clue',nextRoundKind:'words',clues:Object.fromEntries(TUTORIAL.targets.map((t,i)=>[t.text,'Tanım '+(i+1)])),you:{...room('active',0,1).you,strokes:[]}};
+ const next:RoomView={...active,revision:5,round:2,phase:'ready',roundKind:'words',nextRoundKind:'clue',board:null,clues:undefined,starts:null,ends:null};
+ const h=harness(active,async()=>next);try{await h.settle();assert.equal(h.layout().props['wordList'].clues,active.clues);const aside=text(h.layout().props['aside']);assert(aside.includes('İşaretli tanım'));for(const t of TUTORIAL.targets)assert(!aside.includes(t.label));
+  h.push({...active,revision:4,phase:'finished',ends:NOW,winner:'alice'});await h.settle();assert(h.copy().includes('Normal kelime turu'));h.click(/Yeni oyun oyna/);await h.settle();assert.match(h.copy(),/Maç\s+2/,h.copy());assert(h.copy().includes('Bilmeceli tur'));assert.equal(h.apiCalls.filter(c=>c.action==='next').length,1);
+ }finally{h.close();}
 });

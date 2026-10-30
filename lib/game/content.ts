@@ -1,4 +1,5 @@
 import {ATLAS_JOURNEYS,ATLAS_REGIONS} from './atlas-content.ts';
+import {RIDDLE_CHAPTERS} from './riddle-content.ts';
 import {hash,makeCustomPuzzle} from './engine.ts';
 
 export interface Journey {
@@ -37,7 +38,9 @@ export const JOURNEY_BONUSES:Journey[]=[
 JOURNEYS.push(...ATLAS_JOURNEYS.filter((_,i)=>i%6!==5));
 JOURNEY_BONUSES.push(...ATLAS_JOURNEYS.filter((_,i)=>i%6===5));
 export const ALL_JOURNEYS=[...JOURNEYS,...JOURNEY_BONUSES];
-export const journeyById=(id:string)=>ALL_JOURNEYS.find(j=>j.id===id);
+/** Optional clue chapters never grow the fixed main path or its earned album gates. */
+export const PLAYABLE_JOURNEYS=[...ALL_JOURNEYS,...RIDDLE_CHAPTERS];
+export const journeyById=(id:string)=>PLAYABLE_JOURNEYS.find(j=>j.id===id);
 export const journeyBoard=(j:Journey)=>makeCustomPuzzle(j.words,hash('journey-v1:'+j.id),j.size);
 
 export interface Mystery {id:string;title:string;themeId:string;words:string[];answer:string;options:string[];bonus:string;size:number;note:string}

@@ -1,4 +1,10 @@
 export const GAME_UPDATES=[
+ {version:'0.18.0',date:'31 Ekim 2026',title:'Her harfte bir tını, her turda yeni bir ipucu',items:[
+  {where:'Ayarlar · Oyun sesi',detail:'Oyun sesi artık %0–100 arasında ayarlanır; bütün efektlere anında uygulanır ve cihazında saklanır. Kısa sesler güçlendirildi ve dengelendi.'},
+  {where:'Kelime tahtası',detail:'Kaydırırken her yeni harf kısa, değişken bir tını verir. Doğru kelime, yanlış deneme ve tur sonu birbirinden ayrılır; hızlı kaydırma eski sesleri biriktirmez.'},
+  {where:'İpucu Avı ve Arena',detail:'Ana sayfa ve Keşfet’te 32 yeni İpucu Avı bölümü var. Gruplar ipucu ve normal kelime turlarını sırayla oynar; aynı odada bir bilmece yeniden verilmez.'},
+  {where:'Telefon ve tablet',detail:'Uzun oyuncu adları, tur bilgileri ve seçim metinleri dar ekranda satıra geçer; temel kontrollerin dokunma alanları korunur.'}
+ ]},
  {version:'0.17.0',date:'30 Ekim 2026',title:'Daha tutarlı kelime çizimi',items:[
   {where:'Kelime tahtası',detail:'İlk ilerleyişte yön sabitlenir; aynı çizgide geri dönüp seçimini kısaltabilirsin. Seçim izi ve harf vurgusu doğrudan çizilir. Sunucu onayını bekleyen çizgi, doğru kelime kutlaması yapmaz.'},
   {where:'Büyük tahtalar',detail:'Seçtiğin son harf üst satırda büyütülerek görünür. Kısa ekranlarda okunurluğu koruyan tahta alt sınırı yükseltildi.'},

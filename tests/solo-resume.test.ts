@@ -1,3 +1,4 @@
+import * as riddleContent from '../lib/game/riddle-content.ts';
 import * as achievementView from '../lib/game/achievement-view.ts';
 import * as goalWordCard from '../lib/game/word-card.ts';
 // Executes the real Solo logic. Minimal queued hooks/JSX/clock substitute for IO;
@@ -56,7 +57,7 @@ function harness({initial=saved([]),practice=false,known=false}:{initial?:SavedL
  const documentTarget=Object.assign(new EventTarget(),{hidden:false});
  const modules:Record<string,unknown>={
   react:hooks,'react/jsx-runtime':{jsx:(type:unknown,props:Record<string,unknown>)=>({type,props}),jsxs:(type:unknown,props:Record<string,unknown>)=>({type,props}),Fragment:'Fragment'},
-  '@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
+  '@/lib/game/riddle-content':riddleContent,'@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
   '@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,
   '@/lib/studio/chapter-progress':chapterProgress,'@/lib/game/telemetry':{track(){}},
   './common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}},

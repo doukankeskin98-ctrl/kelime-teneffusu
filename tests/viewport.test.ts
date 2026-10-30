@@ -27,3 +27,12 @@ test('measured frames fit small and large phone, tablet and desktop budgets; con
 });
 
 test('a stretched target panel does not pin an old screen height during rotate or browser chrome changes',()=>{for(const height of [900,600,900,420,900]){const result=fitGameFrame(450,height,150,8,150+240);assert.equal(result.minHeight,390);assert(result.boardSize+150<=height);}});
+
+
+test('six viewport budgets keep long-text controls outside the board at normal,130% and200% text overhead',()=>{
+ // Controlled geometry budgets, not screenshots or measurements of a real text renderer.
+ for(const [width,height] of [[360,640],[375,667],[390,844],[430,932],[768,1024],[1024,1366]])for(const scale of [1,1.3,2]){
+  const panel=width!-32,overhead=Math.ceil(270*scale),safeHeight=height!-48,fit=fitGameFrame(panel,safeHeight,overhead,8);
+  assert(fit.boardSize<=panel);assert(fit.boardSize>=Math.min(panel,8*26));assert(fit.minHeight>=overhead+Math.min(panel,8*26));assert(fit.boardSize+overhead<=Math.max(fit.minHeight,safeHeight));
+ }
+});

@@ -45,7 +45,7 @@
 .modal.achievement-modal.dialog-fallback[open]{display:flex}.dialog-fallback .icon-button{min-width:44px;min-height:44px}
 /* Instructions and the selected word share a line box so touching a letter
    does not change the space reserved above the board. Large text can still grow. */
-.viewport-play .selection-preview{font-size:14px;line-height:1.5;min-height:26px}
+.viewport-play .selection-preview{font-size:14px;line-height:1.5;min-height:26px;height:auto;white-space:normal;overflow:visible;overflow-wrap:anywhere;min-width:0}
 .viewport-play .selection-preview>b{font-size:inherit;line-height:inherit}
 /* Active Arena layout does not depend on :has support in older tablet Safari. */
 .app-shell.arena-session .sidebar{display:none}.app-shell.arena-session .main-area{margin-left:0}.app-shell.arena-session .main-content{max-width:1120px}
@@ -71,3 +71,16 @@
 .viewport-play .selection-preview.loupe-available{min-height:48px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .viewport-play .selection-loupe{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;margin-left:auto;border:1px solid #8ba98d;border-radius:50%;background:#f7f7ef;color:#244c3e;font-size:32px;line-height:1;font-weight:700}
 .viewport-play .selection-preview [hidden]{display:none}
+
+/* Arena also lives under main-content, outside game-app. Fit actual content, never a nickname width. */
+.viewport-play .arena-scorebar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center}
+.viewport-play .arena-scorebar>div,.viewport-play .arena-scorebar>div>span,.viewport-play .arena-rank-button{min-width:0;max-width:100%}
+.viewport-play .arena-scorebar small{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.viewport-play .duel-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-width:0}
+.viewport-play .duel-controls>button{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.viewport-play .opponent-progress{display:flex;flex-wrap:wrap;gap:4px 12px;min-width:0}
+.viewport-play .opponent-progress>span{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.viewport-play .play-heading>div,.viewport-play .golden-note>div{min-width:0;overflow-wrap:anywhere}
+.viewport-play .clue-copy,.viewport-play .clue-face{min-width:0;white-space:normal;overflow-wrap:anywhere}
+.arena-round-preview{padding:12px;margin:12px 0;border:1px solid #cbd8bf;border-radius:12px;background:#f3f5e9;text-align:left;overflow-wrap:anywhere}
+.arena-round-preview b{font-size:16px;color:#244c3e}.arena-round-preview p{font-size:14px;line-height:1.6;margin:6px 0}
