@@ -20,8 +20,8 @@ function harness(options:{legacy?:boolean;zoom?:boolean;paused?:boolean;readOnly
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
  let selections=0;
  const commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
- let cursor=0,dirty=true,mounted=true,afterUnmount=0,frameId=0,tree:unknown,resize=()=>{},width=600,height=600;
- const element=Object.assign(new EventTarget(),{style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left:10,top:20,width,height}),setPointerCapture(_id:number){}});
+ let cursor=0,dirty=true,mounted=true,afterUnmount=0,frameId=0,tree:unknown,resize=()=>{},width=600,height=600,left=10,top=20;
+ const element=Object.assign(new EventTarget(),{style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left,top,width,height}),setPointerCapture(_id:number){}});
  const hooks={
   useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return [slot.value,(next:any)=>{if(!mounted)afterUnmount++;const value=typeof next==='function'?next(slot.value):next;if(!Object.is(value,slot.value)){slot.value=value;dirty=true;}}];},
   useRef(initial:any){return (slots[cursor++]??={}).ref??={current:initial};},
@@ -40,10 +40,13 @@ function harness(options:{legacy?:boolean;zoom?:boolean;paused?:boolean;readOnly
  },window:windowTarget,document:documentTarget,performance:{now:()=>100},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id),ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}}});
  const boardNode=()=>{const n=nodes(tree).find(n=>n.props?.['role']==='application');assert.ok(n);return n;};
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);boardNode().props['ref'].current=element;}if(commit)while(effects.length)effects.shift()!();}return tree;};
- const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:10+(cell[1]+.5)*width/TUTORIAL.size,clientY:20+(cell[0]+.5)*height/TUTORIAL.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
+ const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
  return {commits,previews,accepted,props,paint,boardNode,send,
-  native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:10+(cell[1]+.5)*width/TUTORIAL.size,clientY:20+(cell[0]+.5)*height/TUTORIAL.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
+  native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
+  reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
+  rotate(){windowTarget.dispatchEvent(new Event('orientationchange'));paint();},
+  rejectCapture(){element.setPointerCapture=()=>{throw new Error('No active pointer');};},
   get selections(){return selections;},
   flush(){const callbacks=[...frames.values()];frames.clear();for(const fn of callbacks)fn();paint();},
   globalBlur(){windowTarget.dispatchEvent(new Event('blur'));paint();},
@@ -54,7 +57,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;paused?:boolean;readOnly
   tap(cell:Cell,extra:Record<string,unknown>={}){send('onPointerDown',cell,extra);send('onPointerUp',cell,extra);},
   selected(){return nodes(tree).filter(n=>n.props?.['className']==='letter-selected').map(n=>n.props['data-cell']);},
   setProps(next:Partial<typeof props>,commit=true){Object.assign(props,next);dirty=true;paint(commit);},
-  resize(changed=true){if(changed){width+=10;height+=10;}resize();paint();},
+  resize(changed=true){if(changed){width+=10;height+=10;}windowTarget.dispatchEvent(new Event('resize'));paint();},
   unmount(){mounted=false;for(const slot of slots)slot.cleanup?.();},
   get afterUnmount(){return afterUnmount;},get tree(){return tree;}
  };
@@ -171,5 +174,31 @@ describe('actual Board supports legacy Safari Touch Events and its last row',()=
  it('allows enlarged panning and cancels legacy input on backgrounding without a stale commit',()=>{
   const h=harness({legacy:true,zoom:true});h.native('touchstart',[a]);h.native('touchmove',[b]);h.native('touchend',[],[b]);assert.equal(h.commits.length,0);
   h.native('touchstart',[a]);h.native('touchend',[],[a]);h.globalBlur();h.native('touchstart',[b]);h.native('touchend',[],[b]);assert.equal(h.commits.length,0);h.unmount();
+ });
+});
+
+describe('swipe survives its own preview layout',()=>{
+ for(const legacy of [false,true])it('keeps the gesture and rebases coordinates after measured reflow: '+(legacy?'Touch Events':'Pointer Events'),()=>{
+  const h=harness({legacy}),start:Cell=[5,0],end:Cell=[5,5];
+  if(legacy)h.native('touchstart',[start]);else h.send('onPointerDown',start);
+  // Preview/header layout moves and resizes the board after the initial press.
+  h.reflow(30,45,-80);h.flush();assert.equal(h.selected().length,1);
+  if(legacy)h.native('touchmove',[end]);else h.send('onPointerMove',end);
+  h.flush();assert.deepEqual(h.selected().sort(),cells(start,end));
+  h.reflow(-15,12,25);h.flush();
+  if(legacy)h.native('touchend',[],[end]);else h.send('onPointerUp',end);
+  assert.deepEqual(h.commits,[{a:start,b:end}]);assert.equal(h.selected().length,0);h.unmount();
+ });
+ for(const legacy of [false,true])it('uses release coordinates when a fast swipe has no delivered move event: '+(legacy?'Touch Events':'Pointer Events'),()=>{
+  const h=harness({legacy});
+  if(legacy){h.native('touchstart',[a]);h.native('touchend',[],[b]);}else{h.send('onPointerDown',a);h.send('onPointerUp',b);}
+  assert.deepEqual(h.commits,[{a,b}]);h.unmount();
+ });
+ it('does not lose input if a browser refuses optional pointer capture',()=>{
+  const h=harness();h.rejectCapture();drag(h);h.flush();h.send('onPointerUp',b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();
+ });
+ it('still cancels a real rotation after the layout observer already rebased a gesture',()=>{
+  const h=harness();drag(h);h.reflow(5,20,-50);h.rotate();h.send('onPointerUp',b);assert.equal(h.commits.length,0);assert.equal(h.selected().length,0);
+  h.tap(a);h.tap(b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();
  });
 });
