@@ -1,3 +1,13 @@
+# 30 Ekim 2026 · İnceleme dalı · Numaralı ana yolculuk
+
+Kapsam: ana ekran → bölüm → gerçek sonuç → sonraki bölüm. Kullanıcı isteğiyle tek koordinatör; ek ajan/araştırma/tarihli içerik/yayın/birleştirme yok. Adaylar: yalnız mevcut kartı numaralandırma (yetersiz), yeni kayıt/ödül ekonomisi (gereksiz), mevcut 96 sabit bölüm ve 3/5/6 ödül kurallarını kullanan sade ana akış (seçildi).
+
+Kabul: tek ana CTA ve yakın ödül, gerçek kayıttan devam/eksik bölüm, korunmuş ID/tahta/kazanım, sonuçta önce/sonra albüm ve tek sonraki eylem, diğer modların ikincil erişimi. İlk 10: 6/7/9 hücreyle öğrenme; 4. bölüm küçük Türkiye molası, 5. tersten arama, 6–7. Türkiye, 8. küçük Hababam molası, 9. mevcut ustalık tahtası, 10. ilk altılı albüm. Dünyalar mevcut eşiklerle 3 ve 7 sonunda açılır. Eski kelimeler ve tahtalar değiştirilmez; numara kayıt değildir, hiçbir boşluk tamamlanmış sayılmaz. Uygulama tamamlandı. 377/377 test, 120 tahta/2.400 alternatif içerik denetimi, TypeScript, üretim derlemesi ve 339 Worker HTTP kontrolü geçti. Yeni/eskiden yarım kayıt, eksik numara, ilk 10 eşikleri, gerçek Solo tamamlama→sonraki→tekrar, albüm önce/sonra, öğretici statüsü ve ana/Keşfet dönüşü test edildi. Sonlu katalogda yeni bulmaca varmış gibi tekrar sunulmaz.
+
+Korunan içerik/motor/ilerleme/şema/göç ve Arena dosyaları başlangıçla aynı. Kaynakta ödeme, reklam, enerji, yeni bağımlılık veya göç yok. Önizleme generated eski kilit kenara alınarak başlatıldı. Önceki destekli tarayıcı bağlantı/güvenlik engelinde düzelme kanıtı yok; aynı başarısız tarayıcı yolu tekrarlanmadı. Gerçek DOM/telefon, ilk görünüm piksel sığması ve dokunma doğrulanmış sayılmaz. Kullanıcı talimatıyla yalnız inceleme dalı; Sites yayını ve GitHub birleştirmesi yapılmadı. Bu odak tamamlandı; başka geliştirme turu başlatılmadı.
+
+
+
 # 30 Ekim 2026 · 0.15.0 · Ekrana uyum ve kesintisiz grup Arena
 
 Kullanıcının üç somut isteği birlikte uygulandı. Önceden alınan odak/kabul kararı `studio-agents/journal/entries/2026-10-30_arena-fit-decision.md`. Adaylar: yalnız tahta küçültme (yetersiz), yalnız oyuncu limitini kaldırma (iki kişilik protokol nedeniyle hatalı), ölçülen ortak çerçeve + grup protokolü + kalıcı gerçek içerik seçimi (seçildi). Mevcut çalışan motor, D1/CAS, SSE, WordList ve Modal yeniden kullanıldı; ücret/bağımlılık/entegrasyon eklenmedi.

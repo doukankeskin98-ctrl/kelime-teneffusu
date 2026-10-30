@@ -46,3 +46,8 @@ Ana sayfada kişisel kartın hemen altında etkileşimli yol haritası bulunur. 
 Ana kart, oynanacak gerçek önerinin journey kimliğinden parça/konum/albüm/açılış hedefi çıkarır. Aynı bilgi Solo başında görünür. Sonuçta mevcut discoveryRewards ve doğrulanmış saves üzerinden yeni parça/dünya/bonus/albüm; yeni ödül yoksa açık tekrar metni gösterilir. Sonraki hedef mevcut nextJourneyAfter fonksiyonundan gelir, oyuncu eylemi olmadan oyun açılmaz. Standart bölüm, günlük veya tutorial için harita ödülü uydurulmaz. Altılı sahneler ve 3/5/6 kuralları, eski dünyaya erişim istisnası ve tam katalog davranışı değişmez.
 
 Sunum yardımcıları achievement-view ve AchievementLoop içindedir; bunlar kayıt veya ödül yazmaz. SSR ve actual Solo kontrollü kabul testleri hedef eşleşmesini, açılışları, tekrar/rekor ayrımını ve buton callback'lerini kapsar. Kısa hedef listesinde yalnız confirmed grup tamamlamaları vardır; parçalı uzun adlar eski kelime motoruyla kalır. Gerçek cihaz/piksel/odak-kaydırma doğrulaması ayrıca gerekir.
+
+
+## İnceleme dalı: numaralı ana yolculuk
+
+`main-journey.ts` mevcut 96 kimliği bir kez sıralar; numara yalnız sunumdur. İlk 18 bölüm üç dünyanın içeriklerini öğrenme/mola/ustalık ritmiyle birleştirir; 19–96 mevcut atlas sırasıdır. İlk albüm 10. bölümde, ilk yeni dünyalar 3 ve 7 sonunda açılır. Gerçek eski yarım bölüm devam eder; diğer durumda ilk oynanabilir eksik bölüm seçilir. Daha sonraki bir bölümün bitmiş olması önceki boşlukları doldurmaz. Bütün kayıt anahtarları, tahtalar, 3/5/6 açılışları ve ödül türetimi aynıdır. Sonuçtan devam ilk gerçek eksik bölüme gider. Ana yolculuk sonludur; diğer içerikler Keşfet ve arşivde kalır. Bu dal canlıya yayımlanmadı.
