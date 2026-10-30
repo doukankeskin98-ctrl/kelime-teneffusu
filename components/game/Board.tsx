@@ -4,14 +4,15 @@ import {snapLine,type Cell,type Puzzle,type Stroke} from '@/lib/game/engine';
 import {track} from '@/lib/game/telemetry';
 export const strokeColor=(id:string)=>`var(--word-${(Number(id.split('.')[0])||0)%8})`;
 type Drag={id:number;start:Cell;current:Cell;moved:boolean;tapOnly:boolean;x:number;y:number;pan:boolean;rect:DOMRect};
-export function Board({board,strokes,paused=false,readOnly=false,blocked=false,busy=false,statusText='Sunucu onayı bekleniyor.',zoom=false,hint,onCommit,onPreview}:{board:Pick<Puzzle,'grid'|'size'>;strokes:Stroke[];paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;statusText?:string;zoom?:boolean;hint?:Cell|null;onCommit:(a:Cell,b:Cell)=>void;onPreview?:(text:string)=>void}){
+export function Board({board,strokes,paused=false,readOnly=false,blocked=false,busy=false,statusText='Sunucu onayı bekleniyor.',zoom=false,hint,onCommit,onPreview,onSelectStart}:{board:Pick<Puzzle,'grid'|'size'>;strokes:Stroke[];paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;statusText?:string;zoom?:boolean;hint?:Cell|null;onCommit:(a:Cell,b:Cell)=>void;onPreview?:(text:string)=>void;onSelectStart?:()=>void}){
+ const selectionSound=useRef(false);
  const initialFound=useRef(new Set(strokes.map(s=>s.id)));
  const ref=useRef<HTMLDivElement>(null),drag=useRef<Drag|null>(null),frame=useRef(0),pending=useRef<Cell[]|null>(null);
  const [anchor,setAnchor]=useState<Cell|null>(null),[preview,setPreview]=useState<Cell[]>([]),[cursor,setCursor]=useState<Cell>([0,0]),[focused,setFocused]=useState(false);
  const n=board.size,disabled=useRef(paused||readOnly||blocked);disabled.current=paused||readOnly||blocked;
  const signature=board.grid.map(row=>row.join('')).join('|');
  const same=(a:Cell,b:Cell)=>a[0]===b[0]&&a[1]===b[1];
- const clear=()=>{drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;setAnchor(null);setPreview([]);onPreview?.('');};
+ const clear=()=>{selectionSound.current=false;drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;setAnchor(null);setPreview([]);onPreview?.('');};
  const clearRef=useRef(clear);clearRef.current=clear;
  useEffect(()=>{
   const blur=()=>clearRef.current(),visibility=()=>{if(document.hidden)clearRef.current();};
@@ -23,7 +24,7 @@ export function Board({board,strokes,paused=false,readOnly=false,blocked=false,b
  useEffect(()=>()=>cancelAnimationFrame(frame.current),[]);
  useEffect(()=>{const element=ref.current;if(!element)return;let width=element.clientWidth,height=element.clientHeight;const observer=new ResizeObserver(()=>{const nextWidth=element.clientWidth,nextHeight=element.clientHeight;if(width!==nextWidth||height!==nextHeight){width=nextWidth;height=nextHeight;clear();}});observer.observe(element);return ()=>observer.disconnect();},[]);
  const cellAt=(x:number,y:number,rect=drag.current?.rect??ref.current!.getBoundingClientRect()):Cell=>[Math.max(0,Math.min(n-1,Math.floor((y-rect.top)/rect.height*n))),Math.max(0,Math.min(n-1,Math.floor((x-rect.left)/rect.width*n)))];
- const show=(cells:Cell[])=>{setPreview(cells);onPreview?.(cells.map(([r,c])=>board.grid[r]![c]).join(''));};
+ const show=(cells:Cell[])=>{if(!selectionSound.current&&cells.length){selectionSound.current=true;onSelectStart?.();}setPreview(cells);onPreview?.(cells.map(([r,c])=>board.grid[r]![c]).join(''));};
  const schedule=(cells:Cell[])=>{pending.current=cells;if(frame.current)return;frame.current=requestAnimationFrame(()=>{frame.current=0;if(pending.current&&!disabled.current)show(pending.current);pending.current=null;});};
  const commit=(a:Cell,b:Cell)=>{clear();if(!disabled.current&&!same(a,b))onCommit(a,b);};
  const tap=(cell:Cell)=>{if(disabled.current)return;if(anchor){if(same(anchor,cell))clear();else{const cells=snapLine(anchor,cell,n);commit(anchor,cells.at(-1)!);}}else{setAnchor(cell);show([cell]);}};
