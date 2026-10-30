@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.14.0',date:'30 Ekim 2026',title:'Keşfinin yumuşak bir sesi var',items:[
+  {where:'Tahta · keşif sesleri',detail:'Seçime hafif bir tını, doğru kelimeye küçük bir melodi. İpucu, gizli bağlantı ve bitiş için aynı aileden farklı sesler. Hızlı Tur ve Arena başlangıcı ile bitişi de duyulur; son saniyelerde alarm yok.'},
+  {where:'Albüm · Oyun hissi',detail:'Sesleri aç, Hafif / Dengeli / Belirgin düzeylerinden seç ve Sesi dene ile dinle. Düzey bu cihazda saklanır. Oyun içindeki hoparlör sesi hemen kapatır; titreşim ayrı tercihtir.'},
+  {where:'Gerçek başarı',detail:'Arena ve arkadaş meydan okumasında başarı sesi sunucunun kelimeyi kabul etmesini bekler. Yanlış seçimde sert uyarı yok; sekme arka plana geçince sesler susar.'},
+ ]},
  {version:'0.13.1',date:'29 Ekim 2026',title:'Biten düellonu incele',items:[
   {where:'Arena · düello sonucu',detail:'Sonuç penceresini kapattığında harfler ve bulduğun çizgiler açık kalır. Tahta salt okunurdur; yeni hamle göndermez.'},
   {where:'Sonuca geri dön',detail:'Tahtanı inceledikten sonra Düello sonucu ile aynı skoru yeniden açabilir, rövanş isteyebilir veya Arena’ya dönebilirsin.'},

@@ -16,6 +16,7 @@ const compiled=ts.transpileModule(readFileSync('components/game/Board.tsx','utf8
 function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
+ let selections=0;
  const commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
  let cursor=0,dirty=true,mounted=true,afterUnmount=0,frameId=0,tree:unknown,resize=()=>{},width=600,height=600;
  const element={get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left:10,top:20,width,height}),setPointerCapture(_id:number){}};
@@ -26,7 +27,7 @@ function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;blocke
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word)};
+ const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectStart:()=>{selections++;}};
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
   if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
   if(name==='@/lib/game/engine')return {snapLine};if(name==='@/lib/game/telemetry')return {track(){}};
@@ -36,7 +37,7 @@ function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;blocke
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);boardNode().props['ref'].current=element;}if(commit)while(effects.length)effects.shift()!();}return tree;};
  const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:10+(cell[1]+.5)*width/TUTORIAL.size,clientY:20+(cell[0]+.5)*height/TUTORIAL.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
- return {commits,previews,accepted,props,paint,boardNode,send,
+ return {commits,previews,accepted,props,paint,boardNode,send,get selections(){return selections;},
   flush(){const callbacks=[...frames.values()];frames.clear();for(const fn of callbacks)fn();paint();},
   globalBlur(){windowTarget.dispatchEvent(new Event('blur'));paint();},
   visibility(hidden:boolean){documentTarget.hidden=hidden;documentTarget.dispatchEvent(new Event('visibilitychange'));paint();},
@@ -144,4 +145,12 @@ it('keeps pending server input visible and busy without claiming completion, the
  assert.equal(h.commits.length,0);assert.equal(h.selected().length,0);assert.equal(h.boardNode().props['aria-busy'],true);assert.match(h.boardNode().props['aria-label'],/Kelimen doğrulanıyor/);assert.doesNotMatch(h.boardNode().props['aria-label'],/tamamlandı|duraklatıldı/);assert.equal(h.boardNode().props['style'].touchAction,'pan-x pan-y');
  assert.equal(nodes(h.tree).some(n=>n.props?.['className']==='board-paused'),false);assert.equal(nodes(h.tree).filter(n=>String(n.props?.['className']??'').startsWith('found-stroke')).length,1);
  h.setProps({blocked:false,busy:false});h.tap(a);h.tap(b);assert.equal(h.commits.length,1);h.unmount();
+});
+
+describe('selection sound is a single intentional start',()=>{
+ it('does not tick through dragged cells or on commit/cancel',()=>{const h=harness();drag(h);h.flush();h.send('onPointerMove',[3,3]);h.flush();assert.equal(h.selections,1);h.send('onPointerUp',[3,3]);assert.equal(h.selections,1);h.tap(a);assert.equal(h.selections,2);h.key('Escape');assert.equal(h.selections,2);h.unmount();});
+ it('supports keyboard anchoring, stays silent during enlarged panning and all blocked states',()=>{
+  const h=harness();h.key('ArrowRight');assert.equal(h.selections,0);h.key('Enter');h.key('ArrowDown');h.key('Enter');assert.equal(h.selections,1);h.unmount();const pan=harness({zoom:true});drag(pan);pan.send('onPointerUp',b);assert.equal(pan.selections,0);pan.tap(a);pan.tap(b);assert.equal(pan.selections,1);pan.unmount();
+  for(const blocked of [{paused:true},{readOnly:true},{blocked:true}]){const h=harness(blocked);drag(h);h.send('onPointerUp',b);h.key('Enter');assert.equal(h.selections,0);h.unmount();}
+ });
 });
