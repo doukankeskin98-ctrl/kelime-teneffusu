@@ -3,7 +3,7 @@ import {wordCardCopy,wordListProgress} from '@/lib/game/word-card';
 import {useEffect,useRef,useId,useState,type ReactNode} from 'react';
 import {ArrowLeft,Check,HelpCircle,Lightbulb,ListChecks,LoaderCircle,Pause,Play,Volume2,VolumeX,X,ZoomIn} from 'lucide-react';
 import {Board,strokeColor} from './Board';
-import {fittedBoardSize} from '@/lib/game/viewport';
+import {fitGameFrame} from '@/lib/game/viewport';
 import {memberFetch} from '@/lib/auth/firebase-client';
 import type {Cell,Puzzle,Stroke} from '@/lib/game/engine';
 const errorText=(v:unknown)=>v&&typeof v==='object'&&'error' in v&&typeof v.error==='string'?v.error:'Bağlantı kurulamadı.';
@@ -51,21 +51,30 @@ export function PlayLayout({title,kicker,onBack,board,strokes,paused,readOnly=fa
   const screen=screenRef.current,stage=stageRef.current;if(!screen||!stage)return;
   let frame=0;
   const fit=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{
-   if(zoom||window.visualViewport&&window.visualViewport.scale!==1){screen.style.removeProperty('--fitted-board');return;}
    const viewport=window.visualViewport?.height??window.innerHeight;
-   const rect=screen.getBoundingClientRect(),stageRect=stage.getBoundingClientRect();
-   const mobile=window.matchMedia('(max-width: 780px)').matches&&!window.matchMedia('(orientation: landscape) and (max-height: 540px) and (min-width: 600px)').matches;
-   const container=screen.closest('.game-app,.main-content');
-   const bottomSpace=Math.max(16,container?parseFloat(getComputedStyle(container).paddingBottom)||0:0);
-   const remaining=mobile?viewport-Math.max(0,rect.top)-(rect.height-stageRect.height)-bottomSpace:viewport-stageRect.top-110;
-   const size=fittedBoardSize(stage.clientWidth,remaining,board.size);
+   const rect=screen.getBoundingClientRect(),container=screen.closest('.game-app,.main-content');
+   const bottomSpace=Math.max(8,container?parseFloat(getComputedStyle(container).paddingBottom)||0:0);
+   const height=Math.max(160,Math.floor(viewport-Math.max(0,rect.top)-bottomSpace));
+   if(screen.style.getPropertyValue('--play-height')!==height+'px')screen.style.setProperty('--play-height',height+'px');
+   if(zoom||window.visualViewport&&window.visualViewport.scale!==1){screen.style.removeProperty('--fitted-board');screen.style.removeProperty('min-height');return;}
+   // The stage is the remaining flex/grid track after the real HUD, targets and controls.
+   // If enlarged text leaves less than a readable board, grow the complete frame
+   // in normal flow instead of letting a centered board overlap targets or controls.
+   const overhead=screen.clientHeight-stage.clientHeight;
+   const targets=screen.querySelector<HTMLElement>('.targets-panel'),columns=screen.querySelector<HTMLElement>('.play-columns');
+   const targetTop=targets?.getBoundingClientRect().top??0;
+   const intrinsicTargets=targets?Math.max(0,...Array.from(targets.children).map(child=>child.getBoundingClientRect().bottom-targetTop))+(parseFloat(getComputedStyle(targets).paddingBottom)||0):0;
+   const targetMinimum=columns?screen.clientHeight-columns.clientHeight+intrinsicTargets:0;
+   const fitted=fitGameFrame(stage.clientWidth,height,overhead,board.size,targetMinimum),minHeight=fitted.minHeight+'px';
+   if(screen.style.minHeight!==minHeight)screen.style.minHeight=minHeight;
+   const size=fitted.boardSize;
    const value=size+'px';if(screen.style.getPropertyValue('--fitted-board')!==value)screen.style.setProperty('--fitted-board',value);
   });};
-  const observer=new ResizeObserver(fit);observer.observe(screen);observer.observe(stage);
-  window.addEventListener('resize',fit);window.visualViewport?.addEventListener('resize',fit);fit();
-  return ()=>{cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('resize',fit);};
+  const observer=new ResizeObserver(fit);observer.observe(screen);observer.observe(stage);if(screen.parentElement)observer.observe(screen.parentElement);
+  window.addEventListener('resize',fit);window.visualViewport?.addEventListener('resize',fit);window.visualViewport?.addEventListener('scroll',fit);fit();
+  return ()=>{cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('scroll',fit);};
  },[zoom,board.size]);
- return <section ref={screenRef} className={'play-screen'+(zoom?' is-zoomed':'')+(focused?' focused-play':'')+(inlineTargets?' inline-target-play':'')}><header className="play-heading"><button className="icon-button" onClick={onBack} aria-label="Geri"><ArrowLeft/></button><div><span className="eyebrow">{kicker}</span><h1>{title}</h1></div><span className="mini-mark">Kt.</span></header>{children}<div className="play-columns"><div className="board-panel"><div className={'selection-preview'+(readOnly?' is-review':inputBlocked?' is-blocked':preview?' selecting':'')} aria-live="off">{readOnly?<span>{reviewStatus}</span>:inputBlocked?<span>{inputStatus??'Sunucu onayı bekleniyor.'}</span>:preview?<><b>{preview}</b>{/^[A-ZÇĞİÖŞÜ0-9]+$/u.test(preview)&&<span>{[...preview].length} harf</span>}</>:<span>{zoom?'Seçmek için kelimenin iki ucuna dokun.':'Kaydır veya ilk ve son harfe dokun.'}</span>}</div>{inlineTargets&&wordList&&<div className="inline-targets"><WordList {...wordList}/></div>}{wordList&&!inlineTargets&&!paused&&!readOnly&&!inputBlocked&&!wordListUnavailable&&<BoardWords key={wordListKey??JSON.stringify([board.size,board.grid,wordList.board.targets])} words={wordList}/>}<div className="board-stage" ref={stageRef}><Board board={board} strokes={strokes} paused={paused} readOnly={readOnly} blocked={inputBlocked} busy={busy} statusText={inputStatus} zoom={zoom} hint={hint} onCommit={onCommit} onSelectStart={onSelectStart} onPreview={onPreview}/>{effect}</div>{footer}<small className="board-access-note">Yatay · Dikey · Çapraz · Tersten</small></div><aside className="targets-panel">{aside}</aside></div></section>;
+ return <section ref={screenRef} className={'play-screen viewport-play'+(zoom?' is-zoomed':'')+(focused?' focused-play':'')+(inlineTargets?' inline-target-play':'')}><header className="play-heading"><button className="icon-button" onClick={onBack} aria-label="Geri"><ArrowLeft/></button><div><span className="eyebrow">{kicker}</span><h1>{title}</h1></div><span className="mini-mark">Kt.</span></header><div className="play-hud">{children}</div><div className="play-columns"><div className="board-panel"><div className={'selection-preview'+(readOnly?' is-review':inputBlocked?' is-blocked':preview?' selecting':'')} aria-live="off">{readOnly?<span>{reviewStatus}</span>:inputBlocked?<span>{inputStatus??'Sunucu onayı bekleniyor.'}</span>:preview?<><b>{preview}</b>{/^[A-ZÇĞİÖŞÜ0-9]+$/u.test(preview)&&<span>{[...preview].length} harf</span>}</>:<span>{zoom?'Seçmek için kelimenin iki ucuna dokun.':'Kaydır veya ilk ve son harfe dokun.'}</span>}</div>{zoom&&wordList&&!paused&&!readOnly&&!inputBlocked&&!wordListUnavailable&&<BoardWords key={wordListKey??JSON.stringify([board.size,board.grid,wordList.board.targets])} words={wordList}/>}<div className="board-stage" ref={stageRef}><Board board={board} strokes={strokes} paused={paused} readOnly={readOnly} blocked={inputBlocked} busy={busy} statusText={inputStatus} zoom={zoom} hint={hint} onCommit={onCommit} onSelectStart={onSelectStart} onPreview={onPreview}/>{effect}</div>{footer}<small className="board-access-note">Yatay · Dikey · Çapraz · Tersten</small></div><aside className="targets-panel">{wordList&&<div className="viewport-targets" data-many={wordList.board.targets.length>9||undefined}><WordList {...wordList}/></div>}{aside}</aside></div></section>;
 }
 export function PlayControls({paused,onPause,zoom,onZoom,sound,onSound,hints,onHint,onHelp,canPause=true,completed=false,blocked=false,busy=false}:{paused:boolean;onPause:()=>void;zoom:boolean;onZoom:()=>void;sound:boolean;onSound:()=>void;hints:number;onHint:()=>void;onHelp:()=>void;canPause?:boolean;completed?:boolean;blocked?:boolean;busy?:boolean}){return <div className={'play-controls'+(completed?' is-review':'')}>{completed?<span className="review-controls-label"><Check size={17} aria-hidden="true"/>İnceleme</span>:<button className="button primary hint-button" disabled={paused||blocked||hints===0} aria-busy={busy||undefined} onClick={onHint}>{busy?<LoaderCircle size={19} className="spin" aria-hidden="true"/>:<Lightbulb size={19}/>}İpucu <span>{hints}</span></button>}{canPause&&!completed&&<button className="icon-button" onClick={onPause} aria-label={paused?'Devam et':'Duraklat'}>{paused?<Play/>:<Pause/>}</button>}<button className={'icon-button'+(zoom?' selected':'')} onClick={onZoom} aria-label={zoom?'Normal tahta boyutuna dön':completed?'İncelemek için tahtayı büyüt':'Tahtayı büyüt, iki uca dokunarak seç'} aria-pressed={zoom}><ZoomIn/></button><button className="icon-button" onClick={onSound} aria-label={sound?'Sesi kapat':'Sesi aç'} aria-pressed={sound}>{sound?<Volume2/>:<VolumeX/>}</button><button className="icon-button" onClick={onHelp} aria-label="Nasıl oynanır"><HelpCircle/></button></div>;}
 export function Help({onClose,daily=false}:{onClose:()=>void;daily?:boolean}){return <Modal title="Bir bakış, bir kelime." onClose={onClose}><p>Kelimeleri yatay, dikey ve çapraz bul. Tersten de yazılmış olabilirler. Parmağını ilk harften son harfe kaydır veya iki uca sırayla dokun.</p><p>Uzun isimler parçalara ayrılır. İsmin altındaki bütün parçaları bulunca tamamlanır. Yanlış seçim puan götürmez.</p><p>Büyük harf modunda tahtayı yana kaydırabilirsin. Seçim için ilk ve son harfe dokun. Klavyede oklar ve Enter kullan.</p>{daily?<p>Günlük yarışta süre devam eder. Her ipucu bitiş sürene 15 saniye ekler. Her gün bir sıralama hakkın var.</p>:<p>Keşif bölümlerinde süre baskısı yok. İpuçsuz bitir: 3 yıldız. Bir ipucuyla: 2 yıldız. İki veya üç ipucuyla: 1 yıldız. Süre yıldızını etkilemez; koleksiyon parçası için yıldız şartı yok.</p>}<button className="button primary full" onClick={onClose}>Hadi bulalım</button></Modal>;}

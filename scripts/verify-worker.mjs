@@ -104,12 +104,12 @@ try{
  const ghost=await json('/api/social',{cookie:bCookie,method:'POST',body:{action:'start',code:challenge.code}});check(ghost.ghost.nickname==='Alice'&&ghost.ghost.timeline.length===challenge.board.targets.length,'actual recorded opponent timeline');
  const room=await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'enter',kind:'friend',userId:b.profile.id}});check(room.you.id===a.profile.id,'request bodies cannot spoof the actor');
  await json('/api/game',{cookie:bCookie,method:'POST',body:{action:'enter',kind:'friend',code:room.code}});
- await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'ready',id:room.id}});
- const active=await json('/api/game',{cookie:bCookie,method:'POST',body:{action:'ready',id:room.id}});
- await request('/api/game',{cookie:aCookie,method:'POST',body:{action:'claim',id:room.id,...solution(active.board,active.board.targets[0])},expected:409});
+ await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'ready',id:room.id,round:1}});
+ const active=await json('/api/game',{cookie:bCookie,method:'POST',body:{action:'ready',id:room.id,round:1}});
+ await request('/api/game',{cookie:aCookie,method:'POST',body:{action:'claim',id:room.id,round:1,...solution(active.board,active.board.targets[0])},expected:409});
  const live=await request('/api/live?id='+room.id,{cookie:aCookie});check(live.headers.get('Content-Type')?.startsWith('text/event-stream'),'live event transport');const reader=live.body.getReader();const chunk=await reader.read();check(new TextDecoder().decode(chunk.value).includes('event: room'),'initial live state');await reader.cancel();
  await new Promise(resolve=>setTimeout(resolve,4200));
- for(const target of active.board.targets)await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'claim',id:room.id,...solution(active.board,target)}});
+ for(const target of active.board.targets)await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'claim',id:room.id,round:1,...solution(active.board,target)}});
  const result=await json('/api/game?action=room',{cookie:bCookie});check(result.phase==='finished'&&result.winner===a.profile.id,'two-player result persisted');
  check((await json('/api/game',{cookie:aCookie})).stats.wins===1,'a single win is recorded');
  const cloud=await json('/api/progress',{cookie:aCookie});await json('/api/progress',{cookie:aCookie,method:'PUT',body:{progress:{...cloud.progress,sound:true,tutorialDone:true}}});check((await json('/api/progress',{cookie:bCookie})).progress.sound===false,'progress stays private');
@@ -154,7 +154,32 @@ try{
  const companionChapter=releasedChapter(companionSummary.id);await json('/api/chapters',{cookie:aCookie,method:'PUT',body:{id:companionChapter.id,save:{strokes:companionChapter.board.placements,elapsed:80,hints:3,complete:false,stars:99}}});
  const completePairCards=await json('/api/chapters?action=card-progress&ids='+sourcePair.chapters.map(c=>c.id).join(','),{cookie:aCookie}),completeStamp=releaseRunResult(sourcePair,sourceChapter,sourceSave.save,Object.fromEntries(completePairCards.chapters.map(c=>[c.id,c.progress])),'ready');check(completeStamp.stamp.earned&&completeStamp.next===undefined,'both real completions produce one dated stamp without a further target');
  await request('/api/session',{cookie:aCookie,method:'DELETE'});check((await json('/api/game',{cookie:aCookie})).authenticated===false,'guest logout revokes its token');
+
+ // Eight independent trusted-account sessions through the actual production Worker.
+ // This is isolated HTTP/identity persistence evidence, not real provider login or live load.
+ const groupUsers=Array.from({length:8},(_,i)=>'arena-http-'+i),profiles=await Promise.all(groupUsers.map(nativeUser=>json('/api/game',{nativeUser})));
+ const group=await json('/api/game',{nativeUser:groupUsers[0],method:'POST',body:{action:'enter',kind:'friend',mode:'group',expectedOwnerId:profiles[0].profile.id}});
+ const action=(i,name,round,extra={})=>json('/api/game',{nativeUser:groupUsers[i],method:'POST',body:{action:name,id:group.id,round,expectedOwnerId:profiles[i].profile.id,...extra}});
+ await Promise.all(groupUsers.slice(1).map((nativeUser,i)=>json('/api/game',{nativeUser,method:'POST',body:{action:'enter',kind:'friend',code:group.code,expectedOwnerId:profiles[i+1].profile.id}})));
+ await Promise.all(groupUsers.map((_,i)=>action(i,'ready',1)));const groupActive=await action(0,'start',1);
+ const groupViews=await Promise.all(groupUsers.map(nativeUser=>json('/api/game?action=room',{nativeUser})));
+ check(groupViews.every(v=>v.players.length===8&&v.starts===groupActive.starts&&v.ends===groupActive.ends&&JSON.stringify(v.board)===JSON.stringify(groupActive.board)),'eight HTTP sessions share one board, roster, start and end');
+ await request('/api/game',{nativeUser:groupUsers[1],method:'POST',body:{action:'claim',id:group.id,round:1,expectedOwnerId:profiles[0].profile.id,...solution(groupActive.board,groupActive.board.targets[0])},expected:409});
+ await new Promise(resolve=>setTimeout(resolve,Math.max(0,groupActive.starts-Date.now()+50)));
+ const firstWord=solution(groupActive.board,groupActive.board.targets[0]);await Promise.all(groupUsers.map((_,i)=>action(i,'claim',1,firstWord)));
+ const restoredGroup=await json('/api/game?action=room',{nativeUser:groupUsers[7]});
+ check(restoredGroup.you.strokes.length===1&&restoredGroup.starts===groupActive.starts&&restoredGroup.players.every(p=>p.score===restoredGroup.you.score),'fresh session requests restore scores and clock after reconnect');
+ const groupStream=await request('/api/live?id='+group.id,{nativeUser:groupUsers[7]}),groupReader=groupStream.body.getReader();const groupChunk=await groupReader.read();check(new TextDecoder().decode(groupChunk.value).includes('event: room'),'group reconnect receives live authoritative state');await groupReader.cancel();
+ for(const target of groupActive.board.targets.slice(1))await action(0,'claim',1,solution(groupActive.board,target));
+ const groupResult=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(groupResult.phase==='finished'&&groupResult.winner===profiles[0].profile.id&&groupResult.players[0].rank===1,'eight-player result and ranking agree');
+ const successors=await Promise.all([...groupUsers.map((_,i)=>i),0,0,0,0].map(i=>action(i,'next',1)));
+ check(successors.every(v=>v.round===2&&v.id===group.id&&v.board===null),'twelve repeated next requests create one successor round in the same room');
+ await Promise.all(groupUsers.map((_,i)=>action(i,'ready',2)));const second=await action(0,'start',2);
+ const wordKey=b=>JSON.stringify(b.targets.map(t=>t.text).sort());check(wordKey(second.board)!==wordKey(groupActive.board)&&JSON.stringify(second.board.grid)!==JSON.stringify(groupActive.board.grid),'successor uses different real words and grid');
+ const history=await db.prepare('SELECT count(*) n FROM arena_seen WHERE user_id=?').bind(profiles[7].profile.id).first();check(history.n===2,'both boards are durably recorded for a returning account');
+ const again=await json('/api/game',{nativeUser:groupUsers[7]}),afterReentry=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(again.profile.id===profiles[7].profile.id&&afterReentry.round===2&&JSON.stringify(afterReentry.board)===JSON.stringify(second.board),'a fresh authenticated request with the same verified identity preserves round and content history');
+ await request('/api/game',{nativeUser:groupUsers[7],method:'POST',body:{action:'ready',id:group.id,round:1,expectedOwnerId:profiles[7].profile.id},expected:409});
  // Deliberate isolated database failure verifies that the production route records a sanitized fault.
  await db.prepare('DROP TABLE ratings').run();await request('/api/game',{cookie:bCookie,expected:503});const fault=(await json('/api/admin?action=faults',owner)).rows[0];check(fault?.area==='game'&&fault.count===1&&fault.reviewed_count===0,'unexpected route failures create operational counters');check(!JSON.stringify(fault).includes(b.profile.id)&&!JSON.stringify(fault).includes('ratings'),'fault counters contain no identity or raw database error');await json('/api/admin',{...owner,method:'POST',body:{action:'reviewFault',day:fault.day,area:fault.area,code:fault.code}});check((await json('/api/admin?action=faults',owner)).rows[0].reviewed_count===1,'fault review is persisted');
- console.log(`${checks} production Worker HTTP checks passed with two independent players.`);
+ console.log(`${checks} production Worker HTTP checks passed with two legacy players and eight concurrent group sessions.`);
 }finally{await mf.dispose();}

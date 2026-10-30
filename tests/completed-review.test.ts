@@ -67,7 +67,7 @@ describe('Mystery result return and completed review preserve achievements',()=>
   const h=mystery();try{h.closeResult();h.help();assert.equal(h.has('Help'),true);assert.equal(h.has('Modal'),false);h.click('Sonucu göster');assert.equal(h.has('Help'),true);assert.equal(h.has('Modal'),false);h.closeHelp();assert.equal(h.has('Help'),false);assert.equal(h.has('Modal'),true);assert.equal(h.layout().props['paused'],false);}finally{h.close();}
  });
  it('gives nearby words only visible Mystery targets and closes access for connection choice',()=>{
-  const h=mystery({complete:false,solved:false});try{const initial=h.layout().props['wordList'];assert.equal(initial.board.targets.length,h.spec.words.length);assert.equal(initial.strokes.length,0);assert.equal(initial.board, nodes(h.layout().props['aside']).find(n=>n.type==='WordList')!.props['board']);for(let i=0;i<3;i++)h.commit(i);h.click('Bağlantıyı bul');assert.equal(h.layout().props['wordListUnavailable'],true);h.click(h.spec.answer);assert.equal(h.layout().props['wordListUnavailable'],false);assert.equal(h.layout().props['wordList'].board.targets.length,h.board.targets.length);}finally{h.close();}
+  const h=mystery({complete:false,solved:false});try{const initial=h.layout().props['wordList'];assert.equal(initial.board.targets.length,h.spec.words.length);assert.equal(initial.strokes.length,0);assert.equal(initial.board.grid,h.layout().props['board'].grid);assert(!initial.board.targets.some((t:any)=>t.text===h.spec.answer));assert.equal(nodes(h.layout().props['aside']).filter(n=>n.type==='WordList').length,0);for(let i=0;i<3;i++)h.commit(i);h.click('Bağlantıyı bul');assert.equal(h.layout().props['wordListUnavailable'],true);h.click(h.spec.answer);assert.equal(h.layout().props['wordListUnavailable'],false);assert.equal(h.layout().props['wordList'].board.targets.length,h.board.targets.length);}finally{h.close();}
  });
  it('starts a real empty replay while retaining the permanent completed best and collection',()=>{
   const h=mystery();try{
@@ -75,7 +75,7 @@ describe('Mystery result return and completed review preserve achievements',()=>
   }finally{h.close();}
  });
  it('honors an existing completed board even when the separate connection flag is missing, without granting a new collection',()=>{
-  const h=mystery({solved:false});try{assert.equal(h.value.mysteries.length,0);h.closeResult();const aside=h.layout().props['aside'];assert.match(text(aside),new RegExp(h.spec.answer));assert.equal(nodes(aside).some(n=>n.type==='button'&&/Bağlantıyı bul/.test(text(n))),false);assert.equal(nodes(aside).find(n=>n.type==='WordList')!.props['board'].targets.length,h.board.targets.length);h.click('Sonucu göster');assert.equal(h.value.mysteries.length,0);}finally{h.close();}
+  const h=mystery({solved:false});try{assert.equal(h.value.mysteries.length,0);h.closeResult();const aside=h.layout().props['aside'];assert.match(text(aside),new RegExp(h.spec.answer));assert.equal(nodes(aside).some(n=>n.type==='button'&&/Bağlantıyı bul/.test(text(n))),false);assert.equal(h.layout().props['wordList'].board.targets.length,h.board.targets.length);h.click('Sonucu göster');assert.equal(h.value.mysteries.length,0);}finally{h.close();}
  });
 });
 

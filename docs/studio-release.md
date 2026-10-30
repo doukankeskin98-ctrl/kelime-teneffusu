@@ -12,6 +12,9 @@
 
 ## Uygulanan ürün akışları
 
+0.15.0: Ortak yüksekliğe göre oyun çerçevesi, tek hedef listesi, 44 px temel kontroller, safe-area/visualViewport ve okunurluk için doğal genişleme. Arena özel grup odası, ev sahibi başlangıcı, tüm oyuncuların gerçek sıralaması, aynı odada tek sonraki tur ve önceki sonuç erişimi. Yeni ek `0004` göçüyle kalıcı kelime/grid görülme kaydı ve atomik içerik ayırma; eski tablo/göç/solo içerikler korunur. Sonlu kombinasyon havuzu, aday çözülebilirlik/8×8/iki çapraz eğim kontrolü ve açık tükenme hatası. Yeni protokolün round/owner/membership koruması, sonuç ve allocator transaction'ı; eski aktif odaların tahtaları korunur. Son kanıt `studio-agents/journal/entries/2026-10-30_arena-fit-validation.md`.
+
+
 0.14.0: Kullanıcının doğrudan ses isteği. Web Audio ile özgün, kısa ve uyumlu mallet/pluck motifleri; Board seçim başına bir tını, onaylı kelime, ipucu, Gizli Tema bağlantısı, pause/devam, Arena/Hızlı Tur başlama ve gerçek bitiş. Hafif/Dengeli/Belirgin cihaz tercihi, Albümde örnek dinleme; eski sound/haptics kaydı ve sessiz varsayılan korunur. Tek aktif motif, öncelik ve tekrar aralığı; yumuşak envelope, düşük geçiren filtre, gizli sekme/mute/unmount temizliği; jest dışı create/resume ve gecikmiş ses kuyruğu yok. Arena/Meydan success artık ACK doğrulamasından sonra; eski terminal revizyon/inceleme tekrarında kutlama yok. Tahta, puan/ödül, saat, hesap, bulut kayıt ve schema değişmedi. Son kanıt `studio-agents/journal/entries/2026-10-30_sound-validation.md`. Destekli preview eski geliştirme kilidi onarıldıktan sonra healthy; CUA aynı URL'de ERR_CONNECTION_REFUSED verdi. Gerçek browser/telefon/kulaklık dinlemesi ve işitsel konfor doğrulanmış sayılmaz.
 
 
@@ -72,7 +75,7 @@ Keşif Haritası, üç dünya, 18 koleksiyon parçası ve üç bonus bulmaca ekl
 
 ## Doğrulananlar
 
-TypeScript, içerik kontrolü, gerçek SQLite üzerindeki servis testleri ve üretim derlemesi ayrı kontrollerdir. `scripts/verify-worker.mjs` yayımlanacak Worker derlemesini Miniflare üzerinde iki bağımsız oyuncuyla HTTP seviyesinde sınar. Test veritabanı üretimden ayrıdır.
+TypeScript, içerik kontrolü, gerçek SQLite üzerindeki servis testleri ve üretim derlemesi ayrı kontrollerdir. `scripts/verify-worker.mjs` yayımlanacak Worker derlemesini Miniflare üzerinde mevcut iki oyuncu akışına ek sekiz bağımsız grup oturumuyla HTTP seviyesinde sınar. Test veritabanı üretimden ayrıdır.
 
 Özgün SVG görselleri rasterleştirilerek görsel olarak incelenmiştir. Bu, sayfanın tarayıcıda ekran görüntüsüyle kontrol edildiği anlamına gelmez.
 
