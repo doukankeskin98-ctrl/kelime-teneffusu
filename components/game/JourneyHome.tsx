@@ -6,6 +6,7 @@ import {journeyGoal} from '@/lib/game/achievement-view';
 import type {SoloConfig} from './Solo';
 import {PieceTrail} from './AchievementLoop';
 import {WorldArt} from './WorldArt';
+import {RiddleShelf} from './RiddleShelf';
 
 export function JourneyHome({progress,onPlay,onExplore}:{progress:Progress;onPlay:(config:SoloConfig)=>void;onExplore:()=>void}){
  const state=mainJourneyState(progress),current=state.current,goal=journeyGoal(progress,current?.chapter.id),milestone=nextMainMilestone(progress);
@@ -23,5 +24,6 @@ export function JourneyHome({progress,onPlay,onExplore}:{progress:Progress;onPla
   </div>:<div className="journey-home-card journey-end"><Check size={38}/><h1 id="journey-home-title">Yolculuğu tamamladın.</h1><p>Mevcut {state.total} bölüm ve bütün albüm parçaları senin. Yeni bölüm varmış gibi aynı bulmacayı yeniden sunmuyoruz.</p><button className="button primary full" onClick={onExplore}>Bölümleri incele<ArrowRight size={19}/></button><p>Günlük ve Arena alt menüde seni bekliyor.</p></div>}
   {goal&&<div className="journey-home-album"><div><BookOpen size={18}/><b>{goal.state.album.title}</b><span>{goal.state.pieces}/6 parça</span></div><PieceTrail earned={goal.state.earned} current={goal.position}/></div>}
   <button className="text-button journey-library-link" onClick={onExplore}><Compass size={18}/>Dünyalar, hikâyeler ve bölüm arşivi<ArrowRight size={17}/></button>
+  <RiddleShelf progress={progress} onPlay={onPlay}/>
  </section>;
 }

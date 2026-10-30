@@ -22,7 +22,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  let selections=0,renders=0;
  const dom=new Map<string,any>();
  const mount=(node:Node)=>{const r=node.props?.['ref'];if(!r)return;if(node.props['role']==='application'){r.current=element;return;}const key=node.props['data-cell']??node.props['className']??'selection-line';let el=dom.get(key);if(!el){const names=new Set<string>();el={attributes:new Map(),classList:{add:(v:string)=>names.add(v),remove:(v:string)=>names.delete(v),contains:(v:string)=>names.has(v)},setAttribute(k:string,v:string){this.attributes.set(k,v);}};dom.set(key,el);}if(typeof r==='function')r(el);else r.current=el;};
- const commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
+ const letters:number[]=[],commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
  let cursor=0,dirty=true,mounted=true,afterUnmount=0,frameId=0,tree:unknown,resize=()=>{},width=600,height=600,left=10,top=20;
  const element=Object.assign(new EventTarget(),{style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left,top,width,height}),setPointerCapture(_id:number){}});
  const hooks={
@@ -32,7 +32,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectStart:()=>{selections++;}};
+ const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;}};
  if(options.legacy)delete (element as any).setPointerCapture;
  Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
@@ -45,7 +45,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);renders++;for(const node of nodes(tree))mount(node);}if(commit)while(effects.length)effects.shift()!();}return tree;};
  const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
- return {commits,previews,accepted,props,paint,boardNode,send,
+ return {letters,commits,previews,accepted,props,paint,boardNode,send,
   native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
   reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
   toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
@@ -246,3 +246,13 @@ it('pulses only a confirmed new stroke and does not repeat it after pause',()=>{
 });
 
 it('allows a fresh swipe after Strict Mode cleanup/setup without reviving a cancelled gesture',()=>{const h=harness();drag(h);h.strictReplay();h.send('onPointerUp',b);assert.equal(h.commits.length,0);drag(h);h.flush();h.send('onPointerUp',b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();});
+describe('new-letter sound signals follow actual selection geometry',()=>{
+ it('signals extension once, ignores cell jitter and backtracking, and keeps a quick release endpoint',()=>{
+  const h=harness();h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,1]);h.send('onPointerMove',[0,1]);h.send('onPointerMove',[0,2]);h.send('onPointerMove',[0,1]);h.send('onPointerMove',[0,2]);h.send('onPointerUp',[0,4]);
+  assert.deepEqual(h.letters,[1,2,3,5]);assert.equal(h.commits.length,1);h.unmount();
+ });
+ it('deduplicates native/pointer streams and is silent while paused or read-only',()=>{
+  for(const options of [{paused:true},{readOnly:true},{blocked:true}]){const h=harness(options);h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,2]);h.send('onPointerUp',[0,2]);assert.equal(h.letters.length,0);h.unmount();}
+  const h=harness();h.send('onPointerDown',[0,0]);h.native('touchstart',[[0,0]]);h.native('touchmove',[[0,1]]);h.send('onPointerMove',[0,1]);h.native('touchend',[],[[0,1]]);assert.deepEqual(h.letters,[1,2]);assert.equal(h.commits.length,1);h.unmount();
+ });
+});

@@ -3,12 +3,12 @@ import {describe,it} from 'node:test';
 import {GameSound,SOUND_PHRASES,soundLevel,DEFAULT_SOUND_LEVEL} from '../lib/game/sound.ts';
 function fixture(state='running'){
  const nodes:{kind:string;stops:number[];started:number[];disconnected:boolean;onended?:()=>void;gain:any}[]=[],params:{method:string;values:number[]}[]=[];
- let creates=0,resumes=0,closes=0,wall=1000;
+ let creates=0,resumes=0,closes=0,wall=1000,level=.3;
  const param=()=>({value:0,...Object.fromEntries(['setValueAtTime','linearRampToValueAtTime','exponentialRampToValueAtTime','setTargetAtTime','cancelScheduledValues'].map(method=>[method,(...values:number[])=>params.push({method,values})]))});
- const node=(kind:string)=>{const n={kind,stops:[] as number[],started:[] as number[],disconnected:false,gain:param(),frequency:param(),Q:param(),type:'',connect(){},disconnect(){n.disconnected=true;},start(t:number){n.started.push(t);},stop(t:number){n.stops.push(t);}};nodes.push(n);return n;};
- const ctx={state,currentTime:10,onstatechange:null as (()=>void)|null,destination:{},createGain:()=>node('gain'),createBiquadFilter:()=>node('filter'),createOscillator:()=>node('osc'),createBuffer:()=>({}),createBufferSource:()=>node('buffer'),resume:async()=>{resumes++;},close:async()=>{closes++;ctx.state='closed';}};
- const sound=new GameSound(()=>{creates++;return ctx as unknown as AudioContext;},()=>.3,()=>wall);
- return {sound,ctx,nodes,params,advance(ms:number){wall+=ms;},get creates(){return creates;},get resumes(){return resumes;},get closes(){return closes;},osc:()=>nodes.filter(n=>n.kind==='osc')};
+ const node=(kind:string)=>{const n={kind,stops:[] as number[],started:[] as number[],disconnected:false,gain:param(),frequency:param(),Q:param(),threshold:param(),knee:param(),ratio:param(),attack:param(),release:param(),type:'',connect(){},disconnect(){n.disconnected=true;},start(t:number){n.started.push(t);},stop(t:number){n.stops.push(t);}};nodes.push(n);return n;};
+ const ctx={state,currentTime:10,onstatechange:null as (()=>void)|null,destination:{},createGain:()=>node('gain'),createBiquadFilter:()=>node('filter'),createDynamicsCompressor:()=>node('compressor'),createOscillator:()=>node('osc'),createBuffer:()=>({}),createBufferSource:()=>node('buffer'),resume:async()=>{resumes++;},close:async()=>{closes++;ctx.state='closed';}};
+ const sound=new GameSound(()=>{creates++;return ctx as unknown as AudioContext;},()=>level,()=>wall);
+ return {sound,ctx,nodes,params,setLevel(value:number){level=value;sound.refreshVolume();},advance(ms:number){wall+=ms;},get creates(){return creates;},get resumes(){return resumes;},get closes(){return closes;},osc:()=>nodes.filter(n=>n.kind==='osc')};
 }
 describe('gentle finite game audio',()=>{
  it('is lazy and silent when disabled, hidden, disposed, or AudioContext is unavailable',()=>{
@@ -31,10 +31,10 @@ describe('gentle finite game audio',()=>{
  it('has no loop, click-edge envelope, alarm pitch or unbounded sample level',()=>{
   for(const phrase of Object.values(SOUND_PHRASES)){
    assert.ok(phrase.notes.length<=4);assert.ok(Math.max(...phrase.notes.map(n=>n.at+n.length))<1);
-   for(const n of phrase.notes){assert.ok(n.hz>=329&&n.hz<=784);assert.ok(n.gain<=.1);assert.ok(n.length>=.09);}
+   for(const n of phrase.notes){assert.ok(n.hz>=293&&n.hz<=784);assert.ok(n.gain<=.1);assert.ok(n.length>=.03);}
   }
   const f=fixture();f.sound.setEnabled(true);f.sound.unlock();f.sound.play('complete');assert.ok(f.params.some(p=>p.method==='linearRampToValueAtTime'&&p.values[0]===0));assert.ok(f.osc().every(n=>n.started.length===1&&n.stops.length===1));f.sound.dispose();
-  for(const raw of [null,'bad','Infinity',-1,0,2,NaN])assert.equal(soundLevel(raw),DEFAULT_SOUND_LEVEL);assert.equal(soundLevel('.55'),.55);
+  for(const raw of [null,'bad','Infinity',-1,2,NaN])assert.equal(soundLevel(raw),DEFAULT_SOUND_LEVEL);assert.equal(soundLevel('.55'),.55);
  });
 });
 
@@ -55,4 +55,34 @@ describe('bounded audio recovery',()=>{
 
 it('retries a stalled resume on a later real gesture and fences the retired rejection',async()=>{
  const f=fixture('suspended'),attempts:{resolve:()=>void;reject:(e:Error)=>void}[]=[];f.ctx.resume=()=>new Promise<void>((resolve,reject)=>attempts.push({resolve,reject}));f.sound.setEnabled(true);f.sound.unlock();f.sound.play('complete');f.advance(501);f.sound.play('select');assert.equal(attempts.length,1);f.sound.unlock();assert.equal(attempts.length,2);f.sound.play('word');attempts[0]!.reject(new Error('Old activation rejected'));await Promise.resolve();f.ctx.state='running';attempts[1]!.resolve();await Promise.resolve();assert.equal(f.osc().length,4);f.sound.dispose();
+});
+
+
+describe('stronger adjustable mix and bounded melodic letter channel',()=>{
+ it('applies every bus change immediately and zero prevents all new effects',()=>{
+  const f=fixture();f.sound.setEnabled(true);f.sound.unlock();assert(f.sound.play('word'));f.setLevel(.73);
+  assert(f.params.some(p=>p.method==='linearRampToValueAtTime'&&p.values[0]===4.5*.73&&p.values[1]===f.ctx.currentTime+.02));
+  f.setLevel(0);assert.equal(f.sound.play('complete'),false);assert(f.osc().every(n=>n.stops.length>=1));f.sound.dispose();
+ });
+ it('lets quiet ticks accompany success without interrupting it, varies pitch and protects the terminal motif',()=>{
+  const f=fixture();f.sound.setEnabled(true);f.sound.unlock();f.sound.play('word');const word=f.osc().slice();
+  assert(f.sound.play('letter',2));assert(word.every(n=>n.stops.length===1));assert(f.params.some(p=>p.method==='setValueAtTime'&&p.values[0]===440));
+  f.ctx.currentTime+=.01;assert.equal(f.sound.play('letter',3),false);f.ctx.currentTime+=.04;assert(f.sound.play('letter',3));
+  assert(f.params.some(p=>p.method==='setValueAtTime'&&p.values[0]===523.25&&p.values[1]===f.ctx.currentTime));
+  f.sound.play('complete');f.ctx.currentTime+=.05;assert.equal(f.sound.play('letter',4),false);f.sound.dispose();
+ });
+ it('never queues skipped letter events during audio activation',async()=>{
+  const f=fixture('suspended');f.sound.setEnabled(true);f.sound.unlock();for(let i=0;i<100;i++)assert.equal(f.sound.play('letter',i),false);
+  f.ctx.state='running';f.ctx.onstatechange?.();await Promise.resolve();assert.equal(f.osc().length,0);assert(f.sound.play('letter',1));f.sound.dispose();
+ });
+ it('bounds the pre-compressor signal at100%, including a simultaneous tick, using phase-independent envelope maxima',()=>{
+  const env=(t:number,amp:number,length:number,attack:number)=>t<0||t>length?0:t<attack?amp*t/attack:t<length-.025?amp*Math.exp(Math.log(.0001/amp)*(t-attack)/(length-.025-attack)):.0001*(length-t)/.025;
+  const peak=(cue:keyof typeof SOUND_PHRASES)=>{const notes=SOUND_PHRASES[cue].notes,attack=cue==='letter'?.004:.012;
+   // Between these breakpoints the positive envelope sum is convex, so its maximum is at an endpoint.
+   const edges=notes.flatMap(n=>[n.at,n.at+attack,n.at+n.length-.025,n.at+n.length]);
+   return Math.max(...edges.map(t=>4.5*notes.reduce((sum,n)=>sum+env(t-n.at,n.gain,n.length,attack)+env(t-n.at,n.gain*.12,n.length,attack),0)));
+  };
+  for(const cue of Object.keys(SOUND_PHRASES) as (keyof typeof SOUND_PHRASES)[]){assert(peak(cue)<.55,cue);if(SOUND_PHRASES[cue].priority>0&&SOUND_PHRASES[cue].priority<4)assert(peak(cue)+peak('letter')<.8,cue);}
+  assert.equal(soundLevel(0),0);assert.equal(soundLevel(1),1);assert.equal(soundLevel('.73'),.73);
+ });
 });
