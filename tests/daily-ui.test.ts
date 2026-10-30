@@ -82,10 +82,10 @@ describe('actual daily Solo pending and lifetime UI',()=>{
   }finally{h.close();}
  });
 });
-async function app(storage=tabStorage()){
+async function app(storage=tabStorage(),options:{initial?:progress.Progress;query?:string}={}){
  let revision=0,serverOwner='alice',profileReads=0;const browser=Object.assign(new EventTarget(),{matchMedia:()=>({matches:true}),scrollTo(){}});
- const f=fixture(Date.parse('2026-10-28T08:00Z')),daily=await f.game.daily('alice'),gates:ReturnType<typeof deferred<any>>[]=[],calls:any[]=[],account=(id:string)=>({authenticated:true,kind:'guest',profile:{id,nickname:id}}),p={...progress.emptyProgress(),tutorialDone:true};
- const h=view('components/game/App.tsx',{'@/lib/game/catalog':catalog,'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/daily-action':action,'@/lib/game/legacy':{SAVE_KEY:'legacy'},'@/components/auth/useMembership':{useMembership:()=>({ready:true,revision,user:null,available:false})},'./useCloudProgress':{useCloudProgress:()=> 'local'},'./Pages':{DailyPage:'DailyPage',Explore:'Explore',ProfilePage:'ProfilePage'},'./Solo':{Solo:'Solo'},'./daily-transport':{requestDaily:async(id:string,owner:string,intent:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name:'dailyState',id,owner,intent,signal});return gate.promise;}},'./common':{Help:'Help',Modal:'Modal',getApi:async()=>{profileReads++;return account(serverOwner);},api:async(name:string,data:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name,data,signal});return gate.promise;}}},{window:browser,sessionStorage:storage,location:{href:'https://test/?sekme=gunluk',pathname:'/',search:'?sekme=gunluk'},history:{replaceState(){}},localStorage:{getItem:(key:string)=>key===progress.PROGRESS_KEY+':last-user'?'alice':JSON.stringify(p),setItem(){}}});
+ const f=fixture(Date.parse('2026-10-28T08:00Z')),daily=await f.game.daily('alice'),gates:ReturnType<typeof deferred<any>>[]=[],calls:any[]=[],account=(id:string)=>({authenticated:true,kind:'guest',profile:{id,nickname:id}}),p=options.initial??{...progress.emptyProgress(),tutorialDone:true};
+ const h=view('components/game/App.tsx',{'@/lib/game/catalog':catalog,'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/daily-action':action,'@/lib/game/legacy':{SAVE_KEY:'legacy'},'@/components/auth/useMembership':{useMembership:()=>({ready:true,revision,user:null,available:false})},'./useCloudProgress':{useCloudProgress:()=> 'local'},'./Pages':{DailyPage:'DailyPage',Explore:'Explore',ProfilePage:'ProfilePage'},'./Solo':{Solo:'Solo'},'./daily-transport':{requestDaily:async(id:string,owner:string,intent:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name:'dailyState',id,owner,intent,signal});return gate.promise;}},'./common':{Help:'Help',Modal:'Modal',getApi:async()=>{profileReads++;return account(serverOwner);},api:async(name:string,data:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name,data,signal});return gate.promise;}}},{window:browser,sessionStorage:storage,location:{href:'https://test/'+(options.query??'?sekme=gunluk'),pathname:'/',search:options.query??'?sekme=gunluk'},history:{replaceState(){}},localStorage:{getItem:(key:string)=>key===progress.PROGRESS_KEY+':last-user'?'alice':JSON.stringify(p),setItem(){}}});
  browser.addEventListener('kt-auth-updated',()=>{revision++;h.change();});
  h.start(()=>h.exports['GameApp']({}));await h.settle();return{...h,storage,get revision(){return revision;},get profileReads(){return profileReads;},setServerOwner(id:string){serverOwner=id;},get tree(){return h.tree;},get afterUnmount(){return h.afterUnmount;},f,daily,gates,calls,account,start(){h.find('DailyPage').props['start']();},switchOwner(id:string,commit=true){h.state(v=>v?.authenticated===true&&v?.profile?.id,account(id),commit);}};
 }
@@ -121,4 +121,16 @@ describe('daily notice recovery controls',()=>{
   const storage=render('storage-error');assert.match(text(storage),/Kaydı yeniden dene/);nodes(storage).filter(n=>n.type==='button')[0]!.props['onClick']();assert.equal(retry,2);
   for(const phase of ['account-changed','unavailable','expired'])assert.equal(nodes(render(phase)).filter(n=>n.type==='button').length,1);
  });
+});
+
+describe('numbered journey App entry and navigation',()=>{
+ it('opens the real home first and returns from a main chapter to that home, with archive modes still accessible',async()=>{
+  const h=await app(undefined,{initial:progress.emptyProgress(),query:''});try{
+   assert.equal(nodes(h.tree).some(n=>n.type==='Solo'),false);assert.equal(h.find('Explore').props['library'],false);
+   h.find('Explore').props['openSolo']({themeId:'uzay',level:0,journey:'uzay-1',campaign:true});await h.settle();assert.equal(h.find('Solo').props['config'].campaign,true);
+   h.find('Solo').props['onBack']();await h.settle();assert.equal(h.find('Explore').props['library'],false);
+   nodes(h.tree).find(n=>n.type==='button'&&text(n)==='Keşfet')!.props['onClick']();await h.settle();assert.equal(h.find('Explore').props['library'],true);
+  }finally{h.close();}
+ });
+ it('retains a direct secondary exploration link',async()=>{const h=await app(undefined,{query:'?sekme=arsiv'});try{assert.equal(h.find('Explore').props['library'],true);}finally{h.close();}});
 });

@@ -1,3 +1,4 @@
+import * as mainJourney from '../lib/game/main-journey.ts';
 import * as achievementView from '../lib/game/achievement-view.ts';
 import * as goalWordCard from '../lib/game/word-card.ts';
 // Actual shared/caller component bodies with controlled hooks and clocks.
@@ -37,7 +38,7 @@ const base={title:'Keşif',kicker:'KELİMELER',onBack(){},board:content.TUTORIAL
 function shared(props:any){const h=view('components/game/common.tsx');h.start('PlayLayout',{...base,...props});return h;}
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
 const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
-const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/telemetry':{track(){}}};
+const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
  it('keeps one complete confirmed target surface directly visible in normal play',()=>{const words={board:content.TUTORIAL,strokes:[]},h=shared({wordList:words});try{assert.equal(walk(h.tree).filter(n=>typeof n.type==='function'&&n.type.name==='WordList').length,1);assert.equal(h.find('WordList').props['board'],words.board);assert.equal(walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='BoardWords'),false);}finally{h.close();}});
@@ -152,5 +153,29 @@ describe('confirmed Challenge and phase-based Sprint sound',()=>{
  it('Sprint has one start and neutral time-up cue without per-second alarm or repeated result',()=>{
   const sounds:unknown[]=[],h=view('components/game/Sprint.tsx',{...modules,'./common':{...commonStubs,useChime:()=>((v:unknown=false)=>sounds.push(v))}});
   try{h.start('__SprintRun',{seed:42,owner:'test',progress:progress.emptyProgress(),onProgress(){},onBack(){},onReplay(){}});const start=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'));assert.ok(start);start.props['onClick']();h.paint();assert.deepEqual(sounds,[]);h.time(14000);assert.deepEqual(sounds,['start']);h.time(30000);assert.deepEqual(sounds,['start']);h.time(80000);assert.deepEqual(sounds,['start','finish']);h.paint();assert.deepEqual(sounds,['start','finish']);}finally{h.close();}
+ });
+});
+
+describe('actual numbered Solo completes, advances and replays without new awards',()=>{
+ it('persists real completion and opens the correct numbered next chapter',async()=>{
+  let p=progress.emptyProgress();const calls:any[]=[],h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
+  try{
+   h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:p,onProgress(fn:any){p=fn(p);},onBack(){},onMap(){},onNext:(c:any)=>calls.push(c)});
+   assert.equal(h.find('PlayLayout').props['title'],'Bölüm 1');assert.match(text(h.find('PlayLayout')),/İlk kelime/);
+   for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}
+   h.expire();await h.settle();assert.equal(p.saves['route:uzay-1']?.complete,true);assert.equal(p.saves['route:uzay-2'],undefined);
+   assert.equal(h.find('JourneyResult').props['before'].state.pieces,0);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
+   const next=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Bölüm 2’ye geç')!;assert.ok(next);next.props['onClick']();assert.equal(calls[0].journey,'uzay-2');assert.equal(calls[0].campaign,true);
+   const replay=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).includes('Bir daha oyna'))!;replay.props['onClick']();assert.equal(calls[1].journey,'uzay-1');assert.equal(calls[1].practice,true);
+  }finally{h.close();}
+ });
+ it('uses saved cells on resume and does not award an existing piece on replay',async()=>{
+  const b=content.journeyBoard(content.journeyById('uzay-1')!),p=progress.emptyProgress();p.saves['route:uzay-1']=progress.cleanSave({strokes:b.placements,hints:0,elapsed:10,complete:false,stars:0},b);
+  const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{
+   h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true,practice:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});assert.equal(h.find('PlayLayout').props['strokes'].length,0);
+   for(const stroke of b.placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();assert.deepEqual(h.find('JourneyResult').props['rewards'],[]);assert.equal(h.find('JourneyResult').props['before'].state.pieces,1);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
+  }finally{h.close();}
+  const resumed={...p,saves:{'route:uzay-1':progress.cleanSave({strokes:[b.placements[0]!],hints:1,elapsed:12,complete:false,stars:0},b)}};
+  const r=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{r.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:resumed,onProgress(){},onBack(){},onMap(){},onNext(){}});assert.equal(r.find('PlayLayout').props['strokes'].length,1);assert.equal(r.find('PlayControls').props['hints'],2);}finally{r.close();}
  });
 });
