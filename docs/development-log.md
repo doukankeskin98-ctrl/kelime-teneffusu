@@ -1,3 +1,7 @@
+# 30 Ekim 2026 · 0.16.2 · İki yeni bölüm ve içerik özgünlüğü kapısı
+
+Eksik UTC çifti tamamlanır: Kahvaltı sofrası (Rahat 6×6, dört kelime), Orkestra provası (Dengeli 8×8, yedi kelime). Sabit tarih/slot kimlikleri, kaynak snapshot ve mevcut arşiv/damga akışı kullanılır. Adaylar arasından dar ve düşük riskli içerik özgünlüğü kapısı seçildi: yeni kimlik, tohum, sıralama veya yazım biçimi aynı kelime kümesini yeni içerik saydıramaz; gerçek grid de ayrıca karşılaştırılır. Önceki dokuz yayın dosyası ve kayıt/ödül/oynanış korunur. Tek koordinatör; yeni servis, bağımlılık, ajan veya arayüz yok. Kabul ve son kanıt kısa koordinatör günlüğündedir. Faz 1 taslak PR36 ayrı kalır; cihaz/görsel kabulü tamamlanmış veya canlı sayılmaz.
+
 # 30 Ekim 2026 · 0.16.1 · Görünür oda galibiyetleri ve ses sürekliliği
 
 Mevcut kayıtlı sonuç tablosu lobide/sonuçta açık gösterilir. Ses kusurları: yalnız pointer/click aktivasyonu, asenkron resume sırasında düşen ilk cue ve ekran değişimlerinde kapanan AudioContext. Tek belge motoru, touchstart/end/pointerup, kısa taze cue penceresi ve pagehide/interruption temizliği seçildi. Yeni hazır motifi yalnız sunucu onayında. Ücret, DB/göç, kayıt, kelime/tahta ve ödül değişmez. Önceki 0.16.0 doğrulanarak canlıya alındı. Dar kabul/son kanıt ses-session günlüğünde; fiziksel hoparlör/Safari/cihaz kanıtı ayrı sınırdır.

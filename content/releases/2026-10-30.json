@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-30",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261030-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Kahvaltı sofrası",
+          "themeId": "lezzetler",
+          "words": [
+            "BAL",
+            "SÜT",
+            "ZEYTİN",
+            "PEYNİR"
+          ],
+          "size": 6,
+          "seed": 2026103001,
+          "difficulty": "Rahat",
+          "note": "Sıcak bir sofrada dört tanıdık tat. Çaprazlarda da küçük keşifler var."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "U",
+              "B",
+              "S",
+              "L",
+              "N",
+              "N"
+            ],
+            [
+              "S",
+              "Ü",
+              "A",
+              "A",
+              "İ",
+              "H"
+            ],
+            [
+              "T",
+              "Ç",
+              "P",
+              "L",
+              "T",
+              "Y"
+            ],
+            [
+              "T",
+              "B",
+              "U",
+              "B",
+              "Y",
+              "N"
+            ],
+            [
+              "R",
+              "İ",
+              "N",
+              "Y",
+              "E",
+              "P"
+            ],
+            [
+              "Z",
+              "P",
+              "P",
+              "I",
+              "Z",
+              "E"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "BAL",
+              "text": "BAL",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "SÜT",
+              "text": "SÜT",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "ZEYTİN",
+              "text": "ZEYTİN",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "PEYNİR",
+              "text": "PEYNİR",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "2.0",
+              "label": "ZEYTİN",
+              "text": "ZEYTİN",
+              "group": 2,
+              "a": [
+                5,
+                4
+              ],
+              "b": [
+                0,
+                4
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "PEYNİR",
+              "text": "PEYNİR",
+              "group": 3,
+              "a": [
+                4,
+                5
+              ],
+              "b": [
+                4,
+                0
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "BAL",
+              "text": "BAL",
+              "group": 0,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                2,
+                3
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "SÜT",
+              "text": "SÜT",
+              "group": 1,
+              "a": [
+                0,
+                2
+              ],
+              "b": [
+                2,
+                0
+              ]
+            }
+          ]
+        },
+        "contentHash": "9cdc514f16e02e00f8e8c24ffda31925783a1bc020e63c318b6e9d040a54beed",
+        "publishedAt": 1793318400000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261030-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Orkestra provası",
+          "themeId": "muzik",
+          "words": [
+            "KEMAN",
+            "VİYOLA",
+            "ÇELLO",
+            "FLÜT",
+            "TROMPET",
+            "ŞEF",
+            "KORO"
+          ],
+          "size": 8,
+          "seed": 2026103002,
+          "difficulty": "Dengeli",
+          "note": "Yaylılar, üflemeliler ve insan sesi aynı sahnede. Her iki çapraz yönde de ara."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "O",
+              "A",
+              "Ş",
+              "P",
+              "Ğ",
+              "E",
+              "K",
+              "R"
+            ],
+            [
+              "L",
+              "L",
+              "T",
+              "E",
+              "E",
+              "M",
+              "E",
+              "D"
+            ],
+            [
+              "L",
+              "O",
+              "R",
+              "L",
+              "F",
+              "O",
+              "M",
+              "K"
+            ],
+            [
+              "E",
+              "Y",
+              "O",
+              "Ç",
+              "N",
+              "R",
+              "A",
+              "Ç"
+            ],
+            [
+              "Ç",
+              "İ",
+              "M",
+              "Z",
+              "H",
+              "O",
+              "N",
+              "T"
+            ],
+            [
+              "Ş",
+              "V",
+              "P",
+              "N",
+              "Ü",
+              "K",
+              "Ü",
+              "T"
+            ],
+            [
+              "Ö",
+              "F",
+              "E",
+              "N",
+              "Ö",
+              "L",
+              "S",
+              "J"
+            ],
+            [
+              "R",
+              "Ü",
+              "T",
+              "Ç",
+              "F",
+              "U",
+              "C",
+              "Ü"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "KEMAN",
+              "text": "KEMAN",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "VİYOLA",
+              "text": "VİYOLA",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "ÇELLO",
+              "text": "ÇELLO",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "FLÜT",
+              "text": "FLÜT",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "TROMPET",
+              "text": "TROMPET",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "ŞEF",
+              "text": "ŞEF",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "KORO",
+              "text": "KORO",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "4.0",
+              "label": "TROMPET",
+              "text": "TROMPET",
+              "group": 4,
+              "a": [
+                1,
+                2
+              ],
+              "b": [
+                7,
+                2
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "VİYOLA",
+              "text": "VİYOLA",
+              "group": 1,
+              "a": [
+                5,
+                1
+              ],
+              "b": [
+                0,
+                1
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "KEMAN",
+              "text": "KEMAN",
+              "group": 0,
+              "a": [
+                0,
+                6
+              ],
+              "b": [
+                4,
+                6
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "ÇELLO",
+              "text": "ÇELLO",
+              "group": 2,
+              "a": [
+                4,
+                0
+              ],
+              "b": [
+                0,
+                0
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "FLÜT",
+              "text": "FLÜT",
+              "group": 3,
+              "a": [
+                7,
+                4
+              ],
+              "b": [
+                4,
+                7
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "KORO",
+              "text": "KORO",
+              "group": 6,
+              "a": [
+                5,
+                5
+              ],
+              "b": [
+                2,
+                5
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "ŞEF",
+              "text": "ŞEF",
+              "group": 5,
+              "a": [
+                0,
+                2
+              ],
+              "b": [
+                2,
+                4
+              ]
+            }
+          ]
+        },
+        "contentHash": "6aa3d38066a3d90ebac43b12bd7120fcdea4077bbe941d73acb7c731e109da8b",
+        "publishedAt": 1793318400000,
+        "archived": false
+      }
+    }
+  ]
+}
