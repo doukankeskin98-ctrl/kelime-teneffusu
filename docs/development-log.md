@@ -1,3 +1,7 @@
+# 30 Ekim 2026 · 0.16.1 · Görünür oda galibiyetleri ve ses sürekliliği
+
+Mevcut kayıtlı sonuç tablosu lobide/sonuçta açık gösterilir. Ses kusurları: yalnız pointer/click aktivasyonu, asenkron resume sırasında düşen ilk cue ve ekran değişimlerinde kapanan AudioContext. Tek belge motoru, touchstart/end/pointerup, kısa taze cue penceresi ve pagehide/interruption temizliği seçildi. Yeni hazır motifi yalnız sunucu onayında. Ücret, DB/göç, kayıt, kelime/tahta ve ödül değişmez. Önceki 0.16.0 doğrulanarak canlıya alındı. Dar kabul/son kanıt ses-session günlüğünde; fiziksel hoparlör/Safari/cihaz kanıtı ayrı sınırdır.
+
 # 30 Ekim 2026 · Kararlı giriş, tablet ve grup serisi
 
 Kullanıcının gerçek tablet/kaydırma ve grup turu geri bildirimi. Güncel Site36 kaynağı açıldı. Koordinatör uygulama/yayın sahibi; tek bağımsız güvenilirlik incelemesi yalnız hızlı grup/sonuç akışını inceler. Adaylar: daha fazla genel görsel düzeltme (elenir), modları sıfırdan yazma (yüksek risk), mevcut Board ve CAS odası üzerinden cihaz girişini ve ortak grup serisini onarma (seçildi). Bulgular: büyütme dokunmayı bilinçli olarak yalnız tap/pan yapıyor; tablet portrede 780px üstü iki sütun/520px tavan küçük tahta bırakıyor; hızlı sunucu yolu grup parametresini yok sayıyor. Galibiyet makbuzları zaten kalıcı results tablosunda.
