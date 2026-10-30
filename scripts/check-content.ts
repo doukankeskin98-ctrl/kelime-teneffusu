@@ -3,6 +3,8 @@ import {ALL_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from '../lib/game/cont
 import {exactLine,makeCustomPuzzle} from '../lib/game/engine.ts';
 import {RELEASE_BATCHES} from '../lib/studio/releases.ts';
 import {checkChapter} from '../lib/studio/content.ts';
+import {assertOriginalReleases} from '../lib/studio/release-audit.ts';
+assertOriginalReleases(RELEASE_BATCHES.flatMap(batch=>batch.chapters.map(item=>item.chapter)));
 let count=0;
 for(const entry of [...ALL_JOURNEYS,...MYSTERIES]){
  const board='answer' in entry?mysteryBoard(entry):journeyBoard(entry);
