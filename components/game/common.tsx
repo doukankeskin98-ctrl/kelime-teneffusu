@@ -1,9 +1,11 @@
 'use client';
+import '@/lib/game/browser-compat';
 import {wordCardCopy,wordListProgress} from '@/lib/game/word-card';
 import {useEffect,useRef,useId,useState,type ReactNode} from 'react';
 import {ArrowLeft,Check,HelpCircle,Lightbulb,ListChecks,LoaderCircle,Pause,Play,Volume2,VolumeX,X,ZoomIn} from 'lucide-react';
 import {Board,strokeColor} from './Board';
-import {fitGameFrame} from '@/lib/game/viewport';
+import {openGameDialog} from '@/lib/game/legacy-ui';
+import {attachPlayFit} from '@/lib/game/viewport';
 import {memberFetch} from '@/lib/auth/firebase-client';
 import type {Cell,Puzzle,Stroke} from '@/lib/game/engine';
 const errorText=(v:unknown)=>v&&typeof v==='object'&&'error' in v&&typeof v.error==='string'?v.error:'Bağlantı kurulamadı.';
@@ -12,7 +14,7 @@ export async function getApi<T>(query='',signal?:AbortSignal):Promise<T>{const r
 export async function socialApi<T>(action:string,data:Record<string,unknown>={},signal?:AbortSignal):Promise<T>{const res=await memberFetch('/api/social',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data}),signal});const value=await res.json();if(!res.ok)throw new Error(errorText(value));return value as T;}
 export async function getSocial<T>(query='',signal?:AbortSignal):Promise<T>{const res=await memberFetch('/api/social'+query,{signal});const data=await res.json();if(!res.ok)throw new Error(errorText(data));return data as T;}
 export {useChime} from './useGameSound';
-export function Modal({title,onClose,children,className='',footer}:{title:string;onClose:()=>void;children:ReactNode;className?:string;footer?:ReactNode}){const ref=useRef<HTMLDialogElement>(null),id=useId();useEffect(()=>{const d=ref.current;if(d&&!d.open)d.showModal();const old=document.body.style.overflow;document.body.style.overflow='hidden';return ()=>{d?.close();document.body.style.overflow=old;};},[]);return <dialog className={'modal'+(className?' '+className:'')} ref={ref} onCancel={e=>{e.preventDefault();onClose();}} onClick={e=>{if(e.target===ref.current){const bounds=e.currentTarget.getBoundingClientRect();if(e.clientX<bounds.left||e.clientX>bounds.right||e.clientY<bounds.top||e.clientY>bounds.bottom)onClose();}}} aria-labelledby={id}><div className="modal-head"><h2 id={id}>{title}</h2><button className="icon-button" aria-label="Kapat" onClick={onClose}><X/></button></div>{footer?<><div className="modal-content">{children}</div><footer className="modal-actions" aria-label="Sonuç eylemleri">{footer}</footer></>:children}</dialog>;}
+export function Modal({title,onClose,children,className='',footer}:{title:string;onClose:()=>void;children:ReactNode;className?:string;footer?:ReactNode}){const ref=useRef<HTMLDialogElement>(null),id=useId();useEffect(()=>{const d=ref.current;if(d)return openGameDialog(d,onClose,window);},[]);return <dialog className={'modal'+(className?' '+className:'')} ref={ref} onCancel={e=>{e.preventDefault();onClose();}} onClick={e=>{if(e.target===ref.current){const bounds=e.currentTarget.getBoundingClientRect();if(e.clientX<bounds.left||e.clientX>bounds.right||e.clientY<bounds.top||e.clientY>bounds.bottom)onClose();}}} role="dialog" aria-modal="true" aria-labelledby={id}><div className="modal-head"><h2 id={id}>{title}</h2><button className="icon-button" aria-label="Kapat" onClick={onClose}><X/></button></div>{footer?<><div className="modal-content">{children}</div><footer className="modal-actions" aria-label="Sonuç eylemleri">{footer}</footer></>:children}</dialog>;}
 export interface WordListData {board:Pick<Puzzle,'targets'>;strokes:Stroke[];golden?:string|null;clues?:Record<string,string>}
 /** A read-only view. Opening it never pauses, selects or changes the board. */
 export function BoardWords({words}:{words:WordListData}){
@@ -49,30 +51,7 @@ export function PlayLayout({title,kicker,onBack,board,strokes,paused,readOnly=fa
  const screenRef=useRef<HTMLElement>(null),stageRef=useRef<HTMLDivElement>(null);
  useEffect(()=>{
   const screen=screenRef.current,stage=stageRef.current;if(!screen||!stage)return;
-  let frame=0;
-  const fit=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{
-   const viewport=window.visualViewport?.height??window.innerHeight;
-   const rect=screen.getBoundingClientRect(),container=screen.closest('.game-app,.main-content');
-   const bottomSpace=Math.max(8,container?parseFloat(getComputedStyle(container).paddingBottom)||0:0);
-   const height=Math.max(160,Math.floor(viewport-Math.max(0,rect.top)-bottomSpace));
-   if(screen.style.getPropertyValue('--play-height')!==height+'px')screen.style.setProperty('--play-height',height+'px');
-   if(zoom||window.visualViewport&&window.visualViewport.scale!==1){screen.style.removeProperty('--fitted-board');screen.style.removeProperty('min-height');return;}
-   // The stage is the remaining flex/grid track after the real HUD, targets and controls.
-   // If enlarged text leaves less than a readable board, grow the complete frame
-   // in normal flow instead of letting a centered board overlap targets or controls.
-   const overhead=screen.clientHeight-stage.clientHeight;
-   const targets=screen.querySelector<HTMLElement>('.targets-panel'),columns=screen.querySelector<HTMLElement>('.play-columns');
-   const targetTop=targets?.getBoundingClientRect().top??0;
-   const intrinsicTargets=targets?Math.max(0,...Array.from(targets.children).map(child=>child.getBoundingClientRect().bottom-targetTop))+(parseFloat(getComputedStyle(targets).paddingBottom)||0):0;
-   const targetMinimum=columns?screen.clientHeight-columns.clientHeight+intrinsicTargets:0;
-   const fitted=fitGameFrame(stage.clientWidth,height,overhead,board.size,targetMinimum),minHeight=fitted.minHeight+'px';
-   if(screen.style.minHeight!==minHeight)screen.style.minHeight=minHeight;
-   const size=fitted.boardSize;
-   const value=size+'px';if(screen.style.getPropertyValue('--fitted-board')!==value)screen.style.setProperty('--fitted-board',value);
-  });};
-  const observer=new ResizeObserver(fit);observer.observe(screen);observer.observe(stage);if(screen.parentElement)observer.observe(screen.parentElement);
-  window.addEventListener('resize',fit);window.visualViewport?.addEventListener('resize',fit);window.visualViewport?.addEventListener('scroll',fit);fit();
-  return ()=>{cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('resize',fit);window.visualViewport?.removeEventListener('scroll',fit);};
+  return attachPlayFit(screen,stage,board.size,zoom,window);
  },[zoom,board.size]);
  return <section ref={screenRef} className={'play-screen viewport-play'+(zoom?' is-zoomed':'')+(focused?' focused-play':'')+(inlineTargets?' inline-target-play':'')}><header className="play-heading"><button className="icon-button" onClick={onBack} aria-label="Geri"><ArrowLeft/></button><div><span className="eyebrow">{kicker}</span><h1>{title}</h1></div><span className="mini-mark">Kt.</span></header><div className="play-hud">{children}</div><div className="play-columns"><div className="board-panel"><div className={'selection-preview'+(readOnly?' is-review':inputBlocked?' is-blocked':preview?' selecting':'')} aria-live="off">{readOnly?<span>{reviewStatus}</span>:inputBlocked?<span>{inputStatus??'Sunucu onayı bekleniyor.'}</span>:preview?<><b>{preview}</b>{/^[A-ZÇĞİÖŞÜ0-9]+$/u.test(preview)&&<span>{[...preview].length} harf</span>}</>:<span>{zoom?'Seçmek için kelimenin iki ucuna dokun.':'Kaydır veya ilk ve son harfe dokun.'}</span>}</div>{zoom&&wordList&&!paused&&!readOnly&&!inputBlocked&&!wordListUnavailable&&<BoardWords key={wordListKey??JSON.stringify([board.size,board.grid,wordList.board.targets])} words={wordList}/>}<div className="board-stage" ref={stageRef}><Board board={board} strokes={strokes} paused={paused} readOnly={readOnly} blocked={inputBlocked} busy={busy} statusText={inputStatus} zoom={zoom} hint={hint} onCommit={onCommit} onSelectStart={onSelectStart} onPreview={onPreview}/>{effect}</div>{footer}<small className="board-access-note">Yatay · Dikey · Çapraz · Tersten</small></div><aside className="targets-panel">{wordList&&<div className="viewport-targets" data-many={wordList.board.targets.length>9||undefined}><WordList {...wordList}/></div>}{aside}</aside></div></section>;
 }

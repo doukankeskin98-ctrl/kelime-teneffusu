@@ -1,4 +1,5 @@
 'use client';
+import '@/lib/game/browser-compat';
 import {useEffect,useRef,useState} from 'react';
 import {ArrowRight,BookOpen,CalendarDays,Check,ChevronRight,Compass,Flame,HelpCircle,House,LoaderCircle,Sparkles,Star,Swords,User} from 'lucide-react';
 import {EntryPanel} from '@/components/auth/EntryPanel';

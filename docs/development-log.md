@@ -1,3 +1,11 @@
+# 30 Ekim 2026 · Safari ve görünür oyun alanı düzeltmesi
+
+Kullanıcının iPhone 6 Plus/Safari son satır bildirimi. Adaylar: cihaz adına özel küçültme (elenir), mevcut serbest alanı yeniden ölçmek (Safari'nin şişen flex track'ini tekrar temel alır), gerçek HUD/hedef/kontrol ölçümü + eski Safari yolu (seçildi). Tek koordinatör, dar kapsam. Kabul: son satır ve kontroller gerçek görünen alan içinde; adres çubuğu/döndürme/yazı büyütme sonrası ölçüm yenilenir; sığmayan büyük yazı doğal akışa taşar, tahta kesilmez; ResizeObserver/aspect-ratio/cqw/:has olmadan ölçüm ve kare tahta çalışır. İçerik/kayıt/ödül/Arena protokolü korunur.
+
+Kök kusurlar: zorunlu ResizeObserver, yalnız modern CSS ölçüleri, Safari'nin büyüttüğü stage yüksekliğinden türetilen bütçe. Eski iOS için ayrıca istemci sözdizimi hedefi, kullanılan eksik API'ler, Touch Events ve native dialog alternatifi gerekir. Bunlar aynı oyun/sonuç yolunu korur; yeni bağımlılık veya ayrı oyun yok. Birincil kaynaklar: WebKit Safari 13.1 (ResizeObserver), Safari 14.1 (flex gap), Safari 15 (aspect-ratio), Safari 15.4 (viewport birimleri); Apple iOS 12.5.7 belgesinde iPhone 6 Plus bulunur. Fiziksel cihaz ve gerçek Safari kanıtı olmadan tam cihaz desteği ilan edilmez.
+
+Yerel doğrulama: 388 test/81 grup, 56 son hedefli kontrol, tip ve 120 tahta/2.400 alternatif başarılı. Kontrollü kutu ve bileşen testlerinde son satır, toolbar/döndürme/restore, notice, büyük yazı, API'siz başlangıç, native Touch Events ve dialog fallback kapsandı. Sözdizimi guard'ının SW bulgusu düzeltildi. Fiziksel cihaz/Safari ve önceki engelli browser yolu doğrulanmış sayılmaz. Ayrıntı kısa koordinatör kaydı `2026-10-30_safari-fit.md`; son paket/CI/yayın araç makbuzları ayrıca doğrulanır.
+
 # 30 Ekim 2026 · İnceleme dalı · Numaralı ana yolculuk
 
 Kapsam: ana ekran → bölüm → gerçek sonuç → sonraki bölüm. Kullanıcı isteğiyle tek koordinatör; ek ajan/araştırma/tarihli içerik/yayın/birleştirme yok. Adaylar: yalnız mevcut kartı numaralandırma (yetersiz), yeni kayıt/ödül ekonomisi (gereksiz), mevcut 96 sabit bölüm ve 3/5/6 ödül kurallarını kullanan sade ana akış (seçildi).
