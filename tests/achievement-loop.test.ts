@@ -1,3 +1,4 @@
+import * as mainJourney from '../lib/game/main-journey.ts';
 // Real goal data and stateless component SSR. This is not browser/device geometry QA.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -23,7 +24,7 @@ const art={WorldArt:({themeId}:{themeId:string})=>React.createElement('svg',{'da
 function component(file:string,imports:Record<string,unknown>){
  const exports:Record<string,any>={};
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
- const modules:Record<string,unknown>={react:React,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/achievement-view':achievement,...imports};
+ const modules:Record<string,unknown>={react:React,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,...imports};
  vm.runInNewContext(code,{exports,require:(name:string)=>modules[name]??{}});return exports;
 }
 const collection=component('components/game/Discovery.tsx',{'./WorldArt':art});
@@ -84,5 +85,29 @@ describe('real home and victory markup',()=>{
  it('shows the actual next journey and returns no misleading goal when the route is exhausted',()=>{
   const p=first(1),next=nextJourneyAfter(p,'uzay-1')!,goal=achievement.journeyGoal(p,next.id)!;
   const html=render(loop['NextJourneyPreview'],{goal});assert.ok(html.includes(next.title));assert.ok(html.includes(goal.piece));assert.equal(render(loop['NextJourneyPreview'],{goal:null}),'');
+ });
+});
+
+// New home/result render actual collection pieces; these assertions are not pixel QA.
+const numberedHome=component('components/game/JourneyHome.tsx',{'./WorldArt':art,'./AchievementLoop':loop});
+const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery':collection,'./AchievementLoop':loop});
+describe('numbered journey home and real result',()=>{
+ it('shows one primary action, the correct chapter and nearby reward without mode cards',()=>{
+  const html=render(numberedHome['JourneyHome'],{progress:emptyProgress(),onPlay(){},onExplore(){}});
+  assert.match(html,/Bölüm 1 — Oyna/);assert.match(html,/İlk yıldız/);assert.match(html,/3 bölüm sonra/);assert.match(html,/Anadolu Patikası/);assert.equal((html.match(/class="button primary/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
+ });
+ it('continues an existing route and shows a truthful complete-catalogue state',()=>{
+  const p=emptyProgress(),b=journeyBoard(journeyById('uzay-2')!);p.saves['route:uzay-2']=cleanSave({strokes:[b.placements[0]!],hints:0,elapsed:10,complete:false,stars:0},b);p.last={themeId:'uzay',level:0,journey:'uzay-2'};
+  let html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Bölüm 2/);assert.match(html,/Devam et/);assert.match(html,/0<\/b> \/ 96/);
+  for(const item of mainJourney.MAIN_JOURNEY)finish(p,item.chapter.id);
+  html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Yolculuğu tamamladın/);assert.doesNotMatch(html,/— Oyna|Devam et/);
+ });
+ it('renders actual album before/after and the new world, then keeps replay unchanged',()=>{
+  const before=first(2),p=finish(copy(before),'uzay-3'),props={before:achievement.journeyGoal(before,'uzay-3'),after:achievement.journeyGoal(p,'uzay-3'),rewards:discoveryRewards(before,p),save:p.saves['route:uzay-3']};
+  let html=render(numberedResult['JourneyResult'],props);assert.match(html,/Önce <b>2\/6/);assert.match(html,/Şimdi <b>3\/6/);assert.match(html,/YENİ DÜNYA AÇILDI/);assert.match(html,/Anadolu Patikası/);
+  html=render(numberedResult['JourneyResult'],{...props,before:props.after,rewards:[]});assert.match(html,/BU PARÇA ZATEN SENİN/);assert.match(html,/Önce <b>3\/6/);assert.match(html,/Şimdi <b>3\/6/);assert.doesNotMatch(html,/YENİ DÜNYA AÇILDI/);
+ });
+ it('explains tutorial reward status and displays no permanent stars',()=>{
+  const html=render(loop['VictorySummary'],{goal:null,rewards:[],stars:3,hints:0,seconds:15,total:3,tutorial:true});assert.match(html,/Yıldız ve albüm parçası verilmez/);assert.doesNotMatch(html,/victory-stars|Bu tur 3|Yıldızlar nasıl/);
  });
 });
