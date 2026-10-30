@@ -12,6 +12,7 @@ import {api} from './common';
 import {SoundSettings} from './SoundSettings';
 import {WorldArt} from './WorldArt';
 import {JourneyHome} from './JourneyHome';
+import {RiddleShelf} from './RiddleShelf';
 import {DiscoveryMap,DiscoveryAlbums} from './Discovery';
 import type {SoloConfig} from './Solo';
 import {PublishedChapters} from './PublishedChapters';
@@ -28,6 +29,7 @@ export function Explore({library=false,releases,releaseCounts={},onSprint,userId
  return <div className="page-enter studio-home journey-library"><div className="welcome-row"><div><span className="eyebrow">KEŞFET</span><h1>Dünyalar ve hikâyeler</h1></div><button className="text-button" onClick={()=>setNav('kesfet')}>Yolculuğa dön <ArrowRight size={17}/></button></div>
  <DiscoveryMap progress={progress} onPlay={(journey,practice)=>openSolo({themeId:journey.themeId,level:0,journey:journey.id,practice})}/>
  <section className="play-modes" aria-label="Oyun modları"><button className="speed-mode" onClick={onSprint}><span className="mode-symbol">⚡</span><span><small>60 SANİYE · YENİ OYUN MODU</small><b>Hızlı Tur</b><em>Kelimeleri zincirle. Rekorunu geç.</em></span><ArrowRight/></button><button className="mystery-mode" onClick={()=>onMystery(nextMystery.id)}><span className="mode-symbol">?</span><span><small>BAĞLANTIYI ÇÖZ</small><b>Gizli Tema</b><em>Kelimelerin ortak sırrını bul.</em></span><ArrowRight/></button></section>
+ <RiddleShelf progress={progress} onPlay={openSolo}/>
  <div className="discovery-heading" id="dunyalar"><div><span className="eyebrow">MERAKIN NEREYE GÖTÜRÜRSE</span><h2>Bir dünya seç.</h2></div><label className="search-box"><Search size={18}/><input aria-label="Tema ara" placeholder="Dünyalarda ara…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div>
  <div className="category-tabs" aria-label="Tema kategorileri">{['Tümü','Nostalji','Ekran','Spor','Keşif','Yaşam','Merak','Kültür'].map(c=><button className={filter===c?'selected':''} key={c} onClick={()=>setFilter(c)} aria-pressed={filter===c}>{c}</button>)}</div>
  <div className="theme-grid">{visible.map((t,i)=>{

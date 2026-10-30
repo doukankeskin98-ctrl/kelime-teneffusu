@@ -1,6 +1,6 @@
 import {hash,makePuzzle,match,type Puzzle,type Stroke} from './engine.ts';
 import {THEMES} from './catalog.ts';
-import {ALL_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from './content.ts';
+import {PLAYABLE_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from './content.ts';
 export interface SavedLevel {strokes:Stroke[];elapsed:number;hints:number;complete:boolean;stars:number}
 export interface Progress {
  v:2;saves:Record<string,SavedLevel>;sound:boolean;zoom:boolean;days:string[];
@@ -9,7 +9,7 @@ export interface Progress {
 }
 export const PROGRESS_KEY='kelime-teneffusu-v2';
 export const emptyProgress=():Progress=>({v:2,saves:{},sound:false,zoom:false,days:[],last:null,haptics:false,contrast:false,palette:'classic',tutorialDone:false,analytics:false,mysteries:[]});
-const knownKeys=new Set([...THEMES.flatMap(t=>Array.from({length:6},(_,l)=>`${t.id}.${l}`)),...ALL_JOURNEYS.map(j=>'route:'+j.id),...MYSTERIES.map(m=>'mystery:'+m.id)]);
+const knownKeys=new Set([...THEMES.flatMap(t=>Array.from({length:6},(_,l)=>`${t.id}.${l}`)),...PLAYABLE_JOURNEYS.map(j=>'route:'+j.id),...MYSTERIES.map(m=>'mystery:'+m.id)]);
 const boardCache=new Map<string,Puzzle>();
 export function progressBoard(key:string):Puzzle|null {
  if(!knownKeys.has(key))return null;
@@ -17,7 +17,7 @@ export function progressBoard(key:string):Puzzle|null {
  const board=resolveProgressBoard(key);if(board)boardCache.set(key,board);return board;
 }
 function resolveProgressBoard(key:string):Puzzle|null {
- if(key.startsWith('route:')){const j=ALL_JOURNEYS.find(j=>'route:'+j.id===key);return j?journeyBoard(j):null;}
+ if(key.startsWith('route:')){const j=PLAYABLE_JOURNEYS.find(j=>'route:'+j.id===key);return j?journeyBoard(j):null;}
  if(key.startsWith('mystery:')){const m=MYSTERIES.find(m=>'mystery:'+m.id===key);return m?mysteryBoard(m):null;}
  const [themeId,raw]=key.split('.'),level=Number(raw);
  return themeId&&THEMES.some(t=>t.id===themeId)&&Number.isInteger(level)&&level>=0&&level<6?makePuzzle(themeId,level,hash(`campaign-v2:${themeId}:${level}`)):null;
@@ -33,7 +33,7 @@ export function loadProgress(raw:string|null):Progress {
   }
   let last:Progress['last']=null;
   if(r.last&&THEMES.some(t=>t.id===r.last?.themeId)&&Number.isInteger(r.last.level)&&r.last.level>=0&&r.last.level<6){
-   const j=ALL_JOURNEYS.find(j=>j.id===r.last?.journey&&j.themeId===r.last.themeId);
+   const j=PLAYABLE_JOURNEYS.find(j=>j.id===r.last?.journey&&j.themeId===r.last.themeId);
    last={themeId:r.last.themeId,level:r.last.level,...(j?{journey:j.id}:{})};
   }
   const days=Array.isArray(r.days)?[...new Set(r.days.filter(x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&!Number.isNaN(Date.parse(x+'T12:00:00Z'))))].sort().slice(-3660):[];

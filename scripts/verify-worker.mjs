@@ -165,9 +165,13 @@ try{
  await Promise.all(groupUsers.map((_,i)=>action(i,'ready',1)));const groupActive=await action(0,'start',1);
  const groupViews=await Promise.all(groupUsers.map(nativeUser=>json('/api/game?action=room',{nativeUser})));
  check(groupViews.every(v=>v.players.length===8&&v.starts===groupActive.starts&&v.ends===groupActive.ends&&JSON.stringify(v.board)===JSON.stringify(groupActive.board)),'eight HTTP sessions share one board, roster, start and end');
+ check(groupViews.every(v=>v.roundKind==='clue'&&v.nextRoundKind==='words'&&Object.keys(v.clues).length===6&&JSON.stringify(v.clues)===JSON.stringify(groupActive.clues)),'eight sessions share the first riddle round and frozen definitions');
+ check(groupActive.board.targets.every(t=>t.label===groupActive.clues[t.text]),'old clients receive definitions in unconfirmed public labels');
  await request('/api/game',{nativeUser:groupUsers[1],method:'POST',body:{action:'claim',id:group.id,round:1,expectedOwnerId:profiles[0].profile.id,...solution(groupActive.board,groupActive.board.targets[0])},expected:409});
  await new Promise(resolve=>setTimeout(resolve,Math.max(0,groupActive.starts-Date.now()+50)));
- const firstWord=solution(groupActive.board,groupActive.board.targets[0]);await Promise.all(groupUsers.map((_,i)=>action(i,'claim',1,firstWord)));
+ const firstWord=solution(groupActive.board,groupActive.board.targets[0]),oneFound=await action(0,'claim',1,firstWord),onePeer=await json('/api/game?action=room',{nativeUser:groupUsers[1]});
+ check(oneFound.board.targets[0].label===oneFound.board.targets[0].text&&onePeer.board.targets[0].label===groupActive.clues[groupActive.board.targets[0].text],'answer labels reveal only to the player with a confirmed receipt');
+ await Promise.all(groupUsers.map((_,i)=>action(i,'claim',1,firstWord)));
  const restoredGroup=await json('/api/game?action=room',{nativeUser:groupUsers[7]});
  check(restoredGroup.you.strokes.length===1&&restoredGroup.starts===groupActive.starts&&restoredGroup.players.every(p=>p.score===restoredGroup.you.score),'fresh session requests restore scores and clock after reconnect');
  const groupStream=await request('/api/live?id='+group.id,{nativeUser:groupUsers[7]}),groupReader=groupStream.body.getReader();const groupChunk=await groupReader.read();check(new TextDecoder().decode(groupChunk.value).includes('event: room'),'group reconnect receives live authoritative state');await groupReader.cancel();
@@ -177,11 +181,19 @@ try{
  const successors=await Promise.all([...groupUsers.map((_,i)=>i),0,0,0,0].map(i=>action(i,'next',1)));
  check(successors.every(v=>v.round===2&&v.id===group.id&&v.board===null),'twelve repeated next requests create one successor round in the same room');
  await Promise.all(groupUsers.map((_,i)=>action(i,'ready',2)));const second=await action(0,'start',2);
+ check(second.roundKind==='words'&&second.nextRoundKind==='clue'&&!second.clues,'the second group round is the normal word mode');
  const wordKey=b=>JSON.stringify(b.targets.map(t=>t.text).sort());check(wordKey(second.board)!==wordKey(groupActive.board)&&JSON.stringify(second.board.grid)!==JSON.stringify(groupActive.board.grid),'successor uses different real words and grid');
  const history=await db.prepare('SELECT count(*) n FROM arena_seen WHERE user_id=?').bind(profiles[7].profile.id).first();check(history.n===2,'both boards are durably recorded for a returning account');
  const again=await json('/api/game',{nativeUser:groupUsers[7]}),afterReentry=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(again.profile.id===profiles[7].profile.id&&afterReentry.round===2&&JSON.stringify(afterReentry.board)===JSON.stringify(second.board),'a fresh authenticated request with the same verified identity preserves round and content history');
  await request('/api/game',{nativeUser:groupUsers[7],method:'POST',body:{action:'ready',id:group.id,round:1,expectedOwnerId:profiles[7].profile.id},expected:409});
  check(afterReentry.series.rounds===1&&afterReentry.series.players.find(p=>p.id===profiles[0].profile.id).wins===1,'the next round and fresh authenticated requests preserve the recorded series');
+ await new Promise(resolve=>setTimeout(resolve,Math.max(0,second.starts-Date.now()+50)));
+ for(const target of second.board.targets)await action(0,'claim',2,solution(second.board,target));
+ const thirdLobby=await Promise.all(groupUsers.map((_,i)=>action(i,'next',2)));check(thirdLobby.every(v=>v.round===3&&v.roundKind==='clue'&&v.nextRoundKind==='words'),'simultaneous next requests return everyone to one third-round riddle lobby');
+ await Promise.all(groupUsers.map((_,i)=>action(i,'ready',3)));const third=await action(0,'start',3),thirdReload=await json('/api/game?action=room',{nativeUser:groupUsers[7]});
+ check(thirdReload.roundKind==='clue'&&JSON.stringify(thirdReload.board)===JSON.stringify(third.board)&&JSON.stringify(thirdReload.clues)===JSON.stringify(third.clues),'third-round reconnect preserves the same riddle board and definitions');
+ check(Object.keys(third.clues).every(answer=>!(answer in groupActive.clues)),'not even an individual riddle is reused in the same room');
+ check(wordKey(third.board)!==wordKey(second.board)&&wordKey(third.board)!==wordKey(groupActive.board)&&JSON.stringify(third.board.grid)!==JSON.stringify(groupActive.board.grid),'the third round also differs in real content');
  // Sixteen actual guest sessions enter the public group queue concurrently.
  const quickCookies=await Promise.all(Array.from({length:16},async(_,i)=>(await request('/api/session',{method:'POST',body:{name:'Quick '+i}})).headers.get('Set-Cookie')));
  const quickProfiles=await Promise.all(quickCookies.map(cookie=>json('/api/game',{cookie})));

@@ -1,3 +1,4 @@
+import * as riddleContent from '../lib/game/riddle-content.ts';
 // Executes actual hooks/components with controlled IO. No browser layout or phone claims.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -37,7 +38,7 @@ function harness(file:string,modules:Record<string,unknown>={},globals:Record<st
   useId:()=> 'catalogue-test-id',useMemo:(fn:()=>any)=>fn()};
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
- vm.runInNewContext(code,{exports,require:(name:string)=>name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:modules[name]??new Proxy({},{get:(_t,key)=>String(key)}),URL,URLSearchParams,AbortController,Event,console,...globals});
+ vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/game/riddle-content'?riddleContent:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:modules[name]??new Proxy({},{get:(_t,key)=>String(key)}),URL,URLSearchParams,AbortController,Event,console,...globals});
  const paint=()=>{for(let i=0;dirty&&i<30;i++){dirty=false;cursor=0;tree=render();while(effects.length)effects.shift()!();}return tree;};
  return {exports,start(fn:()=>any){render=fn;return paint();},paint,async settle(){for(let i=0;i<12;i++){await Promise.resolve();paint();}return tree;},unmount(){mounted=false;for(const slot of slots)slot.cleanup?.();},get afterUnmount(){return afterUnmount;}};
 }
