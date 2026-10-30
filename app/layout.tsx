@@ -12,6 +12,7 @@ import "./atlas-adventure.css";
 import "./crafted-play.css";
 import "./word-access.css";
 import "./achievement-loop.css";
+import "./sound.css";
 
 export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',themeColor:'#f7f7ef'};
 

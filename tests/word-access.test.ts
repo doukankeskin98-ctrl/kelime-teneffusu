@@ -134,3 +134,22 @@ describe('achievement loop uses real Solo results and compact target access',()=
   }finally{h.close();}
  });
 });
+
+describe('confirmed Challenge and phase-based Sprint sound',()=>{
+ it('keeps Challenge pending/rejected claims silent and sounds only a confirmed word',async()=>{
+  for(const accepted of [true,false]){const sounds:unknown[]=[],gate=deferred<any>(),initial={id:'challenge-1',code:'ABCDEFGH23',themeId:'uzay',creator:true,serverNow:10000,starts:0,finished:null,duration:0,strokes:[],board:content.TUTORIAL,expires:100000,ghost:null,results:[]};
+   const h=view('components/game/Challenges.tsx',{...modules,'./common':{...commonStubs,useChime:()=>((v:unknown=false)=>sounds.push(v)),getSocial:async()=>({challenges:[]}),socialApi:async()=>{const next=await gate.promise;if(!accepted)throw new Error('Claim rejected');return next;}}},initial);
+   try{h.start('Challenges',{authenticated:true,onLogin(){},progress:progress.emptyProgress(),onProgress(){}});await h.settle();const target=content.TUTORIAL.placements[0]!;h.find('PlayLayout').props['onCommit'](target.a,target.b);await h.settle();assert.deepEqual(sounds,[]);gate.resolve({...initial,strokes:[target]});await h.settle();assert.deepEqual(sounds,accepted?[false]:[]);if(accepted){h.find('PlayLayout').props['onCommit'](target.a,target.b);await h.settle();assert.deepEqual(sounds,[false]);}}finally{h.close();}
+  }
+ });
+ it('does not replay a Challenge completion after a newer finished view or unmount',async()=>{
+  for(const leave of [false,true]){const sounds:unknown[]=[],gate=deferred<any>(),initial={id:'challenge-1',code:'ABCDEFGH23',themeId:'uzay',creator:true,serverNow:10000,starts:0,finished:null,duration:0,strokes:[],board:content.TUTORIAL,expires:100000,ghost:null,results:[]};
+   const h=view('components/game/Challenges.tsx',{...modules,'./common':{...commonStubs,useChime:()=>((v:unknown=false)=>sounds.push(v)),getSocial:async()=>({challenges:[]}),socialApi:async()=>gate.promise}},initial);
+   try{h.start('Challenges',{authenticated:true,onLogin(){},progress:progress.emptyProgress(),onProgress(){}});await h.settle();const target=content.TUTORIAL.placements[0]!;h.find('PlayLayout').props['onCommit'](target.a,target.b);await h.settle();if(leave)h.close();else{h.slots[0]!.value={...initial,finished:10000,strokes:content.TUTORIAL.placements};h.update('Challenges',{authenticated:true,onLogin(){},progress:progress.emptyProgress(),onProgress(){}});}gate.resolve({...initial,finished:10000,strokes:content.TUTORIAL.placements});await h.settle();assert.deepEqual(sounds,[]);}finally{h.close();}
+  }
+ });
+ it('Sprint has one start and neutral time-up cue without per-second alarm or repeated result',()=>{
+  const sounds:unknown[]=[],h=view('components/game/Sprint.tsx',{...modules,'./common':{...commonStubs,useChime:()=>((v:unknown=false)=>sounds.push(v))}});
+  try{h.start('__SprintRun',{seed:42,owner:'test',progress:progress.emptyProgress(),onProgress(){},onBack(){},onReplay(){}});const start=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'));assert.ok(start);start.props['onClick']();h.paint();assert.deepEqual(sounds,[]);h.time(14000);assert.deepEqual(sounds,['start']);h.time(30000);assert.deepEqual(sounds,['start']);h.time(80000);assert.deepEqual(sounds,['start','finish']);h.paint();assert.deepEqual(sounds,['start','finish']);}finally{h.close();}
+ });
+});

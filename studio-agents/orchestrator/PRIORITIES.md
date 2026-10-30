@@ -1,5 +1,10 @@
 # Öncelikler
 
+30 Ekim 2026, 0.14.0: kullanıcının doğrudan ses isteğiyle sekiz kısa/yumuşak ortak motif, seçim başına tek ses, onaylı ağ başarısı, aç/kapa/cihaz düzeyi/örnek dinleme. İki gerçek dar uzman ve tek uygulama/yayın sahibi. Kabul sound-decision, deneyim/güvenilirlik bulguları sound-*review, son kapılar sound-validation günlüğündedir. Bölüm/kayıt/ödül/DB korunur; bu doğrudan ses turunda tarihli içerik eklenmedi.
+
+Güncel ilk öncelik: gerçek iPhone/Android hoparlör ve kulaklıkla kısa/uzun dinleme, fiziksel sessiz anahtar/arama kesintisi/arka plan→dönüş, klavye/ekran okuyucu ve aynı hedef→oyun→sonuç akışı. Preview eski lock onarımıyla healthy; destekli CUA bağlantısı ERR_CONNECTION_REFUSED kaldı. Sonraki mevcut işler iki gerçek provider hesabı/PWA, cold-start/cihazlar arası pending ve izinli oyuncu gözlemidir. Ses konforu/tutma artışı ölçülmedi. Haftalık inceleme 31 Ekim/ilk uygun mevcut tur; yeni zamanlayıcı/servis yok.
+
+
 29 Ekim 2026, 0.13.1: Arena `finished` tahtası artık `paused` örtüsü yerine salt okunur inceleme durumunda; harfler ve onaylı çizgiler görünür, sonuç kapatılıp aynı skorla yeniden açılır. Countdown/active/terminal-revizyon bekleme ayrı test edilir. Skor/Elo/round sonucu/rövanş/server claim değişmedi. Tek gerçek reliability uzmanı yalnız `arena-terminal-review` günlüğünü yazdı; koordinatör uygulama/yayın sahibi. Son kapı ve yayın kanıtı `../journal/entries/2026-10-29_arena-terminal-validation.md` içinde tamamlanır. Bugünün Bayram sabahı/Bilim sergisi çifti çoğaltılmadı.
 
 Güncel kısa kuyruk: (1) Destekli gerçek telefon/preview ile hedef→oyun→sonuç ve Arena bitiş incelemesini normal/büyük yazı, ekran okuyucu, odak/kaydırma, iki gerçek hesap-provider ve fiziksel PWA'da doğrulamak. (2) Cold-start/cihazlar arası pending için ayrı tasarım ve kabul. (3) İzinli gerçek oyuncu gözlemiyle eğlence/başarı hissi kararlarını yeniden değerlendirmek. Yeni kozmetik oda/co-op bu kanıtların önüne geçmez; haftalık inceleme 31 Ekim/ilk uygun mevcut turdur.
