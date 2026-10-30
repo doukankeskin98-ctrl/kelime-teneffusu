@@ -1,3 +1,5 @@
+import * as viewport from '../lib/game/viewport.ts';
+import * as legacyUI from '../lib/game/legacy-ui.ts';
 // Actual Board TSX with controlled hooks, pointer coordinates, global events and RAF.
 // This is not a DOM/native event ordering, screen-reader, phone or FPS test.
 import assert from 'node:assert/strict';
@@ -13,13 +15,13 @@ type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
 function nodes(value:unknown):Node[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object')return [];const n=value as Node;return [n,...nodes(n.props?.['children'])];}
 function text(value:unknown):string{if(typeof value==='string')return value;if(Array.isArray(value))return value.map(text).join('');return value&&typeof value==='object'?text((value as Node).props?.['children']):'';}
 const compiled=ts.transpileModule(readFileSync('components/game/Board.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
-function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
+function harness(options:{legacy?:boolean;zoom?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
  let selections=0;
  const commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
  let cursor=0,dirty=true,mounted=true,afterUnmount=0,frameId=0,tree:unknown,resize=()=>{},width=600,height=600;
- const element={get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left:10,top:20,width,height}),setPointerCapture(_id:number){}};
+ const element=Object.assign(new EventTarget(),{style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left:10,top:20,width,height}),setPointerCapture(_id:number){}});
  const hooks={
   useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return [slot.value,(next:any)=>{if(!mounted)afterUnmount++;const value=typeof next==='function'?next(slot.value):next;if(!Object.is(value,slot.value)){slot.value=value;dirty=true;}}];},
   useRef(initial:any){return (slots[cursor++]??={}).ref??={current:initial};},
@@ -28,7 +30,10 @@ function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;blocke
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
  const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectStart:()=>{selections++;}};
+ if(options.legacy)delete (element as any).setPointerCapture;
+ Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
+  if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
   if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
   if(name==='@/lib/game/engine')return {snapLine};if(name==='@/lib/game/telemetry')return {track(){}};
   throw new Error('Unexpected module: '+name);
@@ -37,7 +42,9 @@ function harness(options:{zoom?:boolean;paused?:boolean;readOnly?:boolean;blocke
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);boardNode().props['ref'].current=element;}if(commit)while(effects.length)effects.shift()!();}return tree;};
  const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:10+(cell[1]+.5)*width/TUTORIAL.size,clientY:20+(cell[0]+.5)*height/TUTORIAL.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
- return {commits,previews,accepted,props,paint,boardNode,send,get selections(){return selections;},
+ return {commits,previews,accepted,props,paint,boardNode,send,
+  native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:10+(cell[1]+.5)*width/TUTORIAL.size,clientY:20+(cell[0]+.5)*height/TUTORIAL.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
+  get selections(){return selections;},
   flush(){const callbacks=[...frames.values()];frames.clear();for(const fn of callbacks)fn();paint();},
   globalBlur(){windowTarget.dispatchEvent(new Event('blur'));paint();},
   visibility(hidden:boolean){documentTarget.hidden=hidden;documentTarget.dispatchEvent(new Event('visibilitychange'));paint();},
@@ -152,5 +159,17 @@ describe('selection sound is a single intentional start',()=>{
  it('supports keyboard anchoring, stays silent during enlarged panning and all blocked states',()=>{
   const h=harness();h.key('ArrowRight');assert.equal(h.selections,0);h.key('Enter');h.key('ArrowDown');h.key('Enter');assert.equal(h.selections,1);h.unmount();const pan=harness({zoom:true});drag(pan);pan.send('onPointerUp',b);assert.equal(pan.selections,0);pan.tap(a);pan.tap(b);assert.equal(pan.selections,1);pan.unmount();
   for(const blocked of [{paused:true},{readOnly:true},{blocked:true}]){const h=harness(blocked);drag(h);h.send('onPointerUp',b);h.key('Enter');assert.equal(h.selections,0);h.unmount();}
+ });
+});
+
+describe('actual Board supports legacy Safari Touch Events and its last row',()=>{
+ it('selects the last row by native touch without PointerEvent or setPointerCapture, then remains correct after resizing',()=>{
+  const h=harness({legacy:true}),start:Cell=[5,0],end:Cell=[5,5];
+  h.native('touchstart',[start]);h.native('touchmove',[end]);h.flush();h.native('touchend',[],[end]);assert.deepEqual(h.commits,[{a:start,b:end}]);
+  h.resize();h.native('touchstart',[a]);h.native('touchend',[],[a]);h.native('touchstart',[b]);h.native('touchend',[],[b]);assert.deepEqual(h.commits[1],{a,b});h.unmount();
+ });
+ it('allows enlarged panning and cancels legacy input on backgrounding without a stale commit',()=>{
+  const h=harness({legacy:true,zoom:true});h.native('touchstart',[a]);h.native('touchmove',[b]);h.native('touchend',[],[b]);assert.equal(h.commits.length,0);
+  h.native('touchstart',[a]);h.native('touchend',[],[a]);h.globalBlur();h.native('touchstart',[b]);h.native('touchend',[],[b]);assert.equal(h.commits.length,0);h.unmount();
  });
 });

@@ -1,5 +1,7 @@
 # Studio sürümü: teslim ve doğrulama
 
+0.15.1: Safari görünür alanı, içerikten türetilmiş bütçe, piksel kare/harf, API gözlemi olmayan tarayıcı için yeniden ölçüm, eski Touch Events/dialog yolları ve Safari 12 istemci sözdizimi kapısı. Kayıt/içerik/ödül/şema aynı kalır. Sayısal kutu, gerçek bileşen ve derlenmiş çıktı denetimleri fiziksel Safari testi değildir.
+
 0.6.0 ile günlük kaynak bölümleri, kalıcı arşiv ve uygulama içi sürüm notları eklendi. Güncel kapsam, kabul ölçütleri ve doğrulama sınırları: [geliştirme defteri](development-log.md). Önceki tarayıcı kontrolü ifadeleri bu sürüm için yeni bir görsel test yapıldığı anlamına gelmez.
 
 0.6.1, bu kartlarda gerçek hesap/cihaz ilerlemesini ve doğru devam/tekrar eylemini gösterir. Kart verisi en fazla 24 kimlikle, yalnız mevcut hesap için okunur; yanıt önbelleğe alınmaz ve kelime yolları içermez. Geçersiz veya hash'i uyuşmayan cihaz tahtasından ilerleme gösterilmez.

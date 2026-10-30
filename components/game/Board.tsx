@@ -1,5 +1,8 @@
 'use client';
-import {useEffect,useMemo,useRef,useState,type CSSProperties,type KeyboardEvent,type PointerEvent} from 'react';
+import '@/lib/game/browser-compat';
+import {useEffect,useMemo,useRef,useState,type CSSProperties,type KeyboardEvent} from 'react';
+import {attachBoardSize} from '@/lib/game/viewport';
+import {attachLegacyTouch,type BoardPointer} from '@/lib/game/legacy-ui';
 import {snapLine,type Cell,type Puzzle,type Stroke} from '@/lib/game/engine';
 import {track} from '@/lib/game/telemetry';
 export const strokeColor=(id:string)=>`var(--word-${(Number(id.split('.')[0])||0)%8})`;
@@ -22,23 +25,25 @@ export function Board({board,strokes,paused=false,readOnly=false,blocked=false,b
  useEffect(()=>{if(paused||readOnly||blocked)clear();},[paused,readOnly,blocked]);
  useEffect(()=>{clear();},[signature,zoom]);
  useEffect(()=>()=>cancelAnimationFrame(frame.current),[]);
- useEffect(()=>{const element=ref.current;if(!element)return;let width=element.clientWidth,height=element.clientHeight;const observer=new ResizeObserver(()=>{const nextWidth=element.clientWidth,nextHeight=element.clientHeight;if(width!==nextWidth||height!==nextHeight){width=nextWidth;height=nextHeight;clear();}});observer.observe(element);return ()=>observer.disconnect();},[]);
+ useEffect(()=>{const element=ref.current;if(!element)return;return attachBoardSize(element,n,zoom,()=>clearRef.current(),window);},[n,zoom]);
  const cellAt=(x:number,y:number,rect=drag.current?.rect??ref.current!.getBoundingClientRect()):Cell=>[Math.max(0,Math.min(n-1,Math.floor((y-rect.top)/rect.height*n))),Math.max(0,Math.min(n-1,Math.floor((x-rect.left)/rect.width*n)))];
  const show=(cells:Cell[])=>{if(!selectionSound.current&&cells.length){selectionSound.current=true;onSelectStart?.();}setPreview(cells);onPreview?.(cells.map(([r,c])=>board.grid[r]![c]).join(''));};
  const schedule=(cells:Cell[])=>{pending.current=cells;if(frame.current)return;frame.current=requestAnimationFrame(()=>{frame.current=0;if(pending.current&&!disabled.current)show(pending.current);pending.current=null;});};
  const commit=(a:Cell,b:Cell)=>{clear();if(!disabled.current&&!same(a,b))onCommit(a,b);};
  const tap=(cell:Cell)=>{if(disabled.current)return;if(anchor){if(same(anchor,cell))clear();else{const cells=snapLine(anchor,cell,n);commit(anchor,cells.at(-1)!);}}else{setAnchor(cell);show([cell]);}};
- const down=(e:PointerEvent)=>{
+ const down=(e:BoardPointer)=>{
   if(disabled.current||drag.current||!e.isPrimary||(e.pointerType==='mouse'&&e.button!==0))return;
   const rect=ref.current!.getBoundingClientRect(),start=cellAt(e.clientX,e.clientY,rect),tapOnly=zoom&&e.pointerType!=='mouse';
   drag.current={id:e.pointerId,start,current:start,moved:false,tapOnly,x:e.clientX,y:e.clientY,pan:false,rect};
-  if(!tapOnly){e.preventDefault();ref.current?.setPointerCapture(e.pointerId);if(!anchor)show([start]);}
+  if(!tapOnly){e.preventDefault();ref.current?.setPointerCapture?.(e.pointerId);if(!anchor)show([start]);}
   const at=performance.now();requestAnimationFrame(()=>track('input_feedback',performance.now()-at));
  };
- const move=(e:PointerEvent)=>{const d=drag.current;if(!d||d.id!==e.pointerId)return;if(disabled.current)return clear();if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}const cell=cellAt(e.clientX,e.clientY);if(same(d.current,cell))return;d.current=cell;if(!same(d.start,cell))d.moved=true;if(d.moved){setAnchor(null);schedule(snapLine(d.start,cell,n));}};
- const up=(e:PointerEvent)=>{const d=drag.current;if(!d||d.id!==e.pointerId)return;const cell=cellAt(e.clientX,e.clientY);drag.current=null;if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else if(d.moved){const cells=snapLine(d.start,cell,n);commit(d.start,cells.at(-1)!);}else tap(d.start);};
- const cancel=(e:PointerEvent)=>{if(drag.current?.id===e.pointerId)clear();};
+ const move=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId)return;if(disabled.current)return clear();if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}const cell=cellAt(e.clientX,e.clientY);if(same(d.current,cell))return;d.current=cell;if(!same(d.start,cell))d.moved=true;if(d.moved){setAnchor(null);schedule(snapLine(d.start,cell,n));}};
+ const up=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId)return;const cell=cellAt(e.clientX,e.clientY);drag.current=null;if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else if(d.moved){const cells=snapLine(d.start,cell,n);commit(d.start,cells.at(-1)!);}else tap(d.start);};
+ const cancel=(e:BoardPointer)=>{if(drag.current?.id===e.pointerId)clear();};
  const key=(e:KeyboardEvent)=>{if(paused)return;const dirs:Record<string,Cell>={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};const dir=dirs[e.key];if(dir){e.preventDefault();const next:Cell=[Math.max(0,Math.min(n-1,cursor[0]+dir[0])),Math.max(0,Math.min(n-1,cursor[1]+dir[1]))];setCursor(next);if(anchor&&!disabled.current)show(snapLine(anchor,next,n));}else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!disabled.current)tap(cursor);}else if(e.key==='Escape')clear();};
+ const legacyHandlers=useRef({down,move,up,cancel:clear,pan:()=>zoom||readOnly||blocked});legacyHandlers.current={down,move,up,cancel:clear,pan:()=>zoom||readOnly||blocked};
+ useEffect(()=>{const element=ref.current;if(!element)return;return attachLegacyTouch(element,()=>legacyHandlers.current,window);},[]);
  const line=(a:Cell,b:Cell)=>({x1:a[1]+.5,y1:a[0]+.5,x2:b[1]+.5,y2:b[0]+.5});
  const selectedCells=new Set(preview.map(([r,c])=>`${r},${c}`));
  const grid=useMemo(()=>board.grid.flatMap((row,r)=>row.map((ch,c)=><span data-cell={`${r},${c}`} className={selectedCells.has(`${r},${c}`)?'letter-selected':undefined} key={`${r},${c}`}>{paused?'·':ch}</span>)),[signature,paused,preview]);

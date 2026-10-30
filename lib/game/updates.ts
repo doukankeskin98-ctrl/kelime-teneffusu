@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.15.1',date:'30 Ekim 2026',title:'Tahta için daha sağlam ekran ölçüsü',items:[
+  {where:'Oyun alanı',detail:'Görünür ekran, başlık, kelimeler ve kontroller birlikte ölçülür. Adres çubuğu, ekran döndürme ve büyük yazı değişikliklerinde tahta yeniden yerleşir; sığmayan durumda okunabilir içerik kesilmez.'},
+  {where:'Safari',detail:'Kare tahta ve harfler yalnız yeni CSS özelliklerine bağlı değil. Eski tarayıcılarda ölçüm, dokunarak seçim ve sonuç penceresi için aynı oyunu kullanan yedek yollar eklendi.'},
+ ]},
  {version:'0.15.0',date:'30 Ekim 2026',title:'Aynı odada, yeni kelimelerle',items:[
   {where:'Oyun alanı',detail:'Hedefler tek listede, tahta ve temel kontroller ekranın kalan yüksekliğine göre yerleşir. Büyük yazı ve olağan dışı kısa ekranlarda okunurluk korunur; büyütme seçeneği yerinde.'},
   {where:'Arena · özel oda',detail:'Dört veya daha fazla arkadaş aynı tahtada yarışabilir. Herkes hazır olunca oda sahibi başlatır; ortak süre, gerçek puanlar ve sayfalı sıralama kullanılır.'},
