@@ -43,3 +43,7 @@
 .dialog-fallback-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9998;background:rgba(14,35,25,.55)}
 .modal.dialog-fallback[open]{display:block;position:fixed;z-index:9999;left:12px;right:12px;bottom:auto;margin:0 auto;width:calc(100% - 24px);max-width:520px;max-height:calc(100vh - 24px);overflow-y:auto;box-sizing:border-box}
 .modal.achievement-modal.dialog-fallback[open]{display:flex}.dialog-fallback .icon-button{min-width:44px;min-height:44px}
+/* Instructions and the selected word share a line box so touching a letter
+   does not change the space reserved above the board. Large text can still grow. */
+.viewport-play .selection-preview{font-size:14px;line-height:1.5;min-height:26px}
+.viewport-play .selection-preview>b{font-size:inherit;line-height:inherit}

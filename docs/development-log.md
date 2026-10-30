@@ -1,3 +1,9 @@
+# 30 Ekim 2026 · Kaydırarak seçim onarımı
+
+Kullanıcı canlı sürümde kaydırarak kelime seçiminin çalışmadığını bildirdi. Tek koordinatör, yalnız ortak Board/ölçüm/giriş yolu. Adaylar: Safari düzeltmesini bütünüyle geri almak (son satır onarımını kaybettirir), yalnız önizleme satırını sabitlemek (diğer zararsız yerleşim güncellemelerini kapsamaz), ölçüm kaynaklı yerleşimde seçimi koruyup gerçek ekran değişikliğinde iptal etmek (seçildi). Kaydırma sırasında değişen önizleme satırının yeniden ölçümü, boyut/konum değiştiğinde genel clear çağırabilmektedir. Beş yeni kontrol önce hatayı üretti. 394/394 test (82 grup), 40 hedefli kontrol, TypeScript, 120 tahta/2.400 alternatif, üretim derlemesi, Safari istemci sözdizimi ve 339 Worker HTTP kontrolü geçti. Gerçek CI/yayın ve tam kaynak eşleşmesi ayrıca araç sonucuyla doğrulanır.
+
+Kabul: önizleme/yerleşim değişimi modern Pointer ve eski Touch Events kaydırmasını kesmez; güncel tahta koordinatları kullanılır; hızlı kaydırmanın son koordinatı hareket olayı gelmese de işlenir; gerçek ekran döndürme/yeniden boyutlandırma, arka plan, pause ve iptal eski seçimi göndermez; iki uca dokunma, klavye, büyütülmüş tahta kaydırması, son satır ve onaylanmış çizgiler korunur. İçerik/kayıt/ödül/Arena/DB değişmez. Gerçek cihaz doğrulaması destekli erişimle sınırlıdır.
+
 # 30 Ekim 2026 · Safari ve görünür oyun alanı düzeltmesi
 
 Kullanıcının iPhone 6 Plus/Safari son satır bildirimi. Adaylar: cihaz adına özel küçültme (elenir), mevcut serbest alanı yeniden ölçmek (Safari'nin şişen flex track'ini tekrar temel alır), gerçek HUD/hedef/kontrol ölçümü + eski Safari yolu (seçildi). Tek koordinatör, dar kapsam. Kabul: son satır ve kontroller gerçek görünen alan içinde; adres çubuğu/döndürme/yazı büyütme sonrası ölçüm yenilenir; sığmayan büyük yazı doğal akışa taşar, tahta kesilmez; ResizeObserver/aspect-ratio/cqw/:has olmadan ölçüm ve kare tahta çalışır. İçerik/kayıt/ödül/Arena protokolü korunur.

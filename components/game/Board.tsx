@@ -25,7 +25,11 @@ export function Board({board,strokes,paused=false,readOnly=false,blocked=false,b
  useEffect(()=>{if(paused||readOnly||blocked)clear();},[paused,readOnly,blocked]);
  useEffect(()=>{clear();},[signature,zoom]);
  useEffect(()=>()=>cancelAnimationFrame(frame.current),[]);
- useEffect(()=>{const element=ref.current;if(!element)return;return attachBoardSize(element,n,zoom,()=>clearRef.current(),window);},[n,zoom]);
+ useEffect(()=>{const element=ref.current;if(!element)return;return attachBoardSize(element,n,zoom,(rect,reason)=>{
+  // The live preview can reflow the frame. Keep the starting cell and rebase hit
+  // testing instead of cancelling the gesture that caused that measurement.
+  if(reason==='viewport')clearRef.current();else if(drag.current)drag.current.rect=rect;
+ },window);},[n,zoom]);
  const cellAt=(x:number,y:number,rect=drag.current?.rect??ref.current!.getBoundingClientRect()):Cell=>[Math.max(0,Math.min(n-1,Math.floor((y-rect.top)/rect.height*n))),Math.max(0,Math.min(n-1,Math.floor((x-rect.left)/rect.width*n)))];
  const show=(cells:Cell[])=>{if(!selectionSound.current&&cells.length){selectionSound.current=true;onSelectStart?.();}setPreview(cells);onPreview?.(cells.map(([r,c])=>board.grid[r]![c]).join(''));};
  const schedule=(cells:Cell[])=>{pending.current=cells;if(frame.current)return;frame.current=requestAnimationFrame(()=>{frame.current=0;if(pending.current&&!disabled.current)show(pending.current);pending.current=null;});};
@@ -35,11 +39,11 @@ export function Board({board,strokes,paused=false,readOnly=false,blocked=false,b
   if(disabled.current||drag.current||!e.isPrimary||(e.pointerType==='mouse'&&e.button!==0))return;
   const rect=ref.current!.getBoundingClientRect(),start=cellAt(e.clientX,e.clientY,rect),tapOnly=zoom&&e.pointerType!=='mouse';
   drag.current={id:e.pointerId,start,current:start,moved:false,tapOnly,x:e.clientX,y:e.clientY,pan:false,rect};
-  if(!tapOnly){e.preventDefault();ref.current?.setPointerCapture?.(e.pointerId);if(!anchor)show([start]);}
+  if(!tapOnly){e.preventDefault();try{if(typeof window.PointerEvent==='function')ref.current?.setPointerCapture?.(e.pointerId);}catch{/* Capture is optional; an active in-board swipe still works. */}if(!anchor)show([start]);}
   const at=performance.now();requestAnimationFrame(()=>track('input_feedback',performance.now()-at));
  };
  const move=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId)return;if(disabled.current)return clear();if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}const cell=cellAt(e.clientX,e.clientY);if(same(d.current,cell))return;d.current=cell;if(!same(d.start,cell))d.moved=true;if(d.moved){setAnchor(null);schedule(snapLine(d.start,cell,n));}};
- const up=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId)return;const cell=cellAt(e.clientX,e.clientY);drag.current=null;if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else if(d.moved){const cells=snapLine(d.start,cell,n);commit(d.start,cells.at(-1)!);}else tap(d.start);};
+ const up=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId)return;const cell=cellAt(e.clientX,e.clientY,ref.current!.getBoundingClientRect());drag.current=null;if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else if(d.moved||!same(d.start,cell)){const cells=snapLine(d.start,cell,n);commit(d.start,cells.at(-1)!);}else tap(d.start);};
  const cancel=(e:BoardPointer)=>{if(drag.current?.id===e.pointerId)clear();};
  const key=(e:KeyboardEvent)=>{if(paused)return;const dirs:Record<string,Cell>={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};const dir=dirs[e.key];if(dir){e.preventDefault();const next:Cell=[Math.max(0,Math.min(n-1,cursor[0]+dir[0])),Math.max(0,Math.min(n-1,cursor[1]+dir[1]))];setCursor(next);if(anchor&&!disabled.current)show(snapLine(anchor,next,n));}else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!disabled.current)tap(cursor);}else if(e.key==='Escape')clear();};
  const legacyHandlers=useRef({down,move,up,cancel:clear,pan:()=>zoom||readOnly||blocked});legacyHandlers.current={down,move,up,cancel:clear,pan:()=>zoom||readOnly||blocked};

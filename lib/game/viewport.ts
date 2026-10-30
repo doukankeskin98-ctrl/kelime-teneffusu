@@ -75,13 +75,17 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,
 }
 
 /** A real pixel square also works without aspect-ratio, container units or ResizeObserver. */
-export function attachBoardSize(element:HTMLElement,cells:number,zoom:boolean,onResize:()=>void,view:View){
- let previous:DOMRect|null=null,disposed=false;
- const update=()=>{if(disposed)return;const width=Math.floor(element.getBoundingClientRect().width);if(width<=0)return;
+export function attachBoardSize(element:HTMLElement,cells:number,zoom:boolean,onResize:(rect:DOMRect,reason:'viewport'|'layout')=>void,view:View){
+ let previous:DOMRect|null=null,disposed=false,viewportWidth=view.innerWidth,viewportHeight=view.innerHeight;
+ const update=(reason:'viewport'|'layout'='layout',force=false)=>{if(disposed)return;const width=Math.floor(element.getBoundingClientRect().width);if(width<=0)return;
   set(element,'height',width+'px');set(element,'--board-letter-size',(zoom?24:Math.max(13,Math.min(30,Math.floor((width-2)/cells*.57))))+'px');
-  const rect=element.getBoundingClientRect();if(previous&&(rect.width!==previous.width||rect.height!==previous.height||rect.top!==previous.top||rect.left!==previous.left))onResize();previous=rect;
+  const rect=element.getBoundingClientRect();if(previous&&(force||rect.width!==previous.width||rect.height!==previous.height||rect.top!==previous.top||rect.left!==previous.left))onResize(rect,reason);previous=rect;
  };
- const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(update):null;observer?.observe(element);
- view.addEventListener('resize',update);view.addEventListener('orientationchange',update);view.addEventListener('kt-board-layout',update);update();
- return ()=>{disposed=true;observer?.disconnect();view.removeEventListener('resize',update);view.removeEventListener('orientationchange',update);view.removeEventListener('kt-board-layout',update);};
+ const layout=()=>update('layout'),viewport=(event:Event)=>{
+  const changed=event.type==='orientationchange'||viewportWidth!==view.innerWidth||viewportHeight!==view.innerHeight;
+  viewportWidth=view.innerWidth;viewportHeight=view.innerHeight;update('viewport',changed);
+ };
+ const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(layout):null;observer?.observe(element);
+ view.addEventListener('resize',viewport);view.addEventListener('orientationchange',viewport);view.addEventListener('kt-board-layout',layout);update();
+ return ()=>{disposed=true;observer?.disconnect();view.removeEventListener('resize',viewport);view.removeEventListener('orientationchange',viewport);view.removeEventListener('kt-board-layout',layout);};
 }

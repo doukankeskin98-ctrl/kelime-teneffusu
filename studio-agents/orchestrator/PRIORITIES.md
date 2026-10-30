@@ -1,5 +1,7 @@
 # Öncelikler
 
+30 Ekim 2026, 0.15.2: kullanıcı kaydırarak seçimin bozulduğunu bildirdi. Ölçüm kaynaklı reflow'un kendi seçimini silmesi kontrollü gerçek Board testinde kanıtlandı; ölçüm ile viewport iptali ayrıldı, hızlı bırakma ve capture reddi ele alındı. Tek koordinatör, yeni özellik/altyapı/DB yok. Son kanıt `../journal/entries/2026-10-30_swipe-selection.md`; gerçek Safari/telefon ve destekli DOM kontrolü ilk açık doğrulama olarak kalır.
+
 30 Ekim 2026, 0.15.1: kullanıcı iPhone 6 Plus Safari son satır kesilmesini bildirdi. Ortak geometri ve eski tarayıcı yolu düzeltildi; son kanıt `../journal/entries/2026-10-30_safari-fit.md`. Güncel ilk doğrulama fiziksel iOS 12/Safari ve iPhone/Android adres çubuğu/döndürme/büyük yazı. Bu cihaz kanıtı olmadan tüm cihazlar garantisi verilmez. Kullanıcı dar kapsamıyla tek koordinatör; yeni mod/ekonomi/DB yok.
 
 30 Ekim 2026, 0.15.0: kullanıcının üç düzeltmesi birlikte: ölçülen oyun çerçevesi, 4/üstü özel Arena, aynı odada kalıcı içerik geçmişiyle yeni tur. Son koordinatör kanıtı `../journal/entries/2026-10-30_arena-fit-validation.md`. Güncel öncelik gerçek küçük/büyük iPhone/Android ve 4+ cihaz maçı, gerçek provider yeniden giriş ve üretim D1/SSE kapasite ölçümü; destekli tarayıcı ERR_CONNECTION_REFUSED. 16 servis katılımcısı üretim kapasitesi vaadi değildir. Eski içerik/kayıt korunur.

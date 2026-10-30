@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.15.2',date:'30 Ekim 2026',title:'Kaydırarak seçim onarıldı',items:[
+  {where:'Kelime tahtası',detail:'Seçilen harfler yazılırken ekran yeniden ölçülse de kaydırman kesilmez. Parmağını bıraktığın son harf hızlı kaydırmalarda da değerlendirilir.'},
+  {where:'Telefon ve Safari',detail:'İlk dokunuş ile seçilen kelime aynı satır yüksekliğini kullanır. Ekranı döndürme, duraklatma ve arka plana alma yarım seçimi güvenle temizlemeye devam eder.'},
+ ]},
  {version:'0.15.1',date:'30 Ekim 2026',title:'Tahta için daha sağlam ekran ölçüsü',items:[
   {where:'Oyun alanı',detail:'Görünür ekran, başlık, kelimeler ve kontroller birlikte ölçülür. Adres çubuğu, ekran döndürme ve büyük yazı değişikliklerinde tahta yeniden yerleşir; sığmayan durumda okunabilir içerik kesilmez.'},
   {where:'Safari',detail:'Kare tahta ve harfler yalnız yeni CSS özelliklerine bağlı değil. Eski tarayıcılarda ölçüm, dokunarak seçim ve sonuç penceresi için aynı oyunu kullanan yedek yollar eklendi.'},

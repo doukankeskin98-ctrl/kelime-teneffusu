@@ -4,6 +4,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 
 ## Oyun
 
+- 0.15.2: Kaydırma sırasında ölçüm kaynaklı yerleşim, başlangıç hücresini silmez; tahta koordinatları güncellenir. Hızlı kaydırmada son bırakma koordinatı da işlenir. Pointer Events ve eski Safari Touch Events aynı Board'u kullanır; döndürme, arka plan ve pause iptali korunur.
 - 16 tema, 96 özgün bölüm. Sekiz yön, her tahtada iki eğimde çapraz kelimeler.
 - Hababam, Uzay ve Türkiye için ayrıca 15 düzenlenmiş rota bölümü; küçük tahtalardan başlayan zorluk akışı.
 - Keşif Haritası: 16 dünyada 96 bölüm ve kalıcı koleksiyon parçası. İlk üçlü korunur; 13 yeni haritada 78 bölüm ve 26 İpucu Avı vardır. Üç durak sonraki dünyayı, beş durak bonusu açar.
