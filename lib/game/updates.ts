@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.16.1',date:'30 Ekim 2026',title:'Odandaki galibiyetler, daha kararlı sesler',items:[
+  {where:'Arena · Oda galibiyetleri',detail:'Kim kaç maç kazandı, lobide ve sonuçta doğrudan gör. Yeni turlar ve sayfa yenilemesi aynı odanın gerçek galibiyetlerini korur.'},
+  {where:'Oyun sesleri',detail:'Dokunma ile ses açılışı ve ekranlar arası ses sürekliliği güçlendirildi. Arka plandaki eski sesler sonradan çalmaz. Hazırım onayı için kısa, yumuşak bir tını eklendi; sessize alma ve cihaz ses düzeyi tercihlerin korunur.'},
+ ]},
  {version:'0.16.0',date:'30 Ekim 2026',title:'Daha rahat tahta, birlikte devam eden rekabet',items:[
   {where:'Telefon ve tablet',detail:'Büyük tahtada da parmağınla kelime çiz. Tahtayı taşımak için ayrı Tahtayı kaydır kontrolü var. Tabletlerde tahta daha geniş alan kullanır; büyük harf modu tahtayı küçültmez.'},
   {where:'Arena · Hızlı eşleş',detail:'Ana eylem açık grup lobisine katılır. İkinci oyuncuda lobi kapanmaz; herkes hazır olunca oda sahibi başlatır. İki kişilik dereceli düello ayrı eylemde durur.'},
