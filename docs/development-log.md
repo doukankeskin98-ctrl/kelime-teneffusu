@@ -1,3 +1,11 @@
+# 30 Ekim 2026 · 0.17.0 · Faz 1 yayın birleşimi
+
+Kullanıcının açık canlı yayın isteğiyle PR36'nın seçme hissi değişiklikleri güncel 0.16.2'ye birleştirildi. Altı sürüm/not çakışması her iki değişiklik grubunu koruyarak çözüldü; oynanış kodunda çakışma yok. 30 Ekim çifti, özgünlük denetimi, eski kayıt/ödül/Arena ve göçler korunur. Yeni özellik veya sonraki faz eklenmez. Son birleşim kabulleri ve gerçek doğrulama sınırı phase1-publication günlüğündedir; fiziksel/görsel kabul tamamlanmış sayılmaz.
+
+# 30 Ekim 2026 · Faz 1 · İnceleme dalı
+
+Tek hedef mevcut kelime çiziminin hissi ve güvenilirliği. Yön ekseni, merkez ağırlıklı isabet, imperative RAF izi/harfler ve üst satır büyüteci aynı Board/PlayLayout üzerinde; mevcut liste, mod, sunucu claim ve kayıt değişmez. İlk statik Faz 0 incelemesi görsel kapıda açık kalır. Önceki taban 0.16.1; 0.17.0 henüz inceleme sürümüdür, canlı yayın/cihaz/FPS kabulü yapılmadı. Dar bağımsız inceleme ve gerçek test kanıtı `studio-agents/journal/entries/2026-10-30_phase1-selection.md` kaydında. Faz 2–4'e veya yeni özelliğe otomatik geçilmez.
+
 # 30 Ekim 2026 · 0.16.2 · İki yeni bölüm ve içerik özgünlüğü kapısı
 
 Eksik UTC çifti tamamlanır: Kahvaltı sofrası (Rahat 6×6, dört kelime), Orkestra provası (Dengeli 8×8, yedi kelime). Sabit tarih/slot kimlikleri, kaynak snapshot ve mevcut arşiv/damga akışı kullanılır. Adaylar arasından dar ve düşük riskli içerik özgünlüğü kapısı seçildi: yeni kimlik, tohum, sıralama veya yazım biçimi aynı kelime kümesini yeni içerik saydıramaz; gerçek grid de ayrıca karşılaştırılır. Önceki dokuz yayın dosyası ve kayıt/ödül/oynanış korunur. Tek koordinatör; yeni servis, bağımlılık, ajan veya arayüz yok. Kabul ve son kanıt kısa koordinatör günlüğündedir. Faz 1 taslak PR36 ayrı kalır; cihaz/görsel kabulü tamamlanmış veya canlı sayılmaz.
