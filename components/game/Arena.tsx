@@ -43,7 +43,7 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
  useEffect(()=>{setPending(null);setPreview('');setReview(false);setRanking(false);setPreviousResult(false);},[room?.id,room?.round]);
  const run=async(action:string,data:Record<string,unknown>={})=>{
   if(actionLock.current)return;actionLock.current=true;epoch.current++;const stamp=context();setBusy(true);setError('');
-  try{const next=await arenaRequest(signal=>api<RoomView>(action,{...data,...(room?{round:room.round,expectedOwnerId:room.you.id}:ownerId?{expectedOwnerId:ownerId}:{})},signal));if(isCurrent(stamp)){accept(next,action==='enter');if(action==='enter')setJoinedAt(Date.now());}}
+  try{const next=await arenaRequest(signal=>api<RoomView>(action,{...data,...(room?{round:room.round,expectedOwnerId:room.you.id}:ownerId?{expectedOwnerId:ownerId}:{})},signal));if(isCurrent(stamp)){accept(next,action==='enter');if(action==='enter')setJoinedAt(Date.now());if(action==='ready'&&next.you.ready&&!room?.you.ready&&next.id===room?.id&&next.round===room?.round&&currentRoom.current?.revision===next.revision)chime('ready');}}
   catch(e){if(isCurrent(stamp))setError((e as Error).message);}finally{actionLock.current=false;if(mounted.current)setBusy(false);}
  };
  const leave=async()=>{
@@ -84,11 +84,11 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
  {rules&&!leaving&&<Modal title="Düello kuralları" onClose={()=>setRules(false)}><p>120 saniye boyunca aynı tahtada yarışın. Bütün kelimeleri ilk bulan kazanır. Süre dolarsa en yüksek puan kazanır; birincilik puanları eşitse beraberlik olur. Eşit puanlar aynı sırayı paylaşır.</p><p>Bir kelime 100 + harf başına 10 puan değerinde. İlk 20 saniye ve her 40 saniyede açılan 20 saniyelik Altın Kelime penceresinde işaretli kelime ×2 puan verir.</p><p>İpucu yok. Yanlış seçim cezası yok. Bağlantı kesilirse süre devam eder. Yalnız iki kişilik dereceli düello Arena puanını etkiler. Hızlı grup ve özel odalar etkilemez. Oda serisindeki galibiyetler gerçek tamamlanmış maçlardan hesaplanır; beraberlik kimseye galibiyet eklemez.</p><button className="button primary full" onClick={()=>setRules(false)}>Anlaşıldı</button></Modal>}
  </>;
 }
-export function ArenaSeriesBoard({series,you,expanded=false}:{series:ArenaSeries;you:string;expanded?:boolean}){
+export function ArenaSeriesBoard({series,you}:{series:ArenaSeries;you:string;expanded?:boolean}){
  const [page,setPage]=useState(0),pages=Math.max(1,Math.ceil(series.players.length/12)),current=Math.min(page,pages-1),me=series.players.find(p=>p.id===you);
- return <details className="arena-series" open={expanded}><summary><Trophy size={18}/><span>Oda serisi <small>{series.rounds} kayıtlı maç · Sen {me?.wins??0} galibiyet</small></span></summary>
+ return <section className="arena-series" aria-label="Bu odanın galibiyetleri"><h2><Trophy size={18}/><span>Oda galibiyetleri <small>{series.rounds} kayıtlı maç · Sen {me?.wins??0} galibiyet</small></span></h2>
   {series.rounds===0?<p>İlk tamamlanan maçtan sonra galibiyetler burada birikir.</p>:<><p>Galibiyete göre sıralama. Eşit galibiyetler aynı sırayı paylaşır; beraberlik galibiyet eklemez.</p><ol aria-label="Oda serisi galibiyetleri">{series.players.slice(current*12,current*12+12).map(p=><li key={p.id} className={p.id===you?'is-you':''}><span>{p.rank}.</span><strong>{p.name}{p.id===you?' · Sen':''}<small>{p.played} maç · {p.draws} beraberlik{!p.active?' · Odadan ayrıldı':''}</small></strong><b>{p.wins}<small>galibiyet</small></b></li>)}</ol>{pages>1&&<nav aria-label="Seri sıralaması sayfaları"><button className="text-button" disabled={current===0} onClick={()=>setPage(current-1)}>Önceki</button><span>{current+1}/{pages}</span><button className="text-button" disabled={current===pages-1} onClick={()=>setPage(current+1)}>Sonraki</button></nav>}</>}
- </details>;
+ </section>;
 }
 export function ArenaRoster({people,you,lobby=false,historical=false}:{people:ArenaParticipant[];you:string;lobby?:boolean;historical?:boolean}){
  const [page,setPage]=useState(0);const pages=Math.max(1,Math.ceil(people.length/12)),current=Math.min(page,pages-1);

@@ -4,7 +4,7 @@ Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudfla
 
 ## Oyun
 
-- 0.16.0: Tablet portresinde 1100px'e kadar tek sütunlu tahta, 720px'e kadar gerçek alan kullanımı, küçülmeyen büyük harf modu. Büyütmede tek parmak çizim varsayılandır; Seç/Taşı kontrolü açıktır. Native Touch/Pointer çift olayları tek seçime iner; adres çubuğu yüksekliği çizimi kesmez. Hızlı eşleş ana eylemi derecesiz açık grup lobisine, ayrı eylem dereceli iki kişilik düelloya gider. Grup serisi sonuç makbuzlarından galibiyet/beraberlik/maç türetir; yeni tur, yenileme ve ayrılma kazanımı değiştirmez. Fiziksel telefon/tablet testleri ayrıca açıktır.
+- 0.16.1 · görünür oda galibiyetleri ve ses sürekliliği: Tablet portresinde 1100px'e kadar tek sütunlu tahta, 720px'e kadar gerçek alan kullanımı, küçülmeyen büyük harf modu. Büyütmede tek parmak çizim varsayılandır; Seç/Taşı kontrolü açıktır. Native Touch/Pointer çift olayları tek seçime iner; adres çubuğu yüksekliği çizimi kesmez. Hızlı eşleş ana eylemi derecesiz açık grup lobisine, ayrı eylem dereceli iki kişilik düelloya gider. Grup serisi sonuç makbuzlarından galibiyet/beraberlik/maç türetir; yeni tur, yenileme ve ayrılma kazanımı değiştirmez. Fiziksel telefon/tablet testleri ayrıca açıktır.
 - 0.15.2: Kaydırma sırasında ölçüm kaynaklı yerleşim, başlangıç hücresini silmez; tahta koordinatları güncellenir. Hızlı kaydırmada son bırakma koordinatı da işlenir. Pointer Events ve eski Safari Touch Events aynı Board'u kullanır; döndürme, arka plan ve pause iptali korunur.
 - 16 tema, 96 özgün bölüm. Sekiz yön, her tahtada iki eğimde çapraz kelimeler.
 - Hababam, Uzay ve Türkiye için ayrıca 15 düzenlenmiş rota bölümü; küçük tahtalardan başlayan zorluk akışı.

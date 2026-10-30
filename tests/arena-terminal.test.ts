@@ -14,7 +14,7 @@ type Node={type:unknown;props:Record<string,any>};
 type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void;updates?:any[]};
 const compiled=ts.transpileModule(readFileSync('components/game/Arena.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
 function nodes(value:unknown):Node[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object')return [];const n=value as Node;return [n,...['children','aside','footer'].flatMap(key=>nodes(n.props?.[key]))];}
-function text(value:unknown):string{if(typeof value==='string')return value;if(Array.isArray(value))return value.map(text).join(' ');return value&&typeof value==='object'?text((value as Node).props?.['children']):'';}
+function text(value:unknown):string{if(typeof value==='string'||typeof value==='number')return String(value);if(Array.isArray(value))return value.map(text).join(' ');return value&&typeof value==='object'?text((value as Node).props?.['children']):'';}
 const NOW=2_000_000;
 const publicBoard=(({placements:_placements,...board})=>board)(TUTORIAL);
 function room(phase:RoomView['phase'],starts:number|null,ends:number|null):RoomView{return {revision:3,id:'arena-1',code:'ABCDEFGH',kind:'friend',phase,themeId:'uzay',starts,ends,winner:phase==='finished'?'alice':null,reason:phase==='finished'?'Süre doldu':'',round:1,serverNow:NOW,board:publicBoard,golden:null,you:{id:'alice',name:'Alice',ready:true,strokes:[TUTORIAL.placements[0]!],score:140,rematch:false},opponent:{name:'Bora',ready:true,count:1,score:120,online:true,rematch:false}};}
@@ -88,3 +88,24 @@ it('accepts a server quick-queue transfer only from the current stream and ignor
 it('offers the previous finished ranking in a successor lobby even without receiving the finish event',async()=>{const initial={...room('ready',null,null),board:null,round:2,lastResult:{round:1,winner:'alice',reason:'Tüm kelimeler bulundu',players:[{id:'alice',name:'Alice',score:800,count:6,ready:true,online:true,rematch:false,left:false,rank:1}]}},h=harness(initial);try{await h.settle();h.click(/Önceki maç sonucu/);await h.settle();assert.equal(h.modalCount(),1);h.click(/Lobiye dön/);await h.settle();assert.equal(h.modalCount(),0);}finally{h.close();}});
 
 it('restores a paired quick room even if its result arrived before a delayed queue reconnect',async()=>{const initial={...room('waiting',null,null),kind:'quick',id:'queue-old',board:null},h=harness(initial);try{await h.settle();h.push({...room('finished',NOW-121_000,NOW-1),kind:'quick',id:'host-new'},'queue-old');await h.settle();assert.equal(h.layout().props['readOnly'],true);assert.equal(h.modalCount(),1);}finally{h.close();}});
+
+// The actual series component, with static hooks: the lobby must not hide wins in details.
+describe('visible room win table',()=>{
+ it('shows every recorded win directly and gives no inferred victory to an empty series',()=>{
+  const exports:Record<string,any>={},jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
+  vm.runInNewContext(compiled,{exports,require:(name:string)=>{if(name==='react')return {useState:(v:unknown)=>[v,()=>{}]};if(name==='react/jsx-runtime')return {jsx,jsxs:jsx};if(name==='lucide-react')return new Proxy({},{get:(_t,k)=>String(k)});return {};}});
+  const series={rounds:3,players:[{id:'alice',name:'Alice',rank:1,wins:2,played:3,draws:1,score:480,active:true},{id:'bob',name:'Bora',rank:2,wins:0,played:3,draws:1,score:300,active:true}]};
+  const tree=exports['ArenaSeriesBoard']({series,you:'alice'});assert.equal(tree.type,'section');assert.equal(nodes(tree).some(n=>n.type==='details'),false);assert.equal(nodes(tree).filter(n=>n.type==='li').length,2);assert.match(text(tree),/Oda galibiyetleri/);assert.match(text(tree),/Sen\s+2\s+galibiyet/);assert.match(text(tree),/Bora/);
+  const empty=exports['ArenaSeriesBoard']({series:{...series,rounds:0},you:'alice'});assert.match(text(empty),/İlk tamamlanan maçtan sonra/);assert.equal(nodes(empty).filter(n=>n.type==='li').length,0);
+ });
+ it('keeps large-room tables paginated without silently dropping players',()=>{
+  const exports:Record<string,any>={},jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});let current=0;
+  vm.runInNewContext(compiled,{exports,require:(name:string)=>{if(name==='react')return {useState:()=>[current,(v:number)=>{current=v;}]};if(name==='react/jsx-runtime')return {jsx,jsxs:jsx};if(name==='lucide-react')return new Proxy({},{get:(_t,k)=>String(k)});return {};}});
+  const series={rounds:1,players:Array.from({length:16},(_,i)=>({id:'u'+i,name:'Oyuncu '+i,rank:i+1,wins:i===0?1:0,played:1,draws:0,score:0,active:true}))};
+  let tree=exports['ArenaSeriesBoard']({series,you:'u0'});assert.equal(nodes(tree).filter(n=>n.type==='li').length,12);nodes(tree).find(n=>n.type==='button'&&text(n)==='Sonraki')!.props['onClick']();tree=exports['ArenaSeriesBoard']({series,you:'u0'});assert.equal(nodes(tree).filter(n=>n.type==='li').length,4);assert.match(text(tree),/Oyuncu 15/);
+ });
+});
+
+it('plays the ready cue only after a newly ready state is accepted, never on failure',async()=>{
+ for(const accepted of [false,true]){const initial={...room('ready',null,null),you:{...room('ready',null,null).you,ready:false}},gate=deferredRoom(),h=harness(initial,()=>gate.promise);try{await h.settle();h.click(/Hazırım/);await h.settle();assert.deepEqual(h.sounds,[]);if(accepted)gate.resolve({...initial,revision:4,you:{...initial.you,ready:true}});else gate.reject(new Error('Ready rejected'));await h.settle();assert.deepEqual(h.sounds,accepted?['ready']:[]);}finally{h.close();}}
+});
