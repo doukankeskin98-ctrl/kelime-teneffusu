@@ -1,5 +1,7 @@
 # Öncelikler
 
+30 Ekim 2026, 0.16.0: gerçek tablet/kaydırma bildirimi ve açık grup/oda serisi. Büyütmede çizim ile taşıma ayrıldı, Touch/Pointer sahipliği tekilleştirildi, portre tablet alanı ve zoom alt sınırı onarıldı. Grup kuyruğu eski dereceli düellodan ayrıdır; galibiyet/beraberlik results makbuzundan snapshot sınırıyla türetilir. Tek gerçek bağımsız güvenilirlik incelemesi stale slot ve çevrimdışı host engelini buldu, fix/probe ile kapattı. Koordinatör son kanıtı `../journal/entries/2026-10-30_stability-series.md`. İlk açık iş destekli gerçek iPad/iPhone/Android/kalem ve provider/çok cihaz doğrulamasıdır; sıfır hata/kapasite vaadi yok.
+
 30 Ekim 2026, 0.15.2: kullanıcı kaydırarak seçimin bozulduğunu bildirdi. Ölçüm kaynaklı reflow'un kendi seçimini silmesi kontrollü gerçek Board testinde kanıtlandı; ölçüm ile viewport iptali ayrıldı, hızlı bırakma ve capture reddi ele alındı. Tek koordinatör, yeni özellik/altyapı/DB yok. Son kanıt `../journal/entries/2026-10-30_swipe-selection.md`; gerçek Safari/telefon ve destekli DOM kontrolü ilk açık doğrulama olarak kalır.
 
 30 Ekim 2026, 0.15.1: kullanıcı iPhone 6 Plus Safari son satır kesilmesini bildirdi. Ortak geometri ve eski tarayıcı yolu düzeltildi; son kanıt `../journal/entries/2026-10-30_safari-fit.md`. Güncel ilk doğrulama fiziksel iOS 12/Safari ve iPhone/Android adres çubuğu/döndürme/büyük yazı. Bu cihaz kanıtı olmadan tüm cihazlar garantisi verilmez. Kullanıcı dar kapsamıyla tek koordinatör; yeni mod/ekonomi/DB yok.

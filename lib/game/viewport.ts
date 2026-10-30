@@ -2,7 +2,7 @@
 export function fittedBoardSize(width:number,availableHeight:number,cells:number,insets=0){
  const safeWidth=Math.max(0,Math.floor(width));
  const readableMinimum=Math.min(safeWidth,cells*22+insets);
- return Math.max(readableMinimum,Math.min(safeWidth,520,Math.floor(availableHeight)));
+ return Math.max(readableMinimum,Math.min(safeWidth,720,Math.floor(availableHeight)));
 }
 
 /** Height reserved by HUD, targets and controls is measured, not a device guess. */
@@ -63,7 +63,7 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,
   set(stage,'flex','0 0 auto');changed=set(screen,'--fitted-board',result.boardSize+'px')||changed;
   screen.setAttribute('data-fit',result.overflow?'scroll':'contained');if(changed)view.dispatchEvent(new view.Event('kt-board-layout'));
  });};
- const watch=[screen,...Array.from(screen.querySelectorAll<HTMLElement>('.play-heading,.play-hud,.targets-panel,.selection-preview,.play-controls,.duel-controls,.sprint-footer,.board-word-access'))];
+ const watch=[screen,...Array.from(screen.querySelectorAll<HTMLElement>('.play-heading,.play-hud,.targets-panel,.selection-preview,.play-controls,.duel-controls,.sprint-footer,.board-word-access,.board-input-tools'))];
  const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(fit):null;
  watch.forEach(element=>observer?.observe(element));if(screen.parentElement)observer?.observe(screen.parentElement);
  const mutation=typeof view.MutationObserver==='function'?new view.MutationObserver(records=>{if(records.some(record=>!stage.contains(record.target)))fit();}):null;
@@ -76,16 +76,20 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,
 
 /** A real pixel square also works without aspect-ratio, container units or ResizeObserver. */
 export function attachBoardSize(element:HTMLElement,cells:number,zoom:boolean,onResize:(rect:DOMRect,reason:'viewport'|'layout')=>void,view:View){
- let previous:DOMRect|null=null,disposed=false,viewportWidth=view.innerWidth,viewportHeight=view.innerHeight;
- const update=(reason:'viewport'|'layout'='layout',force=false)=>{if(disposed)return;const width=Math.floor(element.getBoundingClientRect().width);if(width<=0)return;
-  set(element,'height',width+'px');set(element,'--board-letter-size',(zoom?24:Math.max(13,Math.min(30,Math.floor((width-2)/cells*.57))))+'px');
+ let previous:DOMRect|null=null,disposed=false,viewportWidth=view.innerWidth;
+ const update=(reason:'viewport'|'layout'='layout',force=false)=>{if(disposed)return;
+  const parent=element.parentElement;
+  if(zoom&&parent){const css=view.getComputedStyle(parent);set(element,'width',Math.max(cells*46,Math.floor(parent.clientWidth-pixels(css.paddingLeft)-pixels(css.paddingRight)))+'px');}
+  else set(element,'width','100%');
+  const width=Math.floor(element.getBoundingClientRect().width);if(width<=0)return;
+  set(element,'height',width+'px');set(element,'--board-letter-size',Math.max(zoom?24:13,Math.min(zoom?48:42,Math.floor((width-2)/cells*.57)))+'px');
   const rect=element.getBoundingClientRect();if(previous&&(force||rect.width!==previous.width||rect.height!==previous.height||rect.top!==previous.top||rect.left!==previous.left))onResize(rect,reason);previous=rect;
  };
  const layout=()=>update('layout'),viewport=(event:Event)=>{
-  const changed=event.type==='orientationchange'||viewportWidth!==view.innerWidth||viewportHeight!==view.innerHeight;
-  viewportWidth=view.innerWidth;viewportHeight=view.innerHeight;update('viewport',changed);
+  const changed=event.type==='orientationchange'||viewportWidth!==view.innerWidth;
+  viewportWidth=view.innerWidth;update(changed?'viewport':'layout',changed);
  };
- const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(layout):null;observer?.observe(element);
+ const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(layout):null;observer?.observe(element);if(element.parentElement)observer?.observe(element.parentElement);
  view.addEventListener('resize',viewport);view.addEventListener('orientationchange',viewport);view.addEventListener('kt-board-layout',layout);update();
  return ()=>{disposed=true;observer?.disconnect();view.removeEventListener('resize',viewport);view.removeEventListener('orientationchange',viewport);view.removeEventListener('kt-board-layout',layout);};
 }

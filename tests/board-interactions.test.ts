@@ -15,7 +15,7 @@ type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
 function nodes(value:unknown):Node[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object')return [];const n=value as Node;return [n,...nodes(n.props?.['children'])];}
 function text(value:unknown):string{if(typeof value==='string')return value;if(Array.isArray(value))return value.map(text).join('');return value&&typeof value==='object'?text((value as Node).props?.['children']):'';}
 const compiled=ts.transpileModule(readFileSync('components/game/Board.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
-function harness(options:{legacy?:boolean;zoom?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
+function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
  let selections=0;
@@ -29,9 +29,9 @@ function harness(options:{legacy?:boolean;zoom?:boolean;paused?:boolean;readOnly
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectStart:()=>{selections++;}};
+ const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectStart:()=>{selections++;}};
  if(options.legacy)delete (element as any).setPointerCapture;
- Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
+ Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
   if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
   if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
@@ -45,6 +45,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;paused?:boolean;readOnly
  return {commits,previews,accepted,props,paint,boardNode,send,
   native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
   reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
+  toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
   rotate(){windowTarget.dispatchEvent(new Event('orientationchange'));paint();},
   rejectCapture(){element.setPointerCapture=()=>{throw new Error('No active pointer');};},
   get selections(){return selections;},
@@ -57,7 +58,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;paused?:boolean;readOnly
   tap(cell:Cell,extra:Record<string,unknown>={}){send('onPointerDown',cell,extra);send('onPointerUp',cell,extra);},
   selected(){return nodes(tree).filter(n=>n.props?.['className']==='letter-selected').map(n=>n.props['data-cell']);},
   setProps(next:Partial<typeof props>,commit=true){Object.assign(props,next);dirty=true;paint(commit);},
-  resize(changed=true){if(changed){width+=10;height+=10;}windowTarget.dispatchEvent(new Event('resize'));paint();},
+  resize(changed=true){if(changed){width+=10;height+=10;(windowTarget as any).innerWidth+=10;}windowTarget.dispatchEvent(new Event('resize'));paint();},
   unmount(){mounted=false;for(const slot of slots)slot.cleanup?.();},
   get afterUnmount(){return afterUnmount;},get tree(){return tree;}
  };
@@ -103,7 +104,7 @@ describe('Board input compatibility and paused accessibility',()=>{
   for(const pointerType of ['touch','mouse']){const h=harness();h.tap(a,{pointerType});assert.equal(h.selected().length,1);h.tap(b,{pointerType});assert.deepEqual(h.commits,[{a,b}]);h.unmount();}
  });
  it('lets enlarged-touch panning move without selecting a word and keeps subsequent two taps usable',()=>{
-  const h=harness({zoom:true});drag(h);h.send('onPointerUp',b);assert.equal(h.commits.length,0);h.tap(a);h.tap(b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();
+  const h=harness({zoom:true,pan:true});drag(h);h.send('onPointerUp',b);assert.equal(h.commits.length,0);h.tap(a);h.tap(b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();
  });
  it('keeps keyboard diagonal selection and Escape cancellation',()=>{
   const h=harness();h.focus();h.key('Enter');h.key('ArrowDown');h.key('ArrowRight');assert.deepEqual(h.selected().sort(),cells(a,[1,1]));h.key('Escape');h.key('Enter');assert.equal(h.commits.length,0);h.key('ArrowDown');h.key('ArrowRight');h.key('Enter');assert.deepEqual(h.commits,[{a:[1,1],b:[2,2]}]);h.unmount();
@@ -160,7 +161,7 @@ it('keeps pending server input visible and busy without claiming completion, the
 describe('selection sound is a single intentional start',()=>{
  it('does not tick through dragged cells or on commit/cancel',()=>{const h=harness();drag(h);h.flush();h.send('onPointerMove',[3,3]);h.flush();assert.equal(h.selections,1);h.send('onPointerUp',[3,3]);assert.equal(h.selections,1);h.tap(a);assert.equal(h.selections,2);h.key('Escape');assert.equal(h.selections,2);h.unmount();});
  it('supports keyboard anchoring, stays silent during enlarged panning and all blocked states',()=>{
-  const h=harness();h.key('ArrowRight');assert.equal(h.selections,0);h.key('Enter');h.key('ArrowDown');h.key('Enter');assert.equal(h.selections,1);h.unmount();const pan=harness({zoom:true});drag(pan);pan.send('onPointerUp',b);assert.equal(pan.selections,0);pan.tap(a);pan.tap(b);assert.equal(pan.selections,1);pan.unmount();
+  const h=harness();h.key('ArrowRight');assert.equal(h.selections,0);h.key('Enter');h.key('ArrowDown');h.key('Enter');assert.equal(h.selections,1);h.unmount();const pan=harness({zoom:true,pan:true});drag(pan);pan.send('onPointerUp',b);assert.equal(pan.selections,0);pan.tap(a);pan.tap(b);assert.equal(pan.selections,1);pan.unmount();
   for(const blocked of [{paused:true},{readOnly:true},{blocked:true}]){const h=harness(blocked);drag(h);h.send('onPointerUp',b);h.key('Enter');assert.equal(h.selections,0);h.unmount();}
  });
 });
@@ -172,7 +173,7 @@ describe('actual Board supports legacy Safari Touch Events and its last row',()=
   h.resize();h.native('touchstart',[a]);h.native('touchend',[],[a]);h.native('touchstart',[b]);h.native('touchend',[],[b]);assert.deepEqual(h.commits[1],{a,b});h.unmount();
  });
  it('allows enlarged panning and cancels legacy input on backgrounding without a stale commit',()=>{
-  const h=harness({legacy:true,zoom:true});h.native('touchstart',[a]);h.native('touchmove',[b]);h.native('touchend',[],[b]);assert.equal(h.commits.length,0);
+  const h=harness({legacy:true,zoom:true,pan:true});h.native('touchstart',[a]);h.native('touchmove',[b]);h.native('touchend',[],[b]);assert.equal(h.commits.length,0);
   h.native('touchstart',[a]);h.native('touchend',[],[a]);h.globalBlur();h.native('touchstart',[b]);h.native('touchend',[],[b]);assert.equal(h.commits.length,0);h.unmount();
  });
 });
@@ -200,5 +201,27 @@ describe('swipe survives its own preview layout',()=>{
  it('still cancels a real rotation after the layout observer already rebased a gesture',()=>{
   const h=harness();drag(h);h.reflow(5,20,-50);h.rotate();h.send('onPointerUp',b);assert.equal(h.commits.length,0);assert.equal(h.selected().length,0);
   h.tap(a);h.tap(b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();
+ });
+});
+
+describe('touch drawing across devices and enlarged boards',()=>{
+ it('draws in enlarged mode by default and pans only when explicitly selected',()=>{
+  const h=harness({zoom:true});drag(h);h.send('onPointerUp',b);assert.deepEqual(h.commits,[{a,b}]);
+  h.setProps({pan:true});assert.equal(h.boardNode().props['style'].touchAction,'pan-x pan-y');drag(h);h.send('onPointerUp',b);assert.equal(h.commits.length,1);
+  h.setProps({pan:false});h.native('touchstart',[a]);h.native('touchmove',[b]);h.native('touchend',[],[b]);assert.equal(h.commits.length,2);h.unmount();
+ });
+ it('accepts real touch delivery on Pointer-capable browsers in all eight directions',()=>{
+  for(const [dr,dc] of [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]]){
+   const start:Cell=[2,2],end:Cell=[2+dr!*2,2+dc!*2],h=harness({zoom:true});
+   h.native('touchstart',[start]);h.native('touchmove',[end]);h.flush();assert.deepEqual(h.selected().sort(),cells(start,end));h.native('touchend',[],[end]);assert.deepEqual(h.commits,[{a:start,b:end}]);h.unmount();
+  }
+ });
+ it('deduplicates mixed Pointer/Touch delivery and ignores a pointer cancellation after native takeover',()=>{
+  const h=harness();h.send('onPointerDown',a);h.native('touchstart',[a]);h.send('onPointerCancel',a);h.send('onLostPointerCapture',a);h.native('touchmove',[b]);h.send('onPointerMove',b);h.native('touchend',[],[b]);h.send('onPointerUp',b);
+  assert.deepEqual(h.commits,[{a,b}]);assert.equal(h.selections,1);h.unmount();
+ });
+ it('survives browser-toolbar height changes but still cancels on rotation or real native touch cancel',()=>{
+  const h=harness();drag(h);h.toolbar();h.send('onPointerUp',b);assert.deepEqual(h.commits,[{a,b}]);
+  h.native('touchstart',[a]);h.native('touchmove',[b]);h.native('touchcancel',[]);h.native('touchend',[],[b]);assert.equal(h.commits.length,1);h.unmount();
  });
 });

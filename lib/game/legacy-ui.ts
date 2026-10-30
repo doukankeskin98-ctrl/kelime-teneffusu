@@ -1,11 +1,11 @@
 type View=Window&typeof globalThis;
-export interface BoardPointer {pointerId:number;pointerType:string;isPrimary:boolean;button:number;clientX:number;clientY:number;preventDefault:()=>void}
+export interface BoardPointer {input?:'touch';pointerId:number;pointerType:string;isPrimary:boolean;button:number;clientX:number;clientY:number;preventDefault:()=>void}
 interface Handlers {down:(e:BoardPointer)=>void;move:(e:BoardPointer)=>void;up:(e:BoardPointer)=>void;cancel:()=>void;pan:()=>boolean}
-/** Older iOS has Touch Events but no Pointer Events. Modern browsers keep one input path. */
+/** Use real native touch delivery, even when a browser advertises Pointer Events.
+ * Board arbitrates the two streams per gesture so success is committed once. */
 export function attachLegacyTouch(element:HTMLElement,handlers:()=>Handlers,view:View){
- if(typeof view.PointerEvent==='function')return ()=>{};
  let active:number|null=null;
- const event=(touch:Touch,native:TouchEvent):BoardPointer=>({pointerId:touch.identifier,pointerType:'touch',isPrimary:true,button:0,clientX:touch.clientX,clientY:touch.clientY,preventDefault:()=>{if(native.cancelable)native.preventDefault();}});
+ const event=(touch:Touch,native:TouchEvent):BoardPointer=>({input:'touch',pointerId:touch.identifier,pointerType:'touch',isPrimary:true,button:0,clientX:touch.clientX,clientY:touch.clientY,preventDefault:()=>{if(native.cancelable)native.preventDefault();}});
  const cancel=()=>{active=null;handlers().cancel();};
  const start=(e:TouchEvent)=>{if(e.touches.length!==1){cancel();return;}const touch=e.changedTouches[0];if(!touch)return;active=touch.identifier;handlers().down(event(touch,e));};
  const move=(e:TouchEvent)=>{if(e.touches.length!==1){cancel();return;}const touch=Array.from(e.touches).find(t=>t.identifier===active);if(!touch)return;if(!handlers().pan()&&e.cancelable)e.preventDefault();handlers().move(event(touch,e));};

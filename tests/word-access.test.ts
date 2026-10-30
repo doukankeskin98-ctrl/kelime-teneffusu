@@ -42,6 +42,13 @@ const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:
 const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
+ it('defaults an enlarged board to drawing and offers explicit reversible panning outside the board',()=>{
+  const h=shared({zoom:true,wordList:{board:content.TUTORIAL,strokes:[]}});try{
+   assert.equal(h.find('Board').props['pan'],false);const move=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Tahtayı kaydır')!;assert(move);move.props['onClick']();h.paint();assert.equal(h.find('Board').props['pan'],true);
+   const select=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Kelime seç')!;select.props['onClick']();h.paint();assert.equal(h.find('Board').props['pan'],false);
+   move.props['onClick']();h.paint();const next=engine.makePuzzle('uzay',0,123);h.update('PlayLayout',{...base,zoom:true,board:next});assert.equal(h.find('Board').props['pan'],false);
+  }finally{h.close();}
+ });
  it('keeps one complete confirmed target surface directly visible in normal play',()=>{const words={board:content.TUTORIAL,strokes:[]},h=shared({wordList:words});try{assert.equal(walk(h.tree).filter(n=>typeof n.type==='function'&&n.type.name==='WordList').length,1);assert.equal(h.find('WordList').props['board'],words.board);assert.equal(walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='BoardWords'),false);}finally{h.close();}});
  it('does not offer an empty word dialog',()=>{
   const h=view('components/game/common.tsx');try{h.start('BoardWords',{words:{board:{targets:[]},strokes:[]}});assert.equal(h.tree,null);}finally{h.close();}
@@ -80,6 +87,15 @@ describe('near-board word access uses confirmed, visible list data',()=>{
   const h=view('components/game/common.tsx');let closed=0;const dialog=Object.assign(new EventTarget(),{ownerDocument:h.document,style:{maxHeight:''},removeAttribute(){},open:false,showModal(){this.open=true;},close(){this.open=false;},getBoundingClientRect:()=>({left:20,right:200,top:20,bottom:200})});h.start('Modal',{title:'Kelime listen',onClose:()=>closed++,children:null},false);h.find('dialog').props['ref'].current=dialog;h.paint();assert.equal(dialog.open,true);assert.equal(h.document.body.style.overflow,'hidden');
   const node=h.find('dialog');let prevented=false;node.props['onCancel']({preventDefault:()=>prevented=true});assert.equal(prevented,true);h.find('button').props['onClick']();node.props['onClick']({target:dialog,currentTarget:dialog,clientX:0,clientY:0});node.props['onClick']({target:dialog,currentTarget:dialog,clientX:100,clientY:100});assert.equal(closed,3);h.close();assert.equal(dialog.open,false);assert.equal(h.document.body.style.overflow,'');
  });
+});
+
+it('shows real room-series wins, honest empty state and paginated departed participants',()=>{
+ const h=view('components/game/Arena.tsx'),players=Array.from({length:26},(_,i)=>({id:'p'+i,name:'Oyuncu '+i,played:3,wins:26-i,draws:0,score:100,rank:i+1,active:i!==25}));
+ try{
+  h.start('ArenaSeriesBoard',{series:{rounds:3,players},you:'p25',expanded:true});assert.match(text(h.tree),/3 kayıtlı maç · Sen 1 galibiyet/);
+  const next=()=>walk(h.tree).find(n=>n.type==='button'&&text(n)==='Sonraki')!;next().props['onClick']();h.paint();next().props['onClick']();h.paint();assert.match(text(h.tree),/Oyuncu 25/);assert.match(text(h.tree),/Odadan ayrıldı/);assert.equal(next().props['disabled'],true);
+  h.update('ArenaSeriesBoard',{series:{rounds:0,players:[]},you:'new'});assert.match(text(h.tree),/İlk tamamlanan maçtan sonra/);
+ }finally{h.close();}
 });
 
 describe('caller wiring keeps timers, hidden targets and pending claims separate',()=>{

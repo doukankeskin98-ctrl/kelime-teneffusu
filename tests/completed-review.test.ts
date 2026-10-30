@@ -16,7 +16,7 @@ function nodes(v:any):Node[]{return Array.isArray(v)?v.flatMap(nodes):v&&typeof 
 function text(v:any):string{return typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';}
 const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
 const icons=new Proxy({},{get:(_t,key)=>String(key)}),common:Record<string,any>={};
-vm.runInNewContext(compile('components/game/common.tsx'),{exports:common,require:(name:string)=>name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='react'?{useRef:()=>({current:null}),useEffect(){}}:name==='lucide-react'?icons:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:name==='@/lib/game/word-card'?{wordCardCopy}:{}});
+vm.runInNewContext(compile('components/game/common.tsx'),{exports:common,require:(name:string)=>name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='react'?{useRef:()=>({current:null}),useEffect(){},useState:(initial:unknown)=>[initial,()=>{}]}:name==='lucide-react'?icons:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:name==='@/lib/game/word-card'?{wordCardCopy}:{}});
 
 describe('shared completed controls and review instructions',()=>{
  it('replaces hint/pause with review and keeps working zoom, sound and help controls',()=>{
