@@ -32,6 +32,7 @@ try{
  const db=await mf.getD1Database('DB');
  for(const file of (await readdir('drizzle')).filter(x=>x.endsWith('.sql')).sort())for(const sql of (await readFile('drizzle/'+file,'utf8')).split('--> statement-breakpoint').map(x=>x.trim()).filter(Boolean))await db.prepare(sql).run();
  const home=await (await request('/')).text();check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
+ check(/<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(home),'production HTML declares a real device viewport and safe areas');
  check(home.includes('id="journey-home-title"')&&home.includes('Bölüm 1 — Oyna')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
  check(['Yolculuk','Keşfet','Arena','Günlük','Albüm'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
  check(home.includes('Yıldız İskelesi')&&home.includes('journey-mini-path')&&EXPEDITIONS.length===16,'numbered journey preserves the sixteen registered worlds');
@@ -172,6 +173,7 @@ try{
  const groupStream=await request('/api/live?id='+group.id,{nativeUser:groupUsers[7]}),groupReader=groupStream.body.getReader();const groupChunk=await groupReader.read();check(new TextDecoder().decode(groupChunk.value).includes('event: room'),'group reconnect receives live authoritative state');await groupReader.cancel();
  for(const target of groupActive.board.targets.slice(1))await action(0,'claim',1,solution(groupActive.board,target));
  const groupResult=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(groupResult.phase==='finished'&&groupResult.winner===profiles[0].profile.id&&groupResult.players[0].rank===1,'eight-player result and ranking agree');
+ check(groupResult.series.rounds===1&&groupResult.series.players.find(p=>p.id===profiles[0].profile.id).wins===1,'private group result includes the durable room-series win');
  const successors=await Promise.all([...groupUsers.map((_,i)=>i),0,0,0,0].map(i=>action(i,'next',1)));
  check(successors.every(v=>v.round===2&&v.id===group.id&&v.board===null),'twelve repeated next requests create one successor round in the same room');
  await Promise.all(groupUsers.map((_,i)=>action(i,'ready',2)));const second=await action(0,'start',2);
@@ -179,7 +181,25 @@ try{
  const history=await db.prepare('SELECT count(*) n FROM arena_seen WHERE user_id=?').bind(profiles[7].profile.id).first();check(history.n===2,'both boards are durably recorded for a returning account');
  const again=await json('/api/game',{nativeUser:groupUsers[7]}),afterReentry=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(again.profile.id===profiles[7].profile.id&&afterReentry.round===2&&JSON.stringify(afterReentry.board)===JSON.stringify(second.board),'a fresh authenticated request with the same verified identity preserves round and content history');
  await request('/api/game',{nativeUser:groupUsers[7],method:'POST',body:{action:'ready',id:group.id,round:1,expectedOwnerId:profiles[7].profile.id},expected:409});
+ check(afterReentry.series.rounds===1&&afterReentry.series.players.find(p=>p.id===profiles[0].profile.id).wins===1,'the next round and fresh authenticated requests preserve the recorded series');
+ // Sixteen actual guest sessions enter the public group queue concurrently.
+ const quickCookies=await Promise.all(Array.from({length:16},async(_,i)=>(await request('/api/session',{method:'POST',body:{name:'Quick '+i}})).headers.get('Set-Cookie')));
+ const quickProfiles=await Promise.all(quickCookies.map(cookie=>json('/api/game',{cookie})));
+ const quickEntry=await Promise.all(quickCookies.map((cookie,i)=>json('/api/game',{cookie,method:'POST',body:{action:'enter',kind:'quick',mode:'group',expectedOwnerId:quickProfiles[i].profile.id}})));
+ const quickId=quickEntry[0].id,quickViews=await Promise.all(quickCookies.map(cookie=>json('/api/game?action=room',{cookie})));
+ check(quickViews.every(v=>v.id===quickId&&v.mode==='group'&&v.players.length===16&&v.phase==='ready'),'sixteen guest requests share one public group lobby without closing at two');
+ const quickAction=(i,name,round,extra={})=>json('/api/game',{cookie:quickCookies[i],method:'POST',body:{action:name,id:quickId,round,expectedOwnerId:quickProfiles[i].profile.id,...extra}});
+ await Promise.all(quickCookies.map((_,i)=>quickAction(i,'ready',1)));
+ const host=quickProfiles.findIndex(p=>p.profile.id===quickViews[0].hostId),quickActive=await quickAction(host,'start',1);
+ const activeQuickViews=await Promise.all(quickCookies.map(cookie=>json('/api/game?action=room',{cookie})));
+ check(activeQuickViews.every(v=>v.starts===quickActive.starts&&v.ends===quickActive.ends&&JSON.stringify(v.board)===JSON.stringify(quickActive.board)),'sixteen public group sessions share one board and deadline');
+ const quickStream=await request('/api/live?id='+quickId,{cookie:quickCookies[15]}),quickReader=quickStream.body.getReader();check(new TextDecoder().decode((await quickReader.read()).value).includes('event: room'),'shared public lobby UUID is accepted by the actual SSE route');await quickReader.cancel();
+ await new Promise(resolve=>setTimeout(resolve,Math.max(0,quickActive.starts-Date.now()+50)));
+ for(const target of quickActive.board.targets)await quickAction(0,'claim',1,solution(quickActive.board,target));
+ const quickResults=await json('/api/game?action=room',{cookie:quickCookies[15]});check(quickResults.phase==='finished'&&quickResults.series.rounds===1&&quickResults.series.players.find(p=>p.id===quickProfiles[0].profile.id).wins===1,'public group finish publishes one real series win');
+ const quickNext=await Promise.all(quickCookies.map((_,i)=>quickAction(i,'next',1)));check(quickNext.every(v=>v.round===2&&v.id===quickId&&v.series.rounds===1),'sixteen concurrent next requests preserve one successor and the series');
+ const quickRating=await db.prepare('SELECT count(*) n FROM rating_events WHERE room_id=?').bind(quickId+':1').first();check(quickRating.n===0,'public groups do not generate ranked duel Elo events');
  // Deliberate isolated database failure verifies that the production route records a sanitized fault.
  await db.prepare('DROP TABLE ratings').run();await request('/api/game',{cookie:bCookie,expected:503});const fault=(await json('/api/admin?action=faults',owner)).rows[0];check(fault?.area==='game'&&fault.count===1&&fault.reviewed_count===0,'unexpected route failures create operational counters');check(!JSON.stringify(fault).includes(b.profile.id)&&!JSON.stringify(fault).includes('ratings'),'fault counters contain no identity or raw database error');await json('/api/admin',{...owner,method:'POST',body:{action:'reviewFault',day:fault.day,area:fault.area,code:fault.code}});check((await json('/api/admin?action=faults',owner)).rows[0].reviewed_count===1,'fault review is persisted');
- console.log(`${checks} production Worker HTTP checks passed with two legacy players and eight concurrent group sessions.`);
+ console.log(`${checks} production Worker HTTP checks passed with two legacy players, eight private-group and sixteen concurrent public-group sessions.`);
 }finally{await mf.dispose();}
