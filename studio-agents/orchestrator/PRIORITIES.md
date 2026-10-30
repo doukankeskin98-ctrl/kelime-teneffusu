@@ -1,5 +1,7 @@
 # Öncelikler
 
+30 Ekim 2026, 0.15.0: kullanıcının üç düzeltmesi birlikte: ölçülen oyun çerçevesi, 4/üstü özel Arena, aynı odada kalıcı içerik geçmişiyle yeni tur. Son koordinatör kanıtı `../journal/entries/2026-10-30_arena-fit-validation.md`. Güncel öncelik gerçek küçük/büyük iPhone/Android ve 4+ cihaz maçı, gerçek provider yeniden giriş ve üretim D1/SSE kapasite ölçümü; destekli tarayıcı ERR_CONNECTION_REFUSED. 16 servis katılımcısı üretim kapasitesi vaadi değildir. Eski içerik/kayıt korunur.
+
 30 Ekim 2026, 0.14.0: kullanıcının doğrudan ses isteğiyle sekiz kısa/yumuşak ortak motif, seçim başına tek ses, onaylı ağ başarısı, aç/kapa/cihaz düzeyi/örnek dinleme. İki gerçek dar uzman ve tek uygulama/yayın sahibi. Kabul sound-decision, deneyim/güvenilirlik bulguları sound-*review, son kapılar sound-validation günlüğündedir. Bölüm/kayıt/ödül/DB korunur; bu doğrudan ses turunda tarihli içerik eklenmedi.
 
 Güncel ilk öncelik: gerçek iPhone/Android hoparlör ve kulaklıkla kısa/uzun dinleme, fiziksel sessiz anahtar/arama kesintisi/arka plan→dönüş, klavye/ekran okuyucu ve aynı hedef→oyun→sonuç akışı. Preview eski lock onarımıyla healthy; destekli CUA bağlantısı ERR_CONNECTION_REFUSED kaldı. Sonraki mevcut işler iki gerçek provider hesabı/PWA, cold-start/cihazlar arası pending ve izinli oyuncu gözlemidir. Ses konforu/tutma artışı ölçülmedi. Haftalık inceleme 31 Ekim/ilk uygun mevcut tur; yeni zamanlayıcı/servis yok.

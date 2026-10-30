@@ -1,6 +1,6 @@
 import {DatabaseSync,type SQLInputValue} from 'node:sqlite';
 import {readFileSync,readdirSync} from 'node:fs';
-import {GameService,type Database,type Statement,type Room} from '../lib/game/server.ts';
+import {roomPuzzle,GameService,type Database,type Statement,type Room} from '../lib/game/server.ts';
 import {makePuzzle} from '../lib/game/engine.ts';
 export function fixture(initial=Date.parse('2026-10-21T09:00:00Z')){
  const sqlite=new DatabaseSync(':memory:');
@@ -15,5 +15,5 @@ export function fixture(initial=Date.parse('2026-10-21T09:00:00Z')){
  }
  const db:Database={prepare:sql=>new Stmt(sql),batch:async statements=>{sqlite.exec('BEGIN');try{const results=statements.map(s=>(s as Stmt).sync());sqlite.exec('COMMIT');return results;}catch(e){sqlite.exec('ROLLBACK');throw e;}}};
  let now=initial;const clock=()=>now,game=new GameService(db,clock);
- return {db,sqlite,clock,game,advance:(ms:number)=>{now+=ms;},setTime:(ms:number)=>{now=ms;},room:(id:string)=>JSON.parse((sqlite.prepare('SELECT data FROM rooms WHERE id=?').get(id) as {data:string}).data) as Room,puzzle:(id:string)=>{const r=JSON.parse((sqlite.prepare('SELECT data FROM rooms WHERE id=?').get(id) as {data:string}).data) as Room;return makePuzzle(r.themeId,r.level,r.seed);}};
+ return {db,sqlite,clock,game,advance:(ms:number)=>{now+=ms;},setTime:(ms:number)=>{now=ms;},room:(id:string)=>JSON.parse((sqlite.prepare('SELECT data FROM rooms WHERE id=?').get(id) as {data:string}).data) as Room,puzzle:(id:string)=>{const r=JSON.parse((sqlite.prepare('SELECT data FROM rooms WHERE id=?').get(id) as {data:string}).data) as Room;return roomPuzzle(r);}};
 }

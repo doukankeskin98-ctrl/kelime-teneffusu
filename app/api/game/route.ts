@@ -28,14 +28,17 @@ export async function POST(request:Request){try{
  const user=await gameMember(request);if(!user)throw new GameError('Devam etmek için giriş yap.',401);
  const data=await boundedJson(request,4096),game=await service(),id=typeof data['id']==='string'?data['id']:'';
  if((data['action']==='daily'||data['action']==='dailyClaim'||data['action']==='dailyHint')&&Object.hasOwn(data,'expectedOwnerId')&&data['expectedOwnerId']!==user.userId)return json({error:'Günlük oyunun hesabı değişti.',code:'DAILY_OWNER_CHANGED'},409);
+ if(['enter','ready','start','claim','leave','next','rematch'].includes(String(data['action']))&&Object.hasOwn(data,'expectedOwnerId')&&data['expectedOwnerId']!==user.userId)return json({error:'Arena hesabın değişti. Güncel profilini kontrol et.',code:'ARENA_OWNER_CHANGED'},409);
  await rateLimit(env.DB!,'game:'+user.userId,180);
  switch(data['action']){
   case 'rename':return json(await game.rename(user.userId,data['name']));
-  case 'enter':return json(await game.enter(user.userId,data['kind']==='friend'?'friend':'quick',typeof data['code']==='string'?data['code']:undefined));
-  case 'ready':return json(await game.ready(user.userId,id));
-  case 'claim':return json(await game.claim(user.userId,id,data['a'],data['b']));
-  case 'leave':return json(await game.leave(user.userId,id));
-  case 'rematch':return json(await game.rematch(user.userId,id));
+  case 'enter':return json(await game.enter(user.userId,data['kind']==='friend'?'friend':'quick',typeof data['code']==='string'?data['code']:undefined,data['mode']==='group'));
+  case 'ready':return json(await game.ready(user.userId,id,data['round']));
+  case 'start':return json(await game.start(user.userId,id,data['round']));
+  case 'next':return json(await game.nextGame(user.userId,id,data['round']));
+  case 'claim':return json(await game.claim(user.userId,id,data['a'],data['b'],data['round']));
+  case 'leave':return json(await game.leave(user.userId,id,data['round']));
+  case 'rematch':return json(await game.rematch(user.userId,id,data['round']));
   case 'daily':return json(await game.daily(user.userId));
   case 'dailyClaim':return json(await game.dailyClaim(user.userId,id,data['a'],data['b']));
   case 'dailyHint':return json(await game.dailyClaim(user.userId,id,null,null,true,data['requestId']));
