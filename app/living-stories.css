@@ -17,3 +17,4 @@
 .game-app.story-session .viewport-play.focused-play .game-message{color:#526a49}
 
 @media(min-width:600px) and (max-width:780px){.story-feature{display:grid;grid-template-columns:1fr 1fr}.story-feature-art{height:100%;min-height:350px}.story-feature-copy{padding:25px}.story-feature-copy>p{font-size:13px}.story-card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.story-card:last-child:nth-child(odd){grid-column:auto;display:block}}
+@media(max-width:780px){.arena-tabs{display:grid;grid-template-columns:1fr 1.25fr 1fr;width:100%;gap:3px}.arena-tabs button{min-width:0;gap:5px;padding:8px 5px;font-size:11px;white-space:normal}.arena-tabs button>svg{width:14px;height:14px;flex-shrink:0}}
