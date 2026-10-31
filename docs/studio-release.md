@@ -1,5 +1,7 @@
 # Studio sürümü: teslim ve doğrulama
 
+0.20.0: özgün dünya sahnesi, dokunulabilir yakın bölüm yolu, gerçek kapılara bağlı 96 bölümlük seçici, solo kelime/tanım hedefi ve daha belirgin gerçek ödül ekranı. Eski elapsed/hint-only ve kısmi bonus kayıtları devam önerisinde korunur. İçerik/tohum/kayıt şeması/rekabet kuralları değişmedi. 493 test, 156 ana tahta/3.120 alternatif +64 grup tahtası, tip/üretim/Safari sözdizimi ve525 Worker kontrolü geçti. Destekli yerel tarayıcıda 360×640,390×844 ve768×1024 alanlarında oyun akışı kontrol edildi; fiziksel cihaz/ses/FPS kabulü değildir. Kanıt: studio-agents/journal/entries/2026-10-31_professional-decision.md.
+
 0.19.0: 12×12/dokuz farklı kelimeli normal ve bilmeceli grup havuzu; eski cursor/aktif tahta/duel korunur. Yeni havuzun ilk64 farklı tahtası kontrol edilir. Aynı oda ve gerçek içerik/tek bilmece tekrar engeli sürer. Kişisel Tahta rengi mevcut ilerlemeye isteğe bağlı alan olarak eklendi; dört ücretsiz önizleme, anlık uygulama, eski kaydı sıfırlamadan yeniden açılış. Koyu çizgi sınırı ve kağıt/harf kontrastı sayısal test edilir. Kabul/kanıt studio-agents/journal/entries/2026-10-31_group-color-decision.md içinde; fiziksel DOM/cihaz sınırı açıktır.
 
 0.18.1: 31 Ekim tek sabit çifti Kuş sesleri / Dağ yolculuğu. Yeni kaynak yayın kapısı tarih, çift sıra/kimlik, UTC yayın günü, zorluk ve içerik hash bütünlüğünü bozuksa reddeder. Kabul ve kanıt studio-agents/journal/entries/2026-10-31_maintenance.md kaydında. Eski içerik/kayıt/ödül/göç ve 0.18.0 korunur.

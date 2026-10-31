@@ -77,7 +77,7 @@ describe('real home and victory markup',()=>{
  });
  it('distinguishes the current replay from the preserved best and never awards another piece',()=>{
   const p=first(1),best=p.saves['route:uzay-1']!,raw=JSON.stringify(p),html=result(p,'uzay-1',p,{stars:1,hints:3,seconds:90,best});
-  assert.match(html,/Bu parça zaten senin/);assert.doesNotMatch(html,/YENİ PARÇAN SENİN|YENİ DÜNYA AÇILDI/);assert.match(html,/Bu tur 1 \/ 3 yıldız/);assert.match(html,/En iyi sonucun korunuyor/);assert.match(html,/3 yıldız · 0:45/);assert.equal(JSON.stringify(p),raw);
+  assert.match(html,/Bu parça albümünde/);assert.doesNotMatch(html,/YENİ PARÇAN SENİN|YENİ DÜNYA AÇILDI/);assert.match(html,/Bu tur 1 \/ 3 yıldız/);assert.match(html,/En iyi sonucun korunuyor/);assert.match(html,/3 yıldız · 0:45/);assert.equal(JSON.stringify(p),raw);
  });
  it('announces a personal best only when the real caller confirms it and explains stars for standard play',()=>{
   const props={goal:null,rewards:[],stars:2,hints:1,seconds:25,total:4};const unknown=render(loop['VictorySummary'],props),known=render(loop['VictorySummary'],{...props,improved:true});
@@ -91,7 +91,8 @@ describe('real home and victory markup',()=>{
 
 // New home/result render actual collection pieces; these assertions are not pixel QA.
 const riddleShelf=component('components/game/RiddleShelf.tsx',{});
-const numberedHome=component('components/game/JourneyHome.tsx',{'./WorldArt':art,'./AchievementLoop':loop,'./RiddleShelf':riddleShelf});
+const scene=component('components/game/JourneyScene.tsx',{});
+const numberedHome=component('components/game/JourneyHome.tsx',{'./JourneyScene':scene,'./WorldArt':art,'./AchievementLoop':loop,'./RiddleShelf':riddleShelf});
 const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery':collection,'./AchievementLoop':loop});
 describe('numbered journey home and real result',()=>{
  it('shows one primary action, the correct chapter and nearby reward without mode cards',()=>{
@@ -100,9 +101,9 @@ describe('numbered journey home and real result',()=>{
  });
  it('continues an existing route and shows a truthful complete-catalogue state',()=>{
   const p=emptyProgress(),b=journeyBoard(journeyById('uzay-2')!);p.saves['route:uzay-2']=cleanSave({strokes:[b.placements[0]!],hints:0,elapsed:10,complete:false,stars:0},b);p.last={themeId:'uzay',level:0,journey:'uzay-2'};
-  let html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Bölüm 2/);assert.match(html,/Devam et/);assert.match(html,/0<\/b> \/ 96/);
+  let html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Bölüm 2/);assert.match(html,/Keşfe devam et/);assert.match(html,/0\/96/);
   for(const item of mainJourney.MAIN_JOURNEY)finish(p,item.chapter.id);
-  html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Yolculuğu tamamladın/);assert.doesNotMatch(html,/— Oyna|Devam et/);
+  html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/96 bölümün hepsi tamam/);assert.doesNotMatch(html,/— Oyna|Devam et/);
  });
  it('renders actual album before/after and the new world, then keeps replay unchanged',()=>{
   const before=first(2),p=finish(copy(before),'uzay-3'),props={before:achievement.journeyGoal(before,'uzay-3'),after:achievement.journeyGoal(p,'uzay-3'),rewards:discoveryRewards(before,p),save:p.saves['route:uzay-3']};
@@ -110,6 +111,13 @@ describe('numbered journey home and real result',()=>{
   html=render(numberedResult['JourneyResult'],{...props,before:props.after,rewards:[]});assert.match(html,/BU PARÇA ZATEN SENİN/);assert.match(html,/Önce <b>3\/6/);assert.match(html,/Şimdi <b>3\/6/);assert.doesNotMatch(html,/YENİ DÜNYA AÇILDI/);
  });
  it('explains tutorial reward status and displays no permanent stars',()=>{
-  const html=render(loop['VictorySummary'],{goal:null,rewards:[],stars:3,hints:0,seconds:15,total:3,tutorial:true});assert.match(html,/Yıldız ve albüm parçası verilmez/);assert.doesNotMatch(html,/victory-stars|Bu tur 3|Yıldızlar nasıl/);
+  const html=render(loop['VictorySummary'],{goal:null,rewards:[],stars:3,hints:0,seconds:15,total:3,tutorial:true});assert.match(html,/ilk bölümüne geç/);assert.doesNotMatch(html,/victory-stars|Bu tur 3|Yıldızlar nasıl/);
  });
+});
+
+
+it('numbered result announces the actually unlocked album finale without awarding it',()=>{
+ const before=first(4),after=finish(copy(before),'uzay-5'),resultModule=component('components/game/JourneyResult.tsx',{'./AchievementLoop':loop,'./Discovery':collection});
+ const html=render(resultModule['JourneyResult'],{number:9,before:achievement.journeyGoal(before,'uzay-5'),after:achievement.journeyGoal(after,'uzay-5'),rewards:discoveryRewards(before,after),save:after.saves['route:uzay-5']});
+ assert.match(html,/ALBÜM FİNALİ AÇILDI/);assert.doesNotMatch(html,/ALBÜM TAMAMLANDI/);assert.equal(after.saves['route:uzay-gozlemevi'],undefined);
 });

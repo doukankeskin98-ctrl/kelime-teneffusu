@@ -26,7 +26,7 @@ export function discoveryState(progress:Pick<Progress,'saves'>):ExpeditionState[
   const earned=chapters.map(j=>progress.saves['route:'+j.id]?.complete===true);
   const done=earned.filter(Boolean).length,previous=states.at(-1);
   // Returning players retain access to any route they already started in the old open catalogue.
-  const started=[...chapters,bonus].some(j=>{const save=progress.saves['route:'+j.id];return save?.complete||!!save?.strokes.length;});
+  const started=[...chapters,bonus].some(j=>{const save=progress.saves['route:'+j.id];return save?.complete||!!save?.strokes.length||(save?.elapsed??0)>0||(save?.hints??0)>0;});
   const unlocked=!previous||(previous.unlocked&&previous.done>=DISCOVERY_GATE)||started;
   const bonusUnlocked=unlocked&&done===chapters.length,bonusDone=progress.saves['route:'+bonus.id]?.complete===true;
   earned.push(bonusDone);
