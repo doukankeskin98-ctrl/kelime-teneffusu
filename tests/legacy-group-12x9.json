@@ -1,0 +1,774 @@
+{
+  "words": {
+    "themeId": "hababam",
+    "words": [
+      "BACAKSIZ",
+      "KARNE",
+      "MÜDÜR",
+      "SINIF",
+      "SOBA",
+      "TAHTA",
+      "TEBEŞİR",
+      "TENEFFÜS",
+      "ÖĞRETMEN"
+    ],
+    "seed": 3908242493,
+    "board": {
+      "version": 2,
+      "size": 12,
+      "grid": [
+        [
+          "D",
+          "R",
+          "Z",
+          "Ğ",
+          "Ö",
+          "Ğ",
+          "R",
+          "E",
+          "T",
+          "M",
+          "E",
+          "N"
+        ],
+        [
+          "C",
+          "I",
+          "B",
+          "S",
+          "T",
+          "V",
+          "D",
+          "L",
+          "Z",
+          "J",
+          "Ü",
+          "Ö"
+        ],
+        [
+          "J",
+          "U",
+          "M",
+          "Z",
+          "O",
+          "E",
+          "T",
+          "Ü",
+          "İ",
+          "K",
+          "E",
+          "Ğ"
+        ],
+        [
+          "C",
+          "İ",
+          "U",
+          "C",
+          "I",
+          "N",
+          "N",
+          "I",
+          "S",
+          "K",
+          "V",
+          "S"
+        ],
+        [
+          "D",
+          "Ç",
+          "S",
+          "İ",
+          "S",
+          "S",
+          "P",
+          "E",
+          "A",
+          "O",
+          "C",
+          "I"
+        ],
+        [
+          "M",
+          "R",
+          "I",
+          "İ",
+          "G",
+          "Z",
+          "K",
+          "R",
+          "F",
+          "Y",
+          "B",
+          "U"
+        ],
+        [
+          "Ü",
+          "İ",
+          "N",
+          "Ö",
+          "D",
+          "D",
+          "N",
+          "A",
+          "H",
+          "F",
+          "İ",
+          "A"
+        ],
+        [
+          "D",
+          "Ş",
+          "I",
+          "Ç",
+          "F",
+          "E",
+          "V",
+          "G",
+          "C",
+          "Y",
+          "Ü",
+          "T"
+        ],
+        [
+          "Ü",
+          "E",
+          "F",
+          "H",
+          "Ö",
+          "D",
+          "U",
+          "N",
+          "P",
+          "A",
+          "U",
+          "S"
+        ],
+        [
+          "R",
+          "B",
+          "H",
+          "İ",
+          "K",
+          "R",
+          "Ö",
+          "F",
+          "İ",
+          "E",
+          "B",
+          "D"
+        ],
+        [
+          "Ç",
+          "E",
+          "P",
+          "Ğ",
+          "M",
+          "İ",
+          "I",
+          "Y",
+          "B",
+          "K",
+          "A",
+          "İ"
+        ],
+        [
+          "A",
+          "T",
+          "H",
+          "A",
+          "T",
+          "Ç",
+          "S",
+          "F",
+          "S",
+          "L",
+          "H",
+          "Ö"
+        ]
+      ],
+      "targets": [
+        {
+          "id": "0.0",
+          "label": "BACAKSIZ",
+          "text": "BACAKSIZ",
+          "group": 0
+        },
+        {
+          "id": "1.0",
+          "label": "KARNE",
+          "text": "KARNE",
+          "group": 1
+        },
+        {
+          "id": "2.0",
+          "label": "MÜDÜR",
+          "text": "MÜDÜR",
+          "group": 2
+        },
+        {
+          "id": "3.0",
+          "label": "SINIF",
+          "text": "SINIF",
+          "group": 3
+        },
+        {
+          "id": "4.0",
+          "label": "SOBA",
+          "text": "SOBA",
+          "group": 4
+        },
+        {
+          "id": "5.0",
+          "label": "TAHTA",
+          "text": "TAHTA",
+          "group": 5
+        },
+        {
+          "id": "6.0",
+          "label": "TEBEŞİR",
+          "text": "TEBEŞİR",
+          "group": 6
+        },
+        {
+          "id": "7.0",
+          "label": "TENEFFÜS",
+          "text": "TENEFFÜS",
+          "group": 7
+        },
+        {
+          "id": "8.0",
+          "label": "ÖĞRETMEN",
+          "text": "ÖĞRETMEN",
+          "group": 8
+        }
+      ],
+      "placements": [
+        {
+          "id": "0.0",
+          "label": "BACAKSIZ",
+          "text": "BACAKSIZ",
+          "group": 0,
+          "a": [
+            9,
+            10
+          ],
+          "b": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": "7.0",
+          "label": "TENEFFÜS",
+          "text": "TENEFFÜS",
+          "group": 7,
+          "a": [
+            1,
+            4
+          ],
+          "b": [
+            8,
+            11
+          ]
+        },
+        {
+          "id": "8.0",
+          "label": "ÖĞRETMEN",
+          "text": "ÖĞRETMEN",
+          "group": 8,
+          "a": [
+            0,
+            4
+          ],
+          "b": [
+            0,
+            11
+          ]
+        },
+        {
+          "id": "6.0",
+          "label": "TEBEŞİR",
+          "text": "TEBEŞİR",
+          "group": 6,
+          "a": [
+            11,
+            1
+          ],
+          "b": [
+            5,
+            1
+          ]
+        },
+        {
+          "id": "1.0",
+          "label": "KARNE",
+          "text": "KARNE",
+          "group": 1,
+          "a": [
+            3,
+            9
+          ],
+          "b": [
+            7,
+            5
+          ]
+        },
+        {
+          "id": "2.0",
+          "label": "MÜDÜR",
+          "text": "MÜDÜR",
+          "group": 2,
+          "a": [
+            5,
+            0
+          ],
+          "b": [
+            9,
+            0
+          ]
+        },
+        {
+          "id": "3.0",
+          "label": "SINIF",
+          "text": "SINIF",
+          "group": 3,
+          "a": [
+            4,
+            2
+          ],
+          "b": [
+            8,
+            2
+          ]
+        },
+        {
+          "id": "5.0",
+          "label": "TAHTA",
+          "text": "TAHTA",
+          "group": 5,
+          "a": [
+            11,
+            4
+          ],
+          "b": [
+            11,
+            0
+          ]
+        },
+        {
+          "id": "4.0",
+          "label": "SOBA",
+          "text": "SOBA",
+          "group": 4,
+          "a": [
+            3,
+            8
+          ],
+          "b": [
+            6,
+            11
+          ]
+        }
+      ]
+    },
+    "wordsKey": "[\"BACAKSIZ\",\"KARNE\",\"MÜDÜR\",\"SINIF\",\"SOBA\",\"TAHTA\",\"TEBEŞİR\",\"TENEFFÜS\",\"ÖĞRETMEN\"]",
+    "gridKey": "[[\"D\",\"R\",\"Z\",\"Ğ\",\"Ö\",\"Ğ\",\"R\",\"E\",\"T\",\"M\",\"E\",\"N\"],[\"C\",\"I\",\"B\",\"S\",\"T\",\"V\",\"D\",\"L\",\"Z\",\"J\",\"Ü\",\"Ö\"],[\"J\",\"U\",\"M\",\"Z\",\"O\",\"E\",\"T\",\"Ü\",\"İ\",\"K\",\"E\",\"Ğ\"],[\"C\",\"İ\",\"U\",\"C\",\"I\",\"N\",\"N\",\"I\",\"S\",\"K\",\"V\",\"S\"],[\"D\",\"Ç\",\"S\",\"İ\",\"S\",\"S\",\"P\",\"E\",\"A\",\"O\",\"C\",\"I\"],[\"M\",\"R\",\"I\",\"İ\",\"G\",\"Z\",\"K\",\"R\",\"F\",\"Y\",\"B\",\"U\"],[\"Ü\",\"İ\",\"N\",\"Ö\",\"D\",\"D\",\"N\",\"A\",\"H\",\"F\",\"İ\",\"A\"],[\"D\",\"Ş\",\"I\",\"Ç\",\"F\",\"E\",\"V\",\"G\",\"C\",\"Y\",\"Ü\",\"T\"],[\"Ü\",\"E\",\"F\",\"H\",\"Ö\",\"D\",\"U\",\"N\",\"P\",\"A\",\"U\",\"S\"],[\"R\",\"B\",\"H\",\"İ\",\"K\",\"R\",\"Ö\",\"F\",\"İ\",\"E\",\"B\",\"D\"],[\"Ç\",\"E\",\"P\",\"Ğ\",\"M\",\"İ\",\"I\",\"Y\",\"B\",\"K\",\"A\",\"İ\"],[\"A\",\"T\",\"H\",\"A\",\"T\",\"Ç\",\"S\",\"F\",\"S\",\"L\",\"H\",\"Ö\"]]"
+  },
+  "clue": {
+    "themeId": "hayvanlar",
+    "words": [
+      "ARI",
+      "ASLAN",
+      "BAYKUŞ",
+      "KAPLAN",
+      "PANDA",
+      "PENGUEN",
+      "TAVŞAN",
+      "ZEBRA",
+      "ZÜRAFA"
+    ],
+    "seed": 388792203,
+    "board": {
+      "version": 2,
+      "size": 12,
+      "grid": [
+        [
+          "K",
+          "D",
+          "Ö",
+          "L",
+          "N",
+          "R",
+          "O",
+          "Ğ",
+          "İ",
+          "Ü",
+          "E",
+          "Ç"
+        ],
+        [
+          "A",
+          "I",
+          "Ü",
+          "A",
+          "I",
+          "Z",
+          "A",
+          "G",
+          "R",
+          "C",
+          "P",
+          "S"
+        ],
+        [
+          "P",
+          "Ü",
+          "L",
+          "J",
+          "N",
+          "E",
+          "U",
+          "G",
+          "N",
+          "E",
+          "P",
+          "U"
+        ],
+        [
+          "L",
+          "S",
+          "D",
+          "Ş",
+          "O",
+          "B",
+          "Z",
+          "Z",
+          "A",
+          "Ö",
+          "T",
+          "C"
+        ],
+        [
+          "A",
+          "Z",
+          "L",
+          "B",
+          "R",
+          "R",
+          "Ö",
+          "Ü",
+          "A",
+          "R",
+          "U",
+          "B"
+        ],
+        [
+          "N",
+          "J",
+          "T",
+          "Ç",
+          "B",
+          "A",
+          "Ğ",
+          "R",
+          "Ü",
+          "F",
+          "I",
+          "C"
+        ],
+        [
+          "D",
+          "F",
+          "A",
+          "O",
+          "V",
+          "K",
+          "B",
+          "A",
+          "B",
+          "J",
+          "C",
+          "Ş"
+        ],
+        [
+          "E",
+          "Z",
+          "V",
+          "L",
+          "B",
+          "Ü",
+          "A",
+          "F",
+          "P",
+          "E",
+          "G",
+          "T"
+        ],
+        [
+          "C",
+          "Ü",
+          "Ş",
+          "S",
+          "C",
+          "P",
+          "Y",
+          "A",
+          "D",
+          "N",
+          "A",
+          "P"
+        ],
+        [
+          "P",
+          "K",
+          "A",
+          "Z",
+          "R",
+          "K",
+          "K",
+          "V",
+          "P",
+          "O",
+          "M",
+          "L"
+        ],
+        [
+          "İ",
+          "H",
+          "N",
+          "T",
+          "H",
+          "I",
+          "U",
+          "Ü",
+          "P",
+          "D",
+          "P",
+          "Ş"
+        ],
+        [
+          "T",
+          "Ü",
+          "Ö",
+          "K",
+          "Ğ",
+          "Ş",
+          "Ş",
+          "R",
+          "V",
+          "K",
+          "Ö",
+          "M"
+        ]
+      ],
+      "targets": [
+        {
+          "id": "0.0",
+          "label": "ARI",
+          "text": "ARI",
+          "group": 0
+        },
+        {
+          "id": "1.0",
+          "label": "ASLAN",
+          "text": "ASLAN",
+          "group": 1
+        },
+        {
+          "id": "2.0",
+          "label": "BAYKUŞ",
+          "text": "BAYKUŞ",
+          "group": 2
+        },
+        {
+          "id": "3.0",
+          "label": "KAPLAN",
+          "text": "KAPLAN",
+          "group": 3
+        },
+        {
+          "id": "4.0",
+          "label": "PANDA",
+          "text": "PANDA",
+          "group": 4
+        },
+        {
+          "id": "5.0",
+          "label": "PENGUEN",
+          "text": "PENGUEN",
+          "group": 5
+        },
+        {
+          "id": "6.0",
+          "label": "TAVŞAN",
+          "text": "TAVŞAN",
+          "group": 6
+        },
+        {
+          "id": "7.0",
+          "label": "ZEBRA",
+          "text": "ZEBRA",
+          "group": 7
+        },
+        {
+          "id": "8.0",
+          "label": "ZÜRAFA",
+          "text": "ZÜRAFA",
+          "group": 8
+        }
+      ],
+      "placements": [
+        {
+          "id": "5.0",
+          "label": "PENGUEN",
+          "text": "PENGUEN",
+          "group": 5,
+          "a": [
+            2,
+            10
+          ],
+          "b": [
+            2,
+            4
+          ]
+        },
+        {
+          "id": "2.0",
+          "label": "BAYKUŞ",
+          "text": "BAYKUŞ",
+          "group": 2,
+          "a": [
+            6,
+            6
+          ],
+          "b": [
+            11,
+            6
+          ]
+        },
+        {
+          "id": "3.0",
+          "label": "KAPLAN",
+          "text": "KAPLAN",
+          "group": 3,
+          "a": [
+            0,
+            0
+          ],
+          "b": [
+            5,
+            0
+          ]
+        },
+        {
+          "id": "6.0",
+          "label": "TAVŞAN",
+          "text": "TAVŞAN",
+          "group": 6,
+          "a": [
+            5,
+            2
+          ],
+          "b": [
+            10,
+            2
+          ]
+        },
+        {
+          "id": "8.0",
+          "label": "ZÜRAFA",
+          "text": "ZÜRAFA",
+          "group": 8,
+          "a": [
+            3,
+            7
+          ],
+          "b": [
+            8,
+            7
+          ]
+        },
+        {
+          "id": "1.0",
+          "label": "ASLAN",
+          "text": "ASLAN",
+          "group": 1,
+          "a": [
+            4,
+            0
+          ],
+          "b": [
+            0,
+            4
+          ]
+        },
+        {
+          "id": "4.0",
+          "label": "PANDA",
+          "text": "PANDA",
+          "group": 4,
+          "a": [
+            8,
+            11
+          ],
+          "b": [
+            8,
+            7
+          ]
+        },
+        {
+          "id": "7.0",
+          "label": "ZEBRA",
+          "text": "ZEBRA",
+          "group": 7,
+          "a": [
+            1,
+            5
+          ],
+          "b": [
+            5,
+            5
+          ]
+        },
+        {
+          "id": "0.0",
+          "label": "ARI",
+          "text": "ARI",
+          "group": 0,
+          "a": [
+            3,
+            8
+          ],
+          "b": [
+            5,
+            10
+          ]
+        }
+      ]
+    },
+    "wordsKey": "[\"ARI\",\"ASLAN\",\"BAYKUŞ\",\"KAPLAN\",\"PANDA\",\"PENGUEN\",\"TAVŞAN\",\"ZEBRA\",\"ZÜRAFA\"]",
+    "gridKey": "[[\"K\",\"D\",\"Ö\",\"L\",\"N\",\"R\",\"O\",\"Ğ\",\"İ\",\"Ü\",\"E\",\"Ç\"],[\"A\",\"I\",\"Ü\",\"A\",\"I\",\"Z\",\"A\",\"G\",\"R\",\"C\",\"P\",\"S\"],[\"P\",\"Ü\",\"L\",\"J\",\"N\",\"E\",\"U\",\"G\",\"N\",\"E\",\"P\",\"U\"],[\"L\",\"S\",\"D\",\"Ş\",\"O\",\"B\",\"Z\",\"Z\",\"A\",\"Ö\",\"T\",\"C\"],[\"A\",\"Z\",\"L\",\"B\",\"R\",\"R\",\"Ö\",\"Ü\",\"A\",\"R\",\"U\",\"B\"],[\"N\",\"J\",\"T\",\"Ç\",\"B\",\"A\",\"Ğ\",\"R\",\"Ü\",\"F\",\"I\",\"C\"],[\"D\",\"F\",\"A\",\"O\",\"V\",\"K\",\"B\",\"A\",\"B\",\"J\",\"C\",\"Ş\"],[\"E\",\"Z\",\"V\",\"L\",\"B\",\"Ü\",\"A\",\"F\",\"P\",\"E\",\"G\",\"T\"],[\"C\",\"Ü\",\"Ş\",\"S\",\"C\",\"P\",\"Y\",\"A\",\"D\",\"N\",\"A\",\"P\"],[\"P\",\"K\",\"A\",\"Z\",\"R\",\"K\",\"K\",\"V\",\"P\",\"O\",\"M\",\"L\"],[\"İ\",\"H\",\"N\",\"T\",\"H\",\"I\",\"U\",\"Ü\",\"P\",\"D\",\"P\",\"Ş\"],[\"T\",\"Ü\",\"Ö\",\"K\",\"Ğ\",\"Ş\",\"Ş\",\"R\",\"V\",\"K\",\"Ö\",\"M\"]]",
+    "clues": {
+      "ASLAN": "Erkeğinin yelesi olan büyük kedi.",
+      "KAPLAN": "Turuncu kürkünde siyah çizgiler olan büyük kedi.",
+      "ZEBRA": "Siyah beyaz çizgili Afrika otçulu.",
+      "ZÜRAFA": "Çok uzun boynuyla yüksek dallara ulaşır.",
+      "PANDA": "Bambu yiyen siyah beyaz ayı.",
+      "TAVŞAN": "Uzun kulakları ve güçlü arka bacakları vardır.",
+      "PENGUEN": "Uçamayan, kanatlarıyla yüzen siyah beyaz kuş.",
+      "BAYKUŞ": "Çoğu türü gece avlanan, iri gözlü kuş.",
+      "ARI": "Çiçeklerden nektar toplayan bal üreticisi."
+    },
+    "riddleIds": [
+      "riddle-v1:hayvanlar:ARI",
+      "riddle-v1:hayvanlar:ASLAN",
+      "riddle-v1:hayvanlar:BAYKUŞ",
+      "riddle-v1:hayvanlar:KAPLAN",
+      "riddle-v1:hayvanlar:PANDA",
+      "riddle-v1:hayvanlar:PENGUEN",
+      "riddle-v1:hayvanlar:TAVŞAN",
+      "riddle-v1:hayvanlar:ZEBRA",
+      "riddle-v1:hayvanlar:ZÜRAFA"
+    ]
+  }
+}

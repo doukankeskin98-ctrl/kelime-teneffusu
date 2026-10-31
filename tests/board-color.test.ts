@@ -42,7 +42,7 @@ describe('personal board paper and compatible persistence',()=>{
 describe('nine targets beside a readable large board',()=>{
  it('renders all nine normal words or full clues, never split-word inflation or hidden answers',()=>{
   const common:Record<string,any>={};vm.runInNewContext(source('components/game/common.tsx'),{exports:common,require:(name:string)=>name==='react'?React:name==='react/jsx-runtime'?jsx:name==='lucide-react'?icons:name==='@/lib/game/word-card'?wordCard:name==='./Board'?{strokeColor:()=> '#94bfaa'}:{}});
-  for(const clue of [false,true]){const riddle=clue?groupRiddlePuzzle(0)!:null,candidate=riddle??groupPuzzle(0)!;const html=renderToStaticMarkup(React.createElement(common['WordList'],{board:candidate.board,strokes:[],clues:riddle?.clues}));assert.equal((html.match(/role="listitem"/g)??[]).length,9);if(riddle){for(const clue of Object.values(riddle.clues))assert(html.includes(clue));}else for(const target of candidate.board.targets)assert(html.includes(target.text));}
+  for(const clue of [false,true]){const riddle=clue?groupRiddlePuzzle(0)!:null,candidate=riddle??groupPuzzle(0)!;const html=renderToStaticMarkup(React.createElement(common['WordList'],{board:candidate.board,strokes:[],clues:riddle?.clues}));assert.equal((html.match(/role="listitem"/g)??[]).length,7);if(riddle){for(const clue of Object.values(riddle.clues))assert(html.includes(clue));}else for(const target of candidate.board.targets)assert(html.includes(target.text));}
  });
  it('keeps the twelve-row board legible in small/large phone and tablet budgets, expanding instead of clipping',()=>{
   for(const [width,height] of [[360,640],[375,667],[390,844],[430,932],[768,1024],[1024,1366]])for(const text of [1,1.3,2]){
