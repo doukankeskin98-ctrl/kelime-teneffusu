@@ -1,6 +1,7 @@
 import { dailySpec, goldenId, hash, istanbulDay, makePuzzle, match, pointsFor, type Cell, type Puzzle, type Stroke } from './engine.ts';
 import { THEMES } from './catalog.ts';
-import {ARENA_POOL_SIZE,ARENA_RIDDLE_POOL_SIZE,arenaPuzzle,arenaRiddlePuzzle,hasArenaRiddles,nextArenaKind,arenaWordKey,arenaGridKey,type ArenaRoundKind} from './arena-content.ts';
+import {GROUP_WORD_POOL,GROUP_CLUE_POOL,GROUP_POOL_SIZE,GROUP_CLUE_POOL_SIZE,groupPuzzle,groupRiddlePuzzle,hasGroupRiddles} from './group-content.ts';
+import {ARENA_POOL_SIZE,arenaPuzzle,nextArenaKind,arenaWordKey,arenaGridKey,type ArenaRoundKind} from './arena-content.ts';
 
 export interface Statement { bind(...values: unknown[]): Statement; first<T=Record<string,unknown>>(): Promise<T|null>; all<T=Record<string,unknown>>(): Promise<{results:T[]}>; run():Promise<{meta:{changes:number}}> }
 export interface Database {prepare(sql:string):Statement;batch(statements:Statement[]):Promise<{meta:{changes:number}}[]>}
@@ -82,7 +83,7 @@ export class GameService {
    const participants=sorted.map(p=>({id:p.id,name:p.name,ready:p.ready,count:p.strokes.length,score:p.score,online:!p.left&&now-p.seen<15000,rematch:p.rematch,left:!!p.left,rank:ranks[p.id]!}));
    const starters=this.starters(room);
    const roundKind=room.mode==='group'?(room.roundKind??'words'):'words',nextRoundKind=room.mode==='group'?nextArenaKind(roundKind):'words';
-   const roundUnavailable=room.mode==='group'&&roundKind==='clue'&&['waiting','ready'].includes(room.phase)&&!hasArenaRiddles(room.usedRiddleIds??[])?'Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.':'',clues=roundKind==='clue'?room.clues:undefined;
+   const roundUnavailable=room.mode==='group'&&roundKind==='clue'&&['waiting','ready'].includes(room.phase)&&!hasGroupRiddles(room.usedRiddleIds??[])?'Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.':'',clues=roundKind==='clue'?room.clues:undefined;
    // Older clients already render target.label. Mask answers there too, until confirmed.
    const board=puzzle?{...publicBoard(puzzle),targets:puzzle.targets.map(t=>({...t,label:clues?.[t.text]&&!you.strokes.some(s=>s.id===t.id)?clues[t.text]!:t.label}))}:null;
    return {roundKind,nextRoundKind,clues:clues?{...clues}:undefined,roundUnavailable:roundUnavailable||undefined,lastResult:room.lastResult,revision,id:room.id,code:room.code,kind:room.kind,mode:room.mode??'duel',hostId:starters[0]?.id,canStart:!roundUnavailable&&starters.length>=2&&starters.every(p=>p.ready),players:participants,contentOrdinal:room.contentOrdinal,phase:room.phase,themeId:room.themeId,starts:room.starts,ends:room.ends,winner:room.winner,reason:room.reason,round:room.round,serverNow:now,board,golden:puzzle&&room.starts!==null?goldenId(puzzle.targets,room.starts,now):null,you:{id:you.id,name:you.name,ready:you.ready,strokes:you.strokes,score:you.score,rematch:you.rematch},opponent:other?{name:other.name,ready:other.ready,count:other.strokes.length,score:other.score,online:!other.left&&now-other.seen<15000,rematch:other.rematch}:null};
@@ -107,12 +108,12 @@ export class GameService {
    return {...view,series:{rounds:receipts[0]?.rounds??0,players}};
  }
  private async allocate(room:Room){
-   const clue=room.mode==='group'&&room.roundKind==='clue',used=room.usedRiddleIds??[],poolId=clue?'arena-riddle-v1':'arena-v1',limit=clue?ARENA_RIDDLE_POOL_SIZE:ARENA_POOL_SIZE;
-   if(clue&&!hasArenaRiddles(used))throw new GameError('Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.',409,'ARENA_RIDDLES_EXHAUSTED');
+   const group=room.mode==='group',clue=group&&room.roundKind==='clue',used=room.usedRiddleIds??[],poolId=group?(clue?GROUP_CLUE_POOL:GROUP_WORD_POOL):'arena-v1',limit=group?(clue?GROUP_CLUE_POOL_SIZE:GROUP_POOL_SIZE):ARENA_POOL_SIZE;
+   if(clue&&!hasGroupRiddles(used))throw new GameError('Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.',409,'ARENA_RIDDLES_EXHAUSTED');
    await this.q('INSERT OR IGNORE INTO arena_pool(id,next,claim) VALUES(?,0,\'\')',poolId).run();
    const cursor=await this.q('SELECT next FROM arena_pool WHERE id=?',poolId).first<{next:number}>();const from=cursor!.next;
    for(let ordinal=from;ordinal<Math.min(from+128,limit);ordinal++){
-    const riddle=clue?arenaRiddlePuzzle(ordinal,used):null,candidate=clue?riddle:arenaPuzzle(ordinal);if(!candidate)continue;
+    const riddle=clue?groupRiddlePuzzle(ordinal,used):null,candidate=clue?riddle:group?groupPuzzle(ordinal):arenaPuzzle(ordinal);if(!candidate)continue;
     const seen=await this.q('SELECT 1 AS seen FROM arena_seen WHERE user_id IN (SELECT value FROM json_each(?)) AND (words_key=? OR grid_key=?) LIMIT 1',JSON.stringify(room.players.filter(p=>!p.left).map(p=>p.id)),candidate.wordsKey,candidate.gridKey).first();
     if(seen)continue;
     if(riddle){room.clues=riddle.clues;room.usedRiddleIds=[...new Set([...used,...riddle.riddleIds])];}else delete room.clues;
@@ -176,7 +177,7 @@ export class GameService {
     if(room.players.some(p=>p.id===userId&&!p.left))return this.publicView(room,userId,row.revision);
     if(!(room.phase==='waiting'||room.mode==='group'&&room.phase==='ready')||(!room.mode&&room.players.length!==1)||row.expires<this.clock())throw new GameError('Maç başladı veya oda kapandı. Sonraki maçın lobisinde katılabilirsin.',409);
     room.players=room.players.filter(p=>p.id!==userId&&!p.left);room.players.push(player(userId,name,this.clock()));room.phase=room.players.length>1?'ready':'waiting';
-    // Reserve headroom for every player's six strokes and the SSE envelope, not an arbitrary seat count.
+    // Reserve headroom for every player's nine strokes and the SSE envelope, not an arbitrary seat count.
     if(new TextEncoder().encode(JSON.stringify(room)).length+room.players.length*1200>60000)throw new GameError('Oda bu sunucunun güvenli veri kapasitesine ulaştı. Yeni bir özel oda açabilirsin.',409,'ARENA_ROOM_CAPACITY');
     const rev=row.revision+1,token=crypto.randomUUID();room.writeToken=token;
     try{

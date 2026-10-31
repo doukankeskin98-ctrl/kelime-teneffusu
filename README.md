@@ -1,5 +1,7 @@
 # Kelime Teneffüsü
 
+0.19.0: yeni açık/özel grup turları her iki türde12×12/dokuz kelime, ayrı değişmez grup havuzu ve64 yeni tahta denetimi. Eski aktif maçlar aynen sürer; sonraki tur yeni ölçüye geçer. Beyaz/kahverengi/adaçayı/kum kişisel tahta seçimi mevcut kayıt v2 içinde kalır; diğer oyuncuya/oda puanına etkisi yok. Eski dueller/içerik/göçler korunur.
+
 0.18.1: 31 Ekim için Kuş sesleri (Rahat6×6,4 kelime) ve Dağ yolculuğu (Dengeli8×8,7 kelime). Yayın kapısı tarih/slot/ID/hash bütünlüğünü de denetler; eski kayıtlar ve 0.18.0 ses/grup davranışı korunur.
 
 Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudflare Workers + D1 üzerinde çalışır. Lovable kredisi veya Lovable çalışma zamanı gerekmez.

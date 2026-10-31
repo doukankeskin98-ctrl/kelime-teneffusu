@@ -1,5 +1,7 @@
 # Öncelikler
 
+31 Ekim2026,0.19.0: kullanıcının grup12×12/dokuz ve kişisel tahta rengi isteği. Kabul/kanıt ../journal/entries/2026-10-31_group-color-decision.md; tek bağımsız güvenilirlik incelemesi group-12x9-review. Fiziksel küçük/büyük telefon, Safari/tablet, kağıt kontrastı/çapraz çizim ve gerçek provider/PWA hâlâ ilk açık kabuldür. Yeni faz veya üretim kapasitesi garantisi yok.
+
 31 Ekim 2026,0.18.1: tarihli çift ve arşiv kimlik/imza yayın kapısı. Son karar/haftalık değerlendirme/kanıt ../journal/entries/2026-10-31_maintenance.md içinde. İlk açık öncelik gerçek Safari/tablet/ses kesintisi, provider ve PWA doğrulaması; yeni faz tamamlandı sayılmaz.
 
 31 Ekim 2026, 0.18.0: kullanıcının doğrudan ses/yerleşim/grup talebi uygulandı. %0–100 tercih, harf tınıları, 32 ek İpucu Avı ve kalıcı ipucu→normal tur dönüşümü; kabul/gerçek son kanıt `../journal/entries/2026-10-31_audio-riddle-decision.md`. İlk açık iş destekli gerçek Safari/iPad/Android ekran, ses konforu/medya seviyesi/sessiz anahtar/kesinti ve gerçek hesapla dönüş. Araç engelini aynı başarısız yoldan aşma; kontrollü 4/8 oyuncu testini fiziksel cihaz veya üretim kapasitesi diye sunma. Yeni özellik veya sonraki faz kendiliğinden başlamaz.
