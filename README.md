@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.23.0 · Yeni odalarda da kalıcı Arena çeşitliliği
+
+630 yeni tanım; eski144 korunarak774 bilmeceli cevap ve toplam919 rekabet kelimesi. Yeni hızlı/özel gruplar ve dereceli düello, bütün katılımcıların kalıcı arena_seen makbuzlarından tekil kelime kullanımını okur. Önce hiç görülmemiş hedefler; yeterli alternatif varsa kişi başına son12 maç dışlanır, ardından az/eski görülenler seçilir. Reddedilen tam küme gerçekten farklı kelimelerle yeniden denenir. Aynı tam küme/grid ömürboyu engeli ve oda içi tekil bilmece engeli korunur. Şema/göç yok; eski makbuzlar hemen etkilidir. Yeni misafir veya farklı hesap ayrı geçmiş sayılır. Sonlu kütüphane sonsuz tekil kelime garantisi değildir.
+
+Eski üreticiler, havuz cursorları, aktif9×9/12×12 snapshotları, solo bölümler ve kayıtlar değişmez. Yeni server-only rekabet üreticisi grupta9×9/yedi, düelloda8×8/altı üretir; herkes aynı sunucu tahtasını alır. Doğrulama ve sınırlar studio-agents/journal/entries/2026-10-31_arena-variety-decision.md içinde tamamlanır.
+
 ## 0.22.0 · Tahta öncelikli mobil oyun
 
 Yeni grup turları sürümlü9×9/yedi kelime havuzunda; mevcut12×12 maç snapshotları, eski bölüm/kayıt kimlikleri, arena_seen ve usedRiddleIds korunur. Mobil normal/bilmeceli oyunlarda tek okunur hedef,44px önceki/sonraki kontrolleri ve tüm listeye pencere erişimi; seçim sırasında başlıkta kelime geri bildirimi. İçerik ekran ölçüsüne göre değişmez. Başlık/skor/panel boşlukları azaltıldı; tüm ekranı ölçekleme veya zorunlu yakınlaştırma yok.

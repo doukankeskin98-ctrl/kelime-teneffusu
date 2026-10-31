@@ -1,3 +1,5 @@
+import {freshArenaPuzzle} from '../lib/game/arena-fresh.ts';
+import {ARENA_CLUES,ARENA_LIBRARY} from '../lib/game/arena-library.ts';
 import {groupPuzzle,groupRiddlePuzzle} from '../lib/game/group-content.ts';
 import assert from 'node:assert/strict';
 import {PLAYABLE_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from '../lib/game/content.ts';
@@ -27,3 +29,10 @@ for(let i=0;i<64;i++){
  for(const p of board.placements){const cells=exactLine(p.a,p.b,board.size);assert(cells);assert.equal(cells.map(([r,c])=>board.grid[r]![c]).join(''),p.text);}
 }
 console.log('64 additional distinct nine-by-nine group boards with seven solvable words passed.');
+
+for(const options of [{group:true,clue:true},{group:true},{group:false}])for(let i=0;i<32;i++){
+ const c=freshArenaPuzzle(i,options);assert(c,'Missing fresh competition board');
+ assert.equal(c.board.size,options.group?9:8);assert.equal(c.words.length,options.group?7:6);
+ for(const p of c.board.placements){const cells=exactLine(p.a,p.b,c.board.size);assert(cells);assert.equal(cells.map(([r,col]):string=>c.board.grid[r]![col]!).join(''),p.text);}
+}
+console.log(`${ARENA_CLUES.length} Arena definitions / ${ARENA_LIBRARY.length} words;96 fresh competition boards passed.`);

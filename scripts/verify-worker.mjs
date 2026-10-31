@@ -201,6 +201,23 @@ try{
  check(thirdReload.roundKind==='clue'&&JSON.stringify(thirdReload.board)===JSON.stringify(third.board)&&JSON.stringify(thirdReload.clues)===JSON.stringify(third.clues),'third-round reconnect preserves the same riddle board and definitions');
  check(Object.keys(third.clues).every(answer=>!(answer in groupActive.clues)),'not even an individual riddle is reused in the same room');
  check(wordKey(third.board)!==wordKey(second.board)&&wordKey(third.board)!==wordKey(groupActive.board)&&JSON.stringify(third.board.grid)!==JSON.stringify(groupActive.board.grid),'the third round also differs in real content');
+ // The same authenticated players leave, switch modes, and create another room.
+ const pastWords=new Set([groupActive,second,third].flatMap(v=>v.board.targets.map(t=>t.text)));
+ await Promise.all(groupUsers.map((_,i)=>action(i,'leave',3)));
+ const returnAction=(i,name,id,extra={})=>json('/api/game',{nativeUser:groupUsers[i],method:'POST',body:{action:name,id,round:1,expectedOwnerId:profiles[i].profile.id,...extra}});
+ const duelA=await returnAction(0,'enter',undefined,{kind:'quick'}),duelB=await returnAction(7,'enter',undefined,{kind:'quick'});
+ check(duelA.id===duelB.id,'returning accounts enter a new ranked duel together');
+ await returnAction(0,'ready',duelB.id);const returningDuel=await returnAction(7,'ready',duelB.id);
+ check(returningDuel.board.size===8&&returningDuel.board.targets.length===6,'ranked duel retains its eight by eight rules');
+ check(returningDuel.board.targets.every(t=>!pastWords.has(t.text)),'ranked duel shares prior group word history');
+ for(const t of returningDuel.board.targets)pastWords.add(t.text);
+ await returnAction(0,'leave',duelB.id);await returnAction(7,'leave',duelB.id);
+ const freshA=await returnAction(0,'enter',undefined,{kind:'quick',mode:'group'}),freshB=await returnAction(7,'enter',undefined,{kind:'quick',mode:'group'});
+ check(freshA.id===freshB.id&&freshA.id!==group.id,'leaving and quick matching opens a different shared group');
+ await returnAction(0,'ready',freshB.id);await returnAction(7,'ready',freshB.id);const freshGroup=await returnAction(0,'start',freshB.id);
+ check(freshGroup.roundKind==='clue'&&freshGroup.board.targets.every(t=>!pastWords.has(t.text)),'new group excludes individual clues and words seen in previous rooms and duel');
+ const freshPeer=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(JSON.stringify(freshPeer.board)===JSON.stringify(freshGroup.board),'returning participants still receive exactly the same board');
+ await returnAction(0,'leave',freshB.id);await returnAction(7,'leave',freshB.id);
  // Sixteen actual guest sessions enter the public group queue concurrently.
  const quickCookies=await Promise.all(Array.from({length:16},async(_,i)=>(await request('/api/session',{method:'POST',body:{name:'Quick '+i}})).headers.get('Set-Cookie')));
  const quickProfiles=await Promise.all(quickCookies.map(cookie=>json('/api/game',{cookie})));
