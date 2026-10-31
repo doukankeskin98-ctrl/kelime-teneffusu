@@ -43,3 +43,30 @@
 .welcome-row,.discovery-heading,.page-footer,.button-row{flex-wrap:wrap;gap:12px}.welcome-row>div,.discovery-heading>div{min-width:0;overflow-wrap:anywhere}
 .journey-home .journey-chapter-name,.journey-home-note,.journey-home .journey-milestone span,.journey-near-reward>div{min-width:0;overflow-wrap:anywhere}
 @media(max-width:600px){.riddle-chapter-list{grid-template-columns:minmax(0,1fr)}.riddle-shelf{padding:16px}}
+
+/* Personal paper is independent of collectible ink palettes and multiplayer rooms. */
+[data-board-color=white]{--board-paper:#fffdf4}
+[data-board-color=walnut]{--board-paper:#d5b28d;--board-rim:#244c3e}
+[data-board-color=sage]{--board-paper:#dce6d2;--board-rim:#244c3e}
+[data-board-color=sand]{--board-paper:#f1dfb0;--board-rim:#244c3e}
+.stroke-outline,.active-stroke-outline{stroke:var(--board-rim,transparent);opacity:1}
+.stroke-outline.is-pending{opacity:0}
+[data-board-color]:not([data-board-color=white]) .letter-board .letter-grid span{color:#17382c;text-shadow:none}
+[data-board-color]:not([data-board-color=white]) .letter-board .letter-grid span:before{background:transparent;box-shadow:none}
+[data-board-color]:not([data-board-color=white]) .letter-board .board-ink{opacity:1}
+[data-board-color]:not([data-board-color=white]) .letter-board .board-ink line{opacity:1}
+[data-board-color]:not([data-board-color=white]) .letter-board .board-ink .is-pending{opacity:.55}
+[data-board-color]:not([data-board-color=white]) .letter-board .board-ink .stroke-outline.is-pending{opacity:0}
+.board-color-settings{padding:0 0 18px;margin:16px 0 20px;border:0;border-bottom:1px solid var(--line);min-width:0}
+.board-color-settings legend{font-size:16px;font-weight:700}.board-color-settings>p{font-size:14px;line-height:1.5;color:#4b6455}
+.board-color-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.board-color-options>button{min-width:0;min-height:108px;padding:8px;border:1px solid #bac8b4;background:#fafaf2;border-radius:12px;color:#244c3e;display:flex;align-items:center;flex-direction:column;gap:6px;font:inherit}
+.board-color-options>button[aria-pressed=true]{border:2px solid #244c3e;padding:7px;background:#edf2e5}
+.board-color-options>button:focus-visible{outline:3px solid #244c3e;outline-offset:3px}
+.board-color-preview{display:block;border:1px solid #8b9b80;border-radius:7px;padding:4px;width:52px;height:48px;font-size:16px;line-height:18px;color:#17382c;letter-spacing:3px;font-weight:700}
+.board-color-options b{font-size:12px;overflow-wrap:anywhere}.board-color-options small{font-size:12px;display:flex;align-items:center;gap:3px;min-height:18px}
+@media(max-width:400px){.board-color-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Nine full definitions remain readable; the measured frame grows naturally if needed. */
+.viewport-play .viewport-targets .clue-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+.viewport-play .viewport-targets .clue-copy{font-size:14px;line-height:1.4}
+@media(min-width:600px){.viewport-play .viewport-targets .clue-list{grid-template-columns:repeat(3,minmax(0,1fr))}}

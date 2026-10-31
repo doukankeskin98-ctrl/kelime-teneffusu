@@ -51,3 +51,5 @@ Sunum yardımcıları achievement-view ve AchievementLoop içindedir; bunlar kay
 ## İnceleme dalı: numaralı ana yolculuk
 
 `main-journey.ts` mevcut 96 kimliği bir kez sıralar; numara yalnız sunumdur. İlk 18 bölüm üç dünyanın içeriklerini öğrenme/mola/ustalık ritmiyle birleştirir; 19–96 mevcut atlas sırasıdır. İlk albüm 10. bölümde, ilk yeni dünyalar 3 ve 7 sonunda açılır. Gerçek eski yarım bölüm devam eder; diğer durumda ilk oynanabilir eksik bölüm seçilir. Daha sonraki bir bölümün bitmiş olması önceki boşlukları doldurmaz. Bütün kayıt anahtarları, tahtalar, 3/5/6 açılışları ve ödül türetimi aynıdır. Sonuçtan devam ilk gerçek eksik bölüme gider. Ana yolculuk sonludur; diğer içerikler Keşfet ve arşivde kalır. Bu dal canlıya yayımlanmadı.
+
+0.19.0 kişisel Tahta rengi ücretsizdir; koleksiyon mürekkep paletinden ayrıdır. Yeni optional Progress.boardColor v2 alanı eski kayıtları sıfırlamaz; harita/altılı albüm/açılış eşiği değişmez. Grup12×12 havuzu ana yolculuk bölüm listesine eklenmez.

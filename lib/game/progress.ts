@@ -1,9 +1,10 @@
+import {boardColor,type BoardColor} from './board-color.ts';
 import {hash,makePuzzle,match,type Puzzle,type Stroke} from './engine.ts';
 import {THEMES} from './catalog.ts';
 import {PLAYABLE_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from './content.ts';
 export interface SavedLevel {strokes:Stroke[];elapsed:number;hints:number;complete:boolean;stars:number}
 export interface Progress {
- v:2;saves:Record<string,SavedLevel>;sound:boolean;zoom:boolean;days:string[];
+ boardColor?:BoardColor;v:2;saves:Record<string,SavedLevel>;sound:boolean;zoom:boolean;days:string[];
  last:{themeId:string;level:number;journey?:string}|null;
  haptics:boolean;contrast:boolean;palette:'classic'|'ocean'|'orchid';tutorialDone:boolean;analytics:boolean;mysteries:string[];
 }
@@ -37,7 +38,7 @@ export function loadProgress(raw:string|null):Progress {
    last={themeId:r.last.themeId,level:r.last.level,...(j?{journey:j.id}:{})};
   }
   const days=Array.isArray(r.days)?[...new Set(r.days.filter(x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&!Number.isNaN(Date.parse(x+'T12:00:00Z'))))].sort().slice(-3660):[];
-  return {v:2,saves,sound:r.sound===true,zoom:r.zoom===true,days,last,haptics:r.haptics===true,contrast:r.contrast===true,palette:r.palette==='ocean'||r.palette==='orchid'?r.palette:'classic',tutorialDone:r.tutorialDone===true,analytics:r.analytics===true,mysteries:Array.isArray(r.mysteries)?[...new Set(r.mysteries.filter(x=>MYSTERIES.some(m=>m.id===x)))]:[]};
+  return {...(boardColor(r.boardColor)?{boardColor:boardColor(r.boardColor)}:{}),v:2,saves,sound:r.sound===true,zoom:r.zoom===true,days,last,haptics:r.haptics===true,contrast:r.contrast===true,palette:r.palette==='ocean'||r.palette==='orchid'?r.palette:'classic',tutorialDone:r.tutorialDone===true,analytics:r.analytics===true,mysteries:Array.isArray(r.mysteries)?[...new Set(r.mysteries.filter(x=>MYSTERIES.some(m=>m.id===x)))]:[]};
  }catch{return emptyProgress();}
 }
 export function cleanSave(raw:SavedLevel|undefined,board:Pick<Puzzle,'size'|'grid'|'targets'>):SavedLevel {
@@ -57,7 +58,7 @@ export function mergeProgress(server:Progress,local:Progress):Progress {
   const strokes=[...current.strokes,...incoming.strokes.filter(s=>!current.strokes.some(c=>c.id===s.id))];
   saves[key]=cleanSave({strokes,elapsed:Math.max(current.elapsed,incoming.elapsed),hints:Math.max(current.hints,incoming.hints),complete:false,stars:0},board);
  }
- return {...local,last:local.last??server.last,saves,days:[...new Set([...server.days,...local.days])].sort().slice(-3660),tutorialDone:server.tutorialDone||local.tutorialDone,mysteries:[...new Set([...server.mysteries,...local.mysteries])]};
+ return {...(server.boardColor?{boardColor:server.boardColor}:{}),...local,last:local.last??server.last,saves,days:[...new Set([...server.days,...local.days])].sort().slice(-3660),tutorialDone:server.tutorialDone||local.tutorialDone,mysteries:[...new Set([...server.mysteries,...local.mysteries])]};
 }
 export function streak(days:string[],today:string):number {const unique=new Set(days);const date=new Date(today+'T12:00:00Z');if(!unique.has(today))date.setUTCDate(date.getUTCDate()-1);let count=0;while(unique.has(date.toISOString().slice(0,10))){count++;date.setUTCDate(date.getUTCDate()-1);}return count;}
 export function collectionStats(p:Progress){const completed=Object.values(p.saves).filter(s=>s.complete).length;return {completed,stars:Object.values(p.saves).reduce((n,s)=>n+(s.complete?s.stars:0),0),worlds:THEMES.filter(t=>Object.entries(p.saves).some(([key,s])=>s.complete&&(key.startsWith(t.id+'.')||key.startsWith('route:'+t.id+'-')))).length};}

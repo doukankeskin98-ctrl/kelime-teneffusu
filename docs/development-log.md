@@ -1,3 +1,7 @@
+# 31 Ekim2026 ·0.19.0 · Grup12×12/dokuz ve kişisel kağıt
+
+Ayrı grup üreticisi, sürümlü cursor, mevcut CAS/geçmiş ve optional v2 renk tercihi seçildi. Yanıltıcı CSS büyütmesi veya eski havuz/tohum değişimi yok.64 farklı yeni grup tahtası, dört kağıt ve mevcut hesap/tahta UI yeniden kullanılır. Karar, kabul ve son kanıt studio-agents/journal/entries/2026-10-31_group-color-decision.md kaydındadır. Bugünün tarihli çifti çoğaltılmadı.
+
 # 31 Ekim 2026 · 0.18.0 · Ses ve dönüşümlü grup turları
 
 31 Ekim 2026 ·0.18.1: Kuş sesleri / Dağ yolculuğu tarihli tek çift ve arşiv kaynak bütünlüğü kapısı. Aynı içerik/kimlik yeniden üretilmez. Haftalık değerlendirme, seçimin gerekçesi, kabul ve son kanıt studio-agents/journal/entries/2026-10-31_maintenance.md kaydındadır. Fiziksel cihaz kuyruğu korunur.
