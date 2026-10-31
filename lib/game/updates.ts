@@ -1,4 +1,7 @@
 export const GAME_UPDATES=[
+ {version:'0.21.1',date:'31 Ekim 2026',title:'Cihaz kaydın için daha açık durum',items:[
+  {where:'Albüm · Kayıt durumu',detail:'Cihazına kayıt yapılamıyorsa bulut yanıtı bu uyarıyı gizlemez. Cihaz kaydını yeniden dene ile aynı ilerlemeyi tekrar saklayabilirsin. Güvenli bulut yedeklemesi devam eder.'},
+ ]},
  {version:'0.20.0',date:'31 Ekim 2026',title:'Her keşif küçük bir yolculuk',items:[
   {where:'Yolculuk · Yeni görünüm',detail:'Dünyana açılan özgün bir sahne, belirgin Oyna düğmesi ve dokunarak seçebildiğin bölüm yolu. Tüm yolculukta 96 bölümün gerçek kilitleri, kazanılmış yıldızların ve albüm finalleri birlikte görünür.'},
   {where:'Oyun · Hedefini seç',detail:'Bir kelimeye veya tanıma dokun, ararken onu takip et. Bulduğunda sıradaki hedef öne çıkar. Bu seçim cevap göstermez, ipucu harcamaz veya puanını değiştirmez.'},

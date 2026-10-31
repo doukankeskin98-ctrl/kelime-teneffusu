@@ -63,7 +63,7 @@ export class ProgressSync {
    const current=this.options.read(),merged=mergeProgress(remote,current);
    if(!this.hadCache&&Object.keys(initial.saves).length===0){for(const setting of ['palette','sound','zoom','contrast','haptics','analytics'] as const)if(current[setting]===initial[setting])Object.assign(merged,{[setting]:remote[setting]});}
    this.acknowledged=JSON.stringify(remote);this.loaded=true;this.persist(merged);this.options.write(merged);
-   this.report(JSON.stringify(merged)===this.acknowledged?'saved':this.pendingStatus());
+   this.report(JSON.stringify(merged)===this.acknowledged&&this.localOK?'saved':this.pendingStatus());
   }catch(e){if(!this.active())return;if(e instanceof ProgressOwnerChangedError){this.accountChanged=true;this.report(this.pendingStatus());}else this.report(this.localOK?'offline':'storage-error');}finally{this.loading=false;}
  }
  async flush(keepalive=false){
@@ -72,12 +72,12 @@ export class ProgressSync {
   if(this.accountChanged){this.report(this.pendingStatus());return;}
   if(!this.options.online()){this.report(this.pendingStatus());return;}
   if(!this.loaded||this.sending)return;
-  const serialized=JSON.stringify(snapshot);if(serialized===this.acknowledged){this.report('saved');return;}
+  const serialized=JSON.stringify(snapshot);if(serialized===this.acknowledged){this.report(this.localOK?'saved':this.pendingStatus());return;}
   this.sending=true;this.report('syncing');
   try{
    const remote=loadProgress(JSON.stringify(await this.request(signal=>this.options.save(snapshot,signal,keepalive&&new TextEncoder().encode(serialized).byteLength<60000))));if(!this.active())return;
    const merged=mergeProgress(remote,this.options.read());this.acknowledged=JSON.stringify(remote);this.persist(merged);this.options.write(merged);
-   this.report(JSON.stringify(merged)===this.acknowledged?'saved':this.pendingStatus());
+   this.report(JSON.stringify(merged)===this.acknowledged&&this.localOK?'saved':this.pendingStatus());
   }catch(e){if(!this.active())return;if(e instanceof ProgressOwnerChangedError){this.accountChanged=true;this.report(this.pendingStatus());}else this.report(this.localOK?'offline':'storage-error');}finally{this.sending=false;}
  }
  dispose(){this.stopped=true;this.controller.abort();}

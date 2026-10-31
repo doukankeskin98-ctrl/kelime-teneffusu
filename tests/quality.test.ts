@@ -49,7 +49,7 @@ describe('immediate local saves and account-scoped cloud synchronization',()=>{
   assert.equal(h.writes.length,writes);assert.equal(h.local.saves['uzay.0']!.strokes.length,2);
  });
  it('reports storage failure, still uploads a cloud backup and can recover device storage',async()=>{
-  const h=harness({storageFails:true});await h.sync.connect();h.change(discover(h.current));assert.equal(h.statuses.at(-1),'storage-error');await h.sync.flush();assert.equal(h.saved[0]!.saves['uzay.0']!.strokes.length,1);assert.equal(h.statuses.at(-1),'saved');
+  const h=harness({storageFails:true});await h.sync.connect();h.change(discover(h.current));assert.equal(h.statuses.at(-1),'storage-error');await h.sync.flush();assert.equal(h.saved[0]!.saves['uzay.0']!.strokes.length,1);assert.equal(h.statuses.at(-1),'storage-error');
   h.storageFails(false);h.change(discover(h.current,'uzay.0',2));assert.equal(h.local.saves['uzay.0']!.strokes.length,2);
  });
  it('retains discoveries after network failure and retries successfully',async()=>{
@@ -150,5 +150,15 @@ describe('honest next-step guidance and personal results',()=>{
  it('preserves a mystery best time on a slower replay and accepts a faster equal-star result',()=>{
   const key='mystery:'+MYSTERIES[0]!.id,best=discover(emptyProgress(),key,100,30).saves[key]!;
   assert.equal(keepBestSave(best,{...best,elapsed:60}).elapsed,30);assert.equal(keepBestSave(best,{...best,elapsed:20}).elapsed,20);
+ });
+});
+
+
+describe('device persistence failure is never hidden by a cloud acknowledgement',()=>{
+ it('retains the warning after an equal GET and unchanged flush until the same snapshot can persist',async()=>{
+  const h=harness({storageFails:true});try{await h.sync.connect();assert.equal(h.statuses.at(-1),'storage-error');await h.sync.flush();assert.equal(h.statuses.at(-1),'storage-error');assert.equal(h.saved.length,0);h.storageFails(false);await h.sync.flush();assert.equal(h.statuses.at(-1),'saved');assert(h.cache.has(PROGRESS_KEY+':alice'));assert.equal(h.saved.length,0);}finally{h.sync.dispose();}
+ });
+ it('still backs up discoveries while reporting device failure, then retries storage without an extra cloud write',async()=>{
+  const h=harness();try{await h.sync.connect();h.storageFails(true);h.change(discover(h.current));await h.sync.flush();assert.equal(h.statuses.at(-1),'storage-error');assert.equal(h.saved.length,1);await h.sync.flush();assert.equal(h.statuses.at(-1),'storage-error');h.storageFails(false);await h.sync.flush();assert.equal(h.statuses.at(-1),'saved');assert.equal(h.local.saves['uzay.0']!.strokes.length,1);assert.equal(h.saved.length,1);}finally{h.sync.dispose();}
  });
 });

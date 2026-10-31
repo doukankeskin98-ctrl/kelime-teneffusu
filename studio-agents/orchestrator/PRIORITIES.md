@@ -1,5 +1,7 @@
 # Öncelikler
 
+31 Ekim2026 akşam,0.21.1: cihaz hata uyarısını bulut başarısında koruma ve Albüm retry. Son kanıt ../journal/entries/2026-10-31_evening-storage.md. Yeni0.21 hikâyeler ve0.20 DOM kanıtı korunur. İlk açık kabul fiziksel Safari/Android, gerçek hesap/PWA ve uzun oturum; yeni faz yok.
+
 31 Ekim 2026, 0.20.0: kullanıcı web deneyimini ticari uygulama hazırlığına taşıma kapsamını açtı; native dönüşüm istemedi. Ana döngü yenilendi, eski kayıt sınırları kapatıldı ve ilk destekli yerel DOM denetimi yapıldı. Son kabul/kanıt ../journal/entries/2026-10-31_professional-decision.md. Sonraki kabul fiziksel iPhone/Android/Safari, gerçek oyuncuyla ilk10 bölüm gözlemi, ses konforu ve uzun oturum/iki gerçek hesap testidir. Tasarımın ticari etkisi henüz ölçülmedi. Uygulamaya paketleme bu tur yapılmaz.
 
 31 Ekim2026,0.19.0: kullanıcının grup12×12/dokuz ve kişisel tahta rengi isteği. Kabul/kanıt ../journal/entries/2026-10-31_group-color-decision.md; tek bağımsız güvenilirlik incelemesi group-12x9-review. Fiziksel küçük/büyük telefon, Safari/tablet, kağıt kontrastı/çapraz çizim ve gerçek provider/PWA hâlâ ilk açık kabuldür. Yeni faz veya üretim kapasitesi garantisi yok.

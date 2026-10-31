@@ -91,14 +91,19 @@ describe('account-change recovery notice',()=>{
 const cloudExports:Record<string,any>={};
 vm.runInNewContext(compile('components/game/ProgressCloudStatus.tsx'),{exports:cloudExports,require:(n:string)=>n==='react/jsx-runtime'?{jsx,jsxs:jsx}:n==='@/lib/game/progress-sync'?sync:{BookOpen:'book',Cloud:'cloud',CloudOff:'cloud-off',RotateCw:'retry'}});
 describe('Album main progress recovery',()=>{
- it('offers a working manual retry only for an unconfirmed cloud save',()=>{
+ it('offers a working manual retry for an unconfirmed cloud save; ordinary states stay quiet',()=>{
   let calls=0;const node=cloudExports['ProgressCloudStatus']({status:'offline',onRetry:()=>calls++}),button=nodes(node).find(n=>n.type==='button')!;
   assert.match(text(node),/Bulut eşitlemesi bekliyor/);assert.match(text(node),/Ana ilerlemen bu cihazda kayıtlı/);assert.equal(button.props['type'],'button');assert.match(text(button),/Yeniden eşitle/);button.props['onClick']();assert.equal(calls,1);assert.equal(nodes(node).find(n=>n.type==='p')!.props['role'],'status');
-  for(const status of ['local','syncing','saved','storage-error','account-changed','account-changed-storage-error'])assert.equal(nodes(cloudExports['ProgressCloudStatus']({status,onRetry(){}})).some(n=>n.type==='button'),false);
+  for(const status of ['local','syncing','saved','account-changed','account-changed-storage-error'])assert.equal(nodes(cloudExports['ProgressCloudStatus']({status,onRetry(){}})).some(n=>n.type==='button'),false);
  });
  it('does not claim device success in a storage error or cloud success while waiting',()=>{
   const storage=cloudExports['ProgressCloudStatus']({status:'storage-error',onRetry(){}});assert.match(text(storage),/kayıt yapılamıyor/);assert.doesNotMatch(text(storage),/cihazda kayıtlı|bağlantını/i);
   for(const status of ['local','syncing','offline','storage-error','account-changed','account-changed-storage-error'])assert.doesNotMatch(text(cloudExports['ProgressCloudStatus']({status,onRetry(){}})),/bulutla eşitlendi/);
   assert.match(text(cloudExports['ProgressCloudStatus']({status:'saved',onRetry(){}})),/bulutla eşitlendi/);
  });
+});
+
+
+it('offers a working device-persistence retry without reporting device or cloud success',()=>{
+ let retry=0;const n=cloudExports['ProgressCloudStatus']({status:'storage-error',onRetry:()=>retry++}),button=nodes(n).find(n=>n.type==='button');assert(button);assert.equal(button.props['type'],'button');assert.match(text(button),/Cihaz kaydını yeniden dene/);assert.doesNotMatch(text(n),/cihazda kayıtlı|bulutla eşitlendi/);button.props['onClick']();assert.equal(retry,1);
 });
