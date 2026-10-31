@@ -1,4 +1,5 @@
 import {ATLAS_JOURNEYS,ATLAS_REGIONS} from './atlas-content.ts';
+import {LIVING_STORIES} from './story-content.ts';
 import {RIDDLE_CHAPTERS} from './riddle-content.ts';
 import {hash,makeCustomPuzzle} from './engine.ts';
 
@@ -39,7 +40,7 @@ JOURNEYS.push(...ATLAS_JOURNEYS.filter((_,i)=>i%6!==5));
 JOURNEY_BONUSES.push(...ATLAS_JOURNEYS.filter((_,i)=>i%6===5));
 export const ALL_JOURNEYS=[...JOURNEYS,...JOURNEY_BONUSES];
 /** Optional clue chapters never grow the fixed main path or its earned album gates. */
-export const PLAYABLE_JOURNEYS=[...ALL_JOURNEYS,...RIDDLE_CHAPTERS];
+export const PLAYABLE_JOURNEYS=[...ALL_JOURNEYS,...RIDDLE_CHAPTERS,...LIVING_STORIES];
 export const journeyById=(id:string)=>PLAYABLE_JOURNEYS.find(j=>j.id===id);
 export const journeyBoard=(j:Journey)=>makeCustomPuzzle(j.words,hash('journey-v1:'+j.id),j.size);
 

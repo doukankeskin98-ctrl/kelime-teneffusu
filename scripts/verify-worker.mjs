@@ -3,6 +3,7 @@ import {createRequire} from 'node:module';
 import {readdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {LIVING_STORIES} from '../lib/game/story-content.ts';
 import {ATLAS_JOURNEYS} from '../lib/game/atlas-content.ts';
 import {EXPEDITIONS} from '../lib/game/discovery.ts';
 import {JOURNEY_BONUSES,journeyBoard} from '../lib/game/content.ts';
@@ -130,6 +131,10 @@ try{
  const atlasSaved=await json('/api/progress',{cookie:aCookie});check([ATLAS_JOURNEYS[0],ATLAS_JOURNEYS[2],ATLAS_JOURNEYS[5]].every(j=>atlasSaved.progress.saves['route:'+j.id]?.complete&&atlasSaved.progress.saves['route:'+j.id]?.stars===2),'new atlas normal, clue and final chapters are validated and preserved by the Worker');
  check(atlasSaved.progress.last.journey===ATLAS_JOURNEYS[2].id,'the saved clue hunt remains the actual last destination');
  check(!(await json('/api/progress',{cookie:bCookie})).progress.saves['route:'+ATLAS_JOURNEYS[0].id],'atlas chapters remain private to the account');
+ const storySaves={...atlasSaved.progress.saves};for(const story of LIVING_STORIES){const board=journeyBoard(story);storySaves['route:'+story.id]={strokes:board.placements,elapsed:42,hints:1,complete:false,stars:99};}
+ await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...atlasSaved.progress,saves:storySaves}}});
+ const storiesSaved=await json('/api/progress',{cookie:aCookie});check(LIVING_STORIES.every(s=>storiesSaved.progress.saves['route:'+s.id]?.complete&&storiesSaved.progress.saves['route:'+s.id].stars===2),'all five living stories roundtrip through validated full-board saves');check(storiesSaved.progress.last.journey===atlasSaved.progress.last.journey,'story saves preserve the main continuation');check(!(await json('/api/progress',{cookie:bCookie})).progress.saves['route:'+LIVING_STORIES[0].id],'living story keepsakes stay private to the actual owner');
+ for(const event of ['story_start','story_step','story_complete']){const metric=await json('/api/metrics',{method:'POST',body:{event,bucket:'count'}});check(metric.ok===true,'story metric is accepted as an anonymous count: '+event);}
  const sw=await (await request('/sw.js')).text();check(sw.includes('const BUILD_ASSETS=[')&&!sw.includes('const BUILD_ASSETS=[];'),'offline assets are built');
  for(const asset of ['/manifest.webmanifest','/icon-192.png','/icon-512.png'])await request(asset);
  const workshop=await (await request('/atolye')).text();check(workshop.includes('İÇERİK ATÖLYESİ'),'authoring workspace renders');

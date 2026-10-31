@@ -1,5 +1,7 @@
 # Kelime Teneffüsü
 
+0.21.0: **Canlanan hikâyeler**. Beş özgün sahne ve24 sıralı kelime; tek etkin ipucu, bulunan kelimeyle açılan sahne, kalıcı hatıra ve dürüst tekrar sonucu. İlk hikâyedeki başlangıç harfi ücretsizdir. Ana ekran hikâyeler/bölüm yolculuğu arasında geçiş yapar; aynı oturumda seçilen yüzeye geri dönülür. Eski96 bölüm,32 İpucu Avı, tahtalar, kayıt v2, albümler ve rekabet kuralları korunur. Aynı anda art arda ipucu çağrıları üç hakkı aşamaz. Yeni ölçümler mevcut isteğe bağlı rıza koşuluna tabidir.
+
 0.20.0: özgün dünya sahnesi, dokunulabilir yakın bölüm yolu, gerçek kapılara bağlı 96 bölümlük seçici, solo kelime/tanım hedefi ve daha belirgin gerçek ödül ekranı. Eski elapsed/hint-only ve kısmi bonus kayıtları devam önerisinde korunur. İçerik/tohum/kayıt şeması/rekabet kuralları değişmedi. 493 test, 156 ana tahta/3.120 alternatif +64 grup tahtası, tip/üretim/Safari sözdizimi ve525 Worker kontrolü geçti. Destekli yerel tarayıcıda 360×640,390×844 ve768×1024 alanlarında oyun akışı kontrol edildi; fiziksel cihaz/ses/FPS kabulü değildir. Kanıt: studio-agents/journal/entries/2026-10-31_professional-decision.md.
 
 0.19.0: yeni açık/özel grup turları her iki türde12×12/dokuz kelime, ayrı değişmez grup havuzu ve64 yeni tahta denetimi. Eski aktif maçlar aynen sürer; sonraki tur yeni ölçüye geçer. Beyaz/kahverengi/adaçayı/kum kişisel tahta seçimi mevcut kayıt v2 içinde kalır; diğer oyuncuya/oda puanına etkisi yok. Eski dueller/içerik/göçler korunur.

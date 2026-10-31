@@ -1,5 +1,13 @@
 # 31 Ekim 2026 · 0.20.0 · Profesyonel yolculuk
 
+## 31 Ekim 2026 · Canlanan hikâyeler / 0.21.0
+
+Beş özgün SVG sahneyle kelime→ipucu→sahne döngüsü eklendi. Sıradaki cevaplar gizli; doğru ama erken kelime cezasız açıklanır. Tam tahta kayıtlarıyla aşama türetilir, yeni sayaç/şema yoktur. Hatıralar beşli ayrı koleksiyondadır; ana96/riddle32 ve kilit kapıları değişmez. Sonuçta gerçek tur/en iyi kayıt ayrımı ve yıldız kuralı vardır. İlk Fener başlangıç harfi ipucu tüketmez. Hint ref, aynı render içindeki yinelenen çağrıyı üçte sınırlar. Bölüm görünümü üst oturum state'inde korunur.
+
+Yerel tarayıcı: Fener ve Gözlemevi tamamlandı; çapraz pointer sürükleme/iki-uç, sonraki ipucu, erken kelime, ücretsiz/normal ipucu, pause, yenileme2/4 devamı, sonuç ve seçili eski yolculuğa geri dönüş kontrol edildi. 360×640 uzun ipucuyla8×8 tahta+kontroller ekrana sığdı, yatay taşma yok. 390×844 ve768×1024 kontrolleri yapıldı;1282×852 geometri taşmasız, masaüstü tam görüntü yakalama alanı sınırlı. Fiziksel telefon, gerçek ses/titreşim, ekran okuyucu ve retention/FPS kanıtı değildir.
+
+Yerel505 test ve içerik161 ana/3220 alternatif+64 grup kontrolü geçti; tip kontrolü geçti. Üretim build, Worker ve GitHub CI kapıları yayın öncesinde ayrıca çalıştırılır; son kesin yayın/CI kimlikleri çalışma alanındaki release kaydına yazılır. Native uygulama ve ödeme bu sürümde yok.
+
 0.20.0: özgün dünya sahnesi, dokunulabilir yakın bölüm yolu, gerçek kapılara bağlı 96 bölümlük seçici, solo kelime/tanım hedefi ve daha belirgin gerçek ödül ekranı. Eski elapsed/hint-only ve kısmi bonus kayıtları devam önerisinde korunur. İçerik/tohum/kayıt şeması/rekabet kuralları değişmedi. 493 test, 156 ana tahta/3.120 alternatif +64 grup tahtası, tip/üretim/Safari sözdizimi ve525 Worker kontrolü geçti. Destekli yerel tarayıcıda 360×640,390×844 ve768×1024 alanlarında oyun akışı kontrol edildi; fiziksel cihaz/ses/FPS kabulü değildir. Kanıt: studio-agents/journal/entries/2026-10-31_professional-decision.md.
 
 # 31 Ekim2026 ·0.19.0 · Grup12×12/dokuz ve kişisel kağıt
