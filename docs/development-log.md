@@ -1,3 +1,7 @@
+# 31 Ekim2026 ·0.21.1 · Cihaz kaydı durumunu koru
+
+Üç kaynak regresyonu, yerel hata sürerken saved bildirimi verilmesini yakalar. Başarı yalnız eşit bulut ve başarılı cihaz yazımıyla; Albüm retry aynı snapshot’ı saklar, cloud backup sürer. Karar/kanıt studio-agents/journal/entries/2026-10-31_evening-storage.md. Bugünün çifti zaten yayımlı, çoğaltılmadı; yeni hikâyeler ve ödüller değişmez.
+
 # 31 Ekim 2026 · 0.20.0 · Profesyonel yolculuk
 
 ## 31 Ekim 2026 · Canlanan hikâyeler / 0.21.0
