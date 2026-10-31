@@ -59,7 +59,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   blur(){boardNode().props['onBlur']();paint();},
   key(key:string){boardNode().props['onKeyDown']({key,preventDefault(){}});paint();},
   tap(cell:Cell,extra:Record<string,unknown>={}){send('onPointerDown',cell,extra);send('onPointerUp',cell,extra);},
-  selected(){return [...dom].filter(([key,el])=>/^\d+,\d+$/.test(key)&&el.classList.contains('letter-selected')).map(([key])=>key);},get renders(){return renders;},ink(){return dom.get('selection-line')?.attributes;},
+  selected(){return [...dom].filter(([key,el])=>/^\d+,\d+$/.test(key)&&el.classList.contains('letter-selected')).map(([key])=>key);},get renders(){return renders;},ink(){return dom.get('selection-line')?.attributes;},outline(){return dom.get('active-stroke-outline')?.attributes;},
   setProps(next:Partial<typeof props>,commit=true){Object.assign(props,next);dirty=true;paint(commit);},
   resize(changed=true){if(changed){width+=10;height+=10;(windowTarget as any).innerWidth+=10;}windowTarget.dispatchEvent(new Event('resize'));paint();},
   unmount(){mounted=false;for(const slot of slots)slot.cleanup?.();},
@@ -255,4 +255,9 @@ describe('new-letter sound signals follow actual selection geometry',()=>{
   for(const options of [{paused:true},{readOnly:true},{blocked:true}]){const h=harness(options);h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,2]);h.send('onPointerUp',[0,2]);assert.equal(h.letters.length,0);h.unmount();}
   const h=harness();h.send('onPointerDown',[0,0]);h.native('touchstart',[[0,0]]);h.native('touchmove',[[0,1]]);h.send('onPointerMove',[0,1]);h.native('touchend',[],[[0,1]]);assert.deepEqual(h.letters,[1,2]);assert.equal(h.commits.length,1);h.unmount();
  });
+});
+
+
+it('keeps colored-paper outline endpoints aligned with imperative selection without extra renders',()=>{
+ const h=harness();try{h.send('onPointerDown',[0,0]);h.send('onPointerMove',[2,2]);const before=h.renders;h.flush();assert.deepEqual(h.outline(),h.ink());assert.equal(h.renders,before);h.send('onPointerMove',[1,1]);h.flush();assert.deepEqual(h.outline(),h.ink());assert.equal(h.ink().get('x2'),'1.5');}finally{h.unmount();}
 });

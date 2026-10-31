@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.19.0',date:'31 Ekim 2026',title:'Daha büyük grup tahtası, senin tahta rengin',items:[
+  {where:'Arena · Grup odası',detail:'Yeni bilmeceli ve normal grup turları 12×12 tahtada tam dokuz kelimeyle oynanır. Herkes aynı tahtayı alır; aynı odada devam ve tekrar engeli korunur. Devam eden eski maçın tahtası değişmez; sonraki tur yeni ölçüdedir.'},
+  {where:'Albüm · Oyun sana göre olsun',detail:'Tahta rengi: beyaz, kahverengi, adaçayı veya kum. Küçük önizlemelerden seç; tercihin profilinde saklanır. Diğer oyuncuların tahtasını değiştirmez. Renkli kağıtta çizgiler koyu sınırla belirginleşir.'},
+ ]},
  {version:'0.18.1',date:'31 Ekim 2026',title:'Kuş seslerinden dağ yoluna',items:[
   {where:'Ana sayfa · Yeni bölümler',detail:'Kuş sesleri: 6×6 tahtada dört kuş. Dağ yolculuğu: 8×8 tahtada yedi yol kelimesi. İki bölüm de dünyalarında ve kalıcı arşivde durur.'},
   {where:'Albüm · Tarihli damga',detail:'31 Ekim’in iki bölümünü tamamlayarak o günün kalıcı damgasını aç. Daha sonra da tamamlayabilirsin; süre ve ipucu şartı yok.'},
