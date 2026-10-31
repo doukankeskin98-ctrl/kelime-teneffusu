@@ -1,3 +1,7 @@
+# 31 Ekim 2026 · 0.20.0 · Profesyonel yolculuk
+
+0.20.0: özgün dünya sahnesi, dokunulabilir yakın bölüm yolu, gerçek kapılara bağlı 96 bölümlük seçici, solo kelime/tanım hedefi ve daha belirgin gerçek ödül ekranı. Eski elapsed/hint-only ve kısmi bonus kayıtları devam önerisinde korunur. İçerik/tohum/kayıt şeması/rekabet kuralları değişmedi. 493 test, 156 ana tahta/3.120 alternatif +64 grup tahtası, tip/üretim/Safari sözdizimi ve525 Worker kontrolü geçti. Destekli yerel tarayıcıda 360×640,390×844 ve768×1024 alanlarında oyun akışı kontrol edildi; fiziksel cihaz/ses/FPS kabulü değildir. Kanıt: studio-agents/journal/entries/2026-10-31_professional-decision.md.
+
 # 31 Ekim2026 ·0.19.0 · Grup12×12/dokuz ve kişisel kağıt
 
 Ayrı grup üreticisi, sürümlü cursor, mevcut CAS/geçmiş ve optional v2 renk tercihi seçildi. Yanıltıcı CSS büyütmesi veya eski havuz/tohum değişimi yok.64 farklı yeni grup tahtası, dört kağıt ve mevcut hesap/tahta UI yeniden kullanılır. Karar, kabul ve son kanıt studio-agents/journal/entries/2026-10-31_group-color-decision.md kaydındadır. Bugünün tarihli çifti çoğaltılmadı.

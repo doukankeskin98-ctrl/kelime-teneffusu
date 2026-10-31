@@ -227,3 +227,37 @@ describe('optional riddle shelf and actual Solo continuation',()=>{
   }finally{h.close();}
  });
 });
+
+
+describe('player-selected focus is guidance without extra rewards or hidden answers',()=>{
+ it('keeps split groups focused until every part is confirmed and advances to a remaining group',()=>{
+  const targets=[{id:'a',text:'AKİL',label:'AKİL HOCA',group:0},{id:'b',text:'HOCA',label:'AKİL HOCA',group:0},{id:'c',text:'SOBA',label:'SOBA',group:1}],stroke=(id:string):engine.Stroke=>({id,a:[0,0],b:[0,3]});
+  assert.equal(wordCard.focusedWordGroup({targets},[],1),1);assert.equal(wordCard.focusedWordGroup({targets},[stroke('a')],0),0);assert.equal(wordCard.focusedWordGroup({targets},[stroke('a'),stroke('b')],0),1);assert.equal(wordCard.focusedWordGroup({targets},[stroke('a'),stroke('b'),stroke('c')],1),null);
+ });
+ it('selects clue groups through accessible controls without revealing the answer or confirming a word',()=>{
+  const chapter=riddles.RIDDLE_CHAPTERS[0]!,board=content.journeyBoard(chapter),selected:number[]=[],h=view('components/game/common.tsx');
+  try{h.start('WordList',{board,strokes:[],clues:chapter.clues,focusedGroup:board.targets[0]!.group,onFocusGroup:(g:number)=>selected.push(g)});
+   const buttons=walk(h.tree).filter(n=>n.type==='button');assert.equal(buttons.length,4);
+   for(const [i,button] of buttons.entries()){assert.ok(button.props['aria-label'].includes(chapter.clues![board.targets[i]!.text]));assert.ok(!button.props['aria-label'].includes(board.targets[i]!.text));button.props['onClick']();}
+   assert.deepEqual(selected,board.targets.map(t=>t.group));assert.equal(walk(h.tree).filter(n=>n.props['aria-pressed']===true).length,1);
+  }finally{h.close();}
+ });
+ it('actual Solo switches focus without a hint, stroke, save, sound or clock change',async()=>{
+  let writes=0;const sounds:any[]=[],p=progress.emptyProgress(),h=view('components/game/Solo.tsx',{...modules,'./common':{...commonStubs,useChime:()=>((sound:any)=>sounds.push(sound))}});
+  try{h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:p,onProgress(){writes++;},onBack(){},onMap(){},onNext(){}});await h.settle();
+   const beforeWrites=writes,beforeSounds=sounds.length,layout=h.find('PlayLayout').props,controls=h.find('PlayControls').props,strokes=JSON.stringify(layout['strokes']),group=layout['board'].targets[2].group;
+   layout['wordList'].onFocusGroup(group);await h.settle();const after=h.find('PlayLayout').props;
+   assert.equal(after['wordList'].focusedGroup,group);assert.match(text(h.find('PlayLayout')),/Hedefin: MARS/);assert.equal(JSON.stringify(after['strokes']),strokes);assert.equal(h.find('PlayControls').props['hints'],controls['hints']);assert.equal(writes,beforeWrites);assert.equal(sounds.length,beforeSounds);
+   const target=after['board'].placements.find((x:any)=>x.id===after['board'].targets[2].id);after['onCommit'](target.a,target.b);await h.settle();assert.notEqual(h.find('PlayLayout').props['wordList'].focusedGroup,group);
+  }finally{h.close();}
+ });
+ it('actual picker resumes, replays and blocks a locked chapter through the existing callbacks',()=>{
+  const p=progress.emptyProgress(),b=content.journeyBoard(content.journeyById('uzay-1')!);p.saves['route:uzay-1']=progress.cleanSave({strokes:b.placements,elapsed:10,hints:0,complete:false,stars:0},b);
+  const calls:any[]=[],h=view('components/game/JourneyHome.tsx',modules);
+  try{h.start('JourneyHome',{progress:p,onPlay:(c:any)=>calls.push(c),onExplore(){}});
+   const replay=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 1:'))!;replay.props['onClick']();h.paint();assert.equal(calls[0].practice,true);assert.equal(calls[0].campaign,true);
+   const locked=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 4:'))!;assert.equal(locked.props['disabled'],true);locked.props['onClick']();h.paint();assert.equal(calls.length,1);
+   walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();assert.equal(h.find('Modal').props['title'],'Senin yolculuğun');assert.equal(walk(h.find('Modal')).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm ')).length,96);
+  }finally{h.close();}
+ });
+});

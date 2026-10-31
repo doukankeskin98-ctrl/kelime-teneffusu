@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
-import {MAIN_JOURNEY,MAIN_JOURNEY_IDS,FIRST_TEN_LESSONS,mainJourneyState,nextMainChapter,nextMainMilestone,nextChapterLabel} from '../lib/game/main-journey.ts';
+import {MAIN_JOURNEY,MAIN_JOURNEY_IDS,FIRST_TEN_LESSONS,mainJourneyState,mainJourneyChapters,nextMainChapter,nextMainMilestone,nextChapterLabel} from '../lib/game/main-journey.ts';
 import {ALL_JOURNEYS,journeyById,journeyBoard} from '../lib/game/content.ts';
 import {cleanSave,emptyProgress,loadProgress,mergeProgress,type Progress} from '../lib/game/progress.ts';
 import {discoveryState,discoveryRewards,keepBestSave} from '../lib/game/discovery.ts';
@@ -53,4 +53,24 @@ describe('numbered main journey preserves the existing saved worlds',()=>{
   assert.equal(mainJourneyState(loadProgress(JSON.stringify(p))).current,null);assert.equal(mainJourneyState(p).completed,96);assert.equal(nextMainMilestone(p),null);
  });
  it('uses readable Turkish next-action labels',()=>{assert.equal(nextChapterLabel(2),'Bölüm 2’ye geç');assert.equal(nextChapterLabel(6),'Bölüm 6’ya geç');assert.equal(nextChapterLabel(10),'Bölüm 10’a geç');});
+});
+
+
+describe('chapter picker and legacy continuation share access rules',()=>{
+ it('locks unopened worlds and album finales without changing any progress',()=>{
+  const p=emptyProgress(),before=JSON.stringify(p),items=mainJourneyChapters(p);
+  assert.equal(items.length,96);assert.equal(items.find(x=>x.chapter.id==='uzay-1')!.unlocked,true);
+  assert.equal(items.find(x=>x.chapter.id==='turkiye-1')!.unlocked,false);
+  assert.equal(items.find(x=>x.chapter.id==='uzay-gozlemevi')!.unlocked,false);assert.equal(JSON.stringify(p),before);
+  for(let i=1;i<=5;i++)finish(p,'uzay-'+i);
+  assert.equal(mainJourneyChapters(p).find(x=>x.chapter.id==='uzay-gozlemevi')!.unlocked,true);
+ });
+ it('retains elapsed-only, hint-only and partial bonus saves in later worlds without awarding progress',()=>{
+  for(const id of ['turkiye-4','turkiye-kartpostal'])for(const partial of [{elapsed:20,hints:0},{elapsed:0,hints:1}]){
+   const p=emptyProgress(),b=journeyBoard(journeyById(id)!);p.saves['route:'+id]=cleanSave({strokes:[],...partial,complete:false,stars:0},b);p.last={themeId:'turkiye',level:0,journey:id};
+   const before=JSON.stringify(p),loaded=loadProgress(before),item=mainJourneyChapters(loaded).find(x=>x.chapter.id===id)!;
+   assert.equal(item.unlocked,true);assert.equal(item.continuing,true);assert.equal(item.complete,false);assert.equal(mainJourneyState(loaded).current?.chapter.id,id);assert.equal(mainJourneyState(loaded).completed,0);assert.equal(JSON.stringify(p),before);
+  }
+  const untouched=emptyProgress();untouched.saves['route:turkiye-kartpostal']=cleanSave(undefined,journeyBoard(journeyById('turkiye-kartpostal')!));assert.equal(mainJourneyChapters(untouched).find(x=>x.chapter.id==='turkiye-kartpostal')!.unlocked,false);
+ });
 });

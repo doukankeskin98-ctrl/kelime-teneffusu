@@ -1,4 +1,4 @@
-import {journeyById,type Journey} from './content.ts';
+import {journeyById} from './content.ts';
 import {discoveryState,EXPEDITIONS} from './discovery.ts';
 import type {Progress} from './progress.ts';
 
@@ -12,14 +12,26 @@ export const MAIN_JOURNEY_IDS:readonly string[]=[
 export const MAIN_JOURNEY=MAIN_JOURNEY_IDS.map((id,i)=>({number:i+1,chapter:journeyById(id)!}));
 export const mainChapter=(id?:string)=>MAIN_JOURNEY.find(item=>item.chapter.id===id)??null;
 const done=(p:Pick<Progress,'saves'>,id:string)=>p.saves['route:'+id]?.complete===true;
+const started=(save:Progress['saves'][string]|undefined)=>!!save&&(save.complete||save.strokes.length>0||save.elapsed>0||save.hints>0);
+
+/** Picker access follows real world gates, never the presentation number. */
+export function mainJourneyChapters(progress:Pick<Progress,'saves'>){
+ const states=discoveryState(progress);
+ return MAIN_JOURNEY.map(item=>{
+  const world=states.find(s=>s.expedition.id===item.chapter.themeId)!;
+  const save=progress.saves['route:'+item.chapter.id];
+  const unlocked=world.unlocked&&(world.bonus.id!==item.chapter.id||world.bonusUnlocked||started(save));
+  return {...item,world,unlocked,complete:save?.complete===true,stars:save?.stars??0,
+   continuing:!!save&&!save.complete&&(save.strokes.length>0||save.elapsed>0||save.hints>0)};
+ });
+}
 
 export function mainJourneyState(progress:Pick<Progress,'saves'|'last'>){
- const states=discoveryState(progress);
- const available=(j:Journey)=>states.some(s=>s.unlocked&&(s.chapters.some(c=>c.id===j.id)||(s.bonus.id===j.id&&s.bonusUnlocked)));
+ const available=new Set(mainJourneyChapters(progress).filter(item=>item.unlocked).map(item=>item.chapter.id));
  // A real unfinished last journey wins; a standard/archive game cannot replace the main path.
  const last=mainChapter(progress.last?.journey),saved=last?progress.saves['route:'+last.chapter.id]:undefined;
- const resume=last&&saved&&!saved.complete&&(saved.strokes.length>0||saved.elapsed>0||saved.hints>0)&&available(last.chapter)?last:null;
- const current=resume??MAIN_JOURNEY.find(item=>!done(progress,item.chapter.id)&&available(item.chapter))??null;
+ const resume=last&&saved&&!saved.complete&&started(saved)&&available.has(last.chapter.id)?last:null;
+ const current=resume??MAIN_JOURNEY.find(item=>!done(progress,item.chapter.id)&&available.has(item.chapter.id))??null;
  const currentSave=current?progress.saves['route:'+current.chapter.id]:undefined;
  return {current,continuing:!!(currentSave&&!currentSave.complete&&(currentSave.strokes.length||currentSave.elapsed||currentSave.hints)),completed:MAIN_JOURNEY.filter(item=>done(progress,item.chapter.id)).length,total:MAIN_JOURNEY.length};
 }

@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.20.0',date:'31 Ekim 2026',title:'Her keşif küçük bir yolculuk',items:[
+  {where:'Yolculuk · Yeni görünüm',detail:'Dünyana açılan özgün bir sahne, belirgin Oyna düğmesi ve dokunarak seçebildiğin bölüm yolu. Tüm yolculukta 96 bölümün gerçek kilitleri, kazanılmış yıldızların ve albüm finalleri birlikte görünür.'},
+  {where:'Oyun · Hedefini seç',detail:'Bir kelimeye veya tanıma dokun, ararken onu takip et. Bulduğunda sıradaki hedef öne çıkar. Bu seçim cevap göstermez, ipucu harcamaz veya puanını değiştirmez.'},
+  {where:'Sonuç · Bir hatıra daha',detail:'Kazandığın parça, yıldızlar ve yeni dünya daha belirgin. Beş keşif sonrası açılan albüm finali de sonuçta görünür. Eski yarım keşiflerin ve bonuslarına kaldığın yerden dönebilirsin.'},
+ ]},
  {version:'0.19.0',date:'31 Ekim 2026',title:'Daha büyük grup tahtası, senin tahta rengin',items:[
   {where:'Arena · Grup odası',detail:'Yeni bilmeceli ve normal grup turları 12×12 tahtada tam dokuz kelimeyle oynanır. Herkes aynı tahtayı alır; aynı odada devam ve tekrar engeli korunur. Devam eden eski maçın tahtası değişmez; sonraki tur yeni ölçüdedir.'},
   {where:'Albüm · Oyun sana göre olsun',detail:'Tahta rengi: beyaz, kahverengi, adaçayı veya kum. Küçük önizlemelerden seç; tercihin profilinde saklanır. Diğer oyuncuların tahtasını değiştirmez. Renkli kağıtta çizgiler koyu sınırla belirginleşir.'},

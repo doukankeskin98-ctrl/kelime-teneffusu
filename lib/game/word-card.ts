@@ -12,3 +12,10 @@ export function wordListProgress(board:{targets:Target[]},strokes:Stroke[]){
  const total=groups.size,complete=[...groups.values()].filter(Boolean).length;
  return {total,complete,remaining:total-complete};
 }
+
+/** A focus target is presentation only. Split words remain selected until all parts are found. */
+export function focusedWordGroup(board:{targets:Target[]},strokes:Stroke[],preferred:number|null){
+ const found=new Set(strokes.map(s=>s.id));
+ const remaining=[...new Set(board.targets.filter(t=>!found.has(t.id)).map(t=>t.group))];
+ return preferred!==null&&remaining.includes(preferred)?preferred:remaining[0]??null;
+}

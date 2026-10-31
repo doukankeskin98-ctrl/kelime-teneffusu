@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Local macOS checkouts do not have GNU flock/timeout. Keep the same frozen
+# dependency graph and a checkout-local store without the Linux image bootstrap.
+if [[ "$(uname -s)" == Darwin ]]; then
+  cd "$(dirname "${BASH_SOURCE[0]}")/.."
+  if [[ "$(pnpm --version)" != "11.25.0" ]]; then
+    echo "This project requires pnpm 11.25.0." >&2
+    exit 69
+  fi
+  exec pnpm install --frozen-lockfile --store-dir .sites-runtime/pnpm-store --cache-dir .sites-runtime/pnpm-cache
+fi
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ "${SITES_ENV_READY:-}" != "1" ]]; then
   exec "${script_dir}/sites-env.sh" -- "$0" "$@"

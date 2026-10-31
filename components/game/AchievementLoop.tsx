@@ -28,11 +28,11 @@ export function VictorySummary({goal,rewards,stars,hints,seconds,total,improved,
    <h3>{goal.piece}</h3><p>{goal.state.album.title}</p>
    <div className="victory-scene"><CollectionScene state={goal.state}/><span className="victory-seal" aria-label={piece?'Yeni koleksiyon parçası':'Kazanılmış koleksiyon parçası'}><Check size={25}/></span></div>
    <PieceTrail earned={goal.state.earned}/>
-   <p className="victory-caption">{piece?`${goal.state.pieces}/6 parça tamam. Bir adımın daha kalıcı bir hatıraya dönüştü.`:'Bu parça zaten senin. Tekrar oyunu koleksiyonunu çoğaltmaz.'}</p>
+   <p className="victory-caption">{piece?`${goal.state.pieces}/6 parça tamam. Bir adımın daha kalıcı bir hatıraya dönüştü.`:'Bu parça albümünde. Bir sonraki keşifte yeni bir hatıra seni bekliyor.'}</p>
   </div>:<div className="victory-keepsake victory-simple"><span className="victory-medal" aria-hidden="true"><Trophy size={38}/></span><span className="victory-eyebrow">{tutorial?'İLK ADIM TAMAM':daily?'GÜNLÜK KEŞİF TAMAM':'KEŞİF TAMAM'}</span><h3>{tutorial?'İşte bu, başardın!':'Bütün kelimeleri buldun.'}</h3></div>}
   {milestones.length>0&&<ul className="victory-unlocks" aria-label="Yeni açılanlar">{milestones.map(r=><li key={r.id}><span aria-hidden="true">{r.kind==='world'?<Compass/>:r.kind==='album'?<BookOpen/>:<Gift/>}</span><div><small>{r.kind==='world'?'YENİ DÜNYA AÇILDI':r.kind==='album'?'KOLEKSİYON TAMAMLANDI':'BONUS KEŞİF AÇILDI'}</small><b>{r.title}</b></div><Check size={18}/></li>)}</ul>}
   {!tutorial&&<div className="victory-mastery"><div className="victory-stars" aria-label={`Bu tur ${stars} / 3 yıldız`}>{[0,1,2].map(i=><Star key={i} aria-hidden="true" className={i<stars?'earned':''} fill={i<stars?'currentColor':'none'}/>)}</div><strong>{mastery.label}</strong><span>Bu turun sonucu</span></div>}
-  {tutorial&&<p className="tutorial-reward-status">Bu bir alıştırmaydı. Yıldız ve albüm parçası verilmez. Kalıcı ilerlemen numaralı bölümlerde başlar.</p>}
+  {tutorial&&<p className="tutorial-reward-status">Hazırsın! Şimdi ilk bölümüne geç, yıldızlarını ve ilk albüm parçanı kazan.</p>}
   {!tutorial&&<div className="victory-stats" aria-label="Bölüm özeti"><div><b>{total}</b><span>kelime</span></div><div><b>{timeLabel(seconds)}</b><span>{daily?'toplam süre':'keşif süresi'}</span></div><div><b>{hints}</b><span>ipucu</span></div></div>}
   {improved&&<p className="victory-record"><Trophy size={18}/>Bu bölümde yeni kişisel en iyin!</p>}
   {!improved&&best?.complete&&!tutorial&&!daily&&<p className="victory-best">En iyi sonucun korunuyor: <b>{best.stars} yıldız · {timeLabel(best.elapsed)}</b></p>}

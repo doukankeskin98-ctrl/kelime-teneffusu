@@ -1,5 +1,7 @@
 # Öncelikler
 
+31 Ekim 2026, 0.20.0: kullanıcı web deneyimini ticari uygulama hazırlığına taşıma kapsamını açtı; native dönüşüm istemedi. Ana döngü yenilendi, eski kayıt sınırları kapatıldı ve ilk destekli yerel DOM denetimi yapıldı. Son kabul/kanıt ../journal/entries/2026-10-31_professional-decision.md. Sonraki kabul fiziksel iPhone/Android/Safari, gerçek oyuncuyla ilk10 bölüm gözlemi, ses konforu ve uzun oturum/iki gerçek hesap testidir. Tasarımın ticari etkisi henüz ölçülmedi. Uygulamaya paketleme bu tur yapılmaz.
+
 31 Ekim2026,0.19.0: kullanıcının grup12×12/dokuz ve kişisel tahta rengi isteği. Kabul/kanıt ../journal/entries/2026-10-31_group-color-decision.md; tek bağımsız güvenilirlik incelemesi group-12x9-review. Fiziksel küçük/büyük telefon, Safari/tablet, kağıt kontrastı/çapraz çizim ve gerçek provider/PWA hâlâ ilk açık kabuldür. Yeni faz veya üretim kapasitesi garantisi yok.
 
 31 Ekim 2026,0.18.1: tarihli çift ve arşiv kimlik/imza yayın kapısı. Son karar/haftalık değerlendirme/kanıt ../journal/entries/2026-10-31_maintenance.md içinde. İlk açık öncelik gerçek Safari/tablet/ses kesintisi, provider ve PWA doğrulaması; yeni faz tamamlandı sayılmaz.

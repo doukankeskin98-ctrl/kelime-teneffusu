@@ -36,12 +36,12 @@ try{
  check(home.includes('id="journey-home-title"')&&home.includes('Bölüm 1 — Oyna')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
  check(['Yolculuk','Keşfet','Arena','Günlük','Albüm'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
  check(home.includes('Yıldız İskelesi')&&home.includes('journey-mini-path')&&EXPEDITIONS.length===16,'numbered journey preserves the sixteen registered worlds');
- check(home.includes('İlk yıldız')&&home.includes('BU BÖLÜMÜ TAMAMLA')&&home.includes('Anadolu Patikası'),'home presents an actual album piece and upcoming world');
- const released=releaseCatalogue();check(home.includes('Dünyalar, hikâyeler ve bölüm arşivi'),'secondary exploration and archive entry remains visible');
+ check(home.includes('İlk yıldız')&&home.includes('BİR KELİME DAHA, BİR HATIRA DAHA')&&home.includes('Anadolu Patikası'),'home presents an actual album piece and upcoming world');
+ const released=releaseCatalogue();check(home.includes('Dünyalar, hızlı turlar ve günlük hikâyeler'),'secondary exploration and archive entry remains visible');
  check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/6')&&!home.includes('ALBÜM PARÇAN KAZANILDI'),'home does not award an unauthenticated visitor a collection piece');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
- check(home.includes('journey-world')&&home.includes('class="world-art '),'main journey reuses the existing original world artwork');
+ check(home.includes('journey-world')&&home.includes('class="journey-scene '),'main journey has its original world scene');
  const themeId=released.chapters[0].spec.themeId,themeArchive=await json('/api/chapters?collection=releases&theme='+themeId);
  check(themeArchive.total===archive.themeCounts[themeId]&&themeArchive.chapters.every(c=>c.spec.themeId===themeId),'world catalogue filters before pagination and counts all releases in that world');
  check(themeArchive.companions.every(c=>!('board' in c))&&themeArchive.chapters.every(c=>releasePairs([...themeArchive.chapters,...themeArchive.companions]).some(p=>p.chapters.some(member=>member.id===c.id))),'world catalogue retains complete stamp pairs without exposing board paths');

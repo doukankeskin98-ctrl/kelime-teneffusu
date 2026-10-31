@@ -15,7 +15,7 @@ export async function socialApi<T>(action:string,data:Record<string,unknown>={},
 export async function getSocial<T>(query='',signal?:AbortSignal):Promise<T>{const res=await memberFetch('/api/social'+query,{signal});const data=await res.json();if(!res.ok)throw new Error(errorText(data));return data as T;}
 export {useChime} from './useGameSound';
 export function Modal({title,onClose,children,className='',footer}:{title:string;onClose:()=>void;children:ReactNode;className?:string;footer?:ReactNode}){const ref=useRef<HTMLDialogElement>(null),id=useId();useEffect(()=>{const d=ref.current;if(d)return openGameDialog(d,onClose,window);},[]);return <dialog className={'modal'+(className?' '+className:'')} ref={ref} onCancel={e=>{e.preventDefault();onClose();}} onClick={e=>{if(e.target===ref.current){const bounds=e.currentTarget.getBoundingClientRect();if(e.clientX<bounds.left||e.clientX>bounds.right||e.clientY<bounds.top||e.clientY>bounds.bottom)onClose();}}} role="dialog" aria-modal="true" aria-labelledby={id}><div className="modal-head"><h2 id={id}>{title}</h2><button className="icon-button" aria-label="Kapat" onClick={onClose}><X/></button></div>{footer?<><div className="modal-content">{children}</div><footer className="modal-actions" aria-label="Sonuç eylemleri">{footer}</footer></>:children}</dialog>;}
-export interface WordListData {board:Pick<Puzzle,'targets'>;strokes:Stroke[];golden?:string|null;clues?:Record<string,string>}
+export interface WordListData {board:Pick<Puzzle,'targets'>;strokes:Stroke[];golden?:string|null;clues?:Record<string,string>;focusedGroup?:number|null;onFocusGroup?:(group:number)=>void}
 /** A read-only view. Opening it never pauses, selects or changes the board. */
 export function BoardWords({words}:{words:WordListData}){
  const [open,setOpen]=useState(false),opener=useRef<HTMLButtonElement>(null),focusFrame=useRef(0);
@@ -27,12 +27,12 @@ export function BoardWords({words}:{words:WordListData}){
   {open&&<Modal title={words.clues?'Tanım listen':'Kelime listen'} onClose={close}><div className="board-words-sheet"><p className="board-words-summary">Listede <b>{complete} / {total}</b> hedef tamamlandı. Buldukların işaretli; süre işlemeye devam eder.</p><WordList {...words}/><button type="button" className="button primary full" onClick={close}>Tahtaya dön</button></div></Modal>}
  </div>;
 }
-export function WordList({board,strokes,golden,clues}:WordListData){
+export function WordList({board,strokes,golden,clues,focusedGroup,onFocusGroup}:WordListData){
  const groups=[...new Set(board.targets.map(t=>t.group))];
  return <div className={'word-list'+(clues?' clue-list':'')} role="list" aria-label={clues?'Tanımlardan bulunacak kelimeler':'Bulunacak kelimeler'}>{groups.map(group=>{
   const parts=board.targets.filter(t=>t.group===group),target=parts[0]!,done=parts.every(t=>strokes.some(s=>s.id===t.id));
   const split=parts.length>1,clue=clues?.[target.text],copy=wordCardCopy(target,done,clues);
-  return <div className={'word-tag'+(done?' found':'')+(clue?' clue-tag':'')+(parts.some(t=>t.id===golden)?' golden':'')}
+  return <div className={'word-tag'+(done?' found':'')+(clue?' clue-tag':'')+(parts.some(t=>t.id===golden)?' golden':'')+(onFocusGroup&&!done?' focusable-target':'')+(onFocusGroup&&!done&&focusedGroup===group?' is-focus-target':'')}
    key={group} role="listitem" aria-label={copy.text+(copy.detail?' · '+copy.detail:'')+(done?' bulundu':' aranıyor')}
    style={done?{background:`color-mix(in srgb, ${strokeColor(target.id)} 35%, transparent)`}:{}}>
    <span>{done?<Check size={15}/>:<i/>}</span>
@@ -43,6 +43,7 @@ export function WordList({board,strokes,golden,clues}:WordListData){
     <span className="clue-face clue-answer" style={{visibility:done?'visible':'hidden'}} aria-hidden={!done}>{target.label}</span>
    </>:<>{copy.text}{copy.detail&&<small>{copy.detail}</small>}{split&&<small>{parts.map(t=><span className={strokes.some(s=>s.id===t.id)?'part-found':''} key={t.id}>{t.text}</span>)}</small>}</>}</div>
    {parts.some(t=>t.id===golden)&&<b>×2</b>}
+   {onFocusGroup&&!done&&<button type="button" className="target-focus-button" aria-pressed={focusedGroup===group} aria-label={`${copy.text}${copy.detail?' · '+copy.detail:''} · Hedef seç`} onClick={()=>onFocusGroup(group)}/>}
   </div>;
  })}</div>;
 }
