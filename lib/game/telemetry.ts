@@ -1,6 +1,6 @@
 'use client';
 import {istanbulDay} from './engine.ts';
-export const METRIC_EVENTS=['first_word','level_start','level_complete','selection_miss','challenge_start','challenge_complete','invite_share','arena_start','arena_complete','auth_complete','input_feedback','frame_sample','client_error','app_open','cohort_start','retention_day1','retention_day7'] as const;
+export const METRIC_EVENTS=['story_start','story_step','story_complete','first_word','level_start','level_complete','selection_miss','challenge_start','challenge_complete','invite_share','arena_start','arena_complete','auth_complete','input_feedback','frame_sample','client_error','app_open','cohort_start','retention_day1','retention_day7'] as const;
 export type MetricEvent=typeof METRIC_EVENTS[number];
 let consent=false;
 const DAY=86400000;

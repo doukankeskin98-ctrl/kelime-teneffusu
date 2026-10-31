@@ -1,3 +1,4 @@
+import * as stories from '../lib/game/story-content.ts';
 import * as riddles from '../lib/game/riddle-content.ts';
 import * as legacyUI from '../lib/game/legacy-ui.ts';
 import * as mainJourney from '../lib/game/main-journey.ts';
@@ -32,7 +33,7 @@ function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown){
  const hooks={useState(initial:any){const i=cursor++,s=slots[i]??={value:i===0&&seedFirst!==undefined?seedFirst:typeof initial==='function'?initial():initial};return[s.value,(n:any)=>{const v=typeof n==='function'?n(s.value):n;if(!Object.is(v,s.value)){s.value=v;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useId(){return(slots[cursor++]??={value:'id-'+(++id)}).value;},useMemo(fn:()=>any,deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;s.value=fn();}return s.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;effects.push(()=>{s.cleanup?.();const clean=fn();s.cleanup=typeof clean==='function'?clean:undefined;});}},useReducer(reducer:any,arg:any,init:any){const [v,set]=hooks.useState(()=>init(arg));return[v,(event:any)=>set((s:any)=>reducer(s,event))];}};
  class Clock extends Date{static override now(){return now;}}
  const source=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText+(file.endsWith('Sprint.tsx')?'\nexports.__SprintRun=SprintRun;':'');
- vm.runInNewContext(source,{exports,require:(name:string)=>name==='@/lib/game/riddle-content'?riddles:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/legacy-ui'?legacyUI:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize,fitGameFrame}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{innerHeight:640,matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:()=>null,setItem(){}},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void)=>{timeouts.set(++id,fn);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)});
+ vm.runInNewContext(source,{exports,require:(name:string)=>name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddles:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/legacy-ui'?legacyUI:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize,fitGameFrame}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{innerHeight:640,matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:()=>null,setItem(){}},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void)=>{timeouts.set(++id,fn);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)});
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<50;i++){if(dirty){dirty=false;cursor=0;tree=render();}if(commit)while(effects.length)effects.shift()!();}return tree;};
  return{exports,document,slots,frames,start(name:string,props:any,commit=true){render=()=>exports[name](props);return paint(commit);},paint,update(name:string,props:any){render=()=>exports[name](props);dirty=true;return paint();},find(type:string){const n=walk(tree).find(n=>n.type===type||typeof n.type==='function'&&n.type.name===type);assert.ok(n,type);return n;},async settle(){for(let i=0;i<30;i++){await Promise.resolve();paint();}},time(value:number){now=value;for(const fn of [...intervals.values()])fn();paint();},expire(){const f=[...timeouts.values()];timeouts.clear();for(const fn of f)fn();paint();},frame(){const f=[...frames.values()];frames.clear();for(const fn of f)fn();paint();},get tree(){return tree;},close(){for(const s of slots)s.cleanup?.();frames.clear();intervals.clear();timeouts.clear();}};
 }
@@ -259,5 +260,46 @@ describe('player-selected focus is guidance without extra rewards or hidden answ
    const locked=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 4:'))!;assert.equal(locked.props['disabled'],true);locked.props['onClick']();h.paint();assert.equal(calls.length,1);
    walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();assert.equal(h.find('Modal').props['title'],'Senin yolculuğun');assert.equal(walk(h.find('Modal')).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm ')).length,96);
   }finally{h.close();}
+ });
+});
+
+// Story flow executes real Solo with its complete deterministic board.
+function storyPage(index=0,initial=progress.emptyProgress(),practice=false){
+ const story=stories.LIVING_STORIES[index]!,board=content.journeyBoard(story),events:string[]=[],next:any[]=[];let saved=initial,backs=0;
+ const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs,'@/lib/game/telemetry':{track:(event:string)=>events.push(event)}});
+ h.start('Solo',{config:{themeId:story.themeId,level:0,journey:story.id,practice},progress:initial,onProgress:(fn:any)=>{saved=fn(saved);},onBack:()=>backs++,onMap:()=>backs++,onNext:(config:any)=>next.push(config)});
+ const commit=(index:number)=>{const target=board.placements.find(p=>p.text===story.steps[index]!.word)!;h.find('PlayLayout').props['onCommit'](target.a,target.b);};
+ return {...h,get tree(){return h.tree;},story,board,events,next,commit,get saved(){return saved;},get backs(){return backs;}};
+}
+describe('living story sequential interaction, hints, replay and navigation',()=>{
+ it('keeps the full input board, exposes one clue and rejects a later answer without progress or penalty',()=>{
+  const h=storyPage();try{const l=h.find('PlayLayout');assert.equal(l.props['board'].targets.length,4);assert.equal(l.props['wordList'].board.targets.length,1);assert.equal(l.props['wordList'].board.targets[0].text,'KIYI');assert.equal(l.props['wordList'].onFocusGroup,undefined);
+   h.commit(2);h.paint();assert.equal(h.find('PlayLayout').props['strokes'].length,0);assert.equal(h.find('PlayControls').props['hints'],3);assert.match(h.find('StoryHud').props['notice'],/Bu kelime birazdan/);assert.equal(h.events.includes('story_step'),false);
+   h.commit(0);h.paint();assert.equal(h.find('PlayLayout').props['wordList'].board.targets[0].text,'FENER');assert.equal(h.find('PlayLayout').props['board'].targets.length,4);assert.equal(h.find('StoryHud').props['stage'],1);assert.equal(h.saved.saves['route:'+h.story.id]!.complete,false);
+  }finally{h.close();}
+ });
+ it('does not charge for the already visible first letter, then hints only the current step and caps rapid requests',()=>{
+  const h=storyPage();try{const firstHint=h.find('PlayLayout').props['hint'];assert(firstHint);h.find('PlayControls').props['onHint']();h.paint();assert.equal(h.find('PlayControls').props['hints'],3);assert.match(h.find('StoryHud').props['notice'],/Başlangıç ipucun ücretsiz/);
+   h.commit(0);h.paint();const hint=h.find('PlayControls').props['onHint'];for(let i=0;i<6;i++)hint();h.paint();assert.equal(h.saved.saves['route:'+h.story.id]!.hints,3);assert.equal(h.find('PlayControls').props['hints'],0);assert.equal(JSON.stringify(h.find('PlayLayout').props['hint']),JSON.stringify(h.board.placements.find(p=>p.text==='FENER')!.a));
+  }finally{h.close();}
+ });
+ it('accepts consecutive stage-correct moves before another render and completes once from the full board',()=>{
+  const h=storyPage();try{for(let i=0;i<4;i++)h.commit(i);h.paint();h.expire();assert.equal(h.saved.saves['route:'+h.story.id]!.complete,true);assert.equal(h.find('StoryResult').props['save'].strokes.length,4);assert.equal(h.events.filter(x=>x==='story_complete').length,1);assert.equal(h.events.filter(x=>x==='story_step').length,4);
+   h.commit(3);h.paint();assert.equal(h.events.filter(x=>x==='story_complete').length,1);h.find('Modal').props['footer'].props.children[0].props.onClick();assert.equal(h.next[0].journey,stories.LIVING_STORIES[1]!.id);
+  }finally{h.close();}
+ });
+ it('resumes the actual clue, retains campaign continuation and never treats a completed review as a new story completion',()=>{
+  const initial=progress.emptyProgress(),story=stories.LIVING_STORIES[1]!,b=content.journeyBoard(story);initial.last={themeId:'uzay',level:0,journey:'uzay-2'};initial.saves['route:'+story.id]=progress.cleanSave({strokes:b.placements.filter(p=>story.steps.slice(0,2).some(s=>s.word===p.text)),elapsed:41,hints:1,complete:false,stars:0},b);
+  const h=storyPage(1,initial);try{assert.equal(h.find('StoryHud').props['stage'],2);assert.equal(h.find('PlayLayout').props['wordList'].board.targets[0].text,'FİLİZ');assert.equal(h.saved.last?.journey,'uzay-2');for(let i=2;i<5;i++){h.commit(i);h.paint();}h.expire();assert.equal(h.saved.last?.journey,'uzay-2');
+   const review=storyPage(1,progress.loadProgress(JSON.stringify(h.saved)));try{assert.equal(review.find('PlayLayout').props['readOnly'],true);assert.equal(review.events.includes('story_complete'),false);assert.equal(review.events.includes('story_start'),false);}finally{review.close();}
+  }finally{h.close();}
+ });
+ it('replay starts empty, keeps the completed keepsake and preserves a better previous score',()=>{
+  const initial=progress.emptyProgress(),story=stories.LIVING_STORIES[0]!,b=content.journeyBoard(story),key='route:'+story.id;initial.saves[key]=progress.cleanSave({strokes:b.placements,elapsed:20,hints:0,complete:false,stars:0},b);
+  const h=storyPage(0,initial,true);try{assert.equal(h.find('PlayLayout').props['strokes'].length,0);assert.equal(h.find('PlayLayout').props['hint'],null);h.find('PlayControls').props['onHint']();h.paint();for(let i=0;i<4;i++){h.commit(i);h.paint();}h.expire();assert.equal(h.find('StoryResult').props['save'].stars,2);assert.equal(h.saved.saves[key]!.stars,3);assert.equal(h.saved.saves[key]!.elapsed,20);}finally{h.close();}
+ });
+ it('keeps the chosen chapter view through a home remount',()=>{
+  let selected:'stories'|'journey'='stories';const props={progress:progress.emptyProgress(),onPlay(){},onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
+  try{h.start('JourneyHome',props);const button=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Bölüm yolculuğu')!;button.props['onClick']();h.paint();assert.equal(selected,'journey');const next=view('components/game/JourneyHome.tsx',modules);try{next.start('JourneyHome',{...props,initialView:selected});assert.equal(walk(next.tree).find(n=>n.props?.['className']==='journey-classic-panel')!.props['hidden'],false);}finally{next.close();}}finally{h.close();}
  });
 });
