@@ -1,7 +1,7 @@
 import { dailySpec, goldenId, hash, istanbulDay, makePuzzle, match, pointsFor, type Cell, type Puzzle, type Stroke } from './engine.ts';
 import { THEMES } from './catalog.ts';
-import {GROUP_WORD_POOL,GROUP_CLUE_POOL,GROUP_POOL_SIZE,GROUP_CLUE_POOL_SIZE,groupPuzzle,groupRiddlePuzzle,hasGroupRiddles} from './group-content.ts';
-import {ARENA_POOL_SIZE,arenaPuzzle,nextArenaKind,arenaWordKey,arenaGridKey,type ArenaRoundKind} from './arena-content.ts';
+import {FRESH_GROUP_POOL,FRESH_CLUE_POOL,FRESH_DUEL_POOL,FRESH_POOL_LIMIT,freshArenaPuzzle,hasFreshRiddles,type WordHistory} from './arena-fresh.ts';
+import {nextArenaKind,arenaWordKey,arenaGridKey,type ArenaRoundKind} from './arena-content.ts';
 
 export interface Statement { bind(...values: unknown[]): Statement; first<T=Record<string,unknown>>(): Promise<T|null>; all<T=Record<string,unknown>>(): Promise<{results:T[]}>; run():Promise<{meta:{changes:number}}> }
 export interface Database {prepare(sql:string):Statement;batch(statements:Statement[]):Promise<{meta:{changes:number}}[]>}
@@ -83,7 +83,7 @@ export class GameService {
    const participants=sorted.map(p=>({id:p.id,name:p.name,ready:p.ready,count:p.strokes.length,score:p.score,online:!p.left&&now-p.seen<15000,rematch:p.rematch,left:!!p.left,rank:ranks[p.id]!}));
    const starters=this.starters(room);
    const roundKind=room.mode==='group'?(room.roundKind??'words'):'words',nextRoundKind=room.mode==='group'?nextArenaKind(roundKind):'words';
-   const roundUnavailable=room.mode==='group'&&roundKind==='clue'&&['waiting','ready'].includes(room.phase)&&!hasGroupRiddles(room.usedRiddleIds??[])?'Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.':'',clues=roundKind==='clue'?room.clues:undefined;
+   const roundUnavailable=room.mode==='group'&&roundKind==='clue'&&['waiting','ready'].includes(room.phase)&&!hasFreshRiddles(room.usedRiddleIds??[])?'Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.':'',clues=roundKind==='clue'?room.clues:undefined;
    // Older clients already render target.label. Mask answers there too, until confirmed.
    const board=puzzle?{...publicBoard(puzzle),targets:puzzle.targets.map(t=>({...t,label:clues?.[t.text]&&!you.strokes.some(s=>s.id===t.id)?clues[t.text]!:t.label}))}:null;
    return {roundKind,nextRoundKind,clues:clues?{...clues}:undefined,roundUnavailable:roundUnavailable||undefined,lastResult:room.lastResult,revision,id:room.id,code:room.code,kind:room.kind,mode:room.mode??'duel',hostId:starters[0]?.id,canStart:!roundUnavailable&&starters.length>=2&&starters.every(p=>p.ready),players:participants,contentOrdinal:room.contentOrdinal,phase:room.phase,themeId:room.themeId,starts:room.starts,ends:room.ends,winner:room.winner,reason:room.reason,round:room.round,serverNow:now,board,golden:puzzle&&room.starts!==null?goldenId(puzzle.targets,room.starts,now):null,you:{id:you.id,name:you.name,ready:you.ready,strokes:you.strokes,score:you.score,rematch:you.rematch},opponent:other?{name:other.name,ready:other.ready,count:other.strokes.length,score:other.score,online:!other.left&&now-other.seen<15000,rematch:other.rematch}:null};
@@ -108,13 +108,23 @@ export class GameService {
    return {...view,series:{rounds:receipts[0]?.rounds??0,players}};
  }
  private async allocate(room:Room){
-   const group=room.mode==='group',clue=group&&room.roundKind==='clue',used=room.usedRiddleIds??[],poolId=group?(clue?GROUP_CLUE_POOL:GROUP_WORD_POOL):'arena-v1',limit=group?(clue?GROUP_CLUE_POOL_SIZE:GROUP_POOL_SIZE):ARENA_POOL_SIZE;
-   if(clue&&!hasGroupRiddles(used))throw new GameError('Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.',409,'ARENA_RIDDLES_EXHAUSTED');
+   const group=room.mode==='group',clue=group&&room.roundKind==='clue',used=room.usedRiddleIds??[],poolId=group?(clue?FRESH_CLUE_POOL:FRESH_GROUP_POOL):FRESH_DUEL_POOL,limit=FRESH_POOL_LIMIT;
+   if(clue&&!hasFreshRiddles(used))throw new GameError('Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.',409,'ARENA_RIDDLES_EXHAUSTED');
    await this.q('INSERT OR IGNORE INTO arena_pool(id,next,claim) VALUES(?,0,\'\')',poolId).run();
    const cursor=await this.q('SELECT next FROM arena_pool WHERE id=?',poolId).first<{next:number}>();const from=cursor!.next;
+   // Old receipts already contain every shown target, even abandoned/unsolved games.
+   // Aggregate in SQL; return at most the distinct vocabulary, not all past boards.
+   const participants=JSON.stringify(room.players.filter(p=>!p.left).map(p=>p.id));
+   const history=(await this.q(`WITH receipts AS (
+    SELECT words_key,created,ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY created DESC,room_id DESC,round DESC) AS position
+    FROM arena_seen WHERE user_id IN (SELECT value FROM json_each(?))
+   ) SELECT j.value AS word,COUNT(*) AS uses,MAX(r.created) AS lastSeen,MAX(CASE WHEN r.position<=12 THEN 1 ELSE 0 END) AS recent
+    FROM receipts r,json_each(CASE WHEN json_valid(r.words_key) THEN CASE WHEN json_type(r.words_key)='array' THEN r.words_key ELSE '[]' END ELSE '[]' END) j
+    WHERE j.type='text' GROUP BY j.value`,participants).all<WordHistory>()).results;
    for(let ordinal=from;ordinal<Math.min(from+128,limit);ordinal++){
-    const riddle=clue?groupRiddlePuzzle(ordinal,used):null,candidate=clue?riddle:group?groupPuzzle(ordinal):arenaPuzzle(ordinal);if(!candidate)continue;
-    const seen=await this.q('SELECT 1 AS seen FROM arena_seen WHERE user_id IN (SELECT value FROM json_each(?)) AND (words_key=? OR grid_key=?) LIMIT 1',JSON.stringify(room.players.filter(p=>!p.left).map(p=>p.id)),candidate.wordsKey,candidate.gridKey).first();
+    const candidate=freshArenaPuzzle(ordinal,{group,clue,history,usedRiddleIds:used,variation:ordinal-from});if(!candidate)continue;
+    const riddle=clue?candidate:null;
+    const seen=await this.q('SELECT 1 AS seen FROM arena_seen WHERE user_id IN (SELECT value FROM json_each(?)) AND (words_key=? OR grid_key=?) LIMIT 1',participants,candidate.wordsKey,candidate.gridKey).first();
     if(seen)continue;
     if(riddle){room.clues=riddle.clues;room.usedRiddleIds=[...new Set([...used,...riddle.riddleIds])];}else delete room.clues;
     room.puzzle=candidate.board;room.themeId=candidate.themeId;room.seed=candidate.seed;room.contentOrdinal=ordinal;return {poolId,from,next:ordinal+1};

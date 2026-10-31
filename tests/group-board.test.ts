@@ -7,6 +7,8 @@ import {RIDDLE_BANKS,riddleId} from '../lib/game/riddle-content.ts';
 import {match} from '../lib/game/engine.ts';
 import {GameService,GameError} from '../lib/game/server.ts';
 import {fixture} from './fixtures.ts';
+import {FRESH_GROUP_POOL,hasFreshRiddles,freshArenaPuzzle} from '../lib/game/arena-fresh.ts';
+import {ARENA_CLUES} from '../lib/game/arena-library.ts';
 const legacyGroups=JSON.parse(readFileSync(new URL('./legacy-group-12x9.json',import.meta.url),'utf8')) as {words:NonNullable<ReturnType<typeof groupPuzzle>>;clue:NonNullable<ReturnType<typeof groupRiddlePuzzle>>};
 const assertBoard=(board:NonNullable<ReturnType<typeof groupPuzzle>>['board'])=>{
  assert.equal(board.size,GROUP_SIZE);assert.equal(board.grid.length,9);assert(board.grid.every(r=>r.length===9));assert.equal(board.targets.length,GROUP_WORDS);assert.equal(board.placements.length,7);assert.equal(new Set(board.targets.map(t=>t.text)).size,7);
@@ -38,13 +40,14 @@ describe('versioned group nine by nine with seven words',()=>{
   const f=await lobby();try{
    const room=f.room(f.id);room.roundKind='words';f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);
    f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-group-12x9-v1',78,'old')").run();f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-group-clue-12x9-v1',90,'old')").run();f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-v1',123,'old')").run();f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-riddle-v1',456,'old')").run();
-   await start(f,1);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-12x9-v1'").get()!['next'],78);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-clue-12x9-v1'").get()!['next'],90);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-v1'").get()!['next'],123);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-riddle-v1'").get()!['next'],456);assert.equal(f.sqlite.prepare('SELECT next FROM arena_pool WHERE id=?').get(GROUP_WORD_POOL)!['next'],1);
+   f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-group-9x7-v2',987,'old')").run();f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-group-clue-9x7-v2',654,'old')").run();
+   await start(f,1);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-9x7-v2'").get()!['next'],987);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-clue-9x7-v2'").get()!['next'],654);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-12x9-v1'").get()!['next'],78);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-clue-12x9-v1'").get()!['next'],90);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-v1'").get()!['next'],123);assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-riddle-v1'").get()!['next'],456);assert.equal(f.sqlite.prepare('SELECT next FROM arena_pool WHERE id=?').get(FRESH_GROUP_POOL)!['next'],1);
   }finally{f.sqlite.close();}
  });
  it('treats fewer than seven unused definitions as exhausted rather than starting a short riddle board',async()=>{
   for(const left of [4,5,6]){const f=await lobby();try{
-   const keep=new Set(RIDDLE_BANKS[0]!.items.slice(0,left).map(([w])=>riddleId(RIDDLE_BANKS[0]!.themeId,w))),used=RIDDLE_BANKS.flatMap(b=>b.items.map(([w])=>riddleId(b.themeId,w))).filter(id=>!keep.has(id));
-   assert.equal(hasGroupRiddles(used),false);assert.equal(groupRiddlePuzzle(0,used),null);const room=f.room(f.id);room.usedRiddleIds=used;f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);
+   const keep=new Set(ARENA_CLUES.slice(0,left).map(e=>e.riddleId!)),used=ARENA_CLUES.map(e=>e.riddleId!).filter(id=>!keep.has(id));
+   assert.equal(hasFreshRiddles(used),false);assert.equal(freshArenaPuzzle(0,{group:true,clue:true,usedRiddleIds:used}),null);const room=f.room(f.id);room.usedRiddleIds=used;f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);
    const view=(await f.game.state('a'))!;assert(view.roundUnavailable);assert.equal(view.canStart,false);await assert.rejects(()=>start(f,1),e=>e instanceof GameError&&e.code==='ARENA_RIDDLES_EXHAUSTED');assert.equal(f.room(f.id).puzzle,undefined);
   }finally{f.sqlite.close();}}
  });
