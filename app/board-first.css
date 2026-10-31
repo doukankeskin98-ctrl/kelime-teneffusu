@@ -1,0 +1,64 @@
+/* The phone's primary surface is the board; the full target list remains one tap away. */
+.mobile-targets{display:none}
+@media(max-width:1100px) and (orientation:portrait){
+ .game-app,.main-content.arena-is-playing{padding:6px 8px;padding-top:calc(6px + env(safe-area-inset-top,0px));padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));padding-left:calc(8px + env(safe-area-inset-left,0px));padding-right:calc(8px + env(safe-area-inset-right,0px))}
+ .viewport-play .play-heading,.journey-session .viewport-play .play-heading{min-height:44px;padding-bottom:0;border-bottom:0}
+ .viewport-play .play-heading h1,.journey-session .viewport-play .play-heading h1{font-size:21px;line-height:1.15}
+ .viewport-play .play-heading .eyebrow{font-size:10px;letter-spacing:.4px}
+ .viewport-play .mini-mark{display:none}
+ .viewport-play .board-panel,.game-app .viewport-play .board-panel,.journey-session .viewport-play .board-panel{padding:3px;border-radius:16px;box-shadow:none}
+ .viewport-play .board-scroll{padding:0;border:0}
+ .viewport-play .letter-board{border-width:1px;border-radius:13px}
+ .viewport-play .letter-grid span,.game-app .viewport-play .letter-grid span{font-size:var(--board-letter-size,18px);font-weight:750}
+ .viewport-play .selection-preview,.journey-session .viewport-play .selection-preview{font-size:12px;line-height:1.5;min-height:24px;padding:2px 4px}
+ .viewport-play .selection-preview.loupe-available{min-height:28px;flex-wrap:nowrap}
+ .viewport-play .selection-loupe{width:26px;height:26px;flex-basis:26px;font-size:21px}
+ .viewport-play .play-controls,.game-app .viewport-play .play-controls,.viewport-play .duel-controls{padding:0;gap:4px;flex-wrap:nowrap;min-height:44px}
+ .viewport-play .duel-controls>.text-button{font-size:11px;padding:3px 4px;line-height:1.3}
+ .viewport-play .duel-controls>.text-button:first-child{flex:1;justify-content:flex-start}
+ .viewport-play .duel-controls .icon-button{flex:0 0 44px;min-width:44px;width:44px}
+ .viewport-play .arena-scorebar{min-height:46px;padding:3px 8px;border-radius:12px}
+ .viewport-play .arena-scorebar b{font-size:23px;line-height:1.15}
+ .viewport-play .arena-scorebar small{font-size:11px;line-height:1.25}
+ .viewport-play .arena-rank-button{min-height:40px;padding:0}
+ .viewport-play .duel-clock{gap:2px}
+ .viewport-play .opponent-progress{font-size:10px;line-height:1.3;gap:2px 6px;margin-top:3px}
+ .viewport-play .targets-panel,.game-app .viewport-play .targets-panel{margin-bottom:4px}
+ .viewport-play .viewport-targets.has-mobile-targets>.word-list,.game-app .viewport-play .viewport-targets.has-mobile-targets>.word-list{display:none}
+ .mobile-targets{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:stretch;background:#fffdf4;border:1px solid #d6dfca;border-radius:14px;min-height:78px}
+ .target-step{display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;background:transparent;color:#365e43;border:0;border-radius:12px}
+ .target-step:disabled{opacity:.35}.next-target-arrow{transform:rotate(180deg)}
+ .mobile-target-card{min-width:0;text-align:left;padding:8px 3px;border:0;background:transparent;color:#254633;display:flex;flex-direction:column;justify-content:center}
+ .mobile-target-card>small{display:flex;align-items:center;gap:4px;font-size:10px;line-height:1.5;font-weight:600;color:#607254;margin-bottom:3px}
+ .mobile-target-card>small>span{margin-left:auto;display:flex;gap:3px;align-items:center}
+ .mobile-target-card>strong{font-size:15px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
+ .mobile-target-card.golden{color:#73541d}.mobile-target-card.golden>small{color:#89651f}
+ .mobile-target-card:disabled{opacity:1}.target-parts{font-size:12px;line-height:1.5}
+ .target-step:focus-visible,.mobile-target-card:focus-visible{outline:3px solid #b68b32;outline-offset:-3px}
+ .viewport-play .solo-hud,.journey-session .viewport-play .play-hud .solo-hud{min-height:34px;padding:3px 2px}
+ .viewport-play .solo-found>b,.journey-session .solo-found>b{font-size:22px}
+ .viewport-play .solo-star-goal{padding:3px 6px}
+}
+@media(max-width:380px) and (orientation:portrait){
+ .mobile-targets{grid-template-columns:44px minmax(0,1fr) 44px;min-height:76px}
+ .mobile-target-card>strong{font-size:14px}
+ .viewport-play .arena-scorebar small{font-size:10px}
+}
+@media(max-width:1100px) and (orientation:portrait){
+ .viewport-play .arena-scorebar b{margin:0}
+ .viewport-play .arena-scorebar b>small{display:inline;font-size:11px;line-height:inherit}
+ .viewport-play .arena-scorebar .duel-clock{flex-direction:row;gap:4px}
+ .mobile-targets{min-height:64px}
+ .mobile-target-card{padding-top:6px;padding-bottom:6px}
+}
+.mobile-selection{display:none}
+@media(max-width:1100px) and (orientation:portrait){
+ .viewport-play .play-title{position:relative;flex:1;min-width:0}
+ .viewport-play:not(.is-zoomed) .board-panel>.selection-preview{display:none}
+ .viewport-play.has-selection:not(.is-zoomed) .play-title>.eyebrow,.viewport-play.has-selection:not(.is-zoomed) .play-title>h1{visibility:hidden}
+ .viewport-play.has-selection:not(.is-zoomed) .mobile-selection{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;gap:10px;color:#285d40}
+ .mobile-selection>b{font-size:20px;line-height:1.1;overflow-wrap:anywhere;min-width:0}.mobile-selection>small{font-size:11px;white-space:nowrap}.mobile-selection [hidden]{display:none}
+}
+@media(max-width:1100px) and (orientation:portrait){
+ .viewport-play.has-selection:not(.is-zoomed) .mobile-selection{background:#f3f6e9;border:1px solid #d6dfca;border-radius:10px;padding:4px 8px}
+}

@@ -170,8 +170,8 @@ try{
  await Promise.all(groupUsers.map((_,i)=>action(i,'ready',1)));const groupActive=await action(0,'start',1);
  const groupViews=await Promise.all(groupUsers.map(nativeUser=>json('/api/game?action=room',{nativeUser})));
  check(groupViews.every(v=>v.players.length===8&&v.starts===groupActive.starts&&v.ends===groupActive.ends&&JSON.stringify(v.board)===JSON.stringify(groupActive.board)),'eight HTTP sessions share one board, roster, start and end');
- check(groupViews.every(v=>v.roundKind==='clue'&&v.nextRoundKind==='words'&&Object.keys(v.clues).length===9&&JSON.stringify(v.clues)===JSON.stringify(groupActive.clues)),'eight sessions share the first riddle round and frozen definitions');
- check(groupViews.every(v=>v.board.size===12&&v.board.grid.length===12&&v.board.grid.every(row=>row.length===12)&&v.board.targets.length===9&&new Set(v.board.targets.map(t=>t.text)).size===9),'all eight group boards are twelve by twelve with nine unique words');
+ check(groupViews.every(v=>v.roundKind==='clue'&&v.nextRoundKind==='words'&&Object.keys(v.clues).length===7&&JSON.stringify(v.clues)===JSON.stringify(groupActive.clues)),'eight sessions share the first riddle round and frozen definitions');
+ check(groupViews.every(v=>v.board.size===9&&v.board.grid.length===9&&v.board.grid.every(row=>row.length===9)&&v.board.targets.length===7&&new Set(v.board.targets.map(t=>t.text)).size===7),'all eight group boards are nine by nine with seven unique words');
  check(groupActive.board.targets.every(t=>t.label===groupActive.clues[t.text]),'old clients receive definitions in unconfirmed public labels');
  await request('/api/game',{nativeUser:groupUsers[1],method:'POST',body:{action:'claim',id:group.id,round:1,expectedOwnerId:profiles[0].profile.id,...solution(groupActive.board,groupActive.board.targets[0])},expected:409});
  await new Promise(resolve=>setTimeout(resolve,Math.max(0,groupActive.starts-Date.now()+50)));
@@ -187,7 +187,7 @@ try{
  const successors=await Promise.all([...groupUsers.map((_,i)=>i),0,0,0,0].map(i=>action(i,'next',1)));
  check(successors.every(v=>v.round===2&&v.id===group.id&&v.board===null),'twelve repeated next requests create one successor round in the same room');
  await Promise.all(groupUsers.map((_,i)=>action(i,'ready',2)));const second=await action(0,'start',2);
- check(second.board.size===12&&second.board.targets.length===9,'the normal successor keeps twelve by twelve and nine words');
+ check(second.board.size===9&&second.board.targets.length===7,'the normal successor keeps nine by nine and seven words');
  check(second.roundKind==='words'&&second.nextRoundKind==='clue'&&!second.clues,'the second group round is the normal word mode');
  const wordKey=b=>JSON.stringify(b.targets.map(t=>t.text).sort());check(wordKey(second.board)!==wordKey(groupActive.board)&&JSON.stringify(second.board.grid)!==JSON.stringify(groupActive.board.grid),'successor uses different real words and grid');
  const history=await db.prepare('SELECT count(*) n FROM arena_seen WHERE user_id=?').bind(profiles[7].profile.id).first();check(history.n===2,'both boards are durably recorded for a returning account');
@@ -211,7 +211,7 @@ try{
  await Promise.all(quickCookies.map((_,i)=>quickAction(i,'ready',1)));
  const host=quickProfiles.findIndex(p=>p.profile.id===quickViews[0].hostId),quickActive=await quickAction(host,'start',1);
  const activeQuickViews=await Promise.all(quickCookies.map(cookie=>json('/api/game?action=room',{cookie})));
- check(activeQuickViews.every(v=>v.board.size===12&&v.board.targets.length===9),'all sixteen public group boards have twelve by twelve and nine words');
+ check(activeQuickViews.every(v=>v.board.size===9&&v.board.targets.length===7),'all sixteen public group boards have nine by nine and seven words');
  check(activeQuickViews.every(v=>v.starts===quickActive.starts&&v.ends===quickActive.ends&&JSON.stringify(v.board)===JSON.stringify(quickActive.board)),'sixteen public group sessions share one board and deadline');
  const quickStream=await request('/api/live?id='+quickId,{cookie:quickCookies[15]}),quickReader=quickStream.body.getReader();check(new TextDecoder().decode((await quickReader.read()).value).includes('event: room'),'shared public lobby UUID is accepted by the actual SSE route');await quickReader.cancel();
  await new Promise(resolve=>setTimeout(resolve,Math.max(0,quickActive.starts-Date.now()+50)));

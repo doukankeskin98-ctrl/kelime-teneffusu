@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.22.0 · Tahta öncelikli mobil oyun
+
+Yeni grup turları sürümlü9×9/yedi kelime havuzunda; mevcut12×12 maç snapshotları, eski bölüm/kayıt kimlikleri, arena_seen ve usedRiddleIds korunur. Mobil normal/bilmeceli oyunlarda tek okunur hedef,44px önceki/sonraki kontrolleri ve tüm listeye pencere erişimi; seçim sırasında başlıkta kelime geri bildirimi. İçerik ekran ölçüsüne göre değişmez. Başlık/skor/panel boşlukları azaltıldı; tüm ekranı ölçekleme veya zorunlu yakınlaştırma yok.
+
+Destekli yerel tarayıcıda360×568 normal tahta314px/19px harf;414×622 iPhone8Plus Safari içerik bütçesinde bilmeceli tahta368px/23px harf, bütün satırlar ve alt kontroller görünür. Çapraz sürükleme, iki uca dokunma ve hedef listesi→tahtaya dönüş gerçek UI üzerinden kontrol edildi. Bunlar fiziksel iPhone/Safari motoru veya parmak hassasiyeti ölçümü değildir. Son kontroller ve yayın kanıtı mobile-board-decision günlüğü ve repo dışı0.22.0 release kaydında tamamlanır.
+
 0.21.1: cihaz kayıt hatası eşit bulut GET/PUT veya yinelenen flush ile gizlenmez. Albümde gerçek cihaz-kaydı retry; aynı snapshot başarılı saklanınca uyarı kalkar, gereksiz bulut PUT yok. Canlanan hikâyeler/12×12/renkler/kayıt v2 ve eski içerikler korunur. Kanıt studio-agents/journal/entries/2026-10-31_evening-storage.md.
 
 0.21.0: **Canlanan hikâyeler**. Beş özgün sahne ve24 sıralı kelime; tek etkin ipucu, bulunan kelimeyle açılan sahne, kalıcı hatıra ve dürüst tekrar sonucu. İlk hikâyedeki başlangıç harfi ücretsizdir. Ana ekran hikâyeler/bölüm yolculuğu arasında geçiş yapar; aynı oturumda seçilen yüzeye geri dönülür. Eski96 bölüm,32 İpucu Avı, tahtalar, kayıt v2, albümler ve rekabet kuralları korunur. Aynı anda art arda ipucu çağrıları üç hakkı aşamaz. Yeni ölçümler mevcut isteğe bağlı rıza koşuluna tabidir.
