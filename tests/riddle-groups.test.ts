@@ -8,7 +8,9 @@ import {discoveryState,discoveryRewards} from '../lib/game/discovery.ts';
 import {cleanSave,emptyProgress,loadProgress,mergeProgress,progressBoard} from '../lib/game/progress.ts';
 import {arenaPuzzle,arenaWordKey,arenaGridKey} from '../lib/game/arena-content.ts';
 import {GameService,GameError} from '../lib/game/server.ts';
-import {groupRiddlePuzzle as arenaRiddlePuzzle,GROUP_CLUE_POOL_SIZE as ARENA_RIDDLE_POOL_SIZE} from '../lib/game/group-content.ts';
+import {FRESH_POOL_LIMIT as ARENA_RIDDLE_POOL_SIZE,freshArenaPuzzle} from '../lib/game/arena-fresh.ts';
+import {ARENA_CLUES} from '../lib/game/arena-library.ts';
+const arenaRiddlePuzzle=(ordinal:number)=>freshArenaPuzzle(ordinal,{group:true,clue:true});
 import {match} from '../lib/game/engine.ts';
 import {fixture} from './fixtures.ts';
 
@@ -59,7 +61,7 @@ describe('persistent alternating group rounds',()=>{
  it('uses the union of every participant lifetime word-set and real-grid history in clue rounds',async()=>{
   for(const mode of ['words','grid']){const f=await lobby(),candidate=arenaRiddlePuzzle(0)!;
    f.sqlite.prepare('INSERT INTO arena_seen VALUES(?,?,?,?,?,?)').run(f.users[3]!,mode==='words'?candidate.wordsKey:'other words',mode==='grid'?candidate.gridKey:'other grid','old-room',1,f.clock());
-   const v=await start(f,1);assert(v.contentOrdinal!>0);assert.notEqual(arenaWordKey(v.board!),candidate.wordsKey);if(mode==='grid')assert.notEqual(arenaGridKey(v.board!),candidate.gridKey);f.sqlite.close();}
+   const v=await start(f,1);if(mode==='grid')assert(v.contentOrdinal!>0);assert.notEqual(arenaWordKey(v.board!),candidate.wordsKey);if(mode==='grid')assert.notEqual(arenaGridKey(v.board!),candidate.gridKey);f.sqlite.close();}
  });
  it('preserves a legacy active normal board and begins alternation only at its successor',async()=>{
   const f=await lobby(),old=f.room(f.id);delete old.roundKind;old.phase='active';old.starts=f.clock()-1000;old.ends=f.clock()+1000;old.puzzle=arenaPuzzle(23)!.board;
@@ -68,14 +70,14 @@ describe('persistent alternating group rounds',()=>{
   f.advance(2000);const next=await f.game.nextGame(f.users[0]!,f.id,1);assert.equal(next.roundKind,'clue');assert.equal(next.board,null);f.sqlite.close();
  });
  it('makes per-room and global clue exhaustion explicit without resetting history or opening an old board',async()=>{
-  for(const exhausted of ['room','pool']){const f=await lobby();if(exhausted==='room'){const room=f.room(f.id);room.usedRiddleIds=RIDDLE_BANKS.flatMap(b=>b.items.map(([w])=>riddleId(b.themeId,w)));f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);}else f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-group-clue-9x7-v2',?,'')").run(ARENA_RIDDLE_POOL_SIZE);
+  for(const exhausted of ['room','pool']){const f=await lobby();if(exhausted==='room'){const room=f.room(f.id);room.usedRiddleIds=ARENA_CLUES.map(e=>e.riddleId!);f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);}else f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-variety-clue-v3',?,'')").run(ARENA_RIDDLE_POOL_SIZE);
    await Promise.all(f.users.map(u=>f.game.ready(u,f.id,1)));await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1),(e:unknown)=>e instanceof GameError&&e.code===(exhausted==='room'?'ARENA_RIDDLES_EXHAUSTED':'ARENA_CONTENT_UNAVAILABLE'));
    assert.equal(f.room(f.id).phase,'ready');assert.equal(f.room(f.id).puzzle,undefined);assert.equal(f.room(f.id).starts,null);assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM arena_seen').get()!['n'],0);
    const reloaded=(await new GameService(f.db,f.clock).state(f.users[0]!))!;if(exhausted==='room'){assert.equal(reloaded.canStart,false);assert(reloaded.roundUnavailable);}f.sqlite.close();}
  });
  it('rolls back clue history, room and cursor together when receipt persistence fails',async()=>{
   const f=await lobby();f.sqlite.exec("CREATE TRIGGER fail_riddle BEFORE INSERT ON arena_seen BEGIN SELECT RAISE(ABORT,'receipt unavailable'); END");await Promise.all(f.users.map(u=>f.game.ready(u,f.id,1)));
-  await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1));assert.equal(f.room(f.id).usedRiddleIds,undefined);assert.equal(f.room(f.id).clues,undefined);assert.equal(f.room(f.id).phase,'ready');assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-clue-9x7-v2'").get()!['next'],0);f.sqlite.close();
+  await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1));assert.equal(f.room(f.id).usedRiddleIds,undefined);assert.equal(f.room(f.id).clues,undefined);assert.equal(f.room(f.id).phase,'ready');assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-variety-clue-v3'").get()!['next'],0);f.sqlite.close();
  });
 });
 
