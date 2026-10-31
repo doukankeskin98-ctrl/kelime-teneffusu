@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.18.1',date:'31 Ekim 2026',title:'Kuş seslerinden dağ yoluna',items:[
+  {where:'Ana sayfa · Yeni bölümler',detail:'Kuş sesleri: 6×6 tahtada dört kuş. Dağ yolculuğu: 8×8 tahtada yedi yol kelimesi. İki bölüm de dünyalarında ve kalıcı arşivde durur.'},
+  {where:'Albüm · Tarihli damga',detail:'31 Ekim’in iki bölümünü tamamlayarak o günün kalıcı damgasını aç. Daha sonra da tamamlayabilirsin; süre ve ipucu şartı yok.'},
+ ]},
  {version:'0.18.0',date:'31 Ekim 2026',title:'Her harfte bir tını, her turda yeni bir ipucu',items:[
   {where:'Ayarlar · Oyun sesi',detail:'Oyun sesi artık %0–100 arasında ayarlanır; bütün efektlere anında uygulanır ve cihazında saklanır. Kısa sesler güçlendirildi ve dengelendi.'},
   {where:'Kelime tahtası',detail:'Kaydırırken her yeni harf kısa, değişken bir tını verir. Doğru kelime, yanlış deneme ve tur sonu birbirinden ayrılır; hızlı kaydırma eski sesleri biriktirmez.'},

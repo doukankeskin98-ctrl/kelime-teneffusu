@@ -1,5 +1,7 @@
 # Öncelikler
 
+31 Ekim 2026,0.18.1: tarihli çift ve arşiv kimlik/imza yayın kapısı. Son karar/haftalık değerlendirme/kanıt ../journal/entries/2026-10-31_maintenance.md içinde. İlk açık öncelik gerçek Safari/tablet/ses kesintisi, provider ve PWA doğrulaması; yeni faz tamamlandı sayılmaz.
+
 31 Ekim 2026, 0.18.0: kullanıcının doğrudan ses/yerleşim/grup talebi uygulandı. %0–100 tercih, harf tınıları, 32 ek İpucu Avı ve kalıcı ipucu→normal tur dönüşümü; kabul/gerçek son kanıt `../journal/entries/2026-10-31_audio-riddle-decision.md`. İlk açık iş destekli gerçek Safari/iPad/Android ekran, ses konforu/medya seviyesi/sessiz anahtar/kesinti ve gerçek hesapla dönüş. Araç engelini aynı başarısız yoldan aşma; kontrollü 4/8 oyuncu testini fiziksel cihaz veya üretim kapasitesi diye sunma. Yeni özellik veya sonraki faz kendiliğinden başlamaz.
 
 30 Ekim 2026, 0.17.0: kullanıcı Faz 1 için açık canlı yayın talimatı verdi. İnceleme dalı güncel 0.16.2 içerik/özgünlük kapısıyla birleştirilir, toplu kapılar yeni kaynakta yenilenir. Kabul/kanıt `../journal/entries/2026-10-30_phase1-publication.md`. Gerçek Safari/tablet, 20 el denemesi/ekran kaydı ve iPhone SE2 FPS/<100ms ile görsel kabul ilk açık iştir. Faz 0 ve Faz 2–4 tamamlanmış sayılmaz; yeni geliştirme turu bu yayın görevinin kapsamında değildir.

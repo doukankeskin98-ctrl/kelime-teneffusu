@@ -3,7 +3,8 @@ import {PLAYABLE_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from '../lib/game
 import {exactLine,makeCustomPuzzle} from '../lib/game/engine.ts';
 import {RELEASE_BATCHES} from '../lib/studio/releases.ts';
 import {checkChapter} from '../lib/studio/content.ts';
-import {assertOriginalReleases} from '../lib/studio/release-audit.ts';
+import {assertOriginalReleases,assertReleaseManifest} from '../lib/studio/release-audit.ts';
+await assertReleaseManifest(RELEASE_BATCHES);
 assertOriginalReleases(RELEASE_BATCHES.flatMap(batch=>batch.chapters.map(item=>item.chapter)));
 let count=0;
 for(const entry of [...PLAYABLE_JOURNEYS,...MYSTERIES]){
