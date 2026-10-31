@@ -1,3 +1,4 @@
+import * as stories from '../lib/game/story-content.ts';
 import * as riddleContent from '../lib/game/riddle-content.ts';
 import * as mainJourney from '../lib/game/main-journey.ts';
 // Real goal data and stateless component SSR. This is not browser/device geometry QA.
@@ -25,7 +26,7 @@ const art={WorldArt:({themeId}:{themeId:string})=>React.createElement('svg',{'da
 function component(file:string,imports:Record<string,unknown>){
  const exports:Record<string,any>={};
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
- const modules:Record<string,unknown>={react:React,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,'@/lib/game/riddle-content':riddleContent,...imports};
+ const modules:Record<string,unknown>={react:React,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,'@/lib/game/riddle-content':riddleContent,'@/lib/game/story-content':stories,'@/lib/game/content':{journeyBoard},...imports};
  vm.runInNewContext(code,{exports,require:(name:string)=>modules[name]??{}});return exports;
 }
 const collection=component('components/game/Discovery.tsx',{'./WorldArt':art});
@@ -92,7 +93,7 @@ describe('real home and victory markup',()=>{
 // New home/result render actual collection pieces; these assertions are not pixel QA.
 const riddleShelf=component('components/game/RiddleShelf.tsx',{});
 const scene=component('components/game/JourneyScene.tsx',{});
-const numberedHome=component('components/game/JourneyHome.tsx',{'./JourneyScene':scene,'./WorldArt':art,'./AchievementLoop':loop,'./RiddleShelf':riddleShelf});
+const numberedHome=component('components/game/JourneyHome.tsx',{'./JourneyScene':scene,'./WorldArt':art,'./AchievementLoop':loop,'./RiddleShelf':riddleShelf,'./StoryExperience':{StoryShelf:()=>null}});
 const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery':collection,'./AchievementLoop':loop});
 describe('numbered journey home and real result',()=>{
  it('shows one primary action, the correct chapter and nearby reward without mode cards',()=>{
@@ -120,4 +121,19 @@ it('numbered result announces the actually unlocked album finale without awardin
  const before=first(4),after=finish(copy(before),'uzay-5'),resultModule=component('components/game/JourneyResult.tsx',{'./AchievementLoop':loop,'./Discovery':collection});
  const html=render(resultModule['JourneyResult'],{number:9,before:achievement.journeyGoal(before,'uzay-5'),after:achievement.journeyGoal(after,'uzay-5'),rewards:discoveryRewards(before,after),save:after.saves['route:uzay-5']});
  assert.match(html,/ALBÜM FİNALİ AÇILDI/);assert.doesNotMatch(html,/ALBÜM TAMAMLANDI/);assert.equal(after.saves['route:uzay-gozlemevi'],undefined);
+});
+
+const storyScenes=component('components/game/StoryScene.tsx',{});
+const storyExperience=component('components/game/StoryExperience.tsx',{'./StoryScene':storyScenes});
+describe('actual story collection, clue scene and result markup',()=>{
+ it('shows five distinct scenes with truthful empty and partial album states',()=>{
+  const p=emptyProgress(),story=stories.LIVING_STORIES[0]!,b=journeyBoard(story);
+  const empty=render(storyExperience['StoryCollection'],{progress:p,onPlay(){},album:true});assert.match(empty,/0\/5/);assert.equal((empty.match(/class="story-card"/g)??[]).length,5);assert.doesNotMatch(empty,/is-complete/);
+  p.saves['route:'+story.id]=cleanSave({strokes:[b.placements.find(p=>p.text==='KIYI')!],elapsed:10,hints:0,complete:false,stars:0},b);
+  const home=render(storyExperience['StoryShelf'],{progress:p,onPlay(){}});assert.match(home,/Hikâyene devam et/);assert.match(home,/1\/4 adım/);assert.match(home,/0\/5/);
+ });
+ it('never labels undiscovered step answers and explains stars independently of speed',()=>{
+  const story=stories.LIVING_STORIES[0]!,b=journeyBoard(story),hud=render(storyExperience['StoryHud'],{story,stage:1,hints:1});assert.match(hud,/aria-label="KIYI"/);assert.doesNotMatch(hud,/FENER|YELKEN|LİMAN/);assert.match(hud,/Tamamlarsan 2 yıldız/);
+  const save=cleanSave({strokes:b.placements,elapsed:44,hints:1,complete:false,stars:0},b),result=render(storyExperience['StoryResult'],{story,save,best:{...save,stars:3,elapsed:20}});assert.match(result,/HATIRANI YENİDEN/);assert.match(result,/2 yıldız/);assert.match(result,/0:44/);assert.match(result,/Süre yıldızları etkilemez/);assert.match(result,/En iyi sonucun albümünde korunur/);assert.doesNotMatch(result,/ALBÜMÜNE BİR HATIRA/);
+ });
 });

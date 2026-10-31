@@ -2,7 +2,7 @@ import {env} from 'cloudflare:workers';
 import {authJson,boundedJson,requireSameOrigin} from '@/lib/auth/server';
 import {digest,rateLimit} from '@/lib/game/security';
 import {istanbulDay} from '@/lib/game/engine';
-const EVENTS=new Set(['first_word','level_start','level_complete','selection_miss','challenge_start','challenge_complete','invite_share','arena_start','arena_complete','auth_complete','input_feedback','frame_sample','client_error','app_open','cohort_start','retention_day1','retention_day7']);
+const EVENTS=new Set(['story_start','story_step','story_complete','first_word','level_start','level_complete','selection_miss','challenge_start','challenge_complete','invite_share','arena_start','arena_complete','auth_complete','input_feedback','frame_sample','client_error','app_open','cohort_start','retention_day1','retention_day7']);
 export const dynamic='force-dynamic';
 export async function POST(request:Request){try{
  requireSameOrigin(request);if(!env.DB)return authJson({},503);

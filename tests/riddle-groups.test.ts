@@ -17,7 +17,7 @@ describe('reviewed optional riddle chapters preserve the numbered journey',()=>{
   const items=RIDDLE_BANKS.flatMap(b=>b.items.map(([word,clue])=>({id:riddleId(b.themeId,word),word,clue})));
   assert.equal(items.length,144);assert.equal(new Set(items.map(i=>i.id)).size,144);assert.equal(new Set(items.map(i=>i.clue)).size,144);
   assert.equal(RIDDLE_CHAPTERS.length,32);assert.equal(new Set(RIDDLE_CHAPTERS.map(c=>c.id)).size,32);
-  assert.equal(ALL_JOURNEYS.length,96);assert.equal(PLAYABLE_JOURNEYS.length,128);assert.deepEqual(MAIN_JOURNEY_IDS,MAIN_JOURNEY.map(c=>c.chapter.id));
+  assert.equal(ALL_JOURNEYS.length,96);assert.equal(PLAYABLE_JOURNEYS.length,133);assert.deepEqual(MAIN_JOURNEY_IDS,MAIN_JOURNEY.map(c=>c.chapter.id));
   for(const item of items){assert(/^[A-ZÇĞİÖŞÜ]{2,8}$/u.test(item.word));assert(item.clue.length>=12&&item.clue.length<=95);assert.notEqual(item.clue.toLocaleUpperCase('tr-TR'),item.word);}
   const oldSets=new Set(ALL_JOURNEYS.map(c=>JSON.stringify([...c.words].sort())));
   for(const c of RIDDLE_CHAPTERS){assert.equal(c.words.length,4);assert.equal(Object.keys(c.clues!).length,4);assert(!oldSets.has(JSON.stringify([...c.words].sort())),c.id);const board=journeyBoard(c);assert.equal(board.size,c.size);for(const p of board.placements){assert(c.clues![p.text]);assert.equal(match(board,p.a,p.b)?.id,p.id);}}
@@ -85,5 +85,5 @@ it('preserves every old and new solo save plus3660 daily dates within the unchan
  for(const key of keys){const b=progressBoard(key)!;assert(b,key);p.saves[key]=cleanSave({strokes:b.placements,elapsed:123,hints:0,complete:false,stars:0},b);}
  p.days=Array.from({length:3660},(_,i)=>new Date(Date.UTC(2016,0,i+1)).toISOString().slice(0,10));
  const raw=JSON.stringify(p);assert(raw.length<150000);assert(new TextEncoder().encode(JSON.stringify({action:'progress',progress:p})).length<150000);
- const restored=loadProgress(raw);assert.equal(Object.keys(restored.saves).length,230);assert.equal(restored.days.length,3660);for(const key of keys)assert.equal(restored.saves[key]!.complete,true,key);
+ const restored=loadProgress(raw);assert.equal(Object.keys(restored.saves).length,235);assert.equal(restored.days.length,3660);for(const key of keys)assert.equal(restored.saves[key]!.complete,true,key);
 });
