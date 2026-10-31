@@ -1,3 +1,9 @@
+## 0.22.0 · Tahta öncelikli mobil oyun
+
+Yeni grup turları sürümlü9×9/yedi kelime havuzunda; mevcut12×12 maç snapshotları, eski bölüm/kayıt kimlikleri, arena_seen ve usedRiddleIds korunur. Mobil normal/bilmeceli oyunlarda tek okunur hedef,44px önceki/sonraki kontrolleri ve tüm listeye pencere erişimi; seçim sırasında başlıkta kelime geri bildirimi. İçerik ekran ölçüsüne göre değişmez. Başlık/skor/panel boşlukları azaltıldı; tüm ekranı ölçekleme veya zorunlu yakınlaştırma yok.
+
+Destekli yerel tarayıcıda360×568 normal tahta314px/19px harf;414×622 iPhone8Plus Safari içerik bütçesinde bilmeceli tahta368px/23px harf, bütün satırlar ve alt kontroller görünür. Çapraz sürükleme, iki uca dokunma ve hedef listesi→tahtaya dönüş gerçek UI üzerinden kontrol edildi. Bunlar fiziksel iPhone/Safari motoru veya parmak hassasiyeti ölçümü değildir. Son kontroller ve yayın kanıtı mobile-board-decision günlüğü ve repo dışı0.22.0 release kaydında tamamlanır.
+
 # 31 Ekim2026 ·0.21.1 · Cihaz kaydı durumunu koru
 
 Üç kaynak regresyonu, yerel hata sürerken saved bildirimi verilmesini yakalar. Başarı yalnız eşit bulut ve başarılı cihaz yazımıyla; Albüm retry aynı snapshot’ı saklar, cloud backup sürer. Karar/kanıt studio-agents/journal/entries/2026-10-31_evening-storage.md. Bugünün çifti zaten yayımlı, çoğaltılmadı; yeni hikâyeler ve ödüller değişmez.

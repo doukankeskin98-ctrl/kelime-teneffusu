@@ -2,9 +2,9 @@ import {hash,makeCustomPuzzle,match,type Puzzle} from './engine.ts';
 import {ARENA_BANKS,combinations,arenaWordKey,arenaGridKey} from './arena-content.ts';
 import {RIDDLE_BANKS,riddleId} from './riddle-content.ts';
 
-/** Immutable group12x9-v1 vocabulary/order/seed contract. Legacy duel pools stay unchanged. */
-export const GROUP_WORD_POOL='arena-group-12x9-v1',GROUP_CLUE_POOL='arena-group-clue-12x9-v1';
-export const GROUP_SIZE=12,GROUP_WORDS=9;
+/** Versioned group9x7-v2 contract. Existing room puzzle snapshots and legacy duel pools stay unchanged. */
+export const GROUP_WORD_POOL='arena-group-9x7-v2',GROUP_CLUE_POOL='arena-group-clue-9x7-v2';
+export const GROUP_SIZE=9,GROUP_WORDS=7;
 export const GROUP_BANKS=ARENA_BANKS.filter(b=>b.words.length>=GROUP_WORDS);
 const counts=GROUP_BANKS.map(b=>combinations(b.words.length,GROUP_WORDS));
 export const GROUP_POOL_SIZE=counts.reduce((a,b)=>a+b,0);

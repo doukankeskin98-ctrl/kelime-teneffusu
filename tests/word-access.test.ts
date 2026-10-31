@@ -303,3 +303,26 @@ describe('living story sequential interaction, hints, replay and navigation',()=
   try{h.start('JourneyHome',props);const button=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Bölüm yolculuğu')!;button.props['onClick']();h.paint();assert.equal(selected,'journey');const next=view('components/game/JourneyHome.tsx',modules);try{next.start('JourneyHome',{...props,initialView:selected});assert.equal(walk(next.tree).find(n=>n.props?.['className']==='journey-classic-panel')!.props['hidden'],false);}finally{next.close();}}finally{h.close();}
  });
 });
+
+describe('mobile target navigation keeps the puzzle authoritative',()=>{
+ it('shows one unanswered definition, changes target without a claim and opens the full confirmed list',()=>{
+  const board=engine.makeCustomPuzzle(['ASLAN','KAPLAN','PANDA'],73,9),clues={ASLAN:'Erkeğinin yelesi olan büyük kedi.',KAPLAN:'Turuncu kürkünde siyah çizgiler olan büyük kedi.',PANDA:'Bambu yiyen siyah beyaz ayı.'},words={board,strokes:[],clues,golden:board.targets[1]!.id};
+  const h=view('components/game/common.tsx');try{
+   h.start('MobileTargets',{words});assert.match(text(h.tree),/Erkeğinin yelesi/);assert(!text(h.tree).includes('ASLAN'));assert(!text(h.tree).includes('Turuncu'));
+   walk(h.tree).find(n=>n.props['aria-label']==='Sonraki hedef')!.props['onClick']();h.paint();assert.match(text(h.tree),/Turuncu/);assert.match(text(h.tree),/×2/);assert.equal(words.strokes.length,0);
+   const opener=walk(h.tree).find(n=>n.props['aria-haspopup']==='dialog')!;opener.props['onClick']();h.paint();assert.equal(h.find('WordList').props['board'],board);assert.equal(h.find('WordList').props['strokes'],words.strokes);
+   h.find('WordList').props['onFocusGroup'](board.targets[2]!.group);h.paint();assert.match(text(h.tree),/Bambu/);assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));
+   h.update('MobileTargets',{words:{...words,strokes:[board.placements.find(p=>p.id===board.targets[2]!.id)!]}});assert.match(text(h.tree),/Erkeğinin yelesi/);
+  }finally{h.close();}
+ });
+ it('shares Solo focus for the hint target, closes unavailable dialogs and keeps long split names together',()=>{
+  const board=engine.makeCustomPuzzle(['AKİL HOCA','SOBA'],91,8),calls:number[]=[],words={board,strokes:[] as engine.Stroke[],focusedGroup:board.targets[0]!.group,onFocusGroup:(g:number)=>calls.push(g)};
+  const h=view('components/game/common.tsx');try{
+   h.start('MobileTargets',{words});assert.match(text(h.tree),/AKİL/);const second=board.targets.find(t=>t.group!==words.focusedGroup)!.group;
+   walk(h.tree).find(n=>n.props['aria-label']==='Sonraki hedef')!.props['onClick']();assert.deepEqual(calls,[second]);
+   h.update('MobileTargets',{words:{...words,focusedGroup:second}});assert.match(text(h.tree),/SOBA/);
+   walk(h.tree).find(n=>n.props['aria-haspopup']==='dialog')!.props['onClick']();h.paint();assert(h.find('Modal'));
+   h.update('MobileTargets',{words,unavailable:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));assert(walk(h.tree).filter(n=>n.type==='button').every(n=>n.props['disabled']));
+  }finally{h.close();}
+ });
+});

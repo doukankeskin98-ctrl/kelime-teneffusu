@@ -22,8 +22,8 @@ console.log(`${count} authored boards and ${count*20} alternate layouts passed.`
 const groupWords=new Set<string>(),groupGrids=new Set<string>();
 for(let i=0;i<64;i++){
  const candidate=i<48?groupPuzzle(i):groupRiddlePuzzle(i-48);assert(candidate,'Missing new group board '+i);
- const board=candidate.board;assert.equal(board.size,12);assert.equal(board.targets.length,9);assert.equal(new Set(board.targets.map(t=>t.text)).size,9);
+ const board=candidate.board;assert.equal(board.size,9);assert.equal(board.targets.length,7);assert.equal(new Set(board.targets.map(t=>t.text)).size,7);
  assert(!groupWords.has(candidate.wordsKey)&&!groupGrids.has(candidate.gridKey));groupWords.add(candidate.wordsKey);groupGrids.add(candidate.gridKey);
  for(const p of board.placements){const cells=exactLine(p.a,p.b,board.size);assert(cells);assert.equal(cells.map(([r,c])=>board.grid[r]![c]).join(''),p.text);}
 }
-console.log('64 additional distinct twelve-by-twelve group boards with nine solvable words passed.');
+console.log('64 additional distinct nine-by-nine group boards with seven solvable words passed.');

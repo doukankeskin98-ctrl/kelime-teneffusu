@@ -1,4 +1,5 @@
 export const GAME_UPDATES=[
+ {version:'0.22.0',date:'31 Ekim 2026',title:'Tahtaya daha çok yer',items:[{where:'Mobil oyun',detail:'Tek okunaklı hedef, önceki/sonraki okları ve tüm listeye tek dokunuş. Tahta, harfler ve alt kontroller daha geniş alanda.'},{where:'Grup Arena',detail:'Yeni turlar herkes için aynı 9×9 tahtada yedi kelime. Devam eden maçlar, eski keşifler ve tekrar engeli korunur.'}]},
  {version:'0.21.1',date:'31 Ekim 2026',title:'Cihaz kaydın için daha açık durum',items:[
   {where:'Albüm · Kayıt durumu',detail:'Cihazına kayıt yapılamıyorsa bulut yanıtı bu uyarıyı gizlemez. Cihaz kaydını yeniden dene ile aynı ilerlemeyi tekrar saklayabilirsin. Güvenli bulut yedeklemesi devam eder.'},
  ]},

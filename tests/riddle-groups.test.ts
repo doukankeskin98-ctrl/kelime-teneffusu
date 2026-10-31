@@ -44,8 +44,8 @@ describe('persistent alternating group rounds',()=>{
    assert(views.every(x=>x!.roundKind===expected&&x!.starts===v.starts&&x!.ends===v.ends&&JSON.stringify(x!.board)===JSON.stringify(v.board)&&JSON.stringify(x!.clues)===JSON.stringify(v.clues)));
    const board=f.puzzle(f.id),wk=arenaWordKey(board),gk=arenaGridKey(board);assert(!words.has(wk)&&!grids.has(gk));words.add(wk);grids.add(gk);
    if(expected==='clue'){
-    assert.equal(Object.keys(v.clues!).length,9);for(const target of v.board!.targets)assert.equal(target.label,v.clues![target.text]);
-    const all=f.room(f.id).usedRiddleIds!;const fresh=all.filter(id=>!used.has(id));assert.equal(fresh.length,9);for(const id of fresh)used.add(id);assert.equal(all.length,used.size);
+    assert.equal(Object.keys(v.clues!).length,7);for(const target of v.board!.targets)assert.equal(target.label,v.clues![target.text]);
+    const all=f.room(f.id).usedRiddleIds!;const fresh=all.filter(id=>!used.has(id));assert.equal(fresh.length,7);for(const id of fresh)used.add(id);assert.equal(all.length,used.size);
     const p=board.placements[0]!;const found=await f.game.claim(f.users[0]!,f.id,p.a,p.b,round);assert.equal(found.board!.targets.find(t=>t.id===p.id)!.label,p.label);
     const other=(await f.game.state(f.users[1]!))!;assert.equal(other.board!.targets.find(t=>t.id===p.id)!.label,v.clues![p.text]);
    }else assert.equal(v.clues,undefined);
@@ -68,14 +68,14 @@ describe('persistent alternating group rounds',()=>{
   f.advance(2000);const next=await f.game.nextGame(f.users[0]!,f.id,1);assert.equal(next.roundKind,'clue');assert.equal(next.board,null);f.sqlite.close();
  });
  it('makes per-room and global clue exhaustion explicit without resetting history or opening an old board',async()=>{
-  for(const exhausted of ['room','pool']){const f=await lobby();if(exhausted==='room'){const room=f.room(f.id);room.usedRiddleIds=RIDDLE_BANKS.flatMap(b=>b.items.map(([w])=>riddleId(b.themeId,w)));f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);}else f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-group-clue-12x9-v1',?,'')").run(ARENA_RIDDLE_POOL_SIZE);
+  for(const exhausted of ['room','pool']){const f=await lobby();if(exhausted==='room'){const room=f.room(f.id);room.usedRiddleIds=RIDDLE_BANKS.flatMap(b=>b.items.map(([w])=>riddleId(b.themeId,w)));f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);}else f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-group-clue-9x7-v2',?,'')").run(ARENA_RIDDLE_POOL_SIZE);
    await Promise.all(f.users.map(u=>f.game.ready(u,f.id,1)));await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1),(e:unknown)=>e instanceof GameError&&e.code===(exhausted==='room'?'ARENA_RIDDLES_EXHAUSTED':'ARENA_CONTENT_UNAVAILABLE'));
    assert.equal(f.room(f.id).phase,'ready');assert.equal(f.room(f.id).puzzle,undefined);assert.equal(f.room(f.id).starts,null);assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM arena_seen').get()!['n'],0);
    const reloaded=(await new GameService(f.db,f.clock).state(f.users[0]!))!;if(exhausted==='room'){assert.equal(reloaded.canStart,false);assert(reloaded.roundUnavailable);}f.sqlite.close();}
  });
  it('rolls back clue history, room and cursor together when receipt persistence fails',async()=>{
   const f=await lobby();f.sqlite.exec("CREATE TRIGGER fail_riddle BEFORE INSERT ON arena_seen BEGIN SELECT RAISE(ABORT,'receipt unavailable'); END");await Promise.all(f.users.map(u=>f.game.ready(u,f.id,1)));
-  await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1));assert.equal(f.room(f.id).usedRiddleIds,undefined);assert.equal(f.room(f.id).clues,undefined);assert.equal(f.room(f.id).phase,'ready');assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-clue-12x9-v1'").get()!['next'],0);f.sqlite.close();
+  await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1));assert.equal(f.room(f.id).usedRiddleIds,undefined);assert.equal(f.room(f.id).clues,undefined);assert.equal(f.room(f.id).phase,'ready');assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-group-clue-9x7-v2'").get()!['next'],0);f.sqlite.close();
  });
 });
 
