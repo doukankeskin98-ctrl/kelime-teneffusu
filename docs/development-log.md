@@ -1,5 +1,7 @@
 # 31 Ekim 2026 · 0.18.0 · Ses ve dönüşümlü grup turları
 
+31 Ekim 2026 ·0.18.1: Kuş sesleri / Dağ yolculuğu tarihli tek çift ve arşiv kaynak bütünlüğü kapısı. Aynı içerik/kimlik yeniden üretilmez. Haftalık değerlendirme, seçimin gerekçesi, kabul ve son kanıt studio-agents/journal/entries/2026-10-31_maintenance.md kaydındadır. Fiziksel cihaz kuyruğu korunur.
+
 Kullanıcının dört somut isteği tek geçişte: kalıcı %0–100 ortak ses çubuğu, her yeni harfe kuyruksuz tını, Arena/uzun metin sarmalama ve 144 tanım/32 ek İpucu Avı bölümüyle sunucuda dönüşümlü grup turları. Mevcut motor, Board, kayıt doğrulaması ve oda CAS’ı yeniden kullanıldı; yeni altyapı/göç/ekonomi yok. Adaylar, uygulama öncesi kabul ve son kanıt `studio-agents/journal/entries/2026-10-31_audio-riddle-decision.md` kaydında. İki sınırlı uzman yalnız kendi günlüklerine yazdı. Eski ana sıra/tahtalar/ödüller korunur. İlk açık kanıt gerçek Safari/tablet ekranı, hoparlör/kulaklık ve provider hesabıyla yeniden giriş; kontrollü testler bunların yerine geçmez. Diğer fazlara veya yeni geliştirme turuna geçilmez.
 
 # 30 Ekim 2026 · 0.17.0 · Faz 1 yayın birleşimi

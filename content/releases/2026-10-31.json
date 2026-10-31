@@ -1,0 +1,422 @@
+{
+  "date": "2026-10-31",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261031-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Kuş sesleri",
+          "themeId": "hayvanlar",
+          "words": [
+            "KUĞU",
+            "SAKA",
+            "TURNA",
+            "SERÇE"
+          ],
+          "size": 6,
+          "seed": 2026103101,
+          "difficulty": "Rahat",
+          "note": "Dört kuşun izini bul. Kısa kelimeler çapraz dallarda da saklı."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "N",
+              "Ü",
+              "K",
+              "O",
+              "Ö",
+              "A"
+            ],
+            [
+              "B",
+              "A",
+              "İ",
+              "U",
+              "K",
+              "A"
+            ],
+            [
+              "Z",
+              "D",
+              "N",
+              "A",
+              "Ğ",
+              "Ö"
+            ],
+            [
+              "Ş",
+              "N",
+              "S",
+              "R",
+              "B",
+              "U"
+            ],
+            [
+              "F",
+              "K",
+              "H",
+              "R",
+              "U",
+              "R"
+            ],
+            [
+              "E",
+              "Ç",
+              "R",
+              "E",
+              "S",
+              "T"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "KUĞU",
+              "text": "KUĞU",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "SAKA",
+              "text": "SAKA",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "TURNA",
+              "text": "TURNA",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "SERÇE",
+              "text": "SERÇE",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "2.0",
+              "label": "TURNA",
+              "text": "TURNA",
+              "group": 2,
+              "a": [
+                5,
+                5
+              ],
+              "b": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "SERÇE",
+              "text": "SERÇE",
+              "group": 3,
+              "a": [
+                5,
+                4
+              ],
+              "b": [
+                5,
+                0
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "KUĞU",
+              "text": "KUĞU",
+              "group": 0,
+              "a": [
+                0,
+                2
+              ],
+              "b": [
+                3,
+                5
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "SAKA",
+              "text": "SAKA",
+              "group": 1,
+              "a": [
+                3,
+                2
+              ],
+              "b": [
+                0,
+                5
+              ]
+            }
+          ]
+        },
+        "contentHash": "0e659d4a0ee6caabaf6cbe403b4a4c93462ad786429c1f1b1dcee4f60781d0b5",
+        "publishedAt": 1793404800000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261031-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Dağ yolculuğu",
+          "themeId": "dunya",
+          "words": [
+            "PATİKA",
+            "ZİRVE",
+            "VADİ",
+            "YAMAÇ",
+            "PUSULA",
+            "ÇADIR",
+            "MATARA"
+          ],
+          "size": 8,
+          "seed": 2026103102,
+          "difficulty": "Dengeli",
+          "note": "Dağ yolunda yedi kelime. Yamaçları ve iki yöndeki çaprazları dikkatle tara."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "Ö",
+              "M",
+              "M",
+              "A",
+              "T",
+              "A",
+              "R",
+              "A"
+            ],
+            [
+              "A",
+              "Ş",
+              "Z",
+              "R",
+              "I",
+              "D",
+              "A",
+              "Ç"
+            ],
+            [
+              "P",
+              "L",
+              "C",
+              "Y",
+              "Ş",
+              "L",
+              "J",
+              "F"
+            ],
+            [
+              "A",
+              "Z",
+              "U",
+              "Ğ",
+              "F",
+              "E",
+              "Ç",
+              "D"
+            ],
+            [
+              "T",
+              "V",
+              "T",
+              "S",
+              "V",
+              "Ş",
+              "A",
+              "V"
+            ],
+            [
+              "İ",
+              "M",
+              "A",
+              "R",
+              "U",
+              "I",
+              "M",
+              "M"
+            ],
+            [
+              "K",
+              "I",
+              "İ",
+              "D",
+              "F",
+              "P",
+              "A",
+              "Ğ"
+            ],
+            [
+              "A",
+              "Z",
+              "Ö",
+              "R",
+              "İ",
+              "V",
+              "Y",
+              "Ğ"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "PATİKA",
+              "text": "PATİKA",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "ZİRVE",
+              "text": "ZİRVE",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "VADİ",
+              "text": "VADİ",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "YAMAÇ",
+              "text": "YAMAÇ",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "PUSULA",
+              "text": "PUSULA",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "ÇADIR",
+              "text": "ÇADIR",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "MATARA",
+              "text": "MATARA",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "0.0",
+              "label": "PATİKA",
+              "text": "PATİKA",
+              "group": 0,
+              "a": [
+                2,
+                0
+              ],
+              "b": [
+                7,
+                0
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "PUSULA",
+              "text": "PUSULA",
+              "group": 4,
+              "a": [
+                6,
+                5
+              ],
+              "b": [
+                1,
+                0
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "MATARA",
+              "text": "MATARA",
+              "group": 6,
+              "a": [
+                0,
+                2
+              ],
+              "b": [
+                0,
+                7
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "ZİRVE",
+              "text": "ZİRVE",
+              "group": 1,
+              "a": [
+                7,
+                1
+              ],
+              "b": [
+                3,
+                5
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "YAMAÇ",
+              "text": "YAMAÇ",
+              "group": 3,
+              "a": [
+                7,
+                6
+              ],
+              "b": [
+                3,
+                6
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "ÇADIR",
+              "text": "ÇADIR",
+              "group": 5,
+              "a": [
+                1,
+                7
+              ],
+              "b": [
+                1,
+                3
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "VADİ",
+              "text": "VADİ",
+              "group": 2,
+              "a": [
+                4,
+                1
+              ],
+              "b": [
+                7,
+                4
+              ]
+            }
+          ]
+        },
+        "contentHash": "43eafdb024a8397e8e335a6cef2b7a010bdce9b804fae0032f3cb324ecbdcf22",
+        "publishedAt": 1793404800000,
+        "archived": false
+      }
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Kelime Teneffüsü
 
+0.18.1: 31 Ekim için Kuş sesleri (Rahat6×6,4 kelime) ve Dağ yolculuğu (Dengeli8×8,7 kelime). Yayın kapısı tarih/slot/ID/hash bütünlüğünü de denetler; eski kayıtlar ve 0.18.0 ses/grup davranışı korunur.
+
 Türkçe, telefon öncelikli kelime keşif oyunu. React, Vinext/Vite ve Cloudflare Workers + D1 üzerinde çalışır. Lovable kredisi veya Lovable çalışma zamanı gerekmez.
 
 ## Oyun
