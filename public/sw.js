@@ -2,7 +2,7 @@ const CACHE='kelime-studio-v3-20261021';
 const BUILD_ASSETS=[];
 const SHELL=['/','/favicon.svg','/icon-192.png','/icon-512.png','/manifest.webmanifest',...BUILD_ASSETS];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL))));
-self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('kelime-studio-')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{try{for(const key of await caches.keys())if(key.startsWith('kelime-studio-')&&key!==CACHE){try{await caches.delete(key);}catch{}}}catch{}await self.clients.claim();})()));
 self.addEventListener('message',event=>{if(event.data&&event.data.type==='ACTIVATE')self.skipWaiting();});
 // Cache storage is an optional optimization after installation. A quota/privacy
 // failure must never turn a successful network response into a failed page.

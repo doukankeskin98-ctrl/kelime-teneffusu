@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.23.2 · Güncelleme geçişini koru
+
+Eski önbelleğin listelenmesi veya silinmesi hata verdiğinde indirilmiş yeni sürümün aktivasyonu artık kesilmez. Güncel/başka uygulama cache’i korunur; ilk kurulum ve kullanıcı onaylı güncelleme kuralı aynı. Bugünün Örgü sepeti/Tren garı çifti çoğaltılmadı. Kayıt, ödül, tahta ve Arena değişmedi. Kabul/kanıt studio-agents/journal/entries/2026-11-01_evening-update.md; gerçek cihaz/PWA/provider doğrulaması hâlâ açıktır.
+
 ## 0.23.1 · 1 Kasım keşifleri ve açılış güvenilirliği
 
 Örgü sepeti (Rahat6×6/dört) ve Tren garı (Dengeli8×8/yedi), sabit UTC kimlik/hash kaydıyla ana sayfa, dünyalar ve kalıcı arşive eklenir. Her iki çapraz eğim korunur; eski çiftler, kazanımlar ve son0.23 Arena/mobil davranışları değişmez. SW önbellek open/match/put/budama hatası artık başarılı internet cevabını kaybettirmez; offline kabuk/503 ve özel rota istisnaları korunur. Kurulum başarısı için tam önbellek indirmesi hâlâ şarttır. Kanıt/sınırlar: studio-agents/journal/entries/2026-11-01_maintenance.md.

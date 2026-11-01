@@ -1,5 +1,7 @@
 # Öncelikler
 
+1 Kasım akşam,0.23.2: eski cache temizlik hatası güncelleme aktivasyonunu kesmez. Kabul/kanıt ../journal/entries/2026-11-01_evening-update.md. Bugünün çifti korunur; fiziksel cihaz/provider/PWA öncelikleri açık.
+
 1 Kasım2026,0.23.1: güncel0.23 Arena/mobil kaynağı korundu; tarihli çift ve cache arızasında çevrimiçi açılış güvenilirliği. Kabul/kanıt ../journal/entries/2026-11-01_maintenance.md. Fiziksel Safari/Android, ses kesintisi, gerçek provider ve PWA ilk açık kabul olmaya devam eder; kontrollü SW testi bu cihaz kanıtı değildir.
 
 31 Ekim2026 akşam,0.21.1: cihaz hata uyarısını bulut başarısında koruma ve Albüm retry. Son kanıt ../journal/entries/2026-10-31_evening-storage.md. Yeni0.21 hikâyeler ve0.20 DOM kanıtı korunur. İlk açık kabul fiziksel Safari/Android, gerçek hesap/PWA ve uzun oturum; yeni faz yok.
