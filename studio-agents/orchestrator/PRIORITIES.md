@@ -1,5 +1,7 @@
 # Öncelikler
 
+1 Kasım2026,0.23.1: güncel0.23 Arena/mobil kaynağı korundu; tarihli çift ve cache arızasında çevrimiçi açılış güvenilirliği. Kabul/kanıt ../journal/entries/2026-11-01_maintenance.md. Fiziksel Safari/Android, ses kesintisi, gerçek provider ve PWA ilk açık kabul olmaya devam eder; kontrollü SW testi bu cihaz kanıtı değildir.
+
 31 Ekim2026 akşam,0.21.1: cihaz hata uyarısını bulut başarısında koruma ve Albüm retry. Son kanıt ../journal/entries/2026-10-31_evening-storage.md. Yeni0.21 hikâyeler ve0.20 DOM kanıtı korunur. İlk açık kabul fiziksel Safari/Android, gerçek hesap/PWA ve uzun oturum; yeni faz yok.
 
 31 Ekim 2026, 0.20.0: kullanıcı web deneyimini ticari uygulama hazırlığına taşıma kapsamını açtı; native dönüşüm istemedi. Ana döngü yenilendi, eski kayıt sınırları kapatıldı ve ilk destekli yerel DOM denetimi yapıldı. Son kabul/kanıt ../journal/entries/2026-10-31_professional-decision.md. Sonraki kabul fiziksel iPhone/Android/Safari, gerçek oyuncuyla ilk10 bölüm gözlemi, ses konforu ve uzun oturum/iki gerçek hesap testidir. Tasarımın ticari etkisi henüz ölçülmedi. Uygulamaya paketleme bu tur yapılmaz.

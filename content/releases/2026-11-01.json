@@ -1,0 +1,422 @@
+{
+  "date": "2026-11-01",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261101-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Örgü sepeti",
+          "themeId": "teknoloji",
+          "words": [
+            "YÜN",
+            "ŞİŞ",
+            "ÖRGÜ",
+            "İLMEK"
+          ],
+          "size": 6,
+          "seed": 2026110101,
+          "difficulty": "Rahat",
+          "note": "İlmek ilmek ilerle. Çaprazlarda da sıcak bir keşif var."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "İ",
+              "R",
+              "İ",
+              "Ö",
+              "D",
+              "I"
+            ],
+            [
+              "B",
+              "Z",
+              "L",
+              "R",
+              "G",
+              "H"
+            ],
+            [
+              "M",
+              "S",
+              "M",
+              "G",
+              "Y",
+              "Ş"
+            ],
+            [
+              "N",
+              "O",
+              "E",
+              "Ü",
+              "İ",
+              "O"
+            ],
+            [
+              "Y",
+              "Ü",
+              "K",
+              "Ş",
+              "V",
+              "O"
+            ],
+            [
+              "J",
+              "A",
+              "Y",
+              "Y",
+              "I",
+              "M"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "YÜN",
+              "text": "YÜN",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "ŞİŞ",
+              "text": "ŞİŞ",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "ÖRGÜ",
+              "text": "ÖRGÜ",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "İLMEK",
+              "text": "İLMEK",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "3.0",
+              "label": "İLMEK",
+              "text": "İLMEK",
+              "group": 3,
+              "a": [
+                0,
+                2
+              ],
+              "b": [
+                4,
+                2
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "ÖRGÜ",
+              "text": "ÖRGÜ",
+              "group": 2,
+              "a": [
+                0,
+                3
+              ],
+              "b": [
+                3,
+                3
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "YÜN",
+              "text": "YÜN",
+              "group": 0,
+              "a": [
+                5,
+                2
+              ],
+              "b": [
+                3,
+                0
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "ŞİŞ",
+              "text": "ŞİŞ",
+              "group": 1,
+              "a": [
+                2,
+                5
+              ],
+              "b": [
+                4,
+                3
+              ]
+            }
+          ]
+        },
+        "contentHash": "4c8313ee25dd9d95d5feaa57a7c74989ab11f521775bbb34a5306e35d73b58c6",
+        "publishedAt": 1793491200000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261101-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Tren garı",
+          "themeId": "turkiye",
+          "words": [
+            "PERON",
+            "VAGON",
+            "MAKAS",
+            "BİLET",
+            "RAY",
+            "TREN",
+            "SİNYAL"
+          ],
+          "size": 8,
+          "seed": 2026110102,
+          "difficulty": "Dengeli",
+          "note": "Yolculuk başlamadan garın kelimelerini bul. Ters yönleri ve çaprazları kontrol et."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "T",
+              "F",
+              "E",
+              "T",
+              "U",
+              "H",
+              "U",
+              "L"
+            ],
+            [
+              "N",
+              "O",
+              "R",
+              "E",
+              "P",
+              "D",
+              "R",
+              "L"
+            ],
+            [
+              "Y",
+              "E",
+              "Y",
+              "S",
+              "U",
+              "Ç",
+              "N",
+              "A"
+            ],
+            [
+              "N",
+              "E",
+              "Ç",
+              "A",
+              "Ş",
+              "B",
+              "O",
+              "Y"
+            ],
+            [
+              "H",
+              "C",
+              "N",
+              "K",
+              "R",
+              "Ü",
+              "G",
+              "N"
+            ],
+            [
+              "H",
+              "Y",
+              "T",
+              "A",
+              "A",
+              "Z",
+              "A",
+              "İ"
+            ],
+            [
+              "V",
+              "N",
+              "D",
+              "M",
+              "Ç",
+              "Ü",
+              "V",
+              "S"
+            ],
+            [
+              "T",
+              "E",
+              "L",
+              "İ",
+              "B",
+              "Z",
+              "L",
+              "I"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "PERON",
+              "text": "PERON",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "VAGON",
+              "text": "VAGON",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "MAKAS",
+              "text": "MAKAS",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "BİLET",
+              "text": "BİLET",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "RAY",
+              "text": "RAY",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "TREN",
+              "text": "TREN",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "SİNYAL",
+              "text": "SİNYAL",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "6.0",
+              "label": "SİNYAL",
+              "text": "SİNYAL",
+              "group": 6,
+              "a": [
+                6,
+                7
+              ],
+              "b": [
+                1,
+                7
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "PERON",
+              "text": "PERON",
+              "group": 0,
+              "a": [
+                1,
+                4
+              ],
+              "b": [
+                1,
+                0
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "VAGON",
+              "text": "VAGON",
+              "group": 1,
+              "a": [
+                6,
+                6
+              ],
+              "b": [
+                2,
+                6
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "MAKAS",
+              "text": "MAKAS",
+              "group": 2,
+              "a": [
+                6,
+                3
+              ],
+              "b": [
+                2,
+                3
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "BİLET",
+              "text": "BİLET",
+              "group": 3,
+              "a": [
+                7,
+                4
+              ],
+              "b": [
+                7,
+                0
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "TREN",
+              "text": "TREN",
+              "group": 5,
+              "a": [
+                0,
+                3
+              ],
+              "b": [
+                3,
+                0
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "RAY",
+              "text": "RAY",
+              "group": 4,
+              "a": [
+                4,
+                4
+              ],
+              "b": [
+                2,
+                2
+              ]
+            }
+          ]
+        },
+        "contentHash": "57ecb73288c3fb026430080b3b98ceeef3d6548badc5e0c8e1c58a06bf3574fa",
+        "publishedAt": 1793491200000,
+        "archived": false
+      }
+    }
+  ]
+}
