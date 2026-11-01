@@ -1,5 +1,9 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.23.1 · 1 Kasım keşifleri ve açılış güvenilirliği
+
+Örgü sepeti (Rahat6×6/dört) ve Tren garı (Dengeli8×8/yedi), sabit UTC kimlik/hash kaydıyla ana sayfa, dünyalar ve kalıcı arşive eklenir. Her iki çapraz eğim korunur; eski çiftler, kazanımlar ve son0.23 Arena/mobil davranışları değişmez. SW önbellek open/match/put/budama hatası artık başarılı internet cevabını kaybettirmez; offline kabuk/503 ve özel rota istisnaları korunur. Kurulum başarısı için tam önbellek indirmesi hâlâ şarttır. Kanıt/sınırlar: studio-agents/journal/entries/2026-11-01_maintenance.md.
+
 ## 0.23.0 · Yeni odalarda da kalıcı Arena çeşitliliği
 
 630 yeni tanım; eski144 korunarak774 bilmeceli cevap ve toplam919 rekabet kelimesi. Yeni hızlı/özel gruplar ve dereceli düello, bütün katılımcıların kalıcı arena_seen makbuzlarından tekil kelime kullanımını okur. Önce hiç görülmemiş hedefler; yeterli alternatif varsa kişi başına son12 maç dışlanır, ardından az/eski görülenler seçilir. Reddedilen tam küme gerçekten farklı kelimelerle yeniden denenir. Aynı tam küme/grid ömürboyu engeli ve oda içi tekil bilmece engeli korunur. Şema/göç yok; eski makbuzlar hemen etkilidir. Yeni misafir veya farklı hesap ayrı geçmiş sayılır. Sonlu kütüphane sonsuz tekil kelime garantisi değildir.
