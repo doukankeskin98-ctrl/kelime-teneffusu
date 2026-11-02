@@ -383,7 +383,7 @@ describe('world word veils survive every target surface and resume',()=>{
  it('never exposes a hidden answer in list, focus label or a partially completed split target',()=>{
   const j=content.journeyById('uzay-5')!,board=content.journeyBoard(j),veils=worldPresentation.chapterVeils(j.id,board.targets),h=view('components/game/common.tsx');
   try{
-   const split=board.targets.find(t=>veils[t.group]==='hidden'&&board.targets.filter(x=>x.group===t.group).length>1)!;
+   const split=board.targets.find(t=>board.targets.filter(x=>x.group===t.group).length>1)!;veils[split.group]='hidden';
    const parts=board.targets.filter(t=>t.group===split.group),strokes=[board.placements.find(p=>p.id===parts[0]!.id)!];
    const tree=h.exports['WordList']({board,strokes,veils,onFocusGroup(){}}),card=walk(tree).find(n=>n.props?.['role']==='listitem'&&String(n.props['aria-label']).startsWith('Saklı kelime'));
    assert(card);assert(!visible(tree).includes(parts[1]!.text));assert(!JSON.stringify(tree).includes(split.label));
@@ -392,7 +392,7 @@ describe('world word veils survive every target surface and resume',()=>{
   }finally{h.close();}
  });
  it('resumes the same concealed profile and reveals only confirmed words after a reload',async()=>{
-  const j=content.journeyById('uzay-4')!,board=content.journeyBoard(j),p=progress.emptyProgress(),stroke=board.placements[0]!;
+  const j=content.journeyById('uzay-5')!,board=content.journeyBoard(j),p=progress.emptyProgress(),profile=worldPresentation.chapterVeils(j.id,board.targets),stroke=board.placements.find(t=>profile[t.group]==='open')!;
   p.saves['route:'+j.id]=progress.cleanSave({strokes:[stroke],elapsed:19,hints:1,complete:false,stars:0},board);
   const loaded=progress.loadProgress(JSON.stringify(p)),h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
   try{h.start('Solo',{config:{themeId:j.themeId,level:0,journey:j.id,campaign:true},progress:loaded,onProgress(){},onBack(){},onMap(){},onNext(){}});await h.settle();
@@ -400,7 +400,7 @@ describe('world word veils survive every target surface and resume',()=>{
    const remaining=board.targets.find(t=>t.id!==stroke.id&&layout['wordList'].veils[t.group]==='hidden')!;layout['wordList'].onFocusGroup(remaining.group);await h.settle();assert(!visible(h.find('PlayLayout')).includes(remaining.label));assert.match(visible(h.find('PlayLayout')),/Saklı kelime/);
   }finally{h.close();}
  });
- it('announces only the found part of a masked multi-part name until its final part is confirmed',async()=>{
+ it('announces only the found part of a multi-part name until its final part is confirmed',async()=>{
   const j=content.journeyById('uzay-5')!,board=content.journeyBoard(j),p=progress.emptyProgress(),h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
   try{h.start('Solo',{config:{themeId:j.themeId,level:0,journey:j.id,campaign:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});await h.settle();
    const parts=board.placements.filter(t=>t.label==='KUYRUKLU YILDIZ');assert.equal(parts.length,2);

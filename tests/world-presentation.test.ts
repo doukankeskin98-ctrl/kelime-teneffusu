@@ -12,9 +12,17 @@ describe('complete world presentation without changing authored puzzles',()=>{
   assert.equal(EXPEDITIONS.length,16);assert.equal(new Set(Object.values(WORLD_SCENES)).size,16);
   for(const w of EXPEDITIONS){assert(existsSync('public'+sceneImage(sceneForTheme(w.id))),w.id);const chapters=ALL_JOURNEYS.filter(j=>j.themeId===w.id);assert.equal(chapters.length,6);assert.deepEqual(chapters.map(j=>worldChapter(j.id)!.position).sort(),[0,1,2,3,4,5]);assert.equal(new Set(chapters.map(j=>worldChapter(j.id)!.topic)).size,6);}
  });
- it('gradually reduces labels, retains clue rules and reveals confirmed answers in every chapter',()=>{
+ it('keeps most words open with at most one hidden target, retains clues and reveals confirmed answers',()=>{
   for(const j of ALL_JOURNEYS){const board=journeyBoard(j),before=JSON.stringify(board),profile=chapterVeils(j.id,board.targets),info=worldChapter(j.id)!;
-   if(j.clues)assert.deepEqual(profile,{});else if(info.position===0)assert(Object.values(profile).every(v=>v==='open'));else{assert(veilInstruction(profile));if(info.position>=3)assert(Object.values(profile).includes('hidden'));}
+   if(j.clues)assert.deepEqual(profile,{});else{
+    const modes=Object.values(profile),open=modes.filter(v=>v==='open').length,initial=modes.filter(v=>v==='initial').length,hidden=modes.filter(v=>v==='hidden').length;
+    assert(open>initial+hidden,j.id+' should keep most target groups fully readable');
+    assert.equal(modes[0],'open',j.id+' should start with a readable target');
+    assert.equal(hidden,info.position>=4?1:0,j.id+' hidden target limit');
+    assert.equal(initial,info.position>=2?1:0,j.id+' initial-letter target limit');
+    assert.equal(!!veilInstruction(profile),info.position>=2);
+    assert.equal(modes.length,new Set(board.targets.map(t=>t.group)).size,'split names count as one target');
+   }
    for(const target of board.targets){const mask=profile[target.group],copy=wordCardCopy(target,false,j.clues,mask);if(mask==='hidden'){assert(!copy.text.includes(target.text));assert.match(copy.spoken!,/Saklı kelime/);}if(mask==='initial')assert.equal([...copy.text][0],[...target.label][0]);assert.equal(wordCardCopy(target,true,j.clues,mask).text,target.label);}
    assert.equal(JSON.stringify(board),before);assert.deepEqual(chapterVeils(j.id,JSON.parse(JSON.stringify(board.targets))),profile);
   }

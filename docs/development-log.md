@@ -1,3 +1,7 @@
+## 0.26.1 · Gizli hedeflerde daha hafif denge
+
+Oyuncu geri bildirimiyle normal dünya bölümlerinde hedeflerin çoğu açık kalır: ilk iki durakta hepsi açık; 3–4. durakta yalnız bir baş harfli; 5–6. durakta bir tamamen gizli ve bir baş harfli hedef. Gizli hedefler listenin sonunda, ilk hedef her zaman açık. Bilmece kuralları, içerik/tahta/kayıtlar ve Arena değişmedi. Kabul ve doğrulama: `studio-agents/journal/entries/2026-11-03_veil-balance.md`.
+
 ## 0.26.0 · Dünyadan bölüme, bölümden hatıraya
 
 16 dünyanın her biri özgün sahnesiyle giriş, oyun ve sonuç boyunca devam eder. Mevcut 96 bölümün konuları görünür; altı durak aynı dünya içinde ilerler. Kelime yardımı bölüm kimliğine bağlı olarak tam kelime → baş harf → saklı kelimeye geçer; bulunan cevap açılır. Kısa kutlama, gerçek koleksiyon parçası ve tek devam eylemi aynı akıştadır. Arena giriş/lobi/tahta/sonuç stadyum kimliğini paylaşır; ortak bulmaca ve kalıcı içerik geçmişi korunur. Hızlı Tur ve İpucu Avı da ortak sade araç düzenini kullanır.

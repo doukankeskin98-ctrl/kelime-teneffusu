@@ -38,7 +38,8 @@ export function chapterVeils(id:string|undefined,targets:Target[]):Record<number
  const groups=[...new Set(targets.map(t=>t.group))];
  for(const [i,group] of groups.entries()){
   const step=info.position;
-  veils[group]=step===0?'open':step===1?(i===0?'initial':'open'):step===2?(i%2===0?'initial':'open'):step===3?(i%2===0?'hidden':'initial'):step>=4?(i%3===0?'initial':'hidden'):'open';
+  // Concealed words are occasional challenges; most targets stay readable.
+  veils[group]=step>=4?(i===groups.length-1?'hidden':i===groups.length-2?'initial':'open'):step>=2&&i===groups.length-1?'initial':'open';
  }
  return veils;
 }
