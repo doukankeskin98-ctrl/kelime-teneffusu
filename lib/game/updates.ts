@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.24.0',date:'2 Kasım 2026',title:'Daha net oyun, daha çok çeşitlilik',items:[
+  {where:'Mobil oyun',detail:'Kısa kelimeler tahtanın üzerinde birlikte görünür; hedefini seç, bulduklarını tek bakışta takip et. Uzun tanımlar tek kartta kalır, tüm liste bir dokunuş uzakta.'},
+  {where:'Yolculuk',detail:'Ana keşif kaldığın bölümü öne çıkarır. Hikâye veya bölüm tercihin bu cihazda hatırlanır. İlk keşif yalnız tamamlandığında bitmiş sayılır.'},
+  {where:'Hızlı Tur',detail:'714 kelimelik havuz ve bu cihazda tutulan geçmiş. Yarım bıraktığın turlar da hatırlanır; önce görmediğin kelimeler seçilir. Mevcut rekorun ve ilerlemen korunur.'},
+ ]},
  {version:'0.23.3',date:'2 Kasım 2026',title:'Fırından müzeye iki keşif',items:[{where:'Ana sayfa · Yeni bölümler',detail:'Fırın vitrini: 6×6 tahtada dört tanıdık lezzet. Müze gezisi: 8×8 tahtada yedi kültür kelimesi. İkisi de dünyalarında ve kalıcı arşivde.'},{where:'Albüm · Tarihli damga',detail:'İki bölümü tamamlayarak 2 Kasım damganı aç. Süre veya ipucu şartı yok; daha sonra da tamamlayabilirsin.'}]},
  {version:'0.23.2',date:'1 Kasım 2026',title:'Daha güvenli güncelleme',items:[{where:'Uygulama · Yenile',detail:'Eski önbellek temizlenemese de indirilmiş güncelleme devreye girebilir. İlk indirme ve güncellemeyi senin başlatman şartı korunur; ilerlemen değişmez.'}]},
  {version:'0.23.1',date:'1 Kasım 2026',title:'İlmeklerden tren yoluna',items:[{where:'Ana sayfa · Yeni bölümler',detail:'Örgü sepeti: dört kelimeli rahat 6×6. Tren garı: yedi kelimeli dengeli 8×8. İki bölüm de kalıcı arşivde; tamamlayınca 1 Kasım damganı açabilirsin.'},{where:'Oyun açılışı',detail:'Tarayıcı önbelleği hata verse de başarılı internet yanıtı kullanılmaya devam eder. Çevrimdışı açılış için ilk başarılı indirme yine gereklidir.'}]},

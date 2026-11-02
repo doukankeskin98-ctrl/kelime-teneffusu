@@ -1,5 +1,11 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.24.0 · Daha net oyun, oturumlar arasında çeşitlilik
+
+Kısa normal hedefler mobilde kompakt bir listede birlikte görünür; uzun/parçalı adlar ve bilmeceler tek hedef kartı + tam listeyi kullanır. Tahta, kayıtlı içerik ve dokunma kuralları değişmez. Ana giriş numaralı yolculuktur; hikâye/yolculuk tercihi cihazda oyuncuya özel saklanır. İlk öğreticiden erken çıkış tamamlandı sayılmaz.
+
+Hızlı Tur, mevcut denetlenmiş sözlükten 714 kısa kelime ve hesaba özel cihaz geçmişi kullanır. İlk görünen ve yarım bırakılan tahtalar hemen kaydedilir; önce görülmemiş, sonra az/eski görülen kelimeler seçilir. Açık sekmelerin geçmişi birleştirilir. Son4096 tam küme saklanır; sonsuz kelime, cihazlar arası eşitleme veya eşzamanlı atomik seçim garantisi yoktur. Arena'nın sunucudaki kalıcı geçmişi, tüm oyunculara ortak tahtası, eski aktif maçları ve bütün ilerleme şemaları korunur. Kanıt ve sınırlar: `studio-agents/journal/entries/2026-11-02_professional-decision.md`.
+
 ## 0.23.3 · 2 Kasım: Fırın vitrini / Müze gezisi
 
 Kolay6×6/dört lezzet ve orta8×8/yedi müze kelimesi; her iki çapraz eğim ve sabit tarih/slot/ID/hash. Ana sayfa, ilgili dünya ve kalıcı arşiv mevcut katalogdan erişir; iki tamamlamayla2Kasım damgası açılır. Eski12 çift, oyun/ödül/kayıt/Arena/mobil ve güncelleme kodu değişmez. Kabul/kanıt studio-agents/journal/entries/2026-11-02_maintenance.md. Gerçek cihaz/provider/PWA doğrulaması açık kalır.

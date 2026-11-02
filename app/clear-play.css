@@ -1,0 +1,47 @@
+/* A quiet paper surface and compact targets keep attention on finding words. */
+.journey-first-steps{display:flex;align-items:center;gap:12px;width:100%;padding:13px 16px;margin:0 0 16px;background:#fdfbf2;border:1px solid #d8e2d0;border-radius:16px;color:#294e3b;text-align:left}
+.journey-first-steps>span:nth-child(2){flex:1;min-width:0}.journey-first-steps b{display:block;font-size:14px}.journey-first-steps small{display:block;font-size:12px;margin-top:4px;color:#617561;line-height:1.4}.first-steps-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#e9efdc}
+.journey-first-steps:focus-visible{outline:3px solid #a17a2c;outline-offset:3px}
+.viewport-play .letter-board{box-shadow:0 3px 12px #2546330a}
+.viewport-play .letter-grid span{font-variant-numeric:tabular-nums}
+.viewport-play .icon-button{box-shadow:none;border-width:1px}
+.viewport-play .hint-button{box-shadow:none;border-width:1px}
+.viewport-play .word-tag.found{color:#3e614a}
+@media(max-width:1100px) and (orientation:portrait){
+ .viewport-play .viewport-targets.has-word-rack>.mobile-targets{display:none}
+ .viewport-play .viewport-targets.has-word-rack>.word-list,.game-app .viewport-play .viewport-targets.has-word-rack>.word-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:5px;background:#f8faf1;border:1px solid #dce5d5;border-radius:14px}
+ .viewport-play .viewport-targets.has-word-rack .word-tag,.game-app .viewport-play .viewport-targets.has-word-rack .word-tag{border:0;background:transparent;box-shadow:none;min-height:28px;padding:4px 3px;font-size:13px;line-height:1.2;border-radius:8px;gap:3px;justify-content:center;font-weight:700}
+ .viewport-play .viewport-targets.has-word-rack .word-tag.focusable-target{min-height:44px}
+ .viewport-play .viewport-targets.has-word-rack .word-tag.is-focus-target{background:#e6efdd;box-shadow:inset 0 0 0 1px #a4bd95}
+ .viewport-play .viewport-targets.has-word-rack .word-tag>span{width:12px;flex:0 0 12px}
+ .viewport-play .viewport-targets.has-word-rack .word-tag>span>i{width:4px;height:4px;background:#89a279;box-shadow:none}
+ .viewport-play .viewport-targets.has-word-rack .word-tag>div{overflow-wrap:normal;font-size:inherit}
+ .viewport-play .viewport-targets.has-word-rack .word-tag.found{background:#e8eedf!important;color:#5d7259;text-decoration:line-through;text-decoration-thickness:1px}
+ .viewport-play .viewport-targets.has-word-rack .word-tag.golden{color:#805b18}
+ .viewport-play .viewport-targets.has-word-rack .target-focus-button{min-width:0;min-height:44px}
+ .viewport-play .viewport-targets.has-word-rack.wide-word-rack>.word-list,.game-app .viewport-play .viewport-targets.has-word-rack.wide-word-rack>.word-list{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .viewport-play .wide-word-rack .word-tag>span{display:none}
+ .viewport-play .wide-word-rack .word-tag.golden{position:relative}
+ .viewport-play .wide-word-rack .word-tag.golden>b{position:absolute;right:1px;top:0;font-size:9px;line-height:1}
+ .viewport-play .targets-panel{margin-bottom:0}
+ .viewport-play .board-panel{background:#fffef9}
+ .viewport-play .play-controls .icon-button,.viewport-play .duel-controls .icon-button{border-radius:12px;background:#f8faf3;border-color:#dbe4d3}
+ .viewport-play .play-heading>.icon-button{border-radius:13px;background:#fffdf6;border-color:#dbe4d3}
+ .viewport-play .solo-hud{border:0;background:transparent;box-shadow:none}
+ .viewport-play .solo-meter{height:5px;border-radius:5px;background:#e0e8d8}.viewport-play .solo-meter>i{background:#4c7b5b}
+ .studio-journey .journey-view-switch{margin-bottom:12px}
+ .journey-first-steps{padding:10px 12px;gap:9px;margin-bottom:12px}.journey-first-steps b{font-size:13px}.journey-first-steps small{font-size:11px}
+}
+@media(max-width:380px) and (orientation:portrait){
+ .viewport-play .viewport-targets.has-word-rack .word-tag,.game-app .viewport-play .viewport-targets.has-word-rack .word-tag{font-size:12px;padding-inline:1px}
+ .viewport-play .viewport-targets.has-word-rack .word-tag>span{display:none}
+}
+@media(max-height:700px) and (max-width:780px){
+ .studio-journey .journey-panorama{height:106px}
+ .studio-journey .journey-play-card{padding:12px 17px}
+ .studio-journey .journey-play.button{min-height:48px}
+ .studio-journey .journey-home-note{margin-top:5px;margin-bottom:10px}
+ .studio-journey .journey-path-area{padding:0 17px 14px}
+}
+.contrast-mode .journey-first-steps{border-color:#63795d}.contrast-mode .journey-first-steps small{color:#304b30}
+.contrast-mode .viewport-play .viewport-targets.has-word-rack .word-tag{color:#203d2a}.contrast-mode .viewport-play .viewport-targets.has-word-rack .word-tag.found{color:#3e5338}

@@ -84,10 +84,10 @@ describe('actual daily Solo pending and lifetime UI',()=>{
   }finally{h.close();}
  });
 });
-async function app(storage=tabStorage(),options:{initial?:progress.Progress;query?:string}={}){
+async function app(storage=tabStorage(),options:{initial?:progress.Progress;query?:string;local?:ReturnType<typeof tabStorage>}={}){
  let revision=0,serverOwner='alice',profileReads=0;const browser=Object.assign(new EventTarget(),{matchMedia:()=>({matches:true}),scrollTo(){}});
  const f=fixture(Date.parse('2026-10-28T08:00Z')),daily=await f.game.daily('alice'),gates:ReturnType<typeof deferred<any>>[]=[],calls:any[]=[],account=(id:string)=>({authenticated:true,kind:'guest',profile:{id,nickname:id}}),p=options.initial??{...progress.emptyProgress(),tutorialDone:true};
- const h=view('components/game/App.tsx',{'@/lib/game/catalog':catalog,'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/daily-action':action,'@/lib/game/legacy':{SAVE_KEY:'legacy'},'@/components/auth/useMembership':{useMembership:()=>({ready:true,revision,user:null,available:false})},'./useCloudProgress':{useCloudProgress:()=> 'local'},'./Pages':{DailyPage:'DailyPage',Explore:'Explore',ProfilePage:'ProfilePage'},'./Solo':{Solo:'Solo'},'./daily-transport':{requestDaily:async(id:string,owner:string,intent:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name:'dailyState',id,owner,intent,signal});return gate.promise;}},'./common':{Help:'Help',Modal:'Modal',getApi:async()=>{profileReads++;return account(serverOwner);},api:async(name:string,data:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name,data,signal});return gate.promise;}}},{window:browser,sessionStorage:storage,location:{href:'https://test/'+(options.query??'?sekme=gunluk'),pathname:'/',search:options.query??'?sekme=gunluk'},history:{replaceState(){}},localStorage:{getItem:(key:string)=>key===progress.PROGRESS_KEY+':last-user'?'alice':JSON.stringify(p),setItem(){}}});
+ const h=view('components/game/App.tsx',{'@/lib/game/catalog':catalog,'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/daily-action':action,'@/lib/game/legacy':{SAVE_KEY:'legacy'},'@/components/auth/useMembership':{useMembership:()=>({ready:true,revision,user:null,available:false})},'./useCloudProgress':{useCloudProgress:()=> 'local'},'./Pages':{DailyPage:'DailyPage',Explore:'Explore',ProfilePage:'ProfilePage'},'./Solo':{Solo:'Solo'},'./daily-transport':{requestDaily:async(id:string,owner:string,intent:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name:'dailyState',id,owner,intent,signal});return gate.promise;}},'./common':{Help:'Help',Modal:'Modal',getApi:async()=>{profileReads++;return account(serverOwner);},api:async(name:string,data:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name,data,signal});return gate.promise;}}},{window:browser,sessionStorage:storage,location:{href:'https://test/'+(options.query??'?sekme=gunluk'),pathname:'/',search:options.query??'?sekme=gunluk'},history:{replaceState(){}},localStorage:options.local??{getItem:(key:string)=>key===progress.PROGRESS_KEY+':last-user'?'alice':JSON.stringify(p),setItem(){}}});
  browser.addEventListener('kt-auth-updated',()=>{revision++;h.change();});
  h.start(()=>h.exports['GameApp']({}));await h.settle();return{...h,storage,get revision(){return revision;},get profileReads(){return profileReads;},setServerOwner(id:string){serverOwner=id;},get tree(){return h.tree;},get afterUnmount(){return h.afterUnmount;},f,daily,gates,calls,account,start(){h.find('DailyPage').props['start']();},switchOwner(id:string,commit=true){h.state(v=>v?.authenticated===true&&v?.profile?.id,account(id),commit);}};
 }
@@ -135,4 +135,17 @@ describe('numbered journey App entry and navigation',()=>{
   }finally{h.close();}
  });
  it('retains a direct secondary exploration link',async()=>{const h=await app(undefined,{query:'?sekme=arsiv'});try{assert.equal(h.find('Explore').props['library'],true);}finally{h.close();}});
+});
+
+
+describe('home preference and honest tutorial completion',()=>{
+ it('restores the chosen surface after a full app mount and isolates another owner',async()=>{
+  const local=tabStorage();local.setItem(progress.PROGRESS_KEY+':last-user','alice');local.setItem(progress.PROGRESS_KEY+':alice',JSON.stringify(progress.emptyProgress()));
+  const first=await app(undefined,{query:'',local});first.find('Explore').props['onJourneyView']('stories');await first.settle();assert.equal(local.getItem('kt-journey-view-v1:alice'),'stories');first.close();
+  const second=await app(undefined,{query:'',local});try{assert.equal(second.find('Explore').props['journeyView'],'stories');second.switchOwner('bob');assert.equal(second.find('Explore').props['journeyView'],'journey');assert.equal(local.getItem('kt-journey-view-v1:alice'),'stories');}finally{second.close();}
+ });
+ it('leaves an unfinished tutorial available and retains existing saves after Back',async()=>{
+  const p=progress.emptyProgress(),saved={strokes:[],elapsed:19,hints:1,complete:false,stars:0};p.saves['route:uzay-1']=saved;
+  const h=await app(undefined,{query:'',initial:p});try{h.find('Explore').props['openSolo']({themeId:'uzay',level:0,tutorial:true});h.paint();h.find('Solo').props['onBack']();h.paint();const after=h.find('Explore').props['progress'];assert.equal(after.tutorialDone,false);assert.deepEqual(after.saves['route:uzay-1'],saved);}finally{h.close();}
+ });
 });
