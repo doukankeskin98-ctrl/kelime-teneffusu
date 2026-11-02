@@ -1,0 +1,422 @@
+{
+  "date": "2026-11-02",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261102-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Fırın vitrini",
+          "themeId": "lezzetler",
+          "words": [
+            "EKMEK",
+            "SİMİT",
+            "POĞAÇA",
+            "BÖREK"
+          ],
+          "size": 6,
+          "seed": 2026110201,
+          "difficulty": "Rahat",
+          "note": "Vitrindeki dört tanıdık lezzeti bul. Çaprazlara da göz gezdir."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "E",
+              "K",
+              "J",
+              "N",
+              "S",
+              "B"
+            ],
+            [
+              "C",
+              "K",
+              "O",
+              "İ",
+              "G",
+              "Ö"
+            ],
+            [
+              "A",
+              "B",
+              "M",
+              "P",
+              "Ğ",
+              "R"
+            ],
+            [
+              "V",
+              "İ",
+              "U",
+              "E",
+              "N",
+              "E"
+            ],
+            [
+              "T",
+              "T",
+              "J",
+              "Y",
+              "K",
+              "K"
+            ],
+            [
+              "P",
+              "O",
+              "Ğ",
+              "A",
+              "Ç",
+              "A"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "EKMEK",
+              "text": "EKMEK",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "SİMİT",
+              "text": "SİMİT",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "POĞAÇA",
+              "text": "POĞAÇA",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "BÖREK",
+              "text": "BÖREK",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "2.0",
+              "label": "POĞAÇA",
+              "text": "POĞAÇA",
+              "group": 2,
+              "a": [
+                5,
+                0
+              ],
+              "b": [
+                5,
+                5
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "EKMEK",
+              "text": "EKMEK",
+              "group": 0,
+              "a": [
+                0,
+                0
+              ],
+              "b": [
+                4,
+                4
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "SİMİT",
+              "text": "SİMİT",
+              "group": 1,
+              "a": [
+                0,
+                4
+              ],
+              "b": [
+                4,
+                0
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "BÖREK",
+              "text": "BÖREK",
+              "group": 3,
+              "a": [
+                0,
+                5
+              ],
+              "b": [
+                4,
+                5
+              ]
+            }
+          ]
+        },
+        "contentHash": "da5b5db26da1e4b99cbb3126e48df114f428ceb0eb4a882bf71cccf4e803434c",
+        "publishedAt": 1793577600000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261102-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Müze gezisi",
+          "themeId": "dunya",
+          "words": [
+            "ESER",
+            "HEYKEL",
+            "VİTRİN",
+            "TABLO",
+            "TARİH",
+            "REHBER",
+            "SALON"
+          ],
+          "size": 8,
+          "seed": 2026110202,
+          "difficulty": "Dengeli",
+          "note": "Salonları kelime kelime keşfet. Bazı eserler ters yönde veya çaprazda saklı."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "I",
+              "V",
+              "İ",
+              "T",
+              "R",
+              "İ",
+              "N",
+              "G"
+            ],
+            [
+              "C",
+              "N",
+              "O",
+              "L",
+              "A",
+              "S",
+              "T",
+              "U"
+            ],
+            [
+              "R",
+              "Y",
+              "H",
+              "P",
+              "K",
+              "A",
+              "V",
+              "K"
+            ],
+            [
+              "K",
+              "E",
+              "L",
+              "E",
+              "B",
+              "E",
+              "D",
+              "S"
+            ],
+            [
+              "Z",
+              "L",
+              "S",
+              "L",
+              "Y",
+              "T",
+              "T",
+              "Ü"
+            ],
+            [
+              "P",
+              "Ç",
+              "O",
+              "E",
+              "A",
+              "K",
+              "A",
+              "V"
+            ],
+            [
+              "İ",
+              "H",
+              "R",
+              "E",
+              "B",
+              "H",
+              "E",
+              "R"
+            ],
+            [
+              "Ö",
+              "H",
+              "İ",
+              "R",
+              "A",
+              "T",
+              "G",
+              "L"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "ESER",
+              "text": "ESER",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "HEYKEL",
+              "text": "HEYKEL",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "VİTRİN",
+              "text": "VİTRİN",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "TABLO",
+              "text": "TABLO",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "TARİH",
+              "text": "TARİH",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "REHBER",
+              "text": "REHBER",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "SALON",
+              "text": "SALON",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "1.0",
+              "label": "HEYKEL",
+              "text": "HEYKEL",
+              "group": 1,
+              "a": [
+                2,
+                2
+              ],
+              "b": [
+                7,
+                7
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "VİTRİN",
+              "text": "VİTRİN",
+              "group": 2,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                0,
+                6
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "REHBER",
+              "text": "REHBER",
+              "group": 5,
+              "a": [
+                6,
+                7
+              ],
+              "b": [
+                6,
+                2
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "TABLO",
+              "text": "TABLO",
+              "group": 3,
+              "a": [
+                1,
+                6
+              ],
+              "b": [
+                5,
+                2
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "TARİH",
+              "text": "TARİH",
+              "group": 4,
+              "a": [
+                7,
+                5
+              ],
+              "b": [
+                7,
+                1
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "SALON",
+              "text": "SALON",
+              "group": 6,
+              "a": [
+                1,
+                5
+              ],
+              "b": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "ESER",
+              "text": "ESER",
+              "group": 0,
+              "a": [
+                5,
+                3
+              ],
+              "b": [
+                2,
+                0
+              ]
+            }
+          ]
+        },
+        "contentHash": "ebc8f648afc904cde0514c1fa4afb1328fc6f783d7cb6c6ea05104b9244dd388",
+        "publishedAt": 1793577600000,
+        "archived": false
+      }
+    }
+  ]
+}
