@@ -1,5 +1,9 @@
 # Keşif Haritası
 
+## 0.26.0 sunumu
+
+On altı mevcut dünya, altışar kalıcı durak ve kendine ait sahneyle sunulur. Önerilen devam dünyayı tamamlar; eski küresel bölüm numaraları ve kayıt kimlikleri değişmez. Dünya içi konu/kelime gizleme yalnız sunumdur; eski tahtalar ve açılış eşikleri korunur. İlk üç dünyanın aşağıdaki özgün kuralları ve tarihli eklemeler tarihsel kayıt olarak tutulur. Güncel raster sahneler `docs/world-art.md` içinde belgelenir.
+
 Harita mevcut on beş rota bölümünü tek bir ilerleme yolunda birleştirir. Sıra: Yıldız İskelesi (Uzay), Anadolu Patikası (Türkiye), Teneffüs Bahçesi (Hababam). İlk dünya açıktır. Bir dünyadaki üç farklı rota bölümünü tamamlamak sonrakini, beşini tamamlamak o dünyanın yeni bonus bölümünü açar. Herhangi bir yıldız sayısı veya hız şartı aranmaz; ipuçlarıyla tamamlamak da geçerlidir.
 
 Her rota bölümünün belirli bir koleksiyon parçası vardır. Beş ana bölüm ve bir bonus, altı parçalık sahneyi oluşturur. Harita, bir sonraki parçanın adını ve tam açılış koşulunu gösterir. Kazanımlar doğrulanmış `Progress.saves` üzerinden türetilir. Ayrı ödül talebi, tüketilebilir anahtar, günlük sıfırlanan ödül veya tekrar oynayarak çoğaltılabilen bir bakiye yoktur.

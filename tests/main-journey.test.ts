@@ -27,22 +27,21 @@ describe('numbered main journey preserves the existing saved worlds',()=>{
   p.saves['route:uzay-2']=cleanSave({strokes:[],elapsed:20,hints:1,complete:false,stars:0},b);assert.equal(mainJourneyState(p).current?.number,2);assert.equal(mainJourneyState(p).continuing,true);
   p.saves['route:uzay-2']=cleanSave(undefined,b);assert.equal(mainJourneyState(p).current?.number,1);assert.equal(mainJourneyState(p).continuing,false);
  });
- it('makes the first ten playable in order, varies themes, teaches concrete skills and completes the first album at ten',()=>{
-  const p=emptyProgress();assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,10),['uzay-1','uzay-2','uzay-3','turkiye-1','uzay-4','turkiye-2','turkiye-3','hababam-1','uzay-5','uzay-gozlemevi']);
+ it('keeps published numbers while completing a world before continuing to the next',()=>{
+  const p=emptyProgress(),expected=['uzay-1','uzay-2','uzay-3','uzay-4','uzay-5','uzay-gozlemevi','turkiye-1','turkiye-2','turkiye-3','turkiye-4'];
+  assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,10),['uzay-1','uzay-2','uzay-3','turkiye-1','uzay-4','turkiye-2','turkiye-3','hababam-1','uzay-5','uzay-gozlemevi']);
   assert.equal(nextMainMilestone(p)?.remaining,3);
-  for(let i=0;i<10;i++){
-   const current=mainJourneyState(p).current!;assert.equal(current.number,i+1);assert.ok(FIRST_TEN_LESSONS[current.chapter.id]);
-   const before=copy(p);finish(p,current.chapter.id,3);p.last={themeId:current.chapter.themeId,level:0,journey:current.chapter.id};
+  for(const [i,id] of expected.entries()){
+   const current=mainJourneyState(p).current!;assert.equal(current.chapter.id,id);const before=copy(p);finish(p,id,3);p.last={themeId:current.chapter.themeId,level:0,journey:id};
    const rewards=discoveryRewards(before,p);assert.equal(rewards.filter(r=>r.kind==='piece').length,1);
-   if(i===2||i===6)assert.equal(rewards.filter(r=>r.kind==='world').length,1);
-   if(i===9)assert.ok(rewards.some(r=>r.kind==='album'&&r.themeId==='uzay'));
-   assert.equal(nextMainChapter(p)?.number,i+2);
+   if(i===2){assert.equal(nextMainMilestone(p,'uzay-4')?.remaining,3);assert.equal(mainJourneyChapters(p).find(c=>c.chapter.id==='turkiye-1')!.unlocked,true);}
+   if(i===5)assert.ok(rewards.some(r=>r.kind==='album'&&r.themeId==='uzay'));
   }
-  assert.equal(discoveryState(p)[0]!.pieces,6);assert.equal(new Set(MAIN_JOURNEY.slice(0,10).map(x=>x.chapter.themeId)).size,3);
+  assert.equal(discoveryState(p)[0]!.pieces,6);
  });
  it('fills actual gaps without resetting old completions or assuming earlier numbers were finished',()=>{
   const p=finish(finish(emptyProgress(),'uzay-2'),'turkiye-4');p.last={themeId:'turkiye',level:0,journey:'turkiye-4'};
-  assert.equal(mainJourneyState(p).current?.number,1);assert.equal(mainJourneyState(p).completed,2);
+  assert.equal(mainJourneyState(p).current?.chapter.id,'turkiye-1');assert.equal(mainJourneyState(p).completed,2);
   const merged=mergeProgress(p,finish(emptyProgress(),'uzay-1'));assert.equal(nextMainChapter(merged)?.number,3);assert.equal(merged.saves['route:turkiye-4']?.complete,true);
  });
  it('does not multiply rewards on replay, preserves the best and reports finite completion honestly',()=>{

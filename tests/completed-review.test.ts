@@ -1,3 +1,4 @@
+import * as worldPresentation from '../lib/game/world-presentation.ts';
 import * as scenePresentation from '../lib/game/scene.ts';
 import * as boardPresentation from '../lib/game/board-view.ts';
 // Actual shared controls/layout and Mystery component with controlled hooks/clock.
@@ -18,20 +19,14 @@ function nodes(v:any):Node[]{return Array.isArray(v)?v.flatMap(nodes):v&&typeof 
 function text(v:any):string{return typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';}
 const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
 const icons=new Proxy({},{get:(_t,key)=>String(key)}),common:Record<string,any>={};
-vm.runInNewContext(compile('components/game/common.tsx'),{exports:common,require:(name:string)=>name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='react'?{useRef:()=>({current:null}),useEffect(){},useState:(initial:unknown)=>[initial,()=>{}]}:name==='lucide-react'?icons:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:name==='@/lib/game/word-card'?{wordCardCopy}:{}});
+vm.runInNewContext(compile('components/game/common.tsx'),{exports:common,require:(name:string)=>name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='react'?{useRef:()=>({current:null}),useEffect(){},useState:(initial:unknown)=>[initial,()=>{}]}:name==='lucide-react'?icons:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:name==='@/lib/game/word-card'?{wordCardCopy}:{}});
 
 describe('shared completed controls and review instructions',()=>{
- it('replaces hint/pause with review and keeps working zoom, sound and help controls',()=>{
-  let zoom=0,sound=0,help=0;
-  const actions={onPause(){throw new Error('No resume action in completed review');},onHint(){throw new Error('No hint consumed in completed review');},onZoom:()=>zoom++,onSound:()=>sound++,onHelp:()=>help++};
-  for(const paused of [false,true]){
-   const tree=common['PlayControls']({...actions,paused,completed:true,zoom:false,sound:false,hints:2});
-   const buttons=nodes(tree).filter(n=>n.type==='button');assert.equal(buttons.length,3);assert.match(text(tree),/İnceleme/);assert.doesNotMatch(text(tree),/İpucu/);
-   assert.deepEqual(buttons.map(n=>n.props['aria-label']),['İncelemek için tahtayı büyüt','Sesi aç','Nasıl oynanır']);for(const b of buttons)b.props['onClick']();
-  }
-  assert.equal(zoom,2);assert.equal(sound,2);assert.equal(help,2);
-  const regular=common['PlayControls']({...actions,paused:true,zoom:false,sound:false,hints:2});
-  assert.equal(nodes(regular).filter(n=>n.type==='button').length,5);assert.equal(nodes(regular).find(n=>/hint-button/.test(n.props['className']??''))!.props['disabled'],true);assert.ok(nodes(regular).some(n=>n.props['aria-label']==='Devam et'));
+ it('replaces hint/pause with review and exposes the tools menu without resuming',()=>{
+  const actions={onPause(){throw new Error('No resume in review');},onHint(){throw new Error('No hint in review');},onZoom(){},onSound(){},onHelp(){}};
+  for(const paused of [false,true]){const tree=common['PlayControls']({...actions,paused,completed:true,zoom:false,sound:false,hints:2});
+   const buttons=nodes(tree).filter(n=>n.type==='button');assert.equal(buttons.length,1);assert.equal(buttons[0]!.props['aria-label'],'Oyun araçları');assert.match(text(tree),/İnceleme/);assert.doesNotMatch(text(tree),/İpucu/);buttons[0]!.props['onClick']();}
+  const regular=common['PlayControls']({...actions,paused:true,zoom:false,sound:false,hints:2});assert.equal(nodes(regular).filter(n=>n.type==='button').length,3);assert.equal(nodes(regular).find(n=>/hint-button/.test(n.props['className']??''))!.props['disabled'],true);assert.ok(nodes(regular).some(n=>n.props['aria-label']==='Devam et'));
  });
  it('passes read-only state and original ink to Board and never invites a new selection in review',()=>{
   const strokes=content.TUTORIAL.placements,props={title:'İlk keşif',kicker:'KEŞİF',onBack(){},board:content.TUTORIAL,strokes,paused:false,readOnly:true,zoom:false,onCommit(){},preview:'ESKİSEÇİM',onPreview(){},children:null,aside:null,footer:null};
@@ -85,7 +80,7 @@ describe('Mystery result return and completed review preserve achievements',()=>
 it('pending daily controls and layout expose actual waiting without a fake pause or completed board',()=>{
  const actions={onHint(){},onPause(){},onZoom(){},onSound(){},onHelp(){}};
  const controls=common['PlayControls']({...actions,paused:false,completed:false,canPause:false,blocked:true,busy:true,zoom:false,sound:false,hints:3});
- const buttons=nodes(controls).filter(n=>n.type==='button'),hint=buttons.find(n=>/hint-button/.test(n.props['className']??''))!;assert.equal(buttons.length,4);assert.equal(hint.props['disabled'],true);assert.equal(hint.props['aria-busy'],true);assert.equal(buttons.filter(n=>!n.props['disabled']).length,3);assert.doesNotMatch(text(controls),/İnceleme/);
+ const buttons=nodes(controls).filter(n=>n.type==='button'),hint=buttons.find(n=>/hint-button/.test(n.props['className']??''))!;assert.equal(buttons.length,2);assert.equal(hint.props['disabled'],true);assert.equal(hint.props['aria-busy'],true);assert.equal(buttons.filter(n=>!n.props['disabled']).length,1);assert.doesNotMatch(text(controls),/İnceleme/);
  const tree=common['PlayLayout']({title:'Günlük',kicker:'GÜNLÜK',onBack(){},board:content.TUTORIAL,strokes:[],paused:false,readOnly:false,inputBlocked:true,busy:true,inputStatus:'Kelimen doğrulanıyor.',zoom:false,onCommit(){},preview:'BEKLİYOR',onPreview(){},children:null,aside:null,footer:null});
  const board=nodes(tree).find(n=>n.type==='Board')!,note=nodes(tree).find(n=>String(n.props['className']??'').startsWith('selection-preview'))!;assert.equal(board.props['blocked'],true);assert.equal(board.props['busy'],true);assert.equal(board.props['paused'],false);assert.equal(board.props['readOnly'],false);assert.equal(text(note),'Kelimen doğrulanıyor.');
 });

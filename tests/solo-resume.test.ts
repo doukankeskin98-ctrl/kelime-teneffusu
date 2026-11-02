@@ -1,3 +1,4 @@
+import * as worldPresentation from '../lib/game/world-presentation.ts';
 import * as scenePresentation from '../lib/game/scene.ts';
 import * as boardPresentation from '../lib/game/board-view.ts';
 import * as stories from '../lib/game/story-content.ts';
@@ -67,7 +68,7 @@ function harness({initial=saved([]),practice=false,known=false}:{initial?:SavedL
   './AchievementLoop':{JourneyObjective:'JourneyObjective',VictorySummary:'VictorySummary',NextJourneyPreview:'NextJourneyPreview'}
  };
  const exports:Record<string,unknown>={};
- vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
+ vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
   window:windowTarget,document:documentTarget,performance:{now:()=>now},Event,
   setInterval:timer(true),setTimeout:timer(false),clearInterval:(id:number)=>timers.delete(id),clearTimeout:(id:number)=>timers.delete(id)
  });
