@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.26.0',date:'3 Kasım 2026',title:'Her dünya, yeni bir yolculuk',items:[
+  {where:'16 dünya · 96 bölüm',detail:'Her dünyanın kendi manzarası, her bölümün bir konusu var. Altı duraklık yolunu tamamla; dünya seçimi, tahta ve sonuç aynı yolculuğun parçaları.'},
+  {where:'Saklı kelimeler',detail:'İlerledikçe bazı kelimelerin yalnız ilk harfi, sonra yalnız harf sayısı kalır. Konudan yola çık; bulduğun cevap açılır. Çıkıp girince ilerlemen ve hedeflerin korunur.'},
+  {where:'Arena ve oyun hissi',detail:'Arena lobisinden maç sonucuna aynı stadyum atmosferi. Daha sade araçlar, kısa kutlamalar ve daha okunaklı bölüm sonları. Mevcut kayıtların, yıldızların ve Arena geçmişin korunur.'}
+ ]},
  {version:'0.25.0',date:'3 Kasım 2026',title:'Kelimelerin içinden bir dünyaya',items:[
   {where:'Yolculuk ve hikâyeler',detail:'Beş özgün resimli ortam, girişten oyun tahtasına ve bölüm sonucuna kadar sana eşlik ediyor. Yeni dünya ve albüm parçasına ne kadar kaldığını tek bakışta gör.'},
   {where:'Oyun tahtası',detail:'Sade yüzey, belirgin harfler ve renkli kelime izleri. Solo oyunlarda ücretsiz döndürme ile tahtaya başka açıdan bak; buldukların ve ipuçların yerini korur.'},

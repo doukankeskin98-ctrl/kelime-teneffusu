@@ -1,5 +1,5 @@
 import {journeyById} from './content.ts';
-import {discoveryState,EXPEDITIONS} from './discovery.ts';
+import {discoveryState,EXPEDITIONS,nextJourneyAfter} from './discovery.ts';
 import type {Progress} from './progress.ts';
 
 /** Presentation order v1. IDs, boards, saves and the existing 3/5/6 gates stay unchanged.
@@ -31,7 +31,9 @@ export function mainJourneyState(progress:Pick<Progress,'saves'|'last'>){
  // A real unfinished last journey wins; a standard/archive game cannot replace the main path.
  const last=mainChapter(progress.last?.journey),saved=last?progress.saves['route:'+last.chapter.id]:undefined;
  const resume=last&&saved&&!saved.complete&&started(saved)&&available.has(last.chapter.id)?last:null;
- const current=resume??MAIN_JOURNEY.find(item=>!done(progress,item.chapter.id)&&available.has(item.chapter.id))??null;
+ const following=last?nextJourneyAfter(progress,last.chapter.id):null;
+ const worldOrder=EXPEDITIONS.flatMap(world=>MAIN_JOURNEY.filter(item=>item.chapter.themeId===world.id));
+ const current=resume??(following?mainChapter(following.id):null)??worldOrder.find(item=>!done(progress,item.chapter.id)&&available.has(item.chapter.id))??null;
  const currentSave=current?progress.saves['route:'+current.chapter.id]:undefined;
  return {current,continuing:!!(currentSave&&!currentSave.complete&&(currentSave.strokes.length||currentSave.elapsed||currentSave.hints)),completed:MAIN_JOURNEY.filter(item=>done(progress,item.chapter.id)).length,total:MAIN_JOURNEY.length};
 }
@@ -41,12 +43,14 @@ export function nextMainChapter(progress:Pick<Progress,'saves'>){return mainJour
 
 /** Count real remaining chapters until the next world or completed album.
  * This simulates gates for copy only; it never writes or grants a hypothetical reward. */
-export function nextMainMilestone(progress:Pick<Progress,'saves'>){
+export function nextMainMilestone(progress:Pick<Progress,'saves'>,fromId?:string){
  const initial=discoveryState(progress),saves={...progress.saves};let remaining=0;
- for(const item of MAIN_JOURNEY){
-  if(done({saves},item.chapter.id))continue;
+ let cursor=fromId??nextMainChapter(progress)?.chapter.id;
+ for(let step=0;step<MAIN_JOURNEY.length&&cursor;step++){
+  const item=mainChapter(cursor)!;
+  if(done({saves},item.chapter.id)){cursor=nextJourneyAfter({saves},cursor)?.id;continue;}
   const state=discoveryState({saves}).find(s=>s.expedition.id===item.chapter.themeId)!;
-  if(!state.unlocked||(state.bonus.id===item.chapter.id&&!state.bonusUnlocked))continue;
+  if(!state.unlocked||(state.bonus.id===item.chapter.id&&!state.bonusUnlocked))break;
   saves['route:'+item.chapter.id]={strokes:[],elapsed:0,hints:0,complete:true,stars:0};remaining++;
   const after=discoveryState({saves});
   for(let i=0;i<after.length;i++){
@@ -54,6 +58,7 @@ export function nextMainMilestone(progress:Pick<Progress,'saves'>){
    if(now.unlocked&&!before.unlocked)return {kind:'world' as const,title:now.expedition.title,remaining};
    if(now.complete&&!before.complete)return {kind:'album' as const,title:now.album.title,remaining};
   }
+  cursor=nextJourneyAfter({saves},item.chapter.id)?.id;
  }
  return null;
 }

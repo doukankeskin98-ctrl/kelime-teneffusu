@@ -1,5 +1,7 @@
 # Öncelikler
 
+3 Kasım 2026,0.26.0: 16 sahne, 96 bölüm konusu, dünya içinde altı durak, kademeli gizli hedefler ve bütünlüklü sonuç/Arena. Kabul ve hedefli gerçek tarayıcı kanıtı `../journal/entries/2026-11-03_world-renewal.md`. Sonraki açık kabul fiziksel iPhone 8 Plus Safari, iki gerçek Arena oyuncusu, büyük yazı/VoiceOver ve uzun oturum gözlemi; otomatik başarı bu kanıtların yerine geçmez.
+
 3 Kasım 2026,0.25.0: resimli sahne, sade tahta, Solo görünüm döndürme ve giriş–sonuç devamlılığı. Gerçek mobil önizleme ve etkileşim kanıtı scenic-decision kaydında; fiziksel iPhone Safari/dokunma ve oyuncu gözlemi açık.
 
 2 Kasım akşam,0.24.1: hızlı yinelenen Sprint başlangıcı yalnız görünür tahtayı kaydeder. Kabul/kanıt ../journal/entries/2026-11-02_evening-start.md.0.24 gerçek yerel tarayıcı kanıtı korunur; fiziksel cihaz/provider/PWA ayrı açık kabul.

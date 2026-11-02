@@ -5,7 +5,7 @@ import {describe,it} from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
 import {ALL_JOURNEYS,journeyBoard} from '../lib/game/content.ts';
-import {wordCardCopy} from '../lib/game/word-card.ts';
+import {wordCardCopy,veiledText} from '../lib/game/word-card.ts';
 import type {Target,Stroke} from '../lib/game/engine.ts';
 
 type Node={type:unknown;props:Record<string,unknown>};
@@ -15,7 +15,7 @@ const exports:Record<string,unknown>={};
 const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
 vm.runInNewContext(compiled,{exports,require:(name:string)=>{
  if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
- if(name==='@/lib/game/word-card')return {wordCardCopy};
+ if(name==='@/lib/game/word-card')return {wordCardCopy,veiledText};
  if(name==='./Board')return {strokeColor:()=> '#9ab37d'};
  return {};
 }});
