@@ -1,5 +1,9 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.23.3 · 2 Kasım: Fırın vitrini / Müze gezisi
+
+Kolay6×6/dört lezzet ve orta8×8/yedi müze kelimesi; her iki çapraz eğim ve sabit tarih/slot/ID/hash. Ana sayfa, ilgili dünya ve kalıcı arşiv mevcut katalogdan erişir; iki tamamlamayla2Kasım damgası açılır. Eski12 çift, oyun/ödül/kayıt/Arena/mobil ve güncelleme kodu değişmez. Kabul/kanıt studio-agents/journal/entries/2026-11-02_maintenance.md. Gerçek cihaz/provider/PWA doğrulaması açık kalır.
+
 ## 0.23.2 · Güncelleme geçişini koru
 
 Eski önbelleğin listelenmesi veya silinmesi hata verdiğinde indirilmiş yeni sürümün aktivasyonu artık kesilmez. Güncel/başka uygulama cache’i korunur; ilk kurulum ve kullanıcı onaylı güncelleme kuralı aynı. Bugünün Örgü sepeti/Tren garı çifti çoğaltılmadı. Kayıt, ödül, tahta ve Arena değişmedi. Kabul/kanıt studio-agents/journal/entries/2026-11-01_evening-update.md; gerçek cihaz/PWA/provider doğrulaması hâlâ açıktır.

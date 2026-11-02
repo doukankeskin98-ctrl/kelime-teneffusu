@@ -1,5 +1,7 @@
 # Öncelikler
 
+2 Kasım2026,0.23.3: Fırın vitrini/Müze gezisi tek sabit çift; mevcut oyun/kayıt/Arena/güncelleme kodu korunur. Kabul/kanıt ../journal/entries/2026-11-02_maintenance.md. Fiziksel cihaz/ses, provider ve kurulu PWA ilk açık önceliklerdir; yeni faz yok.
+
 1 Kasım akşam,0.23.2: eski cache temizlik hatası güncelleme aktivasyonunu kesmez. Kabul/kanıt ../journal/entries/2026-11-01_evening-update.md. Bugünün çifti korunur; fiziksel cihaz/provider/PWA öncelikleri açık.
 
 1 Kasım2026,0.23.1: güncel0.23 Arena/mobil kaynağı korundu; tarihli çift ve cache arızasında çevrimiçi açılış güvenilirliği. Kabul/kanıt ../journal/entries/2026-11-01_maintenance.md. Fiziksel Safari/Android, ses kesintisi, gerçek provider ve PWA ilk açık kabul olmaya devam eder; kontrollü SW testi bu cihaz kanıtı değildir.
