@@ -17,6 +17,6 @@ self.addEventListener('fetch',event=>{
  if(request.mode==='navigate'&&url.pathname==='/'){
   event.respondWith((async()=>{try{const response=await fetch(request);if(response.ok&&(response.headers.get('Content-Type')||'').includes('text/html'))await remember(await openCache(),'/',response);return response;}catch{const cached=await cachedResponse(await openCache(),'/');return cached||new Response('Teneffüsüne hazırlanmak için önce bir kez internete bağlan.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});}})());return;
  }
- const asset=/\.(?:js|css|woff2|png|svg)$/.test(url.pathname)&&(url.pathname.startsWith('/assets/')||url.pathname.startsWith('/_next/')||SHELL.includes(url.pathname));
+ const asset=/\.(?:js|css|woff2|png|svg|webp)$/.test(url.pathname)&&(url.pathname.startsWith('/assets/')||url.pathname.startsWith('/_next/')||SHELL.includes(url.pathname));
  if(asset)event.respondWith((async()=>{const cache=await openCache(),cached=await cachedResponse(cache,request);if(cached)return cached;const response=await fetch(request);if(response.ok&&cache){await remember(cache,request,response);try{const keys=await cache.keys();if(keys.length>180){const removable=keys.find(k=>!SHELL.includes(new URL(k.url).pathname));if(removable)await cache.delete(removable);}}catch{}}return response;})());
 });

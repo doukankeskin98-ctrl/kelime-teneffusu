@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.25.0 · Sahnenin içinde bir kelime yolculuğu
+
+Beş özgün resimli ortam, giriş–oyun–sonuç boyunca aynı dünya kimliğini taşır. Mobilde sade açık tahta, renkli izler, kısa hedef rafı ve tek bilmece; hikâye metni tahtayı aşağı itmez. Solo'da ücretsiz 180° döndürme yalnız görünümü değiştirir; kayıtlar, ipuçları ve seçim doğrulaması özgün koordinatlarla çalışır. Günlük rekabet tahtasında döndürme eklenmedi. Bitmiş beş hikâyenin ana eylemi yeni bölüm yolculuğuna gider; tekrar oynama açık bir seçimdir.
+
+Eski bölüm kimlikleri/tohumları/kelimeleri/tahtaları, beşli harita kümeleri, ilerleme/ödül şeması, Arena'nın kalıcı içerik geçmişi ve 0.24.1 Hızlı Tur koruması değişmez. Görsel varlıklar toplam yaklaşık 1,8 MB WebP; mevcut çevrimdışı paketine dahil. Yeni bağımlılık, ödeme, uygulama paketi veya servis yok. Üretim istemleri `docs/scenic-art.md`; kabul ve gerçek doğrulama `studio-agents/journal/entries/2026-11-03_scenic-decision.md`.
+
 ## 0.24.1 · Hızlı Tur tek başlangıç
 
 Başlat düğmesine aynı render içinde art arda basmak yalnız bir başlangıç ve görünür tahtanın dört kelimesini kaydeder; gösterilmeyen ek tahtalar görülmüş sayılmaz.0.24 mobil hedef rafı, ana ekran tercihi, öğretici, Sprint geçmişi/rekoru ve Arena korunur. Bugünün Fırın vitrini/Müze gezisi çifti çoğaltılmaz. Kanıt/sınırlar studio-agents/journal/entries/2026-11-02_evening-start.md.
