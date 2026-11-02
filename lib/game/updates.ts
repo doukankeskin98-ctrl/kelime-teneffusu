@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.27.0',date:'3 Kasım 2026',title:'Daha akıcı oyun',items:[
+  {where:'İpucu',detail:'Seçtiğin kelimenin ilk harfini gösterir. Hedef seçmediysen listedeki sıradaki kelimeyi izler.'},
+  {where:'Kaydırma',detail:'Kelime tamamlandığında parmağını kaldırmadan kabul edilir. Bulduğun kelime kısa bir parıltıyla işaretlenir.'},
+  {where:'Bölüm sonu',detail:'Aynı manzara üzerinde yıldızlarını ve albüm ilerlemeni gör, sonraki bölüme geç. Mevcut ilerlemen korunur.'}
+ ]},
  {version:'0.26.1',date:'3 Kasım 2026',title:'Daha rahat bir keşif',items:[{where:'Bölüm yolculuğu',detail:'Kelimelerin çoğu artık açık. İlk iki durakta gizli hedef yok; sonraki iki durakta yalnız bir baş harfli hedef, son iki durakta bir gizli ve bir baş harfli hedef var. İlerlemen ve bulduğun kelimeler korunur.'}]},
  {version:'0.26.0',date:'3 Kasım 2026',title:'Her dünya, yeni bir yolculuk',items:[
   {where:'16 dünya · 96 bölüm',detail:'Her dünyanın kendi manzarası, her bölümün bir konusu var. Altı duraklık yolunu tamamla; dünya seçimi, tahta ve sonuç aynı yolculuğun parçaları.'},

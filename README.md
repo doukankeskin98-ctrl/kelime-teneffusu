@@ -1,5 +1,15 @@
 # Kelime Teneffüsü
 
+## 0.27.0 · Seçili ipucu, anında kabul ve aynı sahnede sonuç
+
+İpucu, seçili grubun sıradaki eksik parçasına gider; seçim yoksa görünür liste sırası izlenir. Günlükte hedef, işlem kimliğiyle birlikte yeniden denemeye taşınır; eski hedef belirtmeyen istekler ve makbuzlar uyumludur. Başka cihazda bulunan hedefin kesin reddi belirsiz işlemi kilitlemez. Hikâye sırası, ücretsiz ilk hikâye ipucu ve Gizli Tema kilidi korunur.
+
+Doğru kelime sürükleme sırasında kabul edilir; atlanan son hücreler, ters yön ve döndürülmüş görünüm desteklenir. Bir hareket yalnız bir kabul üretir. Aynı yönde daha uzun bir hedefin başlangıcı olan kısa hedef parmak bırakılana kadar bekler. İki uç ve klavye seçimi korunur. Günlük/Arena başarıları sunucu onayından sonra çizgi/kelime vurgusu verir. Tahta girişinde konum hareketi ve harfleri örten başarı etiketi kaldırıldı.
+
+Bölüm sonucu mevcut manzaranın üzerinde, gerçek yıldız/albüm ilerlemesi ve tek ana devam düğmesiyle açılır. Azaltılmış hareket tercihi desteklenir; animasyonlar kayıt veya ödül vermeyi yönetmez. Ana ekran, araçlar, hikâye ve Arena metinleri kısaltıldı. Eski kimlikler/kelimeler/tohumlar/tahtalar, ilerleme/ödüller, Arena ortak içerik/geçmişi ve 0.26.1 gizli hedef dengesi değişmedi. Yeni bağımlılık veya servis yok.
+
+583 test / 125 grup; 165 tahta + 3300 alternatif, rekabet ve hızlı oyun içerik denetimi; tip/üretim derlemesi; 615 yerel üretim Worker HTTP kontrolü geçti. Destekli tarayıcıda 414×622 ve 360×568 alanlarında gerçek kaydırmayla normal/bilmeceli bölüm tamamlandı, seçili IŞIK YILI ve BAYKUŞ ipuçları, taşan sürükleme, aynı sahnede sonuç, inceleme ve devam doğrulandı. Fiziksel iPhone Safari, iki gerçek telefonla Arena, VoiceOver ve FPS ölçülmedi. Kabul ve kanıt: `studio-agents/journal/entries/2026-11-03-input-polish.md`; yayın makbuzu depo dışındaki `../world-review/release-0.27.0.json` içinde tutulur.
+
 ## 0.26.1 · Gizli hedeflerde daha hafif denge
 
 Oyuncu geri bildirimiyle normal dünya bölümlerinde hedeflerin çoğu açık kalır: ilk iki durakta hepsi açık; 3–4. durakta yalnız bir baş harfli; 5–6. durakta bir tamamen gizli ve bir baş harfli hedef. Gizli hedefler listenin sonunda, ilk hedef her zaman açık. Bilmece kuralları, içerik/tahta/kayıtlar ve Arena değişmedi. Kabul ve doğrulama: `studio-agents/journal/entries/2026-11-03_veil-balance.md`.

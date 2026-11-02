@@ -41,7 +41,7 @@ export async function POST(request:Request){try{
   case 'rematch':return json(await game.rematch(user.userId,id,data['round']));
   case 'daily':return json(await game.daily(user.userId));
   case 'dailyClaim':return json(await game.dailyClaim(user.userId,id,data['a'],data['b']));
-  case 'dailyHint':return json(await game.dailyClaim(user.userId,id,null,null,true,data['requestId']));
+  case 'dailyHint':return json(await game.dailyClaim(user.userId,id,null,null,true,data['requestId'],data['targetId']));
   default:throw new GameError('Bilinmeyen işlem.');
  }
 }catch(e){return failure(e);}}

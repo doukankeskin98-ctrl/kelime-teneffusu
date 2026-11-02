@@ -8,7 +8,7 @@ import {readFileSync} from 'node:fs';
 import {describe,it} from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
-import {snapLine,type Cell,type Stroke} from '../lib/game/engine.ts';
+import {snapLine,type Cell,type Stroke,type Target} from '../lib/game/engine.ts';
 import {TUTORIAL} from '../lib/game/content.ts';
 
 type Node={type:unknown;props:Record<string,any>};
@@ -32,7 +32,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- const props={board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;}};
+ const props={earlyTargets:undefined as Target[]|undefined,board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;}};
  if(options.legacy)delete (element as any).setPointerCapture;
  Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
@@ -242,7 +242,7 @@ describe('locked imperative selection',()=>{
 });
 
 it('pulses only a confirmed new stroke and does not repeat it after pause',()=>{
- const h=harness(),stroke=TUTORIAL.placements[0]!;h.setProps({strokes:[stroke],busy:true,blocked:true});let line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.match(line.props['className'],/is-pending/);assert.doesNotMatch(line.props['className'],/is-new/);h.setProps({busy:false,blocked:false});line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.match(line.props['className'],/is-new/);h.setProps({paused:true});h.setProps({paused:false});line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.equal(line.props['className'],'found-stroke');h.unmount();
+ const h=harness(),stroke=TUTORIAL.placements[0]!;h.setProps({strokes:[stroke],busy:true,blocked:true});let line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.match(line.props['className'],/is-pending/);assert.doesNotMatch(line.props['className'],/is-new/);assert(!nodes(h.tree).some(n=>n.props['className']==='word-end-flash'));h.setProps({busy:false,blocked:false});line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.match(line.props['className'],/is-new/);assert(nodes(h.tree).some(n=>n.props['className']==='word-end-flash'));h.setProps({paused:true});h.setProps({paused:false});line=nodes(h.tree).find(n=>String(n.props['className']??'').startsWith('found-stroke'))!;assert.equal(line.props['className'],'found-stroke');h.unmount();
 });
 
 it('allows a fresh swipe after Strict Mode cleanup/setup without reviving a cancelled gesture',()=>{const h=harness();drag(h);h.strictReplay();h.send('onPointerUp',b);assert.equal(h.commits.length,0);drag(h);h.flush();h.send('onPointerUp',b);assert.deepEqual(h.commits,[{a,b}]);h.unmount();});
@@ -260,4 +260,29 @@ describe('new-letter sound signals follow actual selection geometry',()=>{
 
 it('keeps colored-paper outline endpoints aligned with imperative selection without extra renders',()=>{
  const h=harness();try{h.send('onPointerDown',[0,0]);h.send('onPointerMove',[2,2]);const before=h.renders;h.flush();assert.deepEqual(h.outline(),h.ink());assert.equal(h.renders,before);h.send('onPointerMove',[1,1]);h.flush();assert.deepEqual(h.outline(),h.ink());assert.equal(h.ink().get('x2'),'1.5');}finally{h.unmount();}
+});
+
+
+describe('early word acceptance consumes the gesture before release',()=>{
+ const target={id:'0.0',group:0,label:'KALE',text:'KALE'};
+ const board={...TUTORIAL,grid:TUTORIAL.grid.map((row,r)=>row.map((ch,c)=>r===0?'KALEXX'[c]??ch:ch)),targets:[target]};
+ const setup=()=>{const h=harness();h.setProps({board,earlyTargets:[target]});return h;};
+ it('accepts on the final letter before RAF or release, then ignores continued input and cancel',()=>{
+  const h=setup();h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,3]);assert.deepEqual(h.commits,[{a:[0,0],b:[0,3]}]);
+  for(const event of ['onPointerMove','onPointerUp','onPointerCancel','onLostPointerCapture'])h.send(event,[0,5]);h.flush();assert.equal(h.commits.length,1);assert.equal(h.selected().length,0);
+  h.setProps({strokes:[{id:target.id,a:[0,0],b:[0,3]}]});h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,3]);assert.equal(h.commits.length,1);h.unmount();
+ });
+ it('finds a skipped endpoint, backwards and with release-only samples',()=>{
+  for(const reverse of [false,true]){const h=setup(),start:Cell=reverse?[0,3]:[0,0],end:Cell=reverse?[0,0]:[0,5];h.send('onPointerDown',start);h.send('onPointerMove',end);assert.deepEqual(h.commits,[{a:start,b:reverse?[0,0]:[0,3]}]);h.unmount();}
+  const h=setup();h.send('onPointerDown',[0,0]);h.send('onPointerUp',[0,5]);assert.deepEqual(h.commits,[{a:[0,0],b:[0,3]}]);h.unmount();
+ });
+ it('keeps legacy touch handoff to one commit and filters locked or already found words',()=>{
+  const h=setup();h.send('onPointerDown',[0,0]);h.native('touchstart',[[0,0]]);h.native('touchmove',[[0,3]]);h.send('onPointerMove',[0,5]);h.native('touchend',[],[[0,5]]);h.send('onPointerUp',[0,5]);assert.equal(h.commits.length,1);h.unmount();
+  const locked=setup();locked.setProps({earlyTargets:[]});locked.send('onPointerDown',[0,0]);locked.send('onPointerMove',[0,3]);assert.equal(locked.commits.length,0);locked.unmount();
+ });
+ it('leaves a short prefix selectable on release without blocking its longer target',()=>{
+  const h=setup(),long={...target,id:'1.0',group:1,label:'KALEM',text:'KALEM'};
+  h.setProps({board:{...board,grid:board.grid.map((row,r)=>r===0?row.map((ch,c)=>c===4?'M':ch):row)},earlyTargets:[target,long]});
+  h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,3]);assert.equal(h.commits.length,0);h.send('onPointerMove',[0,4]);assert.deepEqual(h.commits,[{a:[0,0],b:[0,4]}]);h.unmount();
+ });
 });

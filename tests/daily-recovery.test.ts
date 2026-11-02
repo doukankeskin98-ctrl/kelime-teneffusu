@@ -15,7 +15,7 @@ async function setup(){const f=fixture(Date.parse('2026-10-28T08:00Z')),daily=aw
 type Setup=Awaited<ReturnType<typeof setup>>;
 function session(f:Setup,storage:ReturnType<typeof tab>,request?:(intent:DailyIntent|null)=>Promise<DailyReply>){
  const calls:(DailyIntent|null)[]=[],received:DailyReply[]=[],confirmed:DailyIntent[]=[],states:DailyActionState[]=[],journal=dailyIntentStore(()=>storage,'alice',f.daily);
- const send=async(intent:DailyIntent|null):Promise<DailyReply>=>{try{return intent?intent.kind==='hint'?await f.game.dailyClaim('alice',f.daily.id,null,null,true,intent.requestId):await f.game.dailyClaim('alice',f.daily.id,intent.stroke.a,intent.stroke.b):await f.game.dailyState('alice',f.daily.id);}catch(e){if(e instanceof GameError)throw new DailyRequestError(e.message,e.status,e.code);throw e;}};
+ const send=async(intent:DailyIntent|null):Promise<DailyReply>=>{try{return intent?intent.kind==='hint'?await f.game.dailyClaim('alice',f.daily.id,null,null,true,intent.requestId,intent.targetId):await f.game.dailyClaim('alice',f.daily.id,intent.stroke.a,intent.stroke.b):await f.game.dailyState('alice',f.daily.id);}catch(e){if(e instanceof GameError)throw new DailyRequestError(e.message,e.status,e.code);throw e;}};
  const sync=new DailyActionSession({id:f.daily.id,day:f.daily.day,board:f.daily.board,isCurrent:()=>true,persistence:journal,request:async intent=>{calls.push(intent);return request?request(intent):send(intent);},receive:r=>received.push(r),state:s=>states.push(s),confirmed:i=>confirmed.push(i)});
  return{sync,journal,send,calls,received,confirmed,states,get phase(){return states.at(-1)?.phase;}};
 }
@@ -89,4 +89,21 @@ describe('terminal daily results preserve CAS and accepted receipts',()=>{
   const f=await setup();for(let i=0;i<2;i++)await f.game.dailyClaim('alice',f.daily.id,null,null,true);const old=holdWrite(f,'UPDATE dailies SET data='),flight=old.game.dailyClaim('alice',f.daily.id,null,null,true,key(1));await old.ready;await f.game.dailyClaim('alice',f.daily.id,null,null,true,key(2));
   const limit=(e:unknown)=>e instanceof GameError&&e.status===400&&e.code==='DAILY_HINT_LIMIT';await assert.rejects(()=>f.game.dailyClaim('alice',f.daily.id,null,null,true,key(1)),limit);old.release();await assert.rejects(()=>flight,limit);assert.equal(old.changes[0],0);assert.equal((await f.game.dailyClaim('alice',f.daily.id,null,null,true,key(2))).hints,3);assert.equal((await f.game.dailyState('alice',f.daily.id)).hints,3);
  });
+});
+
+
+describe('targeted hint survives tab recovery',()=>{
+ it('retains both target and receipt id after a lost response and reload',async()=>{
+  const f=await setup(),storage=tab(),target=f.board.placements.at(-1)!,intent:DailyIntent={kind:'hint',requestId:key(9),targetId:target.id};let first:ReturnType<typeof session>;
+  first=session(f,storage,async i=>{await first.send(i);throw new Error('Lost response');});await first.sync.act(intent);assert.deepEqual(first.journal.read(),intent);first.sync.dispose();
+  const next=session(f,storage);await next.sync.restore();await next.sync.retry();assert.equal(next.phase,'idle');assert.deepEqual(next.confirmed,[intent]);assert.deepEqual(next.received.at(-1)!.hintCell,target.a);assert.equal(next.received.at(-1)!.hints,1);next.sync.dispose();
+ });
+});
+
+
+it('unlocks an uncertain targeted hint when another client already found that target',async()=>{
+ const f=await setup(),storage=tab(),target=f.board.placements.at(-1)!,intent:DailyIntent={kind:'hint',requestId:key(8),targetId:target.id};let first:ReturnType<typeof session>;
+ first=session(f,storage,async i=>{if(i)throw new Error('Request lost');return first.send(i);});await first.sync.act(intent);assert.equal(first.phase,'uncertain');first.sync.dispose();
+ await f.game.dailyClaim('alice',f.daily.id,target.a,target.b);
+ const next=session(f,storage);await next.sync.restore();await next.sync.retry();assert.equal(next.journal.read(),null);assert.equal(next.confirmed.length,0);await next.sync.retry();assert.equal(next.phase,'idle');assert.equal(next.received.at(-1)!.hints,0);next.sync.dispose();
 });

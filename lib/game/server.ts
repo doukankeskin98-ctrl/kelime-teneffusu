@@ -297,7 +297,7 @@ export class GameService {
    await this.q('INSERT OR IGNORE INTO dailies(id,user_id,nickname,day,data,created) VALUES(?,?,?,?,?,?)',id,userId,p.nickname,day,JSON.stringify(data),now).run();
    const row=await this.q('SELECT id,data,revision FROM dailies WHERE user_id=? AND day=?',userId,day).first<DailyRow>();if(!row)throw new GameError('Günlük hazırlanamadı.',503);return this.dailyView(JSON.parse(row.data));
  }
- async dailyClaim(userId:string,id:string,a:unknown,b:unknown,hint=false,requestId?:unknown){
+ async dailyClaim(userId:string,id:string,a:unknown,b:unknown,hint=false,requestId?:unknown,targetId?:unknown){
    if(hint&&requestId!==undefined&&(typeof requestId!=='string'||! /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)))throw new GameError('İpucu işlemi doğrulanamadı.');
    for(let tries=0;tries<8;tries++){
      const row=await this.q('SELECT id,data,revision FROM dailies WHERE id=? AND user_id=?',id,userId).first<DailyRow>();if(!row)throw new GameError('Günlük oyun bulunamadı.',404);
@@ -312,7 +312,7 @@ export class GameService {
        continue;
      }
      const spec=dailySpec(d.day),board=makePuzzle(spec.themeId,spec.level,spec.seed);let hintCell:Cell|null=null;
-     if(hint){if(d.hints>=3)throw new GameError('Üç ipucunu da kullandın.',400,'DAILY_HINT_LIMIT');const remaining=board.placements.find(t=>!d.strokes.some(s=>s.id===t.id));if(remaining){d.hints++;hintCell=remaining.a;if(typeof requestId==='string')d.hintReceipts=[...(d.hintReceipts??[]),{id:requestId,cell:hintCell}].slice(-3);}}
+     if(hint){if(d.hints>=3)throw new GameError('Üç ipucunu da kullandın.',400,'DAILY_HINT_LIMIT');if(targetId!==undefined&&(typeof targetId!=='string'||!board.targets.some(t=>t.id===targetId)))throw new GameError('İpucu hedefi bulunamadı.');if(targetId!==undefined&&d.strokes.some(s=>s.id===targetId))throw new GameError('Bu kelime zaten bulundu. Yeni bir hedef seç.',409,'DAILY_HINT_TARGET_FOUND');const target=targetId??board.targets.find(t=>!d.strokes.some(s=>s.id===t.id))?.id,remaining=board.placements.find(t=>t.id===target);if(remaining){d.hints++;hintCell=remaining.a;if(typeof requestId==='string')d.hintReceipts=[...(d.hintReceipts??[]),{id:requestId,cell:hintCell}].slice(-3);}}
      else{const target=match(board,a,b);if(!target)throw new GameError('Bu seçim listedeki bir kelimeyi oluşturmuyor.');if(!d.strokes.some(s=>s.id===target.id))d.strokes.push({id:target.id,a:a as Cell,b:b as Cell});}
      if(d.strokes.length===board.targets.length){d.finished=this.clock();d.duration=Math.max(1,d.finished-d.starts)+d.hints*15000;}
      const r=await this.q('UPDATE dailies SET data=?,revision=revision+1,completed=?,duration=? WHERE id=? AND revision=?',JSON.stringify(d),d.finished!==null?1:0,d.duration,id,row.revision).run();

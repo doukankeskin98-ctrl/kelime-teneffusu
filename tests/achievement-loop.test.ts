@@ -81,7 +81,7 @@ describe('real home and victory markup',()=>{
  });
  it('distinguishes the current replay from the preserved best and never awards another piece',()=>{
   const p=first(1),best=p.saves['route:uzay-1']!,raw=JSON.stringify(p),html=result(p,'uzay-1',p,{stars:1,hints:3,seconds:90,best});
-  assert.match(html,/Bu parça albümünde/);assert.doesNotMatch(html,/YENİ PARÇAN SENİN|YENİ DÜNYA AÇILDI/);assert.match(html,/Bu tur 1 \/ 3 yıldız/);assert.match(html,/En iyi sonucun korunuyor/);assert.match(html,/3 yıldız · 0:45/);assert.equal(JSON.stringify(p),raw);
+  assert.match(html,/Bu parça daha önce kazanıldı/);assert.doesNotMatch(html,/YENİ PARÇAN SENİN|YENİ DÜNYA AÇILDI/);assert.match(html,/Bu tur 1 \/ 3 yıldız/);assert.match(html,/En iyi sonucun korunuyor/);assert.match(html,/3 yıldız · 0:45/);assert.equal(JSON.stringify(p),raw);
  });
  it('announces a personal best only when the real caller confirms it and explains stars for standard play',()=>{
   const props={goal:null,rewards:[],stars:2,hints:1,seconds:25,total:4};const unknown=render(loop['VictorySummary'],props),known=render(loop['VictorySummary'],{...props,improved:true});
@@ -101,7 +101,7 @@ const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery
 describe('numbered journey home and real result',()=>{
  it('shows one primary action, the correct chapter and nearby reward without mode cards',()=>{
   const html=render(numberedHome['JourneyHome'],{progress:emptyProgress(),onPlay(){},onExplore(){}});
-  assert.match(html,/Oyna · 1\/6/);assert.match(html,/İlk yıldız/);assert.match(html,/3 KEŞİF SONRA/);assert.match(html,/Anadolu Patikası/);assert.equal((html.match(/class="button primary/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
+  assert.match(html,/Oyna · 1\/6/);assert.match(html,/İlk yıldız/);assert.match(html,/3 BÖLÜM SONRA/);assert.match(html,/Anadolu Patikası/);assert.equal((html.match(/class="button primary/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
  });
  it('continues an existing route and shows a truthful complete-catalogue state',()=>{
   const p=emptyProgress(),b=journeyBoard(journeyById('uzay-2')!);p.saves['route:uzay-2']=cleanSave({strokes:[b.placements[0]!],hints:0,elapsed:10,complete:false,stars:0},b);p.last={themeId:'uzay',level:0,journey:'uzay-2'};
@@ -112,7 +112,7 @@ describe('numbered journey home and real result',()=>{
  it('renders actual album before/after and the new world, then keeps replay unchanged',()=>{
   const before=first(2),p=finish(copy(before),'uzay-3'),props={before:achievement.journeyGoal(before,'uzay-3'),after:achievement.journeyGoal(p,'uzay-3'),rewards:discoveryRewards(before,p),save:p.saves['route:uzay-3']};
   let html=render(numberedResult['JourneyResult'],props);assert.match(html,/Albümün: 2\/6 → 3\/6 parça/);assert.match(html,/3\/6 parça/);assert.match(html,/YENİ DÜNYA AÇILDI/);assert.match(html,/Anadolu Patikası/);
-  html=render(numberedResult['JourneyResult'],{...props,before:props.after,rewards:[]});assert.match(html,/BU PARÇA ZATEN SENİN/);assert.match(html,/Albümün: 3\/6 → 3\/6 parça/);assert.match(html,/3\/6 parça/);assert.doesNotMatch(html,/YENİ DÜNYA AÇILDI/);
+  html=render(numberedResult['JourneyResult'],{...props,before:props.after,rewards:[]});assert.match(html,/ALBÜMÜNDEKİ PARÇA/);assert.match(html,/Albümün: 3\/6 → 3\/6 parça/);assert.match(html,/3\/6 parça/);assert.doesNotMatch(html,/YENİ DÜNYA AÇILDI/);
  });
  it('explains tutorial reward status and displays no permanent stars',()=>{
   const html=render(loop['VictorySummary'],{goal:null,rewards:[],stars:3,hints:0,seconds:15,total:3,tutorial:true});assert.match(html,/ilk bölümüne geç/);assert.doesNotMatch(html,/victory-stars|Bu tur 3|Yıldızlar nasıl/);
@@ -129,15 +129,15 @@ it('numbered result announces the actually unlocked album finale without awardin
 const storyScenes=component('components/game/StoryScene.tsx',{});
 const storyExperience=component('components/game/StoryExperience.tsx',{'./StoryScene':storyScenes});
 describe('actual story collection, clue scene and result markup',()=>{
- it('leads a completed story collection forward and keeps replays explicit',()=>{const p=emptyProgress();for(const story of stories.LIVING_STORIES){const b=journeyBoard(story);p.saves['route:'+story.id]=cleanSave({strokes:b.placements,hints:0,elapsed:20,complete:false,stars:0},b);}const html=render(storyExperience['StoryShelf'],{progress:p,onPlay(){},onJourney(){}});assert.match(html,/Bölüm yolculuğuna geç/);assert.match(html,/5\/5/);assert.doesNotMatch(html,/Hikâyeye başla|Hikâyene devam et/);});
+ it('leads a completed story collection forward and keeps replays explicit',()=>{const p=emptyProgress();for(const story of stories.LIVING_STORIES){const b=journeyBoard(story);p.saves['route:'+story.id]=cleanSave({strokes:b.placements,hints:0,elapsed:20,complete:false,stars:0},b);}const html=render(storyExperience['StoryShelf'],{progress:p,onPlay(){},onJourney(){}});assert.match(html,/Bölüm yolculuğuna geç/);assert.match(html,/5\/5/);assert.doesNotMatch(html,/Hikâyeye başla|Devam et/);});
  it('shows five distinct scenes with truthful empty and partial album states',()=>{
   const p=emptyProgress(),story=stories.LIVING_STORIES[0]!,b=journeyBoard(story);
   const empty=render(storyExperience['StoryCollection'],{progress:p,onPlay(){},album:true});assert.match(empty,/0\/5/);assert.equal((empty.match(/class="story-card"/g)??[]).length,5);assert.doesNotMatch(empty,/is-complete/);
   p.saves['route:'+story.id]=cleanSave({strokes:[b.placements.find(p=>p.text==='KIYI')!],elapsed:10,hints:0,complete:false,stars:0},b);
-  const home=render(storyExperience['StoryShelf'],{progress:p,onPlay(){}});assert.match(home,/Hikâyene devam et/);assert.match(home,/1\/4 adım/);assert.match(home,/0\/5/);
+  const home=render(storyExperience['StoryShelf'],{progress:p,onPlay(){}});assert.match(home,/Devam et/);assert.match(home,/1\/4 adım/);assert.match(home,/0\/5/);
  });
  it('never labels undiscovered step answers and explains stars independently of speed',()=>{
   const story=stories.LIVING_STORIES[0]!,b=journeyBoard(story),hud=render(storyExperience['StoryHud'],{story,stage:1,hints:1});assert.match(hud,/aria-label="KIYI"/);assert.doesNotMatch(hud,/FENER|YELKEN|LİMAN/);assert.match(hud,/Tamamlarsan 2 yıldız/);
-  const save=cleanSave({strokes:b.placements,elapsed:44,hints:1,complete:false,stars:0},b),result=render(storyExperience['StoryResult'],{story,save,best:{...save,stars:3,elapsed:20}});assert.match(result,/HATIRANI YENİDEN/);assert.match(result,/2 yıldız/);assert.match(result,/0:44/);assert.match(result,/Süre yıldızları etkilemez/);assert.match(result,/En iyi sonucun albümünde korunur/);assert.doesNotMatch(result,/ALBÜMÜNE BİR HATIRA/);
+  const save=cleanSave({strokes:b.placements,elapsed:44,hints:1,complete:false,stars:0},b),result=render(storyExperience['StoryResult'],{story,save,best:{...save,stars:3,elapsed:20}});assert.match(result,/TEKRAR TAMAMLANDI/);assert.match(result,/2 yıldız/);assert.match(result,/0:44/);assert.match(result,/Süre yıldızları etkilemez/);assert.match(result,/En iyi sonucun albümünde korunur/);assert.doesNotMatch(result,/ALBÜMÜNE BİR HATIRA/);
  });
 });
