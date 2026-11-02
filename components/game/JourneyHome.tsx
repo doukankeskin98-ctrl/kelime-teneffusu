@@ -1,5 +1,5 @@
 'use client';
-import {useState} from 'react';
+import {useEffect,useState} from 'react';
 import {ArrowRight,BookOpen,Check,Compass,Gift,Lock,Map,Play,RotateCcw,Sparkles,Star} from 'lucide-react';
 import type {Progress} from '@/lib/game/progress';
 import {MAIN_JOURNEY,mainJourneyChapters,mainJourneyState,nextMainMilestone} from '@/lib/game/main-journey';
@@ -11,8 +11,9 @@ import {StoryShelf} from './StoryExperience';
 import {RiddleShelf} from './RiddleShelf';
 import {Modal} from './common';
 
-export function JourneyHome({progress,onPlay,onExplore,initialView='stories',onViewChange}:{progress:Progress;onPlay:(config:SoloConfig)=>void;onExplore:()=>void;initialView?:'stories'|'journey';onViewChange?:(view:'stories'|'journey')=>void}){
+export function JourneyHome({progress,onPlay,onExplore,initialView='journey',onViewChange}:{progress:Progress;onPlay:(config:SoloConfig)=>void;onExplore:()=>void;initialView?:'stories'|'journey';onViewChange?:(view:'stories'|'journey')=>void}){
  const [mapOpen,setMapOpen]=useState(false),[view,setLocalView]=useState<'stories'|'journey'>(initialView);
+ useEffect(()=>setLocalView(initialView),[initialView]);
  const setView=(next:'stories'|'journey')=>{setLocalView(next);onViewChange?.(next);};
  const state=mainJourneyState(progress),current=state.current,goal=journeyGoal(progress,current?.chapter.id),milestone=nextMainMilestone(progress),chapters=mainJourneyChapters(progress);
  const index=current?current.number-1:MAIN_JOURNEY.length-1,start=Math.max(0,Math.min(index-2,MAIN_JOURNEY.length-5)),nearby=chapters.slice(start,start+5);
@@ -21,6 +22,7 @@ export function JourneyHome({progress,onPlay,onExplore,initialView='stories',onV
  return <section className="journey-home studio-journey page-enter" aria-labelledby={view==='stories'?'story-home-title':'journey-home-title'}>
   <header className="journey-home-intro"><span><Sparkles size={14}/>KÜÇÜK BİR MOLA, BÜYÜK BİR KEŞİF</span><button className="journey-map-trigger" onClick={()=>setMapOpen(true)} aria-label="Bütün yolculuk bölümlerini aç"><Map size={17}/>{state.completed}/{state.total}</button></header>
   <div className="journey-view-switch" aria-label="Yolculuğunu seç"><button aria-pressed={view==='stories'} onClick={()=>setView('stories')}>Canlanan hikâyeler</button><button aria-pressed={view==='journey'} onClick={()=>setView('journey')}>Bölüm yolculuğu</button></div>
+  {!progress.tutorialDone&&<button className="journey-first-steps" onClick={()=>onPlay({themeId:'uzay',level:0,tutorial:true})}><span className="first-steps-icon"><Sparkles size={20}/></span><span><b>İlk keşfini birlikte yapalım</b><small>Üç kelimeyle çizerek seçmeyi öğren.</small></span><ArrowRight size={18}/></button>}
   <div hidden={view!=='stories'}><StoryShelf progress={progress} onPlay={onPlay}/><button className="story-journey-link" onClick={()=>setView('journey')}><Compass size={21}/><span><b>96 bölümlük yolculuğun</b><small>{state.completed} bölüm tamam · Kaldığın yer burada</small></span><ArrowRight size={19}/></button></div>
   <div className="journey-classic-panel" hidden={view!=='journey'}>
   {current&&goal?<article className="journey-home-card">
@@ -33,7 +35,6 @@ export function JourneyHome({progress,onPlay,onExplore,initialView='stories',onV
   </article>:<article className="journey-home-card journey-end"><JourneyScene theme="turkiye"/><div className="journey-finale-copy"><span className="journey-section-label">NE YOLCULUK AMA!</span><h1 id="journey-home-title">Her dünyada<br/>bir izin var.</h1><p>{state.total} bölümün hepsi tamam. Sevdiğin keşiflere dön, yıldızlarını parlat veya yepyeni bir İpucu Avı’na çık.</p><button className="button primary full" onClick={()=>setMapOpen(true)}>Yolculuğumu aç<ArrowRight size={19}/></button></div></article>}
   {goal&&<section className="journey-collection-card" aria-label="Sıradaki koleksiyon hedefin"><div className="journey-near-reward"><span className="reward-gift"><Gift size={24}/></span><div><small>BİR KELİME DAHA, BİR HATIRA DAHA</small><b>{goal.piece}</b><p>{goal.state.album.title} · {goal.state.pieces}/6 parça</p></div><BookOpen size={20}/></div><PieceTrail earned={goal.state.earned} current={goal.position}/>{milestone&&<p className="journey-milestone"><Sparkles size={16}/><span><b>{milestone.remaining} bölüm sonra</b> {milestone.title}{milestone.kind==='world'?' seni bekliyor.':' albümün tamam.'}</span></p>}</section>}
   <button className="journey-explore-card" onClick={onExplore}><span className="explore-card-icon"><Compass size={25}/></span><span><b>Canın başka bir keşif mi çekti?</b><small>Dünyalar, hızlı turlar ve günlük hikâyeler</small></span><ArrowRight size={20}/></button>
-  {!progress.tutorialDone&&<button className="text-button journey-tutorial-link" onClick={()=>onPlay({themeId:'uzay',level:0,tutorial:true})}>İlk kez mi oynuyorsun? Birlikte deneyelim <ArrowRight size={15}/></button>}
   <RiddleShelf progress={progress} onPlay={onPlay}/>
   </div>
   {mapOpen&&<Modal className="chapter-picker" title="Senin yolculuğun" onClose={()=>setMapOpen(false)}><p className="chapter-picker-intro">{state.completed} keşif tamamlandı. Bir bölüm seç, hikâyene devam et.</p>{worlds.map(worldId=>{const items=chapters.filter(c=>c.world.expedition.id===worldId),world=items[0]!.world;return <section className={'chapter-picker-world'+(!world.unlocked?' is-locked':'')} key={worldId}><header><span>{world.expedition.place}</span><div><h3>{world.expedition.title}</h3><p>{world.unlocked?`${world.pieces}/6 albüm parçası`:`${world.previousTitle}: ${world.remaining} keşif sonra açılır`}</p></div>{world.complete?<Check size={19}/>:!world.unlocked?<Lock size={18}/>:<Compass size={20}/>}</header><div className="chapter-picker-grid">{items.map(item=><button key={item.chapter.id} disabled={!item.unlocked} onClick={()=>play(item)} className={(item.complete?'is-complete ':'')+(item.number===current?.number?'is-current':'')} aria-label={`Bölüm ${item.number}: ${item.chapter.title} · ${item.complete?'Tekrar oyna':item.unlocked?'Oyna':'Kilitli'}`}><span>{item.complete?<RotateCcw size={15}/>:!item.unlocked?<Lock size={15}/>:<Play size={14}/>}<b>{item.number}</b></span><small>{item.complete?<span aria-label={`${item.stars} yıldız`}>{[0,1,2].map(i=><Star key={i} size={10} fill={i<item.stars?'currentColor':'none'}/>)}</span>:item.world.bonus.id===item.chapter.id?'Albüm finali':item.continuing?'Devam et':item.chapter.difficulty}</small></button>)}</div>{world.unlocked&&!world.bonusUnlocked&&<p className="chapter-bonus-note"><Gift size={14}/>Beş keşfi tamamla, albüm finalini aç.</p>}</section>})}</Modal>}

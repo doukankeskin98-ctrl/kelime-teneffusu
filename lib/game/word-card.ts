@@ -1,4 +1,8 @@
 import type {Target,Stroke} from './engine.ts';
+/** Only short, single-part normal targets fit the two/three-row phone rack. */
+export function compactWordRack(board:{targets:Target[]},clues?:Record<string,string>){
+ return !clues&&board.targets.length>1&&board.targets.length<=9&&new Set(board.targets.map(t=>t.group)).size===board.targets.length&&board.targets.every(t=>t.label.length<=9&&!/\s/.test(t.label));
+}
 /** Clue mode must not leak the answer through its accessible label. */
 export function wordCardCopy(target:Pick<Target,'text'|'label'>,done:boolean,clues?:Record<string,string>){
  const clue=clues?.[target.text];

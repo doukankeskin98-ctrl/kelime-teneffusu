@@ -1,4 +1,6 @@
 import {makeCustomPuzzle,match,type Cell,type Puzzle,type Stroke} from './engine.ts';
+import {emptySprintHistory,mergeSprintHistory,rememberSprintBoard,variedSprintBoard,type SprintHistory} from './sprint-history.ts';
+export {parseSprintHistory,sprintHistoryKey,mergeSprintHistory} from './sprint-history.ts';
 export const SPRINT_DURATION=60000,CHAIN_WINDOW=7000;
 const WORDS=['BULUT','GÜNEŞ','YILDIZ','ROKET','UZAY','AY','ORMAN','YAPRAK','ÇİÇEK','DAL','KUŞ','DENİZ','KUM','DALGA','YELKEN','ADA','NOTA','RİTİM','GİTAR','PLAK','KİTAP','KALEM','RENK','MASAL'];
 export function sprintBoard(seed:number,round:number):Puzzle{
@@ -6,16 +8,20 @@ export function sprintBoard(seed:number,round:number):Puzzle{
  for(let i=pool.length-1;i>0;i--){n=(Math.imul(n,1664525)+1013904223)>>>0;const j=n%(i+1);[pool[i],pool[j]]=[pool[j]!,pool[i]!];}
  return makeCustomPuzzle(pool.slice(0,4),seed+round*8191,6);
 }
-export interface SprintState{phase:'ready'|'countdown'|'active'|'finished';seed:number;board:Puzzle;round:number;strokes:Stroke[];score:number;words:number;chain:number;bestChain:number;lastAt:number;starts:number;ends:number;nextAt:number;award:number;label:string;now:number}
-export const freshSprint=(seed:number):SprintState=>({phase:'ready',seed,board:sprintBoard(seed,0),round:0,strokes:[],score:0,words:0,chain:0,bestChain:0,lastAt:0,starts:0,ends:0,nextAt:0,award:0,label:'',now:0});
-export type SprintAction={type:'start';now:number}|{type:'tick';now:number}|{type:'select';now:number;a:Cell;b:Cell};
+export interface SprintState{phase:'ready'|'countdown'|'active'|'finished';seed:number;board:Puzzle;history:SprintHistory;round:number;strokes:Stroke[];score:number;words:number;chain:number;bestChain:number;lastAt:number;starts:number;ends:number;nextAt:number;award:number;label:string;now:number}
+export const freshSprint=(seed:number):SprintState=>({phase:'ready',seed,board:variedSprintBoard(seed,0,emptySprintHistory()),history:emptySprintHistory(),round:0,strokes:[],score:0,words:0,chain:0,bestChain:0,lastAt:0,starts:0,ends:0,nextAt:0,award:0,label:'',now:0});
+export type SprintAction={type:'start';now:number;history?:SprintHistory}|{type:'tick';now:number;history?:SprintHistory}|{type:'select';now:number;a:Cell;b:Cell};
 export function sprintReducer(s:SprintState,a:SprintAction):SprintState{
- if(a.type==='start')return s.phase==='ready'?{...s,phase:'countdown',starts:a.now+3000,ends:a.now+3000+SPRINT_DURATION,now:a.now}:s;
+ if(a.type==='start'){
+  if(s.phase!=='ready')return s;
+  const history=a.history?mergeSprintHistory(s.history,a.history):s.history,board=variedSprintBoard(s.seed,0,history);
+  return {...s,board,history:rememberSprintBoard(history,board),phase:'countdown',starts:a.now+3000,ends:a.now+3000+SPRINT_DURATION,now:a.now};
+ }
  if(s.phase==='ready'||s.phase==='finished')return s;
  if(a.now>=s.ends)return {...s,now:a.now,phase:'finished'};
  if(a.type==='tick'){
   if(s.phase==='countdown'&&a.now>=s.starts)return {...s,phase:'active',now:a.now};
-  if(s.nextAt&&a.now>=s.nextAt)return {...s,board:sprintBoard(s.seed,s.round),strokes:[],nextAt:0,now:a.now};
+  if(s.nextAt&&a.now>=s.nextAt){const history=a.history?mergeSprintHistory(s.history,a.history):s.history,board=variedSprintBoard(s.seed,s.round,history);return {...s,board,history:rememberSprintBoard(history,board),strokes:[],nextAt:0,now:a.now};}
   return {...s,now:a.now};
  }
  if(s.phase!=='active'||a.now<s.starts||s.nextAt)return s;

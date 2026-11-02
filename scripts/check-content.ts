@@ -1,3 +1,4 @@
+import {SPRINT_WORDS} from '../lib/game/sprint-vocabulary.ts';
 import {freshArenaPuzzle} from '../lib/game/arena-fresh.ts';
 import {ARENA_CLUES,ARENA_LIBRARY} from '../lib/game/arena-library.ts';
 import {groupPuzzle,groupRiddlePuzzle} from '../lib/game/group-content.ts';
@@ -36,3 +37,12 @@ for(const options of [{group:true,clue:true},{group:true},{group:false}])for(let
  for(const p of c.board.placements){const cells=exactLine(p.a,p.b,c.board.size);assert(cells);assert.equal(cells.map(([r,col]):string=>c.board.grid[r]![col]!).join(''),p.text);}
 }
 console.log(`${ARENA_CLUES.length} Arena definitions / ${ARENA_LIBRARY.length} words;96 fresh competition boards passed.`);
+
+const knownWords=new Set(ARENA_LIBRARY.map(e=>e.word));
+assert.equal(new Set(SPRINT_WORDS).size,SPRINT_WORDS.length);
+for(let offset=0;offset<SPRINT_WORDS.length;offset+=4){
+ const words=Array.from({length:4},(_,i)=>SPRINT_WORDS[(offset+i)%SPRINT_WORDS.length]!);
+ for(const word of words)assert(knownWords.has(word)&&/^[A-ZÇĞİÖŞÜ]{3,6}$/.test(word));
+ for(let seed=1;seed<=5;seed++){const board=makeCustomPuzzle(words,seed,6,'any');assert.equal(board.size,6);assert.equal(board.targets.length,4);for(const p of board.placements){const cells=exactLine(p.a,p.b,6);assert(cells);assert.equal(cells.map(([r,c])=>board.grid[r]![c]!).join(''),p.text);}}
+}
+console.log(`${SPRINT_WORDS.length} reviewed fast-play words passed small-board checks.`);
