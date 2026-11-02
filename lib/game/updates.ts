@@ -1,4 +1,5 @@
 export const GAME_UPDATES=[
+ {version:'0.24.1',date:'2 Kasım 2026',title:'Hızlı Tur tek dokunuşla başlasın',items:[{where:'Hızlı Tur · Başlat',detail:'Art arda dokunsan da yalnız bir tur başlar. Görmediğin ek tahtalar kelime geçmişine yazılmaz; süre, puan ve rekor kuralları aynı.'}]},
  {version:'0.24.0',date:'2 Kasım 2026',title:'Daha net oyun, daha çok çeşitlilik',items:[
   {where:'Mobil oyun',detail:'Kısa kelimeler tahtanın üzerinde birlikte görünür; hedefini seç, bulduklarını tek bakışta takip et. Uzun tanımlar tek kartta kalır, tüm liste bir dokunuş uzakta.'},
   {where:'Yolculuk',detail:'Ana keşif kaldığın bölümü öne çıkarır. Hikâye veya bölüm tercihin bu cihazda hatırlanır. İlk keşif yalnız tamamlandığında bitmiş sayılır.'},

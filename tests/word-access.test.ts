@@ -329,6 +329,11 @@ describe('mobile target navigation keeps the puzzle authoritative',()=>{
 
 
 describe('clear phone targets and persisted fast play',()=>{
+ it('records only the displayed board when the same start callback is invoked rapidly before repaint',()=>{
+  const values=new Map<string,string>(),h=view('components/game/Sprint.tsx',{'./common':commonStubs,...modules},undefined,values);
+  try{h.start('__SprintRun',{seed:914,owner:'alice',progress:progress.emptyProgress(),onProgress(){},onBack(){},onReplay(){}});const click=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'))!.props['onClick'];click();click();click();h.paint();const board=h.find('PlayLayout').props['board'],history=sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!);assert.equal(history.sequence,1);assert.equal(history.sets.length,1);assert.deepEqual(Object.keys(history.words).sort(),board.targets.map((t:any)=>t.text).sort());assert.equal(Object.keys(history.words).length,4);assert.equal(h.find('PlayLayout').props['paused'],true);}finally{h.close();}
+ });
+
  it('uses the compact rack only for short normal words and never changes the authoritative board',()=>{
   const board=engine.makeCustomPuzzle(['BULUT','ORMAN','KİTAP','DENİZ'],81,6);
   for(const clues of [undefined,{BULUT:'Gökyüzündeki su damlacıkları.'}]){const h=shared({board,wordList:{board,strokes:[],clues}});try{const wrapper=walk(h.tree).find(n=>String(n.props['className']).startsWith('viewport-targets'))!;assert.equal(wrapper.props['className'].includes('has-word-rack'),!clues);assert.equal(h.find('Board').props['board'],board);}finally{h.close();}}
