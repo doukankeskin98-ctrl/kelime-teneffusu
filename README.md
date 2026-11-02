@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.24.1 · Hızlı Tur tek başlangıç
+
+Başlat düğmesine aynı render içinde art arda basmak yalnız bir başlangıç ve görünür tahtanın dört kelimesini kaydeder; gösterilmeyen ek tahtalar görülmüş sayılmaz.0.24 mobil hedef rafı, ana ekran tercihi, öğretici, Sprint geçmişi/rekoru ve Arena korunur. Bugünün Fırın vitrini/Müze gezisi çifti çoğaltılmaz. Kanıt/sınırlar studio-agents/journal/entries/2026-11-02_evening-start.md.
+
 ## 0.24.0 · Daha net oyun, oturumlar arasında çeşitlilik
 
 Kısa normal hedefler mobilde kompakt bir listede birlikte görünür; uzun/parçalı adlar ve bilmeceler tek hedef kartı + tam listeyi kullanır. Tahta, kayıtlı içerik ve dokunma kuralları değişmez. Ana giriş numaralı yolculuktur; hikâye/yolculuk tercihi cihazda oyuncuya özel saklanır. İlk öğreticiden erken çıkış tamamlandı sayılmaz.
