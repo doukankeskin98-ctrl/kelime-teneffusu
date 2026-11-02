@@ -1,5 +1,7 @@
 # Öncelikler
 
+3 Kasım 2026,0.25.0: resimli sahne, sade tahta, Solo görünüm döndürme ve giriş–sonuç devamlılığı. Gerçek mobil önizleme ve etkileşim kanıtı scenic-decision kaydında; fiziksel iPhone Safari/dokunma ve oyuncu gözlemi açık.
+
 2 Kasım akşam,0.24.1: hızlı yinelenen Sprint başlangıcı yalnız görünür tahtayı kaydeder. Kabul/kanıt ../journal/entries/2026-11-02_evening-start.md.0.24 gerçek yerel tarayıcı kanıtı korunur; fiziksel cihaz/provider/PWA ayrı açık kabul.
 
 2 Kasım2026,0.24.0: mobil hedef görünürlüğü, kaldığın yolculuk ve 714 kelimeli kalıcı cihaz Sprint geçmişi. Kabul/kanıt ../journal/entries/2026-11-02_professional-decision.md. Fiziksel iPhone/Android dokunma ve ses, gerçek oyuncu gözlemi ve kurulu PWA açık; tarayıcı önizlemesi fiziksel cihaz testi değildir.

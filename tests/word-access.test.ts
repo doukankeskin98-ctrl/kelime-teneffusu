@@ -1,3 +1,5 @@
+import * as scenePresentation from '../lib/game/scene.ts';
+import * as boardPresentation from '../lib/game/board-view.ts';
 import * as stories from '../lib/game/story-content.ts';
 import * as riddles from '../lib/game/riddle-content.ts';
 import * as legacyUI from '../lib/game/legacy-ui.ts';
@@ -33,12 +35,31 @@ function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown,s
  const hooks={useState(initial:any){const i=cursor++,s=slots[i]??={value:i===0&&seedFirst!==undefined?seedFirst:typeof initial==='function'?initial():initial};return[s.value,(n:any)=>{const v=typeof n==='function'?n(s.value):n;if(!Object.is(v,s.value)){s.value=v;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useId(){return(slots[cursor++]??={value:'id-'+(++id)}).value;},useMemo(fn:()=>any,deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;s.value=fn();}return s.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;effects.push(()=>{s.cleanup?.();const clean=fn();s.cleanup=typeof clean==='function'?clean:undefined;});}},useReducer(reducer:any,arg:any,init:any){const [v,set]=hooks.useState(()=>init(arg));return[v,(event:any)=>set((s:any)=>reducer(s,event))];}};
  class Clock extends Date{static override now(){return now;}}
  const source=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText+(file.endsWith('Sprint.tsx')?'\nexports.__SprintRun=SprintRun;':'');
- vm.runInNewContext(source,{exports,require:(name:string)=>name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddles:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/legacy-ui'?legacyUI:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize,fitGameFrame}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{innerHeight:640,matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:(key:string)=>storageValues?.get(key)??null,setItem:(key:string,value:string)=>storageValues?.set(key,value)},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void)=>{timeouts.set(++id,fn);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)});
+ vm.runInNewContext(source,{exports,require:(name:string)=>name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddles:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/legacy-ui'?legacyUI:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize,fitGameFrame}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{innerHeight:640,matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:(key:string)=>storageValues?.get(key)??null,setItem:(key:string,value:string)=>storageValues?.set(key,value)},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void)=>{timeouts.set(++id,fn);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)});
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<50;i++){if(dirty){dirty=false;cursor=0;tree=render();}if(commit)while(effects.length)effects.shift()!();}return tree;};
  return{exports,document,slots,frames,start(name:string,props:any,commit=true){render=()=>exports[name](props);return paint(commit);},paint,update(name:string,props:any){render=()=>exports[name](props);dirty=true;return paint();},find(type:string){const n=walk(tree).find(n=>n.type===type||typeof n.type==='function'&&n.type.name===type);assert.ok(n,type);return n;},async settle(){for(let i=0;i<30;i++){await Promise.resolve();paint();}},time(value:number){now=value;for(const fn of [...intervals.values()])fn();paint();},expire(){const f=[...timeouts.values()];timeouts.clear();for(const fn of f)fn();paint();},frame(){const f=[...frames.values()];frames.clear();for(const fn of f)fn();paint();},get tree(){return tree;},close(){for(const s of slots)s.cleanup?.();frames.clear();intervals.clear();timeouts.clear();}};
 }
 const base={title:'Keşif',kicker:'KELİMELER',onBack(){},board:content.TUTORIAL,strokes:[],paused:false,zoom:false,onCommit(){},preview:'',onPreview(){},children:null,aside:null,footer:null};
 function shared(props:any){const h=view('components/game/common.tsx');h.start('PlayLayout',{...base,...props});return h;}
+
+describe('rotated live layout keeps the original puzzle authoritative',()=>{
+ it('maps displayed ink, hint and selection back to the original board without changing targets',()=>{
+  const puzzle=content.TUTORIAL,stroke=puzzle.placements[0]!,commits:engine.Cell[][]=[],words={board:puzzle,strokes:[stroke]};
+  const props={...base,turned:true,wordList:words,strokes:[stroke],hint:stroke.a,onCommit:(a:engine.Cell,b:engine.Cell)=>commits.push([a,b])},h=shared(props);
+  try{
+   const display=h.find('Board'),map=(c:engine.Cell)=>boardPresentation.viewCell(c,puzzle.size,true);
+   assert.deepEqual(display.props['board'].grid,boardPresentation.boardView(puzzle,true).grid);
+   assert.deepEqual(display.props['hint'],map(stroke.a));assert.deepEqual(display.props['strokes'][0].a,map(stroke.a));
+   assert.equal(h.find('WordList').props['board'],puzzle);
+   display.props['onCommit'](map(stroke.a),map(stroke.b));assert.deepEqual(commits,[[stroke.a,stroke.b]]);
+   const rotatedKey=display.key;h.update('PlayLayout',{...props,turned:false});assert.notEqual(h.find('Board').key,rotatedKey);assert.equal(h.find('Board').props['board'],puzzle);
+  }finally{h.close();}
+ });
+ it('remounts a symmetric board when direction changes so pending gestures cannot survive',()=>{
+  const puzzle={...content.TUTORIAL,grid:Array.from({length:6},()=>Array(6).fill('A'))},h=shared({board:puzzle});
+  try{const key=h.find('Board').key;h.update('PlayLayout',{...base,board:puzzle,turned:true});assert.notEqual(h.find('Board').key,key);}finally{h.close();}
+ });
+});
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
 const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
 const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
@@ -137,7 +158,7 @@ describe('achievement loop uses real Solo results and compact target access',()=
  });
  it('shows one confirmed inline list outside the board, with no duplicate popup',()=>{
   const pending=[content.TUTORIAL.placements[0]!],words={board:content.TUTORIAL,strokes:[]},h=shared({wordList:words,strokes:pending,inlineTargets:true,focused:true});try{
-   assert.match(h.tree.props['className'],/focused-play inline-target-play/);assert.equal(walk(h.tree).filter(n=>typeof n.type==='function'&&n.type.name==='WordList').length,1);assert.equal(walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='BoardWords'),false);assert.equal(h.find('WordList').props['strokes'],words.strokes);assert.equal(h.find('Board').props['strokes'],pending);assert.equal(walk(walk(h.tree).find(n=>n.props['className']==='board-stage')).some(n=>typeof n.type==='function'&&n.type.name==='WordList'),false);
+   assert.match(walk(h.tree).find(n=>n.type==='section')!.props['className'],/focused-play inline-target-play/);assert.equal(walk(h.tree).filter(n=>typeof n.type==='function'&&n.type.name==='WordList').length,1);assert.equal(walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='BoardWords'),false);assert.equal(h.find('WordList').props['strokes'],words.strokes);assert.equal(h.find('Board').props['strokes'],pending);assert.equal(walk(walk(h.tree).find(n=>n.props['className']==='board-stage')).some(n=>typeof n.type==='function'&&n.type.name==='WordList'),false);
   }finally{h.close();}
  });
  it('carries one real route goal through confirmed completion and the existing next/replay callbacks',async()=>{

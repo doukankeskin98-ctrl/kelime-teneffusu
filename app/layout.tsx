@@ -19,6 +19,7 @@ import "./professional.css";
 import "./living-stories.css";
 import "./board-first.css";
 import "./clear-play.css";
+import "./scenic-journey.css";
 
 export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',themeColor:'#f7f7ef'};
 
