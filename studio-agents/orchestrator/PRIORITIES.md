@@ -1,5 +1,7 @@
 # Öncelikler
 
+2 Kasım akşam,0.24.1: hızlı yinelenen Sprint başlangıcı yalnız görünür tahtayı kaydeder. Kabul/kanıt ../journal/entries/2026-11-02_evening-start.md.0.24 gerçek yerel tarayıcı kanıtı korunur; fiziksel cihaz/provider/PWA ayrı açık kabul.
+
 2 Kasım2026,0.24.0: mobil hedef görünürlüğü, kaldığın yolculuk ve 714 kelimeli kalıcı cihaz Sprint geçmişi. Kabul/kanıt ../journal/entries/2026-11-02_professional-decision.md. Fiziksel iPhone/Android dokunma ve ses, gerçek oyuncu gözlemi ve kurulu PWA açık; tarayıcı önizlemesi fiziksel cihaz testi değildir.
 
 2 Kasım2026,0.23.3: Fırın vitrini/Müze gezisi tek sabit çift; mevcut oyun/kayıt/Arena/güncelleme kodu korunur. Kabul/kanıt ../journal/entries/2026-11-02_maintenance.md. Fiziksel cihaz/ses, provider ve kurulu PWA ilk açık önceliklerdir; yeni faz yok.
