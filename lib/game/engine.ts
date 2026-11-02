@@ -25,7 +25,7 @@ export function makePuzzle(themeId: string, level: number, seed: number): Puzzle
   const minSize=Math.max(9+Math.floor(level/2),...targets.map(t=>t.text.length));
   return generatePuzzle(targets,themeId,level,seed,minSize);
 }
-export function makeCustomPuzzle(labels:string[],seed:number,size=7):Puzzle {
+export function makeCustomPuzzle(labels:string[],seed:number,size=7,diagonalPolicy:'both'|'any'='both'):Puzzle {
   const used=new Set<string>();
   const targets=labels.flatMap((label,group)=>splitWord(label).map((text,p)=>{
     const reverse=[...text].reverse().join('');
@@ -33,9 +33,9 @@ export function makeCustomPuzzle(labels:string[],seed:number,size=7):Puzzle {
     used.add(text);return {id:`${group}.${p}`,label,text,group};
   }));
   if(targets.length<2||targets.length>15)throw new Error('Bir tahtada 2–15 hedef olmalı.');
-  return generatePuzzle(targets,'authored-v1',0,seed,Math.max(6,Math.min(13,size),...targets.map(t=>t.text.length)));
+  return generatePuzzle(targets,'authored-v1',0,seed,Math.max(6,Math.min(13,size),...targets.map(t=>t.text.length)),diagonalPolicy);
 }
-function generatePuzzle(targets:Target[],themeId:string,level:number,seed:number,minSize:number):Puzzle {
+function generatePuzzle(targets:Target[],themeId:string,level:number,seed:number,minSize:number,diagonalPolicy:'both'|'any'='both'):Puzzle {
   if(minSize>13 || targets.some(t=>t.text.length<2)) throw new Error('Geçersiz kelime bankası');
   const order=[...targets].sort((a,b)=>b.text.length-a.text.length);
   const forced=[...targets].sort((a,b)=>a.text.length-b.text.length).slice(0,2);
@@ -47,7 +47,7 @@ function generatePuzzle(targets:Target[],themeId:string,level:number,seed:number
     for(let idx=0;idx<order.length;idx++) {
       const target=order[idx]!; const len=target.text.length;
       // Shorter diagonal targets avoid impossible crossings of full-width words.
-      const dirs=target.id===forced[0]!.id?[[1,1],[-1,-1]]:target.id===forced[1]!.id?[[1,-1],[-1,1]]:DIRECTIONS;
+      const dirs=diagonalPolicy==='any'?DIRECTIONS:target.id===forced[0]!.id?[[1,1],[-1,-1]]:target.id===forced[1]!.id?[[1,-1],[-1,1]]:DIRECTIONS;
       const choices: {a:Cell;b:Cell;dr:number;dc:number}[]=[];
       for(const dir of dirs){const dr=dir[0]!,dc=dir[1]!;
         for(let r=0;r<size;r++)for(let c=0;c<size;c++){
