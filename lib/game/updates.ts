@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.25.0',date:'3 Kasım 2026',title:'Kelimelerin içinden bir dünyaya',items:[
+  {where:'Yolculuk ve hikâyeler',detail:'Beş özgün resimli ortam, girişten oyun tahtasına ve bölüm sonucuna kadar sana eşlik ediyor. Yeni dünya ve albüm parçasına ne kadar kaldığını tek bakışta gör.'},
+  {where:'Oyun tahtası',detail:'Sade yüzey, belirgin harfler ve renkli kelime izleri. Solo oyunlarda ücretsiz döndürme ile tahtaya başka açıdan bak; buldukların ve ipuçların yerini korur.'},
+  {where:'Kaldığın yer',detail:'Bölümlerin, yıldızların ve hatıraların korunur. Tamamlanan hikâyelerden sonra yeni bölüm yolculuğu öne çıkar; yeniden oynamak senin seçimin.'}
+ ]},
  {version:'0.24.1',date:'2 Kasım 2026',title:'Hızlı Tur tek dokunuşla başlasın',items:[{where:'Hızlı Tur · Başlat',detail:'Art arda dokunsan da yalnız bir tur başlar. Görmediğin ek tahtalar kelime geçmişine yazılmaz; süre, puan ve rekor kuralları aynı.'}]},
  {version:'0.24.0',date:'2 Kasım 2026',title:'Daha net oyun, daha çok çeşitlilik',items:[
   {where:'Mobil oyun',detail:'Kısa kelimeler tahtanın üzerinde birlikte görünür; hedefini seç, bulduklarını tek bakışta takip et. Uzun tanımlar tek kartta kalır, tüm liste bir dokunuş uzakta.'},

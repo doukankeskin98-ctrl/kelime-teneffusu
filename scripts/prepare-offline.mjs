@@ -2,7 +2,7 @@ import {readdir,readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 const root=path.resolve('dist/client');
-async function walk(directory){const result=[];for(const e of await readdir(directory,{withFileTypes:true})){const file=path.join(directory,e.name);if(e.isDirectory())result.push(...await walk(file));else if(/\.(js|css|woff2)$/.test(e.name))result.push('/'+path.relative(root,file).split(path.sep).join('/'));}return result;}
+async function walk(directory){const result=[];for(const e of await readdir(directory,{withFileTypes:true})){const file=path.join(directory,e.name);if(e.isDirectory())result.push(...await walk(file));else if(/\.(js|css|woff2|webp)$/.test(e.name))result.push('/'+path.relative(root,file).split(path.sep).join('/'));}return result;}
 const assets=(await walk(root)).sort();
 if(!assets.length)throw new Error('Offline build needs client assets.');
 const version=createHash('sha256').update(assets.join('\n')).digest('hex').slice(0,12);
