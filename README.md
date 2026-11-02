@@ -1,5 +1,13 @@
 # Kelime Teneffüsü
 
+## 0.26.0 · Dünyadan bölüme, bölümden hatıraya
+
+16 dünyanın her biri özgün sahnesiyle giriş, oyun ve sonuç boyunca devam eder. Mevcut 96 bölümün konuları görünür; altı durak aynı dünya içinde ilerler. Kelime yardımı bölüm kimliğine bağlı olarak tam kelime → baş harf → saklı kelimeye geçer; bulunan cevap açılır. Kısa kutlama, gerçek koleksiyon parçası ve tek devam eylemi aynı akıştadır. Arena giriş/lobi/tahta/sonuç stadyum kimliğini paylaşır; ortak bulmaca ve kalıcı içerik geçmişi korunur. Hızlı Tur ve İpucu Avı da ortak sade araç düzenini kullanır.
+
+Bölüm kimlikleri ve küresel numaraları, kelimeler/tohumlar/tahtalar, 3/5/6 açılış eşikleri, kayıt/ödül şemaları değişmedi. Eski yarım bölüm kaldığı çizgilerle açılır. Parçalı gizli hedeflerde bildirim ve erişilebilir metin kalan cevabı açmaz; hedefin bulunması tahtayı kaydırmaz. Ek bağımlılık veya servis yok. 11 yeni WebP ile toplam 16 sahne yaklaşık 5 MB; üretim kaynakları `docs/world-art.md`.
+
+563 test / 120 grup, içerik denetimi, tip kontrolü ve üretim derlemesi geçti. Yerel tarayıcıda 360×568 ve 414×622 kullanılabilir alanlarda normal/gizli/bilmeceli tahtalar, döndürme, kayıtla dönüş ve gerçek bölüm sonuçları oynanarak görüldü. Arena aktif/sonuç görsel kontrolü açıkça etiketli örnek oyuncularla yapıldı; lobi gerçek yerel arayüzde açılıp kapatıldı. Fiziksel iPhone Safari, iki gerçek telefon, VoiceOver, FPS ve oyuncu tutma ölçülmedi. Sunucu/GitHub/yayın kanıtı `studio-agents/journal/entries/2026-11-03_world-renewal.md` içinde izlenir.
+
 ## 0.25.0 · Sahnenin içinde bir kelime yolculuğu
 
 Beş özgün resimli ortam, giriş–oyun–sonuç boyunca aynı dünya kimliğini taşır. Mobilde sade açık tahta, renkli izler, kısa hedef rafı ve tek bilmece; hikâye metni tahtayı aşağı itmez. Solo'da ücretsiz 180° döndürme yalnız görünümü değiştirir; kayıtlar, ipuçları ve seçim doğrulaması özgün koordinatlarla çalışır. Günlük rekabet tahtasında döndürme eklenmedi. Bitmiş beş hikâyenin ana eylemi yeni bölüm yolculuğuna gider; tekrar oynama açık bir seçimdir.
