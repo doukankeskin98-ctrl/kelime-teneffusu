@@ -1,4 +1,5 @@
 export const GAME_UPDATES=[
+ {version:'0.26.1',date:'3 Kasım 2026',title:'Daha rahat bir keşif',items:[{where:'Bölüm yolculuğu',detail:'Kelimelerin çoğu artık açık. İlk iki durakta gizli hedef yok; sonraki iki durakta yalnız bir baş harfli hedef, son iki durakta bir gizli ve bir baş harfli hedef var. İlerlemen ve bulduğun kelimeler korunur.'}]},
  {version:'0.26.0',date:'3 Kasım 2026',title:'Her dünya, yeni bir yolculuk',items:[
   {where:'16 dünya · 96 bölüm',detail:'Her dünyanın kendi manzarası, her bölümün bir konusu var. Altı duraklık yolunu tamamla; dünya seçimi, tahta ve sonuç aynı yolculuğun parçaları.'},
   {where:'Saklı kelimeler',detail:'İlerledikçe bazı kelimelerin yalnız ilk harfi, sonra yalnız harf sayısı kalır. Konudan yola çık; bulduğun cevap açılır. Çıkıp girince ilerlemen ve hedeflerin korunur.'},
