@@ -19,6 +19,10 @@
  .viewport-play .viewport-targets.has-word-rack .word-tag.found{background:#e8eedf!important;color:#5d7259;text-decoration:line-through;text-decoration-thickness:1px}
  .viewport-play .viewport-targets.has-word-rack .word-tag.golden{color:#805b18}
  .viewport-play .viewport-targets.has-word-rack .target-focus-button{min-width:0;min-height:44px}
+ .viewport-play .viewport-targets.has-word-rack.wide-word-rack>.word-list,.game-app .viewport-play .viewport-targets.has-word-rack.wide-word-rack>.word-list{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .viewport-play .wide-word-rack .word-tag>span{display:none}
+ .viewport-play .wide-word-rack .word-tag.golden{position:relative}
+ .viewport-play .wide-word-rack .word-tag.golden>b{position:absolute;right:1px;top:0;font-size:9px;line-height:1}
  .viewport-play .targets-panel{margin-bottom:0}
  .viewport-play .board-panel{background:#fffef9}
  .viewport-play .play-controls .icon-button,.viewport-play .duel-controls .icon-button{border-radius:12px;background:#f8faf3;border-color:#dbe4d3}
