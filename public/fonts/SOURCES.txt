@@ -1,0 +1,4 @@
+Manrope by Mikhail Sharanda / Manrope Project Authors. SIL Open Font License 1.1.
+Official source: https://github.com/google/fonts/tree/main/ofl/manrope
+Variable weight 200–800, latin and latin-ext subsets downloaded from fonts.googleapis.com on 2026-11-03.
+Font family alias Teneffus used only in CSS; font binaries are unmodified. See Manrope-OFL.txt.

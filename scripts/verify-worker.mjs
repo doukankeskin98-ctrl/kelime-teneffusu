@@ -36,16 +36,17 @@ try{
  const home=(await (await request('/')).text()).replace(/<!--[\s\S]*?-->/g,'');check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
  check(/<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(home),'production HTML declares a real device viewport and safe areas');
  check(home.includes('id="journey-home-title"')&&home.includes('stage-play')&&home.includes('Bölüm 1')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
- check(['Yolculuk','Arena','Koleksiyon','Günlük','Diğer oyunlar'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
- check(home.includes('Yıldız İskelesi')&&home.includes('stage-trail')&&EXPEDITIONS.length===20,'numbered journey exposes twenty independently registered routes');
+ check(['Yolculuk','Arena','Koleksiyon','Etkinlikler'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
+ check(home.includes('Yıldız İskelesi')&&home.includes('stage-trail')&&EXPEDITIONS.length===24,'numbered journey exposes twenty-four independently registered routes');
  check(home.includes('Gökyüzüne bak')&&home.includes('3 bölüm sonra')&&home.includes('Anadolu Patikası'),'home presents an actual album piece and upcoming world');
- const released=releaseCatalogue();check(home.includes('Diğer oyunlar'),'secondary exploration and archive entry remains visible');
- check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/120')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
+ const released=releaseCatalogue();check(home.includes('Etkinlikler'),'secondary exploration and archive entry remains visible');
+ check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/144')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
  check(home.includes('journey-stage')&&home.includes('/art/scenes/observatory-v1.webp'),'main journey presents the illustrated scene for its actual world');
  const offlineWorker=await readFile('dist/client/sw.js','utf8');
  for(const scene of ['observatory','harbor','garden','bakery','courtyard','bosphorus','school','valley','workshop','cassette','stadium','court','cinema','neighborhood','square','temple']){const asset='/art/scenes/'+scene+'-v1.webp';const image=await request(asset);check(image.headers.get('Content-Type')?.includes('image/webp'),'scene is served as WebP');check(offlineWorker.includes(asset),'illustrated scene is included in the offline installation');}
+ for(const asset of ['/fonts/manrope-latin.woff2','/fonts/manrope-latin-ext.woff2']){const font=await request(asset);check(font.headers.get('Content-Type')?.includes('font/woff2'),'bundled font served as woff2');check(offlineWorker.includes(asset),'bundled font available offline');}
  const themeId=released.chapters[0].spec.themeId,themeArchive=await json('/api/chapters?collection=releases&theme='+themeId);
  check(themeArchive.total===archive.themeCounts[themeId]&&themeArchive.chapters.every(c=>c.spec.themeId===themeId),'world catalogue filters before pagination and counts all releases in that world');
  check(themeArchive.companions.every(c=>!('board' in c))&&themeArchive.chapters.every(c=>releasePairs([...themeArchive.chapters,...themeArchive.companions]).some(p=>p.chapters.some(member=>member.id===c.id))),'world catalogue retains complete stamp pairs without exposing board paths');

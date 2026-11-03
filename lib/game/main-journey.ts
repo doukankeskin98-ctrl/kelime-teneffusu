@@ -1,3 +1,4 @@
+import {NATURE_CHAPTERS} from './nature-content.ts';
 import {COAST_CHAPTERS} from './coast-content.ts';
 import {journeyById} from './content.ts';
 import {discoveryState,EXPEDITIONS,nextJourneyAfter,expeditionForChapter} from './discovery.ts';
@@ -10,6 +11,7 @@ export const MAIN_JOURNEY_IDS:readonly string[]=[
  'hababam-2','hababam-3','turkiye-4','turkiye-5','turkiye-kartpostal','hababam-4','hababam-5','hababam-yillik',
  ...EXPEDITIONS.slice(3,16).flatMap(e=>[...e.chapterIds,`${e.id}-atlas-6`]),
  ...COAST_CHAPTERS.map(c=>c.id),
+ ...NATURE_CHAPTERS.map(c=>c.id),
 ];
 export const MAIN_JOURNEY=MAIN_JOURNEY_IDS.map((id,i)=>({number:i+1,chapter:journeyById(id)!}));
 export const mainChapter=(id?:string)=>MAIN_JOURNEY.find(item=>item.chapter.id===id)??null;
