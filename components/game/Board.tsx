@@ -9,7 +9,7 @@ import {advanceGesture,earlyWordEnd} from '@/lib/game/input-gesture';
 import {track} from '@/lib/game/telemetry';
 export const strokeColor=(id:string)=>`var(--word-${(Number(id.split('.')[0])||0)%8})`;
 type Drag={id:number;source:'pointer'|'touch';type:string;start:Cell;current:Cell;axis:Cell|null;moved:boolean;tapOnly:boolean;x:number;y:number;pan:boolean;rect:DOMRect};
-export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,blocked=false,busy=false,pan=false,statusText='Sunucu onayı bekleniyor.',zoom=false,hint,hintEnd,onCommit,onPreview,onSelectStart,onSelectLetter}:{board:Pick<Puzzle,'grid'|'size'>;strokes:Stroke[];earlyTargets?:Target[];paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;pan?:boolean;statusText?:string;zoom?:boolean;hint?:Cell|null;hintEnd?:Cell|null;onCommit:(a:Cell,b:Cell)=>void;onPreview?:(text:string)=>void;onSelectStart?:()=>void;onSelectLetter?:(depth:number)=>void}){
+export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,blocked=false,busy=false,pan=false,statusText='Sunucu onayı bekleniyor.',zoom=false,hint,hintEnd,onCommit,onPreview,onSelectStart,onSelectLetter,onSelectEnd}:{board:Pick<Puzzle,'grid'|'size'>;strokes:Stroke[];earlyTargets?:Target[];paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;pan?:boolean;statusText?:string;zoom?:boolean;hint?:Cell|null;hintEnd?:Cell|null;onCommit:(a:Cell,b:Cell)=>void;onPreview?:(text:string)=>void;onSelectStart?:()=>void;onSelectLetter?:(depth:number)=>void;onSelectEnd?:()=>void}){
  const selectionSound=useRef(false);
  const soundedCells=useRef(new Set<string>());
  const initialFound=useRef(new Set(strokes.map(s=>s.id)));
@@ -28,7 +28,9 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
   if(a&&b&&line){for(const [name,value] of Object.entries({x1:a[1]+.5,y1:a[0]+.5,x2:b[1]+.5,y2:b[0]+.5})){line.setAttribute(name,String(value));outlineRef.current?.setAttribute(name,String(value));}}
   inkRef.current?.setAttribute('data-active',cells.length?'true':'false');
  };
- const clear=()=>{selectionSound.current=false;soundedCells.current.clear();drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;setAnchor(null);paint([]);onPreview?.('');};
+ const endSelection=()=>{if(!selectionSound.current)return;selectionSound.current=false;onSelectEnd?.();};
+ const endSelectionRef=useRef(endSelection);endSelectionRef.current=endSelection;
+ const clear=()=>{endSelection();soundedCells.current.clear();drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;setAnchor(null);paint([]);onPreview?.('');};
  const clearRef=useRef(clear);clearRef.current=clear;
  useEffect(()=>{
   const blur=()=>clearRef.current(),visibility=()=>{if(document.hidden||!gameIsActive())clearRef.current();};
@@ -38,7 +40,7 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
  useEffect(()=>{if(paused||readOnly||blocked)clear();},[paused,readOnly,blocked]);
  useEffect(()=>{if(!busy)for(const stroke of strokes)confirmedFound.current.add(stroke.id);if(paused)for(const stroke of strokes)initialFound.current.add(stroke.id);},[strokes,busy,paused]);
  useEffect(()=>{clear();},[signature,zoom,pan]);
- useEffect(()=>{disabled.current=paused||readOnly||blocked;return ()=>{disabled.current=true;drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);};},[]);
+ useEffect(()=>{disabled.current=paused||readOnly||blocked;return ()=>{endSelectionRef.current();disabled.current=true;drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);};},[]);
  useEffect(()=>{const element=ref.current;if(!element)return;return attachBoardSize(element,n,zoom,(rect,reason)=>{
   // The live preview can reflow the frame. Keep the starting cell and rebase hit
   // testing instead of cancelling the gesture that caused that measurement.

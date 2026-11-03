@@ -1,3 +1,9 @@
+## 0.30.1 · Harf geçişi titreşimi
+
+Ortak harf sinyali artık iOS seçim titreşimine ulaşır; native generator ilk harften önce hazırlanır. Mantıksal seçim bittiğinde, ayar kapatıldığında, pause/blur/arka plan veya ekran değişiminde temizlenir. Tek native seçim işlemi ve gerçek değişim çağrısından 50 ms aralık; hızlı harfler kuyruk oluşturmaz, geciken hazırlık iptalden sonra titreşim üretmez. Kelime/bölüm başarı titreşimleri ayrı kalır. Ses ve titreşim tercihi bağımsız; varsayılan kapalı tercih ve web'in sessiz davranışı korunur.
+
+624 test/131 grup (65 hedef haptik/Board/hook testi), içerik denetimi, tip, web/mobil paket, Xcode simülatör derlemesi ve 628 Worker HTTP geçti. Tek dar bağımsız güvenilirlik incelemesinde engel yok. Bölüm/içerik/ilerleme/ödül/Arena kuralları değişmedi. Fiziksel iPhone'da titreşim yoğunluğu ve hissi ölçülmedi; simülatör bunu kanıtlamaz. Kabul: `studio-agents/journal/entries/2026-11-03-haptics-fix.md`; kaynak/yayın makbuzu `../world-review/release-0.30.1.json`.
+
 ## 0.30.0 · Kelime hissi ve Doğa Günlüğü
 
 Onaylanan yeni kelime, en fazla dört eşzamanlı ve 600 ms içinde temizlenen dekoratif ışık hareketi üretir. Ağ isteği beklerken, kayıtla yeniden girişte, döndürmede veya gizli/paused ekranda başarı üretilmez. Giriş, kayıt ve ödüller animasyon bitişine bağlı değildir. Aynı sahnede gerçek yıldızlar, kazanılmış hatıra, altı parça ilerlemesi ve sonraki konuyu gösteren devam düğmesi; kısa ses ritmi ve azaltılmış hareket desteği.

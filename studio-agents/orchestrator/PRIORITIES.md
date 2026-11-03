@@ -1,5 +1,7 @@
 # Öncelikler
 
+3 Kasım 2026, 0.30.1: iOS harf titreşimi, kuyruksuz native seçim yaşam döngüsü ve iptal temizliği tamamlandı. 624 test/65 hedef test, 628 Worker HTTP ve web/mobil/Xcode derlemesi geçti. Fiziksel Taptic Engine hissi ve gecikmesi açık kabul; web titreşimi kapalı. Kanıt `../journal/entries/2026-11-03-haptics-fix.md`.
+
 3 Kasım 2026, 0.30.0: ortak kelime/sonuç hareketi, paketli Türkçe tipografi, sade menü ve 24 yeni doğa bölümüyle 144 ana bölüm. Eski 120 tahta/ilerleme korunur. 611 test, 628 Worker HTTP, web/mobil/Xcode derlemesi ve gerçek mobil tarayıcı etkileşimi geçti. Fiziksel cihaz dokunma, iki cihaz Arena, ses/haptics ve FPS kabulü açık; App Store kapıları değişmedi. Kanıt `../journal/entries/2026-11-03-studio-polish.md`.
 
 3 Kasım 2026, 0.29.0: kullanıcı iOS test uygulamasına geçişi istedi. Paketli Capacitor/Xcode temeli hazır. Sıradaki kapılar güvenli eski kimlik/ilerleme aktarımı, uygulama içinden hesap silme, moderasyon, yayıncı politikaları ve fiziksel cihaz kabulü. Apple Developer hesabı henüz yok. Kaynak: `../../docs/app-store-readiness.md`; ayrıntı `../journal/entries/2026-11-03-ios-foundation.md`.

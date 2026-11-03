@@ -4,17 +4,18 @@ import {App} from '@capacitor/app';
 import {Haptics,ImpactStyle,NotificationType} from '@capacitor/haptics';
 import {GameApp} from '@/components/game/App';
 import {releaseCatalogue} from '@/lib/studio/releases';
-import {setNativeTransport,setGameActive} from '@/lib/platform/runtime';
+import {setNativeTransport,setGameActive,gameIsActive} from '@/lib/platform/runtime';
 import {nativeApiTransport} from '@/lib/platform/native-transport';
-import {setHapticsAdapter} from '@/lib/game/haptics';
+import {nativeHaptics} from '@/lib/platform/native-haptics';
+import {setHapticsAdapter,stopHapticSelection} from '@/lib/game/haptics';
 import '@/app/game-styles.css';
 import './native.css';
 if(Capacitor.isNativePlatform()){
  setNativeTransport(nativeApiTransport(options=>CapacitorHttp.request(options)));
- setHapticsAdapter(cue=>cue==='complete'?Haptics.notification({type:NotificationType.Success}):cue==='word'?Haptics.impact({style:ImpactStyle.Light}):Haptics.selectionChanged());
+ setHapticsAdapter(nativeHaptics({selectionStart:()=>Haptics.selectionStart(),selectionChanged:()=>Haptics.selectionChanged(),selectionEnd:()=>Haptics.selectionEnd(),word:()=>Haptics.impact({style:ImpactStyle.Light}),complete:()=>Haptics.notification({type:NotificationType.Success})},()=>gameIsActive()&&!document.hidden));
  void App.addListener('appStateChange',({isActive})=>{
   setGameActive(isActive);
-  if(!isActive)window.dispatchEvent(new Event('blur'));
+  if(!isActive){stopHapticSelection();window.dispatchEvent(new Event('blur'));}
   document.dispatchEvent(new Event('visibilitychange'));
   if(isActive){window.dispatchEvent(new Event('kt-sync-now'));window.dispatchEvent(new Event('kt-app-resume'));}
  });
