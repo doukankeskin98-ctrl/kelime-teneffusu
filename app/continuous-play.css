@@ -1,0 +1,69 @@
+/* One motion and control vocabulary for the game, including legacy entry paths. */
+:root{--tap-time:110ms;--panel-time:190ms;--settle-ease:cubic-bezier(.2,.85,.25,1)}
+.app-shell button,.game-app button,.game-dialog button{touch-action:manipulation;transition:transform var(--tap-time) var(--settle-ease),background-color 140ms,opacity 140ms}
+.app-shell button:active:not(:disabled),.game-app button:active:not(:disabled),.game-dialog button:active:not(:disabled){transform:scale(.97)}
+.app-shell button,.game-app button,.game-dialog button{font-family:var(--sans)}
+.game-dialog{font-family:var(--sans);animation:game-panel-in var(--panel-time) var(--settle-ease) both;border-radius:24px;border:1px solid #dce4d5;box-shadow:0 14px 55px #0b263536}
+.game-dialog .modal-head{min-height:60px;padding:14px 20px;border-bottom:1px solid #dce4d5}.game-dialog .modal-head h2{font-size:23px;font-weight:800;letter-spacing:-.04em}.game-dialog .modal-head .icon-button{border-radius:50%;box-shadow:none;min-width:40px;width:40px;height:40px}
+.game-dialog::backdrop{background:#0b243965;backdrop-filter:none}
+.game-dialog .modal-content{padding:16px 20px}.game-dialog select,.game-dialog input{font:inherit;min-height:44px}
+@keyframes game-panel-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+/* A frame is reserved before input so text changes cannot move the board. */
+.scenic-play .active-selection,.scenic-play .active-selection line{transition:none!important;animation:none!important}
+.scenic-play .letter-grid>span{transition:color 100ms,background-color 100ms;transform:none!important}
+.scenic-play .play-heading{min-height:48px}.scenic-play .play-title{position:relative;min-width:0}
+.scenic-play .mobile-selection>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.word-flight.word-flight-label{width:auto;height:auto;max-width:190px;padding:5px 12px;border-radius:20px;background:#f6d778;color:#173e36;box-shadow:0 3px 10px #102d3840;font:800 13px/1.2 var(--sans);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;will-change:transform,opacity}
+.scenic-play .found-stroke.is-new{animation:word-lock 240ms var(--settle-ease) both;transform-origin:center;transform-box:fill-box}
+@keyframes word-lock{0%{opacity:.75;stroke-width:.83}60%{opacity:1;stroke-width:.8}100%{opacity:1;stroke-width:.76}}
+@media(max-width:1100px) and (orientation:portrait){
+ .scenic-play .play-heading{height:52px;flex:0 0 52px;overflow:hidden}
+ .scenic-play .play-heading h1{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.15;font-size:19px}
+ .scenic-play .game-message{height:30px;min-height:30px;max-height:30px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:15px;margin:3px 0 0!important}
+ .scenic-play .mobile-targets{height:88px;min-height:88px}
+ .scenic-play .mobile-target-card>strong{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;line-height:17px}
+ .scenic-play .mobile-target-card>small{flex-shrink:0}
+ .scenic-play .viewport-targets.has-word-rack>.word-list{min-height:58px;align-content:center}
+ .scenic-play .solo-hud{height:34px;min-height:34px;white-space:nowrap}
+ .scenic-play .solo-clock,.scenic-play .duel-scorebar{font-variant-numeric:tabular-nums}
+ .scenic-play .play-controls{height:46px;min-height:46px}
+ .scenic-play .board-panel{padding:5px!important;border-radius:19px}
+ .scenic-play .board-scroll{padding:2px!important}
+}
+/* Scene celebration: the existing world remains visible behind the reward. */
+.modal.scenic-outcome.scene-result,.modal.achievement-modal.journey-outcome.scene-result{width:min(100%,480px);max-height:calc(100svh - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,#10384bdf,#123d47f2);border:1px solid #edf2d937;box-shadow:0 12px 60px #071f3440;border-radius:30px;overflow:hidden}
+.scene-result::backdrop{background:#0c2a444a;backdrop-filter:none}
+.scene-result .modal-head{justify-content:center;border:0;padding:20px 20px 4px;min-height:60px}.scene-result .modal-head h2{font-size:32px;letter-spacing:-.045em}.scene-result .modal-head>.icon-button{position:absolute;right:12px;top:12px;width:36px;height:36px;min-width:36px;color:#fff4d4;background:#ffffff13;box-shadow:none}
+.scene-result .modal-content{padding:4px 22px 12px}.scene-result .modal-actions{border:0;background:transparent;padding:10px 24px 22px}.scene-result .modal-actions .primary{min-height:58px;font-size:18px}
+.scene-result .result-star-stage{height:110px;margin:2px 0 6px}.scene-result .result-star{animation-duration:420ms;animation-delay:calc(var(--star-index)*90ms);width:57px;height:57px}.scene-result .result-star:nth-child(2){width:76px;height:76px}
+.scene-result .result-mastery{margin:0 0 14px!important;font-size:15px}.scene-result .result-keepsake{background:#ffffff0d;border:1px solid #ffffff18;border-radius:18px;box-shadow:none;padding:12px;animation:reward-reveal 260ms 160ms both}.scene-result .result-keepsake-art{flex-basis:52px;height:58px}.scene-result .result-keepsake h3{font-size:19px!important}.scene-result .result-album-progress{padding:12px 4px 4px}.scene-result .world-result-heading{font-size:13px;margin-bottom:0}.scene-result .journey-result-details{margin-top:10px}.scene-result .achievement-secondary{margin-top:8px}.scene-result .achievement-secondary .text-button{min-height:40px;font-size:11px;opacity:.85}
+.scene-result .story-result-art{display:none}.scene-result .story-result h2{font-size:24px}.scene-result .story-star-rule{display:none}
+.extra-games{max-width:620px;margin:8px auto 24px}.extra-games-heading{padding:6px 4px 16px}.extra-games-heading>span{font-size:12px;color:#698274}.extra-games-heading h1{font-size:26px;font-weight:800;margin-top:5px;letter-spacing:-.04em}.extra-games-menu{gap:10px}.extra-games-menu button{min-height:74px;background:#fffdf7;border:1px solid #dae3d5;box-shadow:0 3px 0 #d6dfcf66}.extra-games-menu button>svg:first-child{width:25px;height:25px}.extra-games-menu b{font-size:16px}.extra-games-menu small{font-size:12px}
+.chapter-world-nav{display:flex;align-items:center;gap:10px;margin:12px 0}.chapter-world-nav label{flex:1;min-width:0}.chapter-world-nav label>span{display:none}.chapter-world-nav select{width:100%;border:0;background:#edf2e6;border-radius:12px;padding:8px;color:#284f43;font-weight:700;font-size:13px}.chapter-world-nav .icon-button{background:#edf2e6;border-radius:12px}.chapter-world-cover{position:relative;height:140px;border-radius:18px;overflow:hidden;color:#fff9e6;background:#173c45}.chapter-world-cover .scene-art{position:absolute;width:100%;height:100%;object-fit:cover;object-position:center 30%}.chapter-world-cover>div{position:absolute;inset:0;padding:18px;display:flex;flex-direction:column;justify-content:end;background:linear-gradient(transparent,#0d2934d9)}.chapter-world-cover h3{font-size:24px;font-weight:800}.chapter-world-cover span{font-size:12px;color:#efdfb3;margin-bottom:4px}.chapter-lock-note{display:flex;align-items:center;gap:7px;font-size:12px;padding:10px 0}.chapter-picker-world{margin:0!important;border:0!important;padding:0!important}.chapter-picker-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}.chapter-picker-grid button{min-height:88px;padding:12px;border-radius:14px;border:1px solid #dbe4d5;background:#f4f6ec}.chapter-picker-grid em{font-family:var(--sans);font-style:normal;font-size:13px;line-height:1.25}.chapter-picker-grid .is-current{background:#fff2c8;border-color:#d5af58}.chapter-picker-grid .is-complete{background:#e8f1e2}
+.free-theme-list,.free-level-list{display:grid;gap:8px;margin-top:14px}.free-theme-list>button,.free-level-list>button{display:flex;align-items:center;gap:12px;text-align:left;min-height:66px;padding:9px 12px;border:1px solid #dce4d5;border-radius:14px;background:#f3f6ed}.free-theme-list b,.free-level-list>button>span:first-child{flex:1}.free-theme-art{width:48px;height:48px;border-radius:12px;overflow:hidden;display:block}.free-theme-art svg{width:100%;height:100%}.free-level-list b,.free-level-list small{display:block}.free-level-list small{font-size:11px;color:#6d8274;margin-top:3px}.free-level-list>button>span:last-child{display:flex;gap:3px}
+.collection-settings-link{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;border-top:1px solid #dbe4d5;margin:20px 0 12px;padding:12px 0;text-align:left;font-weight:700}.collection-settings-link>span{flex:1}.settings-appearance{border-top:1px solid #dce4d5;border-bottom:1px solid #dce4d5;margin:10px 0}.settings-appearance>summary{padding:16px 2px;font-weight:700;cursor:pointer}.settings-appearance .palette-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:14px 0}.settings-appearance .palette-options button{padding:10px 4px;min-width:0}.settings-appearance .palette-options small{font-size:10px}.settings-appearance .palette-swatches{justify-content:center}
+@media(max-height:650px){.scene-result .modal-head{padding-top:14px;min-height:50px}.scene-result .modal-head h2{font-size:28px}.scene-result .result-star-stage{height:86px}.scene-result .result-star{width:46px;height:46px}.scene-result .result-star:nth-child(2){width:61px;height:61px}.scene-result .result-keepsake{padding:8px}.scene-result .result-keepsake-art{height:44px;flex-basis:44px}.scene-result .result-album-progress{padding-top:8px}.scene-result .modal-actions{padding-bottom:14px}.scene-result .modal-actions .primary{min-height:52px}.scene-result .journey-result-details{margin-top:5px}}
+@media(prefers-reduced-motion:reduce){.game-dialog,.scene-result *,.scenic-play .found-stroke.is-new{animation:none!important}.app-shell button,.game-app button,.game-dialog button{transition:none!important}}
+html[data-reduce-motion=true] .game-dialog,html[data-reduce-motion=true] .scene-result *,html[data-reduce-motion=true] .scenic-play .found-stroke.is-new{animation:none!important}
+html[data-reduce-motion=true] .app-shell button,html[data-reduce-motion=true] .game-app button,html[data-reduce-motion=true] .game-dialog button{transition:none!important}
+
+.chapter-source-switch{display:flex;gap:6px;padding:4px;background:#eef2e8;border-radius:16px;margin-bottom:14px}.chapter-source-switch button{flex:1;min-height:44px;border:0;border-radius:12px;background:transparent;font-size:14px;font-weight:700;color:#425c50}.chapter-source-switch button[aria-pressed=true]{background:#fff;box-shadow:0 2px 8px #20392c12}
+
+.game-notices:empty{display:none}.game-app>.game-notices,.arena-is-playing>.game-notices{position:fixed;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(calc(100% - 24px),520px);z-index:90;max-height:28svh;overflow:auto;filter:drop-shadow(0 4px 14px #203b3520)}
+
+@media(max-width:1100px) and (max-height:650px) and (orientation:portrait){
+ .scenic-play[data-dense-board] .play-heading{height:44px;min-height:44px;flex-basis:44px}
+ .scenic-play[data-dense-board] .mobile-targets{height:72px;min-height:72px}
+ .scenic-play[data-dense-board] .duel-controls{height:46px;min-height:46px;padding-top:2px;padding-bottom:0}
+}
+.native-scene .main-content>.game-notices:not(:empty){position:fixed;top:max(58px,env(safe-area-inset-top));left:12px;right:12px;z-index:90;max-height:25svh;overflow:auto;background:#fff9e9;border-radius:12px;box-shadow:0 6px 20px #102e3b30}
+@media(max-width:759px) and (max-height:700px){
+ .journey-stage,.arena-stage{min-height:calc(100svh - 150px - env(safe-area-inset-bottom,0px))}
+ .journey-stage-title h1{font-size:28px}.journey-stage-title{padding-top:0}.journey-stage-space{min-height:10px}
+ .stage-chapter-copy{margin-bottom:8px}.stage-chapter-copy h2{font-size:22px;margin-top:4px}
+ .stage-play{min-height:60px;padding-top:10px;padding-bottom:10px}.stage-trail{margin:14px 2px 5px}
+ .stage-shortcuts{margin-top:4px}.stage-milestone{min-height:32px}
+}
+
+.dismissible-notice{display:flex;align-items:center;gap:8px;margin:0!important}.dismissible-notice>span{flex:1}.dismissible-notice .text-button{flex-shrink:0;padding:4px;min-width:44px}
+@media(max-width:759px) and (max-height:700px){.native-arsiv .main-content{padding-top:4px}.extra-games{margin-top:4px}.extra-games-heading{padding-bottom:12px}.extra-games-heading h1{font-size:24px}.extra-games-menu{gap:6px}.extra-games-menu button{min-height:62px;padding:10px 14px}}

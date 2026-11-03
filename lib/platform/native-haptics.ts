@@ -1,6 +1,7 @@
 import type {HapticsAdapter,HapticCue} from '../game/haptics.ts';
 
 export interface NativeHapticDriver {
+ menu?:()=>Promise<void>;
  selectionStart:()=>Promise<void>;
  selectionChanged:()=>Promise<void>;
  selectionEnd:()=>Promise<void>;
@@ -11,7 +12,7 @@ type Selection={busy:boolean;closed:boolean;ending:boolean;last:number};
 
 /** One live native selection, no pulse queue. Late preparation cannot replay input. */
 export function nativeHaptics(driver:NativeHapticDriver,active:()=>boolean,now:()=>number=()=>performance.now()):HapticsAdapter {
- let selection:Selection|null=null;
+ let selection:Selection|null=null,menuBusy=false,lastMenu=-Infinity;
  const end=async(s:Selection)=>{
   if(s.ending)return;s.ending=true;
   try{await driver.selectionEnd();}catch{/* Haptics may be unavailable. */}
@@ -30,6 +31,10 @@ export function nativeHaptics(driver:NativeHapticDriver,active:()=>boolean,now:(
  };
  const play=(cue:HapticCue)=>{
   if(!active()){stop();return;}
+  if(cue==='menu'){
+   const at=now();if(menuBusy||at-lastMenu<65||!driver.menu)return;lastMenu=at;menuBusy=true;
+   try{void driver.menu().catch(()=>{}).finally(()=>{menuBusy=false;});}catch{menuBusy=false;}return;
+  }
   if(cue!=='selection'){
    stop();
    try{void (cue==='word'?driver.word():driver.complete()).catch(()=>{});}catch{/* Feedback never owns game state. */}

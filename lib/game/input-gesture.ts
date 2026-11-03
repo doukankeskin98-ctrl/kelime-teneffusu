@@ -35,3 +35,16 @@ export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell
  if(distance>(release?.65:CELL_HIT_RADIUS))return unchanged;
  return {cell,axis:direction};
 }
+
+/** Continuous ink in board coordinates; never used to accept a letter or a word. */
+export function gestureTip(start:Cell,axis:Cell|null,point:Cell,size:number):Cell{
+ const origin:Cell=[start[0]+.5,start[1]+.5];
+ if(!point.every(Number.isFinite)||size<1)return origin;
+ const dy=point[0]-origin[0],dx=point[1]-origin[1];
+ const angle=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*Math.PI/4;
+ const direction=axis??[Math.round(Math.sin(angle))||0,Math.round(Math.cos(angle))||0];
+ const [dr,dc]=direction;let step=(dy*dr+dx*dc)/(dr*dr+dc*dc),low=-Infinity,high=Infinity;
+ for(let i=0;i<2;i++){const d=direction[i]!,at=origin[i]!;if(d){const a=(.5-at)/d,b=(size-.5-at)/d;low=Math.max(low,Math.min(a,b));high=Math.min(high,Math.max(a,b));}}
+ step=Math.max(low,Math.min(high,step));
+ return [origin[0]+dr*step,origin[1]+dc*step];
+}

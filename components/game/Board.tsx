@@ -2,10 +2,10 @@
 import {gameIsActive} from '@/lib/platform/runtime';
 import '@/lib/game/browser-compat';
 import {useEffect,useMemo,useRef,useState,type CSSProperties,type KeyboardEvent} from 'react';
-import {attachBoardSize} from '@/lib/game/viewport';
+import {attachBoardSize,setBoardDrawing} from '@/lib/game/viewport';
 import {attachLegacyTouch,type BoardPointer} from '@/lib/game/legacy-ui';
 import {snapLine,type Cell,type Puzzle,type Stroke,type Target} from '@/lib/game/engine';
-import {advanceGesture,earlyWordEnd} from '@/lib/game/input-gesture';
+import {advanceGesture,earlyWordEnd,gestureTip} from '@/lib/game/input-gesture';
 import {track} from '@/lib/game/telemetry';
 export const strokeColor=(id:string)=>`var(--word-${(Number(id.split('.')[0])||0)%8})`;
 type Drag={id:number;source:'pointer'|'touch';type:string;start:Cell;current:Cell;axis:Cell|null;moved:boolean;tapOnly:boolean;x:number;y:number;pan:boolean;rect:DOMRect};
@@ -14,23 +14,24 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
  const soundedCells=useRef(new Set<string>());
  const initialFound=useRef(new Set(strokes.map(s=>s.id)));
  const confirmedFound=useRef(new Set(strokes.map(s=>s.id)));
- const ref=useRef<HTMLDivElement>(null),drag=useRef<Drag|null>(null),frame=useRef(0),pending=useRef<Cell[]|null>(null);
+ const ref=useRef<HTMLDivElement>(null),drag=useRef<Drag|null>(null),frame=useRef(0),pending=useRef<{cells:Cell[];tip?:Cell}|null>(null),contact=useRef(false),previewText=useRef('');
  const inkRef=useRef<SVGGElement>(null),lineRef=useRef<SVGLineElement>(null),outlineRef=useRef<SVGLineElement>(null),letters=useRef<(HTMLSpanElement|null)[]>([]),selected=useRef<Cell[]>([]);
  const [anchor,setAnchor]=useState<Cell|null>(null),[cursor,setCursor]=useState<Cell>([0,0]),[focused,setFocused]=useState(false);
  const n=board.size,disabled=useRef(paused||readOnly||blocked);disabled.current=paused||readOnly||blocked;
  const signature=board.grid.map(row=>row.join('')).join('|');
  const same=(a:Cell,b:Cell)=>a[0]===b[0]&&a[1]===b[1];
- const paint=(cells:Cell[])=>{
-  for(const [r,c] of selected.current)letters.current[r*n+c]?.classList.remove('letter-selected');
-  for(const [r,c] of cells)letters.current[r*n+c]?.classList.add('letter-selected');
+ const paint=(cells:Cell[],tip?:Cell)=>{
+  for(const [r,c] of selected.current)if(!cells.some(cell=>cell[0]===r&&cell[1]===c))letters.current[r*n+c]?.classList.remove('letter-selected');
+  for(const [r,c] of cells)if(!selected.current.some(cell=>cell[0]===r&&cell[1]===c))letters.current[r*n+c]?.classList.add('letter-selected');
   selected.current=cells;
   const a=cells[0],b=cells.at(-1),line=lineRef.current;
-  if(a&&b&&line){for(const [name,value] of Object.entries({x1:a[1]+.5,y1:a[0]+.5,x2:b[1]+.5,y2:b[0]+.5})){line.setAttribute(name,String(value));outlineRef.current?.setAttribute(name,String(value));}}
+  if(a&&b&&line){for(const [name,value] of Object.entries({x1:a[1]+.5,y1:a[0]+.5,x2:tip?.[1]??b[1]+.5,y2:tip?.[0]??b[0]+.5})){line.setAttribute(name,String(value));outlineRef.current?.setAttribute(name,String(value));}}
   inkRef.current?.setAttribute('data-active',cells.length?'true':'false');
  };
  const endSelection=()=>{if(!selectionSound.current)return;selectionSound.current=false;onSelectEnd?.();};
  const endSelectionRef=useRef(endSelection);endSelectionRef.current=endSelection;
- const clear=()=>{endSelection();soundedCells.current.clear();drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;setAnchor(null);paint([]);onPreview?.('');};
+ const releaseContact=()=>{if(!contact.current)return;contact.current=false;if(ref.current)setBoardDrawing(ref.current,false,window);};
+ const clear=()=>{releaseContact();endSelection();soundedCells.current.clear();drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;setAnchor(null);paint([]);previewText.current='';onPreview?.('');};
  const clearRef=useRef(clear);clearRef.current=clear;
  useEffect(()=>{
   const blur=()=>clearRef.current(),visibility=()=>{if(document.hidden||!gameIsActive())clearRef.current();};
@@ -40,7 +41,7 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
  useEffect(()=>{if(paused||readOnly||blocked)clear();},[paused,readOnly,blocked]);
  useEffect(()=>{if(!busy)for(const stroke of strokes)confirmedFound.current.add(stroke.id);if(paused)for(const stroke of strokes)initialFound.current.add(stroke.id);},[strokes,busy,paused]);
  useEffect(()=>{clear();},[signature,zoom,pan]);
- useEffect(()=>{disabled.current=paused||readOnly||blocked;return ()=>{endSelectionRef.current();disabled.current=true;drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);};},[]);
+ useEffect(()=>{disabled.current=paused||readOnly||blocked;return ()=>{releaseContact();endSelectionRef.current();disabled.current=true;drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);};},[]);
  useEffect(()=>{const element=ref.current;if(!element)return;return attachBoardSize(element,n,zoom,(rect,reason)=>{
   // The live preview can reflow the frame. Keep the starting cell and rebase hit
   // testing instead of cancelling the gesture that caused that measurement.
@@ -48,9 +49,9 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
  },window);},[n,zoom]);
  const cellAt=(x:number,y:number,rect=drag.current?.rect??ref.current!.getBoundingClientRect()):Cell=>[Math.max(0,Math.min(n-1,Math.floor((y-rect.top)/rect.height*n))),Math.max(0,Math.min(n-1,Math.floor((x-rect.left)/rect.width*n)))];
  const notifyLetters=(cells:Cell[])=>{if(disabled.current)return;let added=false;for(const cell of cells){const key=cell.join(',');if(!soundedCells.current.has(key)){soundedCells.current.add(key);added=true;}}if(added)onSelectLetter?.(cells.length);};
- const show=(cells:Cell[])=>{if(!selectionSound.current&&cells.length){selectionSound.current=true;onSelectStart?.();}notifyLetters(cells);paint(cells);onPreview?.(cells.map(([r,c])=>board.grid[r]![c]).join(''));};
+ const show=(cells:Cell[],tip?:Cell)=>{if(!selectionSound.current&&cells.length){selectionSound.current=true;onSelectStart?.();}notifyLetters(cells);paint(cells,tip);const text=cells.map(([r,c])=>board.grid[r]![c]).join('');if(text!==previewText.current){previewText.current=text;onPreview?.(text);}};
  const showRef=useRef(show);showRef.current=show;
- const schedule=(cells:Cell[])=>{notifyLetters(cells);pending.current=cells;if(frame.current)return;frame.current=requestAnimationFrame(()=>{frame.current=0;if(pending.current&&!disabled.current)showRef.current(pending.current);pending.current=null;});};
+ const schedule=(cells:Cell[],tip?:Cell)=>{notifyLetters(cells);pending.current={cells,tip};if(frame.current)return;frame.current=requestAnimationFrame(()=>{frame.current=0;if(pending.current&&!disabled.current)showRef.current(pending.current.cells,pending.current.tip);pending.current=null;});};
  const commit=(a:Cell,b:Cell)=>{if(!disabled.current&&!same(a,b))notifyLetters(snapLine(a,b,n));clear();if(!disabled.current&&!same(a,b))onCommit(a,b);};
  const tap=(cell:Cell)=>{if(disabled.current)return;if(anchor){if(same(anchor,cell))clear();else{const cells=snapLine(anchor,cell,n);commit(anchor,cells.at(-1)!);}}else{setAnchor(cell);show([cell]);}};
  const down=(e:BoardPointer)=>{
@@ -58,15 +59,15 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
   if(drag.current){const current=drag.current;if(e.input==='touch'&&current.source==='pointer'&&current.type==='touch'){current.id=e.pointerId;current.source='touch';current.rect=ref.current!.getBoundingClientRect();if(!current.tapOnly)e.preventDefault();}return;}
   const rect=ref.current!.getBoundingClientRect(),start=cellAt(e.clientX,e.clientY,rect),tapOnly=zoom&&pan&&e.pointerType!=='mouse';
   drag.current={id:e.pointerId,source:e.input??'pointer',type:e.pointerType,start,current:start,axis:null,moved:false,tapOnly,x:e.clientX,y:e.clientY,pan:false,rect};
-  if(!tapOnly){e.preventDefault();try{if(e.input!=='touch'&&typeof window.PointerEvent==='function')ref.current?.setPointerCapture?.(e.pointerId);}catch{/* Capture is optional; an active in-board swipe still works. */}if(!anchor)show([start]);}
+  if(!tapOnly){contact.current=true;setBoardDrawing(ref.current!,true,window);e.preventDefault();try{if(e.input!=='touch'&&typeof window.PointerEvent==='function')ref.current?.setPointerCapture?.(e.pointerId);}catch{/* Capture is optional; an active in-board swipe still works. */}if(!anchor)show([start]);}
   const at=performance.now();requestAnimationFrame(()=>track('input_feedback',performance.now()-at));
  };
  const advance=(d:Drag,x:number,y:number,release=false)=>{
   const rect=d.rect,point:Cell=[(y-rect.top)/rect.height*n,(x-rect.left)/rect.width*n],step=advanceGesture(d.start,d.current,d.axis,point,n,release);
   d.axis=step.axis;if(same(d.current,step.cell))return false;d.current=step.cell;if(!same(d.start,step.cell))d.moved=true;return true;
  };
- const move=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;if(disabled.current)return clear();if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}if(advance(d,e.clientX,e.clientY)&&d.moved){setAnchor(null);const end=earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current);if(end){commit(d.start,end);return;}schedule(snapLine(d.start,d.current,n));}};
- const up=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;d.rect=ref.current!.getBoundingClientRect();const cell=cellAt(e.clientX,e.clientY,d.rect);drag.current=null;if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else{advance(d,e.clientX,e.clientY,true);if(d.moved)commit(d.start,earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current)||d.current);else if(same(cell,d.start))tap(d.start);else clear();}};
+ const move=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;if(disabled.current)return clear();if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}const changed=advance(d,e.clientX,e.clientY);if(changed&&d.moved){setAnchor(null);const end=earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current);if(end){commit(d.start,end);return;}}const point:Cell=[(e.clientY-d.rect.top)/d.rect.height*n,(e.clientX-d.rect.left)/d.rect.width*n];schedule(snapLine(d.start,d.current,n),gestureTip(d.start,d.axis,point,n));};
+ const up=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;d.rect=ref.current!.getBoundingClientRect();const cell=cellAt(e.clientX,e.clientY,d.rect);drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;releaseContact();if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else{advance(d,e.clientX,e.clientY,true);if(d.moved)commit(d.start,earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current)||d.current);else if(same(cell,d.start))tap(d.start);else clear();}};
  const cancel=(e:BoardPointer)=>{if(drag.current?.id===e.pointerId&&drag.current.source===(e.input??'pointer'))clear();};
  const key=(e:KeyboardEvent)=>{if(paused)return;const dirs:Record<string,Cell>={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};const dir=dirs[e.key];if(dir){e.preventDefault();const next:Cell=[Math.max(0,Math.min(n-1,cursor[0]+dir[0])),Math.max(0,Math.min(n-1,cursor[1]+dir[1]))];setCursor(next);if(anchor&&!disabled.current)show(snapLine(anchor,next,n));}else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!disabled.current)tap(cursor);}else if(e.key==='Escape')clear();};
  const legacyHandlers=useRef({down,move,up,cancel:clear,pan:()=>zoom&&pan||readOnly||blocked});legacyHandlers.current={down,move,up,cancel:clear,pan:()=>zoom&&pan||readOnly||blocked};

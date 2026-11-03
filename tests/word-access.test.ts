@@ -286,14 +286,14 @@ describe('player-selected focus is guidance without extra rewards or hidden answ
    const target=after['board'].placements.find((x:any)=>x.id===after['board'].targets[2].id);after['onCommit'](target.a,target.b);await h.settle();assert.notEqual(h.find('PlayLayout').props['wordList'].focusedGroup,group);
   }finally{h.close();}
  });
- it('actual picker resumes, replays and blocks a locked chapter through the existing callbacks',()=>{
+ it('shared picker resumes, replays and blocks a locked world with six global chapter numbers',()=>{
   const p=progress.emptyProgress(),b=content.journeyBoard(content.journeyById('uzay-1')!);p.saves['route:uzay-1']=progress.cleanSave({strokes:b.placements,elapsed:10,hints:0,complete:false,stars:0},b);
-  const calls:any[]=[],h=view('components/game/JourneyHome.tsx',modules);
-  try{h.start('JourneyHome',{progress:p,onPlay:(c:any)=>calls.push(c),onExplore(){}});
-   const replay=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 1:'))!;replay.props['onClick']();h.paint();assert.equal(calls[0].practice,true);assert.equal(calls[0].campaign,true);
-   walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();
-   const locked=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 4:'))!;assert.equal(locked.props['disabled'],true);locked.props['onClick']();h.paint();assert.equal(calls.length,1);
-   walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();assert.equal(h.find('Modal').props['title'],'Bölümler');assert.equal(walk(h.find('Modal')).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm ')).length,144);
+  const calls:any[]=[],h=view('components/game/ChapterPicker.tsx',modules);let closed=0;
+  try{h.start('ChapterPicker',{progress:p,onPlay:(c:any)=>calls.push(c),onClose:()=>closed++});
+   const cards=()=>walk(h.tree).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm '));assert.equal(cards().length,6);
+   assert.deepEqual(cards().map(n=>Number(String(n.props['aria-label']).split(':')[0]!.split(' ')[1])),[1,2,3,5,9,10]);
+   cards()[0]!.props['onClick']();assert.equal(calls[0].practice,true);assert.equal(calls[0].campaign,true);assert.equal(closed,1);
+   walk(h.tree).find(n=>n.type==='select')!.props['onChange']({target:{value:'turkiye'}});h.paint();const locked=cards()[0]!;assert.equal(locked.props['disabled'],true);locked.props['onClick']();assert.equal(calls.length,1);assert.equal(closed,1);
   }finally{h.close();}
  });
 });
@@ -333,9 +333,13 @@ describe('living story sequential interaction, hints, replay and navigation',()=
   const initial=progress.emptyProgress(),story=stories.LIVING_STORIES[0]!,b=content.journeyBoard(story),key='route:'+story.id;initial.saves[key]=progress.cleanSave({strokes:b.placements,elapsed:20,hints:0,complete:false,stars:0},b);
   const h=storyPage(0,initial,true);try{assert.equal(h.find('PlayLayout').props['strokes'].length,0);assert.equal(h.find('PlayLayout').props['hint'],null);h.find('PlayControls').props['onHint']();h.paint();for(let i=0;i<4;i++){h.commit(i);h.paint();}h.expire();assert.equal(h.find('StoryResult').props['save'].stars,2);assert.equal(h.saved.saves[key]!.stars,3);assert.equal(h.saved.saves[key]!.elapsed,20);}finally{h.close();}
  });
- it('keeps the chosen chapter view through a home remount',()=>{
-  let selected:'stories'|'journey'='stories';const props={progress:progress.emptyProgress(),onPlay(){},onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
-  try{h.start('JourneyHome',{...props,initialView:'stories'});h.find('Modal').props['onClose']();h.paint();assert.equal(selected,'journey');const next=view('components/game/JourneyHome.tsx',modules);try{next.start('JourneyHome',{...props,initialView:selected});assert.equal(walk(next.tree).some(n=>n.type==='Modal'),false);assert(walk(next.tree).some(n=>n.props?.['className']==='stage-play'));}finally{next.close();}}finally{h.close();}
+ it('resumes a saved story directly and cancelling a picker preserves the chosen home',()=>{
+  let selected:'stories'|'journey'='stories';const p=progress.emptyProgress(),story=stories.LIVING_STORIES[2]!,b=content.journeyBoard(story);p.saves['route:'+story.id]=progress.cleanSave({strokes:[b.placements[0]!],elapsed:10,hints:0,complete:false,stars:0},b);
+  const calls:any[]=[],props={progress:p,onPlay:(c:any)=>calls.push(c),onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
+  try{h.start('JourneyHome',{...props,initialView:'stories'});assert.equal(walk(h.tree).some(n=>n.type==='Modal'),false);walk(h.tree).find(n=>n.props?.['className']==='stage-play')!.props['onClick']();assert.equal(calls[0].journey,story.id);
+   walk(h.tree).find(n=>n.props?.['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();h.find('ChapterPicker').props['onClose']();h.paint();assert.equal(selected,'stories');
+   walk(h.tree).find(n=>n.props?.['className']==='stage-milestone')!.props['onClick']();assert.equal(selected,'journey');
+  }finally{h.close();}
  });
 });
 
@@ -393,7 +397,7 @@ describe('clear phone targets and persisted fast play',()=>{
  });
  it('applies an asynchronously restored home preference without losing progress or opening a game',()=>{
   const p=progress.emptyProgress(),h=view('components/game/JourneyHome.tsx',modules);let plays=0;const props={progress:p,onPlay(){plays++;},onExplore(){},initialView:'journey'};
-  try{h.start('JourneyHome',props);h.update('JourneyHome',{...props,initialView:'stories'});assert.equal(h.find('Modal').props['title'],'Hikâyeler');assert.equal(plays,0);assert.equal(p.tutorialDone,false);}finally{h.close();}
+  try{h.start('JourneyHome',props);h.update('JourneyHome',{...props,initialView:'stories'});assert.equal(walk(h.tree).some(n=>n.type==='Modal'),false);assert.match(text(h.tree),/HİKÂYELER/);assert.equal(plays,0);assert.equal(p.tutorialDone,false);}finally{h.close();}
  });
 });
 
@@ -464,4 +468,13 @@ describe('hint target follows visible selection, not placement ordering',()=>{
 
 it('gives the compact target selector and animated list distinct identities on every board',()=>{
  for(const wordListKey of [undefined,'room:2']){const h=shared({wordListKey,wordList:{board:content.TUTORIAL,strokes:[]}});try{const selector=h.find('MobileTargets'),list=h.find('WordList');assert.notEqual(list.key,selector.key);assert.equal(list.key,'words:'+(wordListKey??content.TUTORIAL.grid.map(row=>row.join('')).join('|')));}finally{h.close();}}
+});
+
+it('continues ten actual Solo chapters directly, keeping each completed save through reload',()=>{
+ let p=progress.emptyProgress(),config:any={themeId:'uzay',level:0,journey:'uzay-1',campaign:true};
+ const expected=['uzay-1','uzay-2','uzay-3','uzay-4','uzay-5','uzay-gozlemevi','turkiye-1','turkiye-2','turkiye-3','turkiye-4'];
+ for(const id of expected){assert.equal(config.journey,id);const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});let next:any;
+  try{h.start('Solo',{config,progress:p,onProgress:(fn:any)=>{p=fn(p);},onBack(){},onMap(){},onNext:(c:any)=>next=c});const b=h.find('PlayLayout').props['board'];for(const stroke of b.placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);h.paint();}h.expire();assert.equal(p.saves['route:'+id]?.complete,true);const result=h.find('Modal');walk(result.props['footer']).find(n=>n.type==='button'&&String(n.props['className']).includes('primary'))!.props['onClick']();assert(next);config=next;p=progress.loadProgress(JSON.stringify(p));}finally{h.close();}
+ }
+ assert(expected.every(id=>p.saves['route:'+id]?.complete));assert.equal(Object.keys(p.saves).length,10);
 });

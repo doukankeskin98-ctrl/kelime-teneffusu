@@ -12,6 +12,13 @@ export function fitGameFrame(width:number,height:number,overhead:number,cells:nu
 }
 
 type View=Window&typeof globalThis;
+const drawingBoards=new WeakSet<HTMLElement>();
+/** Physical pointer contact only; a two-tap anchor must not freeze layout. */
+export function setBoardDrawing(element:HTMLElement,drawing:boolean,view:View){
+ if(drawing){drawingBoards.add(element);return;}
+ if(!drawingBoards.delete(element))return;
+ view.dispatchEvent(new view.Event('kt-board-drawing-end'));
+}
 const pixels=(value:string)=>Number.parseFloat(value)||0;
 const set=(element:HTMLElement,name:string,value:string)=>{if(element.style.getPropertyValue(name)===value)return false;element.style.setProperty(name,value);return true;};
 function box(element:HTMLElement,view:View){
@@ -53,9 +60,12 @@ export function measurePlayFrame(screen:HTMLElement,stage:HTMLElement,cells:numb
 
 /** ResizeObserver is an enhancement, never a requirement for the first fit. */
 export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,zoom:boolean,view:View){
- let frame=0,disposed=false;
+ let frame=0,disposed=false,deferred=false;
  const fit=()=>{if(disposed)return;view.cancelAnimationFrame(frame);frame=view.requestAnimationFrame(()=>{
-  if(disposed)return;const result=measurePlayFrame(screen,stage,cells,zoom,view);
+  if(disposed)return;
+  const board=stage.querySelector<HTMLElement>('.letter-board');
+  if(board&&drawingBoards.has(board)){deferred=true;return;}
+  deferred=false;const result=measurePlayFrame(screen,stage,cells,zoom,view);
   let changed=set(screen,'--play-height',result.height+'px');
   // Pinch zoom is a reader preference. Leave natural overflow available.
   if(view.visualViewport&&view.visualViewport.scale!==1){screen.style.removeProperty('min-height');stage.style.removeProperty('height');screen.style.removeProperty('--fitted-board');return;}
@@ -63,6 +73,7 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,
   set(stage,'flex','0 0 auto');changed=set(screen,'--fitted-board',result.boardSize+'px')||changed;
   screen.setAttribute('data-fit',result.overflow?'scroll':'contained');if(changed)view.dispatchEvent(new view.Event('kt-board-layout'));
  });};
+ const released=()=>{if(deferred)fit();};view.addEventListener('kt-board-drawing-end',released);
  const watch=[screen,...Array.from(screen.querySelectorAll<HTMLElement>('.play-heading,.play-hud,.targets-panel,.selection-preview,.play-controls,.duel-controls,.sprint-footer,.board-word-access,.board-input-tools'))];
  const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(fit):null;
  watch.forEach(element=>observer?.observe(element));if(screen.parentElement)observer?.observe(screen.parentElement);
@@ -76,7 +87,7 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,
  for(const event of ['resize','orientationchange','pageshow'])view.addEventListener(event,fit);if(!view.visualViewport)view.addEventListener('scroll',fit,{passive:true});
  view.visualViewport?.addEventListener('resize',fit);view.visualViewport?.addEventListener('scroll',fit);
  screen.ownerDocument.fonts?.ready.then(()=>{if(!disposed)fit();});fit();
- return ()=>{disposed=true;view.cancelAnimationFrame(frame);observer?.disconnect();mutation?.disconnect();for(const event of ['resize','orientationchange','pageshow'])view.removeEventListener(event,fit);view.removeEventListener('scroll',fit);view.visualViewport?.removeEventListener('resize',fit);view.visualViewport?.removeEventListener('scroll',fit);};
+ return ()=>{disposed=true;view.removeEventListener('kt-board-drawing-end',released);view.cancelAnimationFrame(frame);observer?.disconnect();mutation?.disconnect();for(const event of ['resize','orientationchange','pageshow'])view.removeEventListener(event,fit);view.removeEventListener('scroll',fit);view.visualViewport?.removeEventListener('resize',fit);view.visualViewport?.removeEventListener('scroll',fit);};
 }
 
 /** A real pixel square also works without aspect-ratio, container units or ResizeObserver. */

@@ -1,3 +1,9 @@
+## 0.31.0 · Kesintisiz çizim ve sade oyun akışı
+
+Çizgi ucu parmağı hücre içinde de izler; hücre kabulü, yön kilidi ve erken kelime tanıma ayrı kalır. Çizim sırasında ölçüm ertelenir; üst bildirimler tahtayı itmez. Onaylanan kelime kısa bir etiket hareketiyle hedefine ulaşır; gizli çok parçalı cevap ancak tamamlandığında açılır. Sahne üstündeki sonuç ekranı tek devam eylemiyle sürer. Ortak bölüm seçici, doğrudan hikâye devamı, sade ek oyun menüsü ve tek ayarlar görünümü eski girişlerin yerini alır. Native menü dokunuşu tercihe bağlı hafif titreşim verir; web sessiz kalır.
+
+144 ana bölümün kimliği/tahtası, mevcut ilerleme, Arena tekrar geçmişi ve kurallar korunur. Konuyla uyuşmayan başlıklar yalnız sunumda düzeltilir; kayıt içeriği değiştirilmez. 637 test / 132 grup, on gerçek Solo bölümünü devamla bitirme ve yeniden yükleme, gizli cevap, kesirli çizim, iptal ve menü cleanup regresyonları geçti. Ayrıntılı yerel tarayıcı, paket ve fiziksel cihaz sınırı: `studio-agents/journal/entries/2026-11-04-continuous-play.md`. Bu sürüm telefon bağlı olmadığı için fiziksel iPhone'a kurulmadı; yeni akıcılık ve titreşim hissi henüz cihazda doğrulanmadı.
+
 ## 0.30.3 · Harf çizerken yerleşim yükü
 
 Gerçek iPhone kullanıcısı titreşimin çalıştığını, takılmanın harf üzerinde kaydırırken oluştuğunu doğruladı. ResizeObserver bulunan cihazlarda salt canlı seçim metni mutasyonları artık bütün ekranı tekrar ölçtürmez; gerçek boyut değişimi, yapısal bildirim ve eski tarayıcı yolu korunur. Değişmeyen önizleme metni/görünürlüğü tekrar yazılmaz. Tahta kabulü, yön kilidi, erken kelime tanıma ve titreşim mantığı değişmez.
