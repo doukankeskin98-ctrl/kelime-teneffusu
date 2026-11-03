@@ -1,3 +1,4 @@
+import {EVERYDAY_ROUTES} from './everyday-content.ts';
 import {NATURE_ROUTES} from './nature-content.ts';
 import {COAST_ROUTES} from './coast-content.ts';
 import {ATLAS_REGIONS} from './atlas-content.ts';
@@ -16,6 +17,7 @@ export const EXPEDITIONS:readonly Expedition[]=[
  ...ATLAS_REGIONS.map((r,i)=>({id:r.id,title:r.title,subtitle:r.subtitle,place:String(i+4).padStart(2,'0'),pieces:r.pieces,accent:r.accent,chapterIds:[1,2,3,4,5].map(n=>`${r.id}-atlas-${n}`)})),
  ...COAST_ROUTES.map((r,i)=>({id:r.id,themeId:r.chapters[0]!.themeId,title:r.title,subtitle:r.subtitle,place:String(i+17).padStart(2,'0'),pieces:r.pieces,accent:'#87bdc1',chapterIds:r.chapters.slice(0,5).map(c=>c.id),bonusId:r.chapters[5]!.id,album:{themeId:r.id,title:r.album,description:r.subtitle,stamp:'KIYI GÜNLÜĞÜ'}})),
  ...NATURE_ROUTES.map((r,i)=>({id:r.id,themeId:r.chapters[0]!.themeId,title:r.title,subtitle:r.subtitle,place:String(i+21).padStart(2,'0'),pieces:r.pieces,accent:'#8fbd93',chapterIds:r.chapters.slice(0,5).map(c=>c.id),bonusId:r.chapters[5]!.id,album:{themeId:r.id,title:r.album,description:r.subtitle,stamp:'DOĞA GÜNLÜĞÜ'}})),
+ ...EVERYDAY_ROUTES.map((r,i)=>({id:r.id,themeId:r.chapters[0]!.themeId,title:r.title,subtitle:r.subtitle,place:String(i+25).padStart(2,'0'),pieces:r.pieces,accent:'#d9b97a',chapterIds:r.chapters.slice(0,5).map(c=>c.id),bonusId:r.chapters[5]!.id,album:{themeId:r.id,title:r.album,description:r.subtitle,stamp:'GÜNÜN RENKLERİ'}})),
 ];
 export const expeditionTheme=(world:Expedition)=>world.themeId??world.id;
 export const expeditionBonusId=(world:Expedition)=>world.bonusId??JOURNEY_BONUSES.find(j=>j.themeId===world.id)!.id;

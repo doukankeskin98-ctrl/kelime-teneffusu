@@ -1,6 +1,7 @@
 'use client';
 import {LIVING_STORIES} from '@/lib/game/story-content';
 import {ChapterPicker} from './ChapterPicker';
+import {everydayRouteForChapter} from '@/lib/game/everyday-content';
 import {natureRouteForChapter} from '@/lib/game/nature-content';
 import {useEffect,useState} from 'react';
 import {ArrowRight,BookOpen,CalendarDays,Check,Compass,Lock,Map,Play,Star} from 'lucide-react';
@@ -27,7 +28,7 @@ export function JourneyHome({progress,onPlay,onExplore,onDaily,initialView='jour
  const world=goal?.state.expedition??EXPEDITIONS[0]!,nearby=chapters.filter(item=>expeditionForChapter(item.chapter.id)?.id===world.id).sort((a,b)=>(worldChapter(a.chapter.id)?.position??0)-(worldChapter(b.chapter.id)?.position??0));
  const close=()=>setPanel(null);
  const play=(item:typeof chapters[number])=>{if(!item.unlocked)return;close();onPlay({themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(item.complete?{practice:true}:{})});};
- return <section className="journey-stage" aria-labelledby="journey-home-title" data-light={(coastRouteForChapter(current?.chapter.id)??natureRouteForChapter(current?.chapter.id))?.light??'default'}>
+ return <section className="journey-stage" aria-labelledby="journey-home-title" data-light={(coastRouteForChapter(current?.chapter.id)??natureRouteForChapter(current?.chapter.id)??everydayRouteForChapter(current?.chapter.id))?.light??'default'}>
   <div className="journey-stage-art" aria-hidden="true"><SceneArt theme={expeditionTheme(world)} scene={story?.scene} eager/><div className="journey-stage-shade"/></div>
   <div className="journey-stage-top"><span className="stage-wordmark">Kelime Teneffüsü</span><button className="stage-map-button" onClick={()=>setPanel('map')} aria-label="Bütün yolculuk bölümlerini aç"><Map size={19}/><span>{state.completed}/{state.total}</span></button></div>
   <div className="journey-stage-title"><span>{story?'HİKÂYELER':world.subtitle==='Doğa Günlüğü'?'DOĞA GÜNLÜĞÜ':world.subtitle.startsWith('Kıyı Günlüğü')?'KIYI GÜNLÜĞÜ':`DÜNYA ${world.place}`}</span><h1 id="journey-home-title">{story?.title??world.title}</h1></div>

@@ -8,8 +8,8 @@ import {WORLD_SCENES,sceneImage,sceneForTheme} from '../lib/game/scene.ts';
 import {wordCardCopy} from '../lib/game/word-card.ts';
 
 describe('complete world presentation without changing authored puzzles',()=>{
- it('covers 24 routes over 16 shipped worlds and all 144 chapters with meaningful topics',()=>{
-  assert.equal(EXPEDITIONS.length,24);assert.equal(new Set(Object.values(WORLD_SCENES)).size,16);
+ it('covers 28 routes over 16 shipped worlds and all 168 chapters with meaningful topics',()=>{
+  assert.equal(EXPEDITIONS.length,28);assert.equal(new Set(Object.values(WORLD_SCENES)).size,16);
   for(const w of EXPEDITIONS){assert(existsSync('public'+sceneImage(sceneForTheme(expeditionTheme(w)))),w.id);const chapters=ALL_JOURNEYS.filter(j=>expeditionForChapter(j.id)?.id===w.id);assert.equal(chapters.length,6);assert.deepEqual(chapters.map(j=>worldChapter(j.id)!.position).sort(),[0,1,2,3,4,5]);assert.equal(new Set(chapters.map(j=>worldChapter(j.id)!.topic)).size,6);}
  });
  it('keeps most words open with at most one hidden target, retains clues and reveals confirmed answers',()=>{
@@ -18,8 +18,8 @@ describe('complete world presentation without changing authored puzzles',()=>{
     const modes=Object.values(profile),open=modes.filter(v=>v==='open').length,initial=modes.filter(v=>v==='initial').length,hidden=modes.filter(v=>v==='hidden').length;
     assert(open>initial+hidden,j.id+' should keep most target groups fully readable');
     assert.equal(modes[0],'open',j.id+' should start with a readable target');
-    assert.equal(hidden,(j.id.startsWith('kiyi-')||j.id.startsWith('doga-'))?((j.id==='kiyi-fener-6'||j.id==='doga-gozlem-6')?1:0):info.position>=4?1:0,j.id+' hidden target limit');
-    assert.equal(initial,(j.id.startsWith('kiyi-')||j.id.startsWith('doga-'))?(info.position===4?1:0):info.position>=2?1:0,j.id+' initial-letter target limit');
+    assert.equal(hidden,(j.id.startsWith('kiyi-')||j.id.startsWith('doga-')||j.id.startsWith('renkler-'))?((j.id==='kiyi-fener-6'||j.id==='doga-gozlem-6'||j.id==='renkler-muzik-6')?1:0):info.position>=4?1:0,j.id+' hidden target limit');
+    assert.equal(initial,(j.id.startsWith('kiyi-')||j.id.startsWith('doga-')||j.id.startsWith('renkler-'))?(info.position===4?1:0):info.position>=2?1:0,j.id+' initial-letter target limit');
     assert.equal(!!veilInstruction(profile),hidden+initial>0);
     assert.equal(modes.length,new Set(board.targets.map(t=>t.group)).size,'split names count as one target');
    }

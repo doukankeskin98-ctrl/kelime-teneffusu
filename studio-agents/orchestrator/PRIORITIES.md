@@ -1,5 +1,7 @@
 # Öncelikler
 
+4 Kasım 2026, 0.32.0: kullanıcı isteğiyle 24 yeni başlık-uyumlu ana bölüm eklendi; toplam168/28 rota. 100 tekil hedef ve16 tanım editoryal incelemeden geçti. Eski144 numara/181 tahta ve kayıtlar korunur. Kanıt `../journal/entries/2026-11-04-everyday-pack.md`. 300/600 hedefi tamamlanmış değildir; fiziksel cihaz kabulü açık kalır.
+
 4 Kasım 2026, 0.31.0: kesintisiz görsel çizgi, fiziksel temas boyunca ölçüm erteleme, oyun dışı bildirim katmanı, tek bölüm/ayar görünümü, hikâye devamı ve menü titreşimi. Kabul ve gerçek cihaz sınırı `../journal/entries/2026-11-04-continuous-play.md`. Telefon yeniden bağlanınca çizim kare süreleri/haptics ve 20 dakika oturum kabulü önceliklidir; ekran görüntüsü FPS kanıtı değildir.
 
 3 Kasım 2026, 0.30.3: kullanıcı gerçek iPhone titreşimini doğruladı; kelime çizerken takılma bildirildi. Canlı önizlemenin gereksiz tam çerçeve ölçümü kaldırıldı; Board/kayıt kuralları değişmedi. Kabul ve fiziksel tekrar denemesi `../journal/entries/2026-11-03-device-drag.md`.

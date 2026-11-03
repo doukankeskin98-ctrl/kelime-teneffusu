@@ -5,6 +5,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {LIVING_STORIES} from '../lib/game/story-content.ts';
 import {COAST_CHAPTERS} from '../lib/game/coast-content.ts';
+import {EVERYDAY_CHAPTERS} from '../lib/game/everyday-content.ts';
 import {ATLAS_JOURNEYS} from '../lib/game/atlas-content.ts';
 import {EXPEDITIONS} from '../lib/game/discovery.ts';
 import {JOURNEY_BONUSES,journeyBoard} from '../lib/game/content.ts';
@@ -37,10 +38,10 @@ try{
  check(/<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(home),'production HTML declares a real device viewport and safe areas');
  check(home.includes('id="journey-home-title"')&&home.includes('stage-play')&&home.includes('Bölüm 1')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
  check(['Yolculuk','Arena','Koleksiyon','Etkinlikler'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
- check(home.includes('Yıldız İskelesi')&&home.includes('stage-trail')&&EXPEDITIONS.length===24,'numbered journey exposes twenty-four independently registered routes');
+ check(home.includes('Yıldız İskelesi')&&home.includes('stage-trail')&&EXPEDITIONS.length===28,'numbered journey exposes twenty-eight independently registered routes');
  check(home.includes('Gökyüzüne bak')&&home.includes('3 bölüm sonra')&&home.includes('Anadolu Patikası'),'home presents an actual album piece and upcoming world');
  const released=releaseCatalogue();check(home.includes('Etkinlikler'),'secondary exploration and archive entry remains visible');
- check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/144')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
+ check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/168')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
  check(home.includes('journey-stage')&&home.includes('/art/scenes/observatory-v1.webp'),'main journey presents the illustrated scene for its actual world');
@@ -141,6 +142,12 @@ try{
  const coastSaves={...atlasSaved.progress.saves};for(const chapter of COAST_CHAPTERS){const board=journeyBoard(chapter);coastSaves['route:'+chapter.id]={strokes:board.placements,elapsed:41,hints:0,complete:false,stars:99};}
  await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...atlasSaved.progress,saves:coastSaves,last:{themeId:COAST_CHAPTERS.at(-1).themeId,level:0,journey:COAST_CHAPTERS.at(-1).id}}}});
  const coastSaved=await json('/api/progress',{cookie:aCookie});check(COAST_CHAPTERS.every(j=>coastSaved.progress.saves['route:'+j.id]?.complete&&coastSaved.progress.saves['route:'+j.id]?.stars===3),'all24 coast chapters survive server validation and cloud read');check(coastSaved.progress.last.journey===COAST_CHAPTERS.at(-1).id,'coast last destination survives cloud read');check(!!coastSaved.progress.saves[bonusKey]?.complete,'coast update preserves legacy bonus progress');check(!(await json('/api/progress',{cookie:bCookie})).progress.saves['route:'+COAST_CHAPTERS[0].id],'coast progression is isolated by owner');
+ const everydayFirst=EVERYDAY_CHAPTERS[0],everydayBoard=journeyBoard(everydayFirst),everydayKey='route:'+everydayFirst.id;
+ await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...coastSaved.progress,saves:{...coastSaved.progress.saves,[everydayKey]:{strokes:[everydayBoard.placements[0]],elapsed:17,hints:1,complete:false,stars:99}},last:{themeId:everydayFirst.themeId,level:0,journey:everydayFirst.id}}}});
+ const everydayPartial=await json('/api/progress',{cookie:aCookie});check(everydayPartial.progress.saves[everydayKey]?.strokes.length===1&&!everydayPartial.progress.saves[everydayKey]?.complete,'new145 partial survives actual Worker validation');check(everydayPartial.progress.last.journey===everydayFirst.id,'new145 continuation survives cloud read');
+ const everydaySaves={...everydayPartial.progress.saves};for(const chapter of EVERYDAY_CHAPTERS){const board=journeyBoard(chapter);everydaySaves['route:'+chapter.id]={strokes:board.placements,elapsed:44,hints:0,complete:false,stars:99};}
+ await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...everydayPartial.progress,saves:everydaySaves,last:{themeId:EVERYDAY_CHAPTERS.at(-1).themeId,level:0,journey:EVERYDAY_CHAPTERS.at(-1).id}}}});
+ const everydaySaved=await json('/api/progress',{cookie:aCookie});check(EVERYDAY_CHAPTERS.every(j=>everydaySaved.progress.saves['route:'+j.id]?.complete&&everydaySaved.progress.saves['route:'+j.id]?.stars===3),'all24 everyday chapters survive server validation with derived stars');check(everydaySaved.progress.last.journey===EVERYDAY_CHAPTERS.at(-1).id,'last168 survives cloud read');check(COAST_CHAPTERS.every(j=>everydaySaved.progress.saves['route:'+j.id]?.complete)&&everydaySaved.progress.saves[bonusKey]?.complete,'new pack preserves old completed worlds and bonus');check(!(await json('/api/progress',{cookie:bCookie})).progress.saves[everydayKey],'new pack progress remains private to its owner');
  const storySaves={...atlasSaved.progress.saves};for(const story of LIVING_STORIES){const board=journeyBoard(story);storySaves['route:'+story.id]={strokes:board.placements,elapsed:42,hints:1,complete:false,stars:99};}
  await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...atlasSaved.progress,saves:storySaves}}});
  const storiesSaved=await json('/api/progress',{cookie:aCookie});check(LIVING_STORIES.every(s=>storiesSaved.progress.saves['route:'+s.id]?.complete&&storiesSaved.progress.saves['route:'+s.id].stars===2),'all five living stories roundtrip through validated full-board saves');check(storiesSaved.progress.last.journey===atlasSaved.progress.last.journey,'story saves preserve the main continuation');check(!(await json('/api/progress',{cookie:bCookie})).progress.saves['route:'+LIVING_STORIES[0].id],'living story keepsakes stay private to the actual owner');
