@@ -1,4 +1,5 @@
-import {EXPEDITIONS} from './discovery.ts';
+import {coastRouteForChapter} from './coast-content.ts';
+import {EXPEDITIONS,expeditionForChapter,expeditionBonusId} from './discovery.ts';
 import {journeyById} from './content.ts';
 import type {Target} from './engine.ts';
 import type {WordVeil} from './word-card.ts';
@@ -24,11 +25,11 @@ const TOPICS:Record<string,readonly string[]>={
 };
 export function worldChapter(id?:string){
  const chapter=id?journeyById(id):null;if(!chapter)return null;
- const world=EXPEDITIONS.find(w=>w.id===chapter.themeId);if(!world)return null;
- const index=world.chapterIds.indexOf(chapter.id),bonus=chapter.id===`${world.id}-atlas-6`||['uzay-gozlemevi','turkiye-kartpostal','hababam-yillik'].includes(chapter.id);
+ const world=expeditionForChapter(chapter.id);if(!world)return null;
+ const index=world.chapterIds.indexOf(chapter.id),bonus=chapter.id===expeditionBonusId(world);
  if(index<0&&!bonus)return null;
  const position=bonus?5:index;
- return {world,position,topic:TOPICS[world.id]![position]!,chapter};
+ return {world,position,topic:TOPICS[world.id]?.[position]??chapter.title,chapter};
 }
 
 /** Fixed per chapter/group across resumes, devices and replays. Clues retain their own rules. */
@@ -38,6 +39,7 @@ export function chapterVeils(id:string|undefined,targets:Target[]):Record<number
  const groups=[...new Set(targets.map(t=>t.group))];
  for(const [i,group] of groups.entries()){
   const step=info.position;
+  if(coastRouteForChapter(id)){veils[group]=i===groups.length-1?(step===4?'initial':id==='kiyi-fener-6'?'hidden':'open'):'open';continue;}
   // Concealed words are occasional challenges; most targets stay readable.
   veils[group]=step>=4?(i===groups.length-1?'hidden':i===groups.length-2?'initial':'open'):step>=2&&i===groups.length-1?'initial':'open';
  }

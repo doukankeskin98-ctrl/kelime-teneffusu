@@ -20,7 +20,7 @@ export function JourneyObjective({goal,complete}:{goal:Goal;complete:boolean}){
 export function VictorySummary({goal,rewards,stars,hints,seconds,total,improved,best,tutorial=false,daily=false}:{
  goal:Goal;rewards:DiscoveryReward[];stars:number;hints:number;seconds:number;total:number;improved?:boolean;best?:SavedLevel;tutorial?:boolean;daily?:boolean;
 }){
- const piece=goal?rewards.find(r=>r.kind==='piece'&&r.themeId===goal.chapter.themeId&&r.title===goal.piece):undefined;
+ const piece=goal?rewards.find(r=>r.id===`piece:${goal.state.expedition.id}:${goal.position}`):undefined;
  const milestones=rewards.filter(r=>r.kind!=='piece'),mastery=masteryCopy(hints);
  return <div className="victory-summary">
   {goal?<div className={'victory-keepsake'+(piece?' is-new':'')}>

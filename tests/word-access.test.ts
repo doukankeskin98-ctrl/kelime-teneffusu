@@ -1,3 +1,4 @@
+import * as coast from '../lib/game/coast-content.ts';
 import * as worldPresentation from '../lib/game/world-presentation.ts';
 import * as scenePresentation from '../lib/game/scene.ts';
 import * as boardPresentation from '../lib/game/board-view.ts';
@@ -36,7 +37,7 @@ function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown,s
  const hooks={useState(initial:any){const i=cursor++,s=slots[i]??={value:i===0&&seedFirst!==undefined?seedFirst:typeof initial==='function'?initial():initial};return[s.value,(n:any)=>{const v=typeof n==='function'?n(s.value):n;if(!Object.is(v,s.value)){s.value=v;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useId(){return(slots[cursor++]??={value:'id-'+(++id)}).value;},useMemo(fn:()=>any,deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;s.value=fn();}return s.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;effects.push(()=>{s.cleanup?.();const clean=fn();s.cleanup=typeof clean==='function'?clean:undefined;});}},useReducer(reducer:any,arg:any,init:any){const [v,set]=hooks.useState(()=>init(arg));return[v,(event:any)=>set((s:any)=>reducer(s,event))];}};
  class Clock extends Date{static override now(){return now;}}
  const source=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText+(file.endsWith('Sprint.tsx')?'\nexports.__SprintRun=SprintRun;':'');
- vm.runInNewContext(source,{exports,require:(name:string)=>name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddles:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/legacy-ui'?legacyUI:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize,fitGameFrame}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{innerHeight:640,matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:(key:string)=>storageValues?.get(key)??null,setItem:(key:string,value:string)=>storageValues?.set(key,value)},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void)=>{timeouts.set(++id,fn);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)});
+ vm.runInNewContext(source,{exports,require:(name:string)=>name==='@/lib/game/coast-content'?coast:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddles:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/legacy-ui'?legacyUI:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize,fitGameFrame}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{innerHeight:640,matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:(key:string)=>storageValues?.get(key)??null,setItem:(key:string,value:string)=>storageValues?.set(key,value)},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void)=>{timeouts.set(++id,fn);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)});
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<50;i++){if(dirty){dirty=false;cursor=0;tree=render();}if(commit)while(effects.length)effects.shift()!();}return tree;};
  return{exports,document,slots,frames,start(name:string,props:any,commit=true){render=()=>exports[name](props);return paint(commit);},paint,update(name:string,props:any){render=()=>exports[name](props);dirty=true;return paint();},find(type:string){const n=walk(tree).find(n=>n.type===type||typeof n.type==='function'&&n.type.name===type);assert.ok(n,type);return n;},async settle(){for(let i=0;i<30;i++){await Promise.resolve();paint();}},time(value:number){now=value;for(const fn of [...intervals.values()])fn();paint();},expire(){const f=[...timeouts.values()];timeouts.clear();for(const fn of f)fn();paint();},frame(){const f=[...frames.values()];frames.clear();for(const fn of f)fn();paint();},get tree(){return tree;},close(){for(const s of slots)s.cleanup?.();frames.clear();intervals.clear();timeouts.clear();}};
 }
@@ -46,11 +47,11 @@ function shared(props:any){const h=view('components/game/common.tsx');h.start('P
 describe('rotated live layout keeps the original puzzle authoritative',()=>{
  it('maps displayed ink, hint and selection back to the original board without changing targets',()=>{
   const puzzle=content.TUTORIAL,stroke=puzzle.placements[0]!,commits:engine.Cell[][]=[],words={board:puzzle,strokes:[stroke]};
-  const props={...base,turned:true,wordList:words,strokes:[stroke],hint:stroke.a,onCommit:(a:engine.Cell,b:engine.Cell)=>commits.push([a,b])},h=shared(props);
+  const props={...base,turned:true,wordList:words,strokes:[stroke],hint:stroke.a,hintEnd:stroke.b,onCommit:(a:engine.Cell,b:engine.Cell)=>commits.push([a,b])},h=shared(props);
   try{
    const display=h.find('Board'),map=(c:engine.Cell)=>boardPresentation.viewCell(c,puzzle.size,true);
    assert.deepEqual(display.props['board'].grid,boardPresentation.boardView(puzzle,true).grid);
-   assert.deepEqual(display.props['hint'],map(stroke.a));assert.deepEqual(display.props['strokes'][0].a,map(stroke.a));
+   assert.deepEqual(display.props['hint'],map(stroke.a));assert.deepEqual(display.props['hintEnd'],map(stroke.b));assert.deepEqual(display.props['strokes'][0].a,map(stroke.a));
    assert.equal(h.find('WordList').props['board'],puzzle);
    display.props['onCommit'](map(stroke.a),map(stroke.b));assert.deepEqual(commits,[[stroke.a,stroke.b]]);
    const rotatedKey=display.key;h.update('PlayLayout',{...props,turned:false});assert.notEqual(h.find('Board').key,rotatedKey);assert.equal(h.find('Board').props['board'],puzzle);
@@ -281,7 +282,7 @@ describe('player-selected focus is guidance without extra rewards or hidden answ
    const replay=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 1:'))!;replay.props['onClick']();h.paint();assert.equal(calls[0].practice,true);assert.equal(calls[0].campaign,true);
    walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();
    const locked=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 4:'))!;assert.equal(locked.props['disabled'],true);locked.props['onClick']();h.paint();assert.equal(calls.length,1);
-   walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();assert.equal(h.find('Modal').props['title'],'Bölümler');assert.equal(walk(h.find('Modal')).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm ')).length,96);
+   walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();assert.equal(h.find('Modal').props['title'],'Bölümler');assert.equal(walk(h.find('Modal')).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm ')).length,120);
   }finally{h.close();}
  });
 });
@@ -323,7 +324,7 @@ describe('living story sequential interaction, hints, replay and navigation',()=
  });
  it('keeps the chosen chapter view through a home remount',()=>{
   let selected:'stories'|'journey'='stories';const props={progress:progress.emptyProgress(),onPlay(){},onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
-  try{h.start('JourneyHome',props);const button=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Bölümler')!;button.props['onClick']();h.paint();assert.equal(selected,'journey');const next=view('components/game/JourneyHome.tsx',modules);try{next.start('JourneyHome',{...props,initialView:selected});assert.equal(walk(next.tree).find(n=>n.props?.['className']==='journey-classic-panel')!.props['hidden'],false);}finally{next.close();}}finally{h.close();}
+  try{h.start('JourneyHome',{...props,initialView:'stories'});h.find('Modal').props['onClose']();h.paint();assert.equal(selected,'journey');const next=view('components/game/JourneyHome.tsx',modules);try{next.start('JourneyHome',{...props,initialView:selected});assert.equal(walk(next.tree).some(n=>n.type==='Modal'),false);assert(walk(next.tree).some(n=>n.props?.['className']==='stage-play'));}finally{next.close();}}finally{h.close();}
  });
 });
 
@@ -374,7 +375,7 @@ describe('clear phone targets and persisted fast play',()=>{
  });
  it('applies an asynchronously restored home preference without losing progress or opening a game',()=>{
   const p=progress.emptyProgress(),h=view('components/game/JourneyHome.tsx',modules);let plays=0;const props={progress:p,onPlay(){plays++;},onExplore(){},initialView:'journey'};
-  try{h.start('JourneyHome',props);h.update('JourneyHome',{...props,initialView:'stories'});assert.equal(walk(h.tree).find(n=>n.props['className']==='journey-classic-panel')!.props['hidden'],true);assert.equal(plays,0);assert.equal(p.tutorialDone,false);}finally{h.close();}
+  try{h.start('JourneyHome',props);h.update('JourneyHome',{...props,initialView:'stories'});assert.equal(h.find('Modal').props['title'],'Hikâyeler');assert.equal(plays,0);assert.equal(p.tutorialDone,false);}finally{h.close();}
  });
 });
 

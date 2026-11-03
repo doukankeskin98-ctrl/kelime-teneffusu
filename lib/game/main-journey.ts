@@ -1,5 +1,6 @@
+import {COAST_CHAPTERS} from './coast-content.ts';
 import {journeyById} from './content.ts';
-import {discoveryState,EXPEDITIONS,nextJourneyAfter} from './discovery.ts';
+import {discoveryState,EXPEDITIONS,nextJourneyAfter,expeditionForChapter} from './discovery.ts';
 import type {Progress} from './progress.ts';
 
 /** Presentation order v1. IDs, boards, saves and the existing 3/5/6 gates stay unchanged.
@@ -7,7 +8,8 @@ import type {Progress} from './progress.ts';
 export const MAIN_JOURNEY_IDS:readonly string[]=[
  'uzay-1','uzay-2','uzay-3','turkiye-1','uzay-4','turkiye-2','turkiye-3','hababam-1','uzay-5','uzay-gozlemevi',
  'hababam-2','hababam-3','turkiye-4','turkiye-5','turkiye-kartpostal','hababam-4','hababam-5','hababam-yillik',
- ...EXPEDITIONS.slice(3).flatMap(e=>[...e.chapterIds,`${e.id}-atlas-6`]),
+ ...EXPEDITIONS.slice(3,16).flatMap(e=>[...e.chapterIds,`${e.id}-atlas-6`]),
+ ...COAST_CHAPTERS.map(c=>c.id),
 ];
 export const MAIN_JOURNEY=MAIN_JOURNEY_IDS.map((id,i)=>({number:i+1,chapter:journeyById(id)!}));
 export const mainChapter=(id?:string)=>MAIN_JOURNEY.find(item=>item.chapter.id===id)??null;
@@ -18,7 +20,7 @@ const started=(save:Progress['saves'][string]|undefined)=>!!save&&(save.complete
 export function mainJourneyChapters(progress:Pick<Progress,'saves'>){
  const states=discoveryState(progress);
  return MAIN_JOURNEY.map(item=>{
-  const world=states.find(s=>s.expedition.id===item.chapter.themeId)!;
+  const world=states.find(s=>s.expedition.id===expeditionForChapter(item.chapter.id)?.id)!;
   const save=progress.saves['route:'+item.chapter.id];
   const unlocked=world.unlocked&&(world.bonus.id!==item.chapter.id||world.bonusUnlocked||started(save));
   return {...item,world,unlocked,complete:save?.complete===true,stars:save?.stars??0,
@@ -32,7 +34,7 @@ export function mainJourneyState(progress:Pick<Progress,'saves'|'last'>){
  const last=mainChapter(progress.last?.journey),saved=last?progress.saves['route:'+last.chapter.id]:undefined;
  const resume=last&&saved&&!saved.complete&&started(saved)&&available.has(last.chapter.id)?last:null;
  const following=last?nextJourneyAfter(progress,last.chapter.id):null;
- const worldOrder=EXPEDITIONS.flatMap(world=>MAIN_JOURNEY.filter(item=>item.chapter.themeId===world.id));
+ const worldOrder=EXPEDITIONS.flatMap(world=>MAIN_JOURNEY.filter(item=>expeditionForChapter(item.chapter.id)?.id===world.id));
  const current=resume??(following?mainChapter(following.id):null)??worldOrder.find(item=>!done(progress,item.chapter.id)&&available.has(item.chapter.id))??null;
  const currentSave=current?progress.saves['route:'+current.chapter.id]:undefined;
  return {current,continuing:!!(currentSave&&!currentSave.complete&&(currentSave.strokes.length||currentSave.elapsed||currentSave.hints)),completed:MAIN_JOURNEY.filter(item=>done(progress,item.chapter.id)).length,total:MAIN_JOURNEY.length};
@@ -49,7 +51,7 @@ export function nextMainMilestone(progress:Pick<Progress,'saves'>,fromId?:string
  for(let step=0;step<MAIN_JOURNEY.length&&cursor;step++){
   const item=mainChapter(cursor)!;
   if(done({saves},item.chapter.id)){cursor=nextJourneyAfter({saves},cursor)?.id;continue;}
-  const state=discoveryState({saves}).find(s=>s.expedition.id===item.chapter.themeId)!;
+  const state=discoveryState({saves}).find(s=>s.expedition.id===expeditionForChapter(item.chapter.id)?.id)!;
   if(!state.unlocked||(state.bonus.id===item.chapter.id&&!state.bonusUnlocked))break;
   saves['route:'+item.chapter.id]={strokes:[],elapsed:0,hints:0,complete:true,stars:0};remaining++;
   const after=discoveryState({saves});

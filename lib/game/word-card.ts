@@ -1,4 +1,4 @@
-import type {Target,Stroke} from './engine.ts';
+import type {Target,Stroke,Cell} from './engine.ts';
 export type WordVeil='open'|'initial'|'hidden';
 export function veiledText(text:string,veil:WordVeil='open'){
  if(veil==='open')return text;
@@ -37,4 +37,10 @@ export function focusedWordGroup(board:{targets:Target[]},strokes:Stroke[],prefe
 export function hintTarget(board:{targets:Target[]},strokes:Stroke[],preferred:number|null=null){
  const group=focusedWordGroup(board,strokes,preferred),found=new Set(strokes.map(s=>s.id));
  return board.targets.find(t=>t.group===group&&!found.has(t.id))??null;
+}
+
+/** Each charged solo hint adds help. Stored hint count survives reload; competitive hints stay server-owned. */
+export function soloHintGuide(placement:Pick<Stroke,'a'|'b'>,used:number):{start:Cell;end:Cell|null;message:string}{
+ const {a,b}=placement;
+ return used<=1?{start:a,end:null,message:'Kelimenin ilk harfi burada.'}:used===2?{start:a,end:[a[0]+Math.sign(b[0]-a[0]),a[1]+Math.sign(b[1]-a[1])],message:'İlk harften işaretli yönde ilerle.'}:{start:a,end:b,message:'İşaretli yolu çizerek kelimeyi tamamla.'};
 }

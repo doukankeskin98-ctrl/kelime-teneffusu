@@ -4,6 +4,7 @@ import {readdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {LIVING_STORIES} from '../lib/game/story-content.ts';
+import {COAST_CHAPTERS} from '../lib/game/coast-content.ts';
 import {ATLAS_JOURNEYS} from '../lib/game/atlas-content.ts';
 import {EXPEDITIONS} from '../lib/game/discovery.ts';
 import {JOURNEY_BONUSES,journeyBoard} from '../lib/game/content.ts';
@@ -34,15 +35,15 @@ try{
  for(const file of (await readdir('drizzle')).filter(x=>x.endsWith('.sql')).sort())for(const sql of (await readFile('drizzle/'+file,'utf8')).split('--> statement-breakpoint').map(x=>x.trim()).filter(Boolean))await db.prepare(sql).run();
  const home=(await (await request('/')).text()).replace(/<!--[\s\S]*?-->/g,'');check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
  check(/<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(home),'production HTML declares a real device viewport and safe areas');
- check(home.includes('id="journey-home-title"')&&home.includes('Oyna · 1/6')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
- check(['Yolculuk','Keşfet','Arena','Günlük','Albüm'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
- check(home.includes('Yıldız İskelesi')&&home.includes('voyage-path')&&EXPEDITIONS.length===16,'numbered journey preserves the sixteen registered worlds');
- check(home.includes('İlk yıldız')&&home.includes('Sıradaki parça')&&home.includes('Anadolu Patikası'),'home presents an actual album piece and upcoming world');
- const released=releaseCatalogue();check(home.includes('Dünyalar, hızlı turlar ve günlük hikâyeler'),'secondary exploration and archive entry remains visible');
- check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/6')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
+ check(home.includes('id="journey-home-title"')&&home.includes('stage-play')&&home.includes('Bölüm 1')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
+ check(['Yolculuk','Arena','Koleksiyon','Günlük','Diğer oyunlar'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
+ check(home.includes('Yıldız İskelesi')&&home.includes('stage-trail')&&EXPEDITIONS.length===20,'numbered journey exposes twenty independently registered routes');
+ check(home.includes('Gökyüzüne bak')&&home.includes('3 bölüm sonra')&&home.includes('Anadolu Patikası'),'home presents an actual album piece and upcoming world');
+ const released=releaseCatalogue();check(home.includes('Diğer oyunlar'),'secondary exploration and archive entry remains visible');
+ check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/120')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
- check(home.includes('voyage-hero')&&home.includes('/art/scenes/observatory-v1.webp'),'main journey presents the illustrated scene for its actual world');
+ check(home.includes('journey-stage')&&home.includes('/art/scenes/observatory-v1.webp'),'main journey presents the illustrated scene for its actual world');
  const offlineWorker=await readFile('dist/client/sw.js','utf8');
  for(const scene of ['observatory','harbor','garden','bakery','courtyard','bosphorus','school','valley','workshop','cassette','stadium','court','cinema','neighborhood','square','temple']){const asset='/art/scenes/'+scene+'-v1.webp';const image=await request(asset);check(image.headers.get('Content-Type')?.includes('image/webp'),'scene is served as WebP');check(offlineWorker.includes(asset),'illustrated scene is included in the offline installation');}
  const themeId=released.chapters[0].spec.themeId,themeArchive=await json('/api/chapters?collection=releases&theme='+themeId);
@@ -136,6 +137,9 @@ try{
  const atlasSaved=await json('/api/progress',{cookie:aCookie});check([ATLAS_JOURNEYS[0],ATLAS_JOURNEYS[2],ATLAS_JOURNEYS[5]].every(j=>atlasSaved.progress.saves['route:'+j.id]?.complete&&atlasSaved.progress.saves['route:'+j.id]?.stars===2),'new atlas normal, clue and final chapters are validated and preserved by the Worker');
  check(atlasSaved.progress.last.journey===ATLAS_JOURNEYS[2].id,'the saved clue hunt remains the actual last destination');
  check(!(await json('/api/progress',{cookie:bCookie})).progress.saves['route:'+ATLAS_JOURNEYS[0].id],'atlas chapters remain private to the account');
+ const coastSaves={...atlasSaved.progress.saves};for(const chapter of COAST_CHAPTERS){const board=journeyBoard(chapter);coastSaves['route:'+chapter.id]={strokes:board.placements,elapsed:41,hints:0,complete:false,stars:99};}
+ await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...atlasSaved.progress,saves:coastSaves,last:{themeId:COAST_CHAPTERS.at(-1).themeId,level:0,journey:COAST_CHAPTERS.at(-1).id}}}});
+ const coastSaved=await json('/api/progress',{cookie:aCookie});check(COAST_CHAPTERS.every(j=>coastSaved.progress.saves['route:'+j.id]?.complete&&coastSaved.progress.saves['route:'+j.id]?.stars===3),'all24 coast chapters survive server validation and cloud read');check(coastSaved.progress.last.journey===COAST_CHAPTERS.at(-1).id,'coast last destination survives cloud read');check(!!coastSaved.progress.saves[bonusKey]?.complete,'coast update preserves legacy bonus progress');check(!(await json('/api/progress',{cookie:bCookie})).progress.saves['route:'+COAST_CHAPTERS[0].id],'coast progression is isolated by owner');
  const storySaves={...atlasSaved.progress.saves};for(const story of LIVING_STORIES){const board=journeyBoard(story);storySaves['route:'+story.id]={strokes:board.placements,elapsed:42,hints:1,complete:false,stars:99};}
  await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...atlasSaved.progress,saves:storySaves}}});
  const storiesSaved=await json('/api/progress',{cookie:aCookie});check(LIVING_STORIES.every(s=>storiesSaved.progress.saves['route:'+s.id]?.complete&&storiesSaved.progress.saves['route:'+s.id].stars===2),'all five living stories roundtrip through validated full-board saves');check(storiesSaved.progress.last.journey===atlasSaved.progress.last.journey,'story saves preserve the main continuation');check(!(await json('/api/progress',{cookie:bCookie})).progress.saves['route:'+LIVING_STORIES[0].id],'living story keepsakes stay private to the actual owner');
