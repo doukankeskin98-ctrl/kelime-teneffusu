@@ -1,7 +1,22 @@
-import type {Cell} from './engine';
+import type {Cell,Puzzle,Stroke,Target} from './engine';
 /** A .47-cell ellipse covers 69.4% of a cell, independent of pixel aspect ratio. */
 export const CELL_HIT_RADIUS=.47;
 export type GestureStep={cell:Cell;axis:Cell|null};
+/** Search the sampled ray, including endpoints skipped by a fast swipe.
+ * Ambiguous prefixes wait for release so the longer target stays selectable.
+ * Only caller-supplied unlocked targets are eligible; no placements are needed.
+ */
+export function earlyWordEnd(board:Pick<Puzzle,'grid'|'size'>,targets:Target[],strokes:Stroke[],start:Cell,end:Cell):Cell|null{
+ const dy=end[0]-start[0],dx=end[1]-start[1],length=Math.max(Math.abs(dy),Math.abs(dx))+1;
+ if(length<2||dy&&dx&&Math.abs(dy)!==Math.abs(dx))return null;
+ const dr=Math.sign(dy),dc=Math.sign(dx),found=new Set(strokes.map(s=>s.id));
+ const words=targets.filter(t=>!found.has(t.id)).flatMap(t=>[t.text,[...t.text].reverse().join('')]);
+ let ray='';
+ for(let r=start[0],c=start[1];r>=0&&c>=0&&r<board.size&&c<board.size;r+=dr,c+=dc)ray+=board.grid[r]![c];
+ const candidates=words.filter(word=>ray.startsWith(word));
+ const word=candidates.filter(word=>word.length>=2&&word.length<=length&&!candidates.some(long=>long.length>word.length&&long.startsWith(word))).sort((a,b)=>a.length-b.length)[0];
+ return word?[start[0]+dr*(word.length-1),start[1]+dc*(word.length-1)]:null;
+}
 export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell,size:number,release=false):GestureStep{
  const unchanged={cell:current,axis};
  if(!point.every(Number.isFinite)||!Number.isInteger(size)||size<1)return unchanged;

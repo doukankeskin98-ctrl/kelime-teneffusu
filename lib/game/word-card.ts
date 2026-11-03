@@ -32,3 +32,9 @@ export function focusedWordGroup(board:{targets:Target[]},strokes:Stroke[],prefe
  const remaining=[...new Set(board.targets.filter(t=>!found.has(t.id)).map(t=>t.group))];
  return preferred!==null&&remaining.includes(preferred)?preferred:remaining[0]??null;
 }
+
+/** Follow the visible focus and original list order, never placement length order. */
+export function hintTarget(board:{targets:Target[]},strokes:Stroke[],preferred:number|null=null){
+ const group=focusedWordGroup(board,strokes,preferred),found=new Set(strokes.map(s=>s.id));
+ return board.targets.find(t=>t.group===group&&!found.has(t.id))??null;
+}

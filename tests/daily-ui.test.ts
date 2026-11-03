@@ -152,3 +152,11 @@ describe('home preference and honest tutorial completion',()=>{
   const h=await app(undefined,{query:'',initial:p});try{h.find('Explore').props['openSolo']({themeId:'uzay',level:0,tutorial:true});h.paint();h.find('Solo').props['onBack']();h.paint();const after=h.find('Explore').props['progress'];assert.equal(after.tutorialDone,false);assert.deepEqual(after.saves['route:uzay-1'],saved);}finally{h.close();}
  });
 });
+
+
+it('sends the focused daily target and shows its hint only after confirmation',async()=>{
+ const h=await solo();try{await h.settle();const target=h.board.targets.at(-1)!,placement=h.board.placements.find(p=>p.id===target.id)!;
+  h.layout().props['wordList'].onFocusGroup(target.group);await h.settle();h.hint();await h.settle();const intent=h.calls[0].intent;assert.equal(intent.targetId,target.id);assert.equal(h.layout().props['hint'],null);assert.equal(h.sounds.length,0);
+  h.gate.resolve(await h.f.game.dailyClaim('alice',h.initial.id,null,null,true,intent.requestId,intent.targetId));await h.settle();assert.deepEqual(h.layout().props['hint'],placement.a);assert.equal(h.controls().props['hints'],2);
+ }finally{h.close();}
+});
