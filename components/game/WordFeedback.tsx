@@ -36,18 +36,18 @@ export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:Re
    const dest=destination.getBoundingClientRect();
    const x=rect.left-bounds.left+(end[1]+.5)*rect.width/board.size,y=rect.top-bounds.top+(end[0]+.5)*rect.height/board.size;
    const tx=dest.left-bounds.left+dest.width/2,ty=dest.top-bounds.top+dest.height/2;
-   const spark=document.createElement('span');spark.className='word-flight';spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
+   const spark=document.createElement('span');spark.className='word-flight word-flight-label';spark.textContent=board.targets.filter(t=>t.group===target.group).every(t=>confirmed.some(s=>s.id===t.id))?target.label:target.text;spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
    const animations:Animation[]=[];let timer:ReturnType<typeof setTimeout>|undefined,stopped=false;
    const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);for(const animation of animations)animation.cancel();spark.remove();work.current.delete(stop);};
    work.current.add(stop);
    try{
     animations.push(spark.animate([
-     {transform:`translate(${x}px,${y}px) scale(.4)`,opacity:0,offset:0},
-     {transform:`translate(${x}px,${y}px) scale(1.3)`,opacity:1,offset:.12},
-     {transform:`translate(${x+(tx-x)*.35}px,${Math.min(y,ty)-20}px) scale(1)`,opacity:1,offset:.55},
-     {transform:`translate(${tx}px,${ty}px) scale(.25)`,opacity:0,offset:1},
-    ],{duration:440,easing:'cubic-bezier(.2,.7,.3,1)',fill:'both'}));
-    animations.push(destination.animate([{filter:'brightness(1)'},{filter:'brightness(1.15)'},{filter:'brightness(1)'}],{delay:240,duration:300}));
+     {transform:`translate(${x}px,${y}px) translate(-50%,-50%) scale(.8)`,opacity:0,offset:0},
+     {transform:`translate(${x}px,${y}px) translate(-50%,-50%) scale(1.06)`,opacity:1,offset:.12},
+     {transform:`translate(${x+(tx-x)*.35}px,${Math.min(y,ty)-20}px) translate(-50%,-50%) scale(1)`,opacity:1,offset:.55},
+     {transform:`translate(${tx}px,${ty}px) translate(-50%,-50%) scale(.55)`,opacity:0,offset:1},
+    ],{duration:360,easing:'cubic-bezier(.2,.7,.3,1)',fill:'both'}));
+    if(destination.hasAttribute('data-word-group'))animations.push(destination.animate([{transform:'scale(1)'},{transform:'scale(1.045)'},{transform:'scale(1)'}],{delay:180,duration:220}));
     timer=setTimeout(stop,600);
    }catch{stop();}
   }

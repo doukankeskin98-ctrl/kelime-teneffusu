@@ -12,7 +12,7 @@ import '@/app/game-styles.css';
 import './native.css';
 if(Capacitor.isNativePlatform()){
  setNativeTransport(nativeApiTransport(options=>CapacitorHttp.request(options)));
- setHapticsAdapter(nativeHaptics({selectionStart:()=>Haptics.selectionStart(),selectionChanged:()=>Haptics.selectionChanged(),selectionEnd:()=>Haptics.selectionEnd(),word:()=>Haptics.impact({style:ImpactStyle.Light}),complete:()=>Haptics.notification({type:NotificationType.Success})},()=>gameIsActive()&&!document.hidden));
+ setHapticsAdapter(nativeHaptics({menu:()=>Haptics.impact({style:ImpactStyle.Light}),selectionStart:()=>Haptics.selectionStart(),selectionChanged:()=>Haptics.selectionChanged(),selectionEnd:()=>Haptics.selectionEnd(),word:()=>Haptics.impact({style:ImpactStyle.Light}),complete:()=>Haptics.notification({type:NotificationType.Success})},()=>gameIsActive()&&!document.hidden));
  void App.addListener('appStateChange',({isActive})=>{
   setGameActive(isActive);
   if(!isActive){stopHapticSelection();window.dispatchEvent(new Event('blur'));}

@@ -304,3 +304,24 @@ describe('logical selection feedback lifecycle',()=>{
   }
  });
 });
+
+describe('continuous ink remains independent from logical cells',()=>{
+ it('moves within one cell without another preview, haptic, commit or React render',()=>{
+  const h=harness();h.send('onPointerDown',[2,1]);h.send('onPointerMove',[2,2]);h.flush();
+  const previews=h.previews.length,letters=h.letters.length,renders=h.renders;
+  const x=Number(h.ink().get('x2'));
+  h.send('onPointerMove',[2,2.2]);h.flush();assert(Number(h.ink().get('x2'))>x);
+  assert.equal(h.previews.length,previews);assert.equal(h.letters.length,letters);assert.equal(h.renders,renders);assert.equal(h.commits.length,0);
+  h.send('onPointerUp',[2,2.2]);assert.deepEqual(h.commits,[{a:[2,1],b:[2,2]}]);h.unmount();
+ });
+ it('keeps fractional ink on each locked ray and clears queued motion on cancellation',()=>{
+  for(const [dr,dc] of [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]]){
+   const h=harness(),start:Cell=[2,2];h.send('onPointerDown',start);h.send('onPointerMove',[2+dr!,2+dc!]);h.flush();
+   h.send('onPointerMove',[2+dr!*1.2,2+dc!*1.2]);h.flush();
+   assert(Math.abs(Number(h.ink().get('x2'))-(2.5+dc!*1.2))<.001);assert(Math.abs(Number(h.ink().get('y2'))-(2.5+dr!*1.2))<.001);
+   h.send('onPointerMove',[2+dr!*1.3,2+dc!*1.3]);h.send('onPointerCancel',start);h.flush();assert.equal(h.selected().length,0);assert.equal(h.commits.length,0);h.unmount();
+  }
+ });
+});
+
+it('releasing fractional movement within the initial cell retires queued ink before tap anchoring',()=>{const h=harness();h.send('onPointerDown',[1,1]);h.send('onPointerMove',[1,1.2]);h.send('onPointerUp',[1,1.2]);h.flush();assert.equal(h.commits.length,0);assert.equal(Number(h.ink().get('x2')),1.5);assert.equal(Number(h.ink().get('y2')),1.5);h.tap([1,3]);assert.deepEqual(h.commits,[{a:[1,1],b:[1,3]}]);h.unmount();});
