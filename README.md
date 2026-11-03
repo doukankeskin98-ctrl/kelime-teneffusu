@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.30.1 · Harf geçişi titreşimi
+
+Ortak harf sinyali artık iOS seçim titreşimine ulaşır; native generator ilk harften önce hazırlanır. Mantıksal seçim bittiğinde, ayar kapatıldığında, pause/blur/arka plan veya ekran değişiminde temizlenir. Tek native seçim işlemi ve gerçek değişim çağrısından 50 ms aralık; hızlı harfler kuyruk oluşturmaz, geciken hazırlık iptalden sonra titreşim üretmez. Kelime/bölüm başarı titreşimleri ayrı kalır. Ses ve titreşim tercihi bağımsız; varsayılan kapalı tercih ve web'in sessiz davranışı korunur.
+
+624 test/131 grup (65 hedef haptik/Board/hook testi), içerik denetimi, tip, web/mobil paket, Xcode simülatör derlemesi ve 628 Worker HTTP geçti. Tek dar bağımsız güvenilirlik incelemesinde engel yok. Bölüm/içerik/ilerleme/ödül/Arena kuralları değişmedi. Fiziksel iPhone'da titreşim yoğunluğu ve hissi ölçülmedi; simülatör bunu kanıtlamaz. Kabul: `studio-agents/journal/entries/2026-11-03-haptics-fix.md`; kaynak/yayın makbuzu `../world-review/release-0.30.1.json`.
+
 ## 0.30.0 · Kelime hissi ve Doğa Günlüğü
 
 Doğru kelimeden hedefe kısa ışık hareketi, aynı manzarada yıldız/hatıra kutlaması ve tek devam eylemi. Yerel paketli Manrope yazı tipi; Etkinlikler menüsü, yatay dünya albümleri ve okunaklı Arena lobisi. Yeni 24 bölümle 144 ana bölüm/24 rota; mevcut 16 özgün sahne kullanılır. Eski 120 bölümün sıra/kimlik/kelime/tohum/tahta hashleri, kayıtlar ve ödüller korunur.
