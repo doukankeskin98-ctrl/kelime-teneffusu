@@ -1,4 +1,5 @@
 'use client';
+import {appFetch} from '@/lib/platform/runtime';
 import {useEffect,useId,useRef,useState,type Dispatch,type SetStateAction} from 'react';
 import {ArrowRight,Check,Cloud,CloudOff,LoaderCircle,RefreshCw,Sparkles,TriangleAlert,WifiOff} from 'lucide-react';
 import {findTheme} from '@/lib/game/catalog';
@@ -85,7 +86,7 @@ export function PublishedPlay({chapter:summary,userId,initialPractice=false,pair
      return;
     }
     if(navigator.onLine){
-     const response=await fetch('/api/chapters?id='+encodeURIComponent(summary.id),{cache:'no-store',signal:c.signal});
+     const response=await appFetch('/api/chapters?id='+encodeURIComponent(summary.id),{cache:'no-store',signal:c.signal});
      if(!response.ok)throw new Error('Bu keşfe şu an ulaşılamıyor.');
      const candidate=cachedChapter(await response.json());
      if(!candidate||candidate.id!==summary.id)throw new Error('Bölüm kaydı doğrulanamadı.');

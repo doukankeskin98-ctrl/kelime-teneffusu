@@ -1,27 +1,5 @@
 import type { Metadata } from "next";
-import "./game.css";
-import "./auth.css";
-import "./studio.css";
-import "./discovery.css";
-import "./quality.css";
-import "./start.css";
-import "./releases.css";
-import "./mobile-game.css";
-import "./playful-studio.css";
-import "./atlas-adventure.css";
-import "./crafted-play.css";
-import "./word-access.css";
-import "./achievement-loop.css";
-import "./sound.css";
-import "./viewport-arena.css";
-import "./main-journey.css";
-import "./professional.css";
-import "./living-stories.css";
-import "./board-first.css";
-import "./clear-play.css";
-import "./scenic-journey.css";
-import "./world-journey.css";
-import "./game-shell.css";
+import "./game-styles.css";
 
 export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',themeColor:'#f7f7ef'};
 
