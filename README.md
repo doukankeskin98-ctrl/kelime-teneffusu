@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.32.0 · Günün Renkleri
+
+145–168 numaralı 24 yeni ana bölüm: Meyve Bahçesi, Mutfakta Bir Gün, El İşi Atölyesi ve Müzik Sokağı. Her rotada altı bölüm ve altı kalıcı albüm parçası; toplam 168 bölüm / 28 rota. Başlıklar görünür konu olarak doğrudan kullanılır. 100 farklı hedef ve 16 tanım editoryal olarak incelendi; eski katalogla aynı kelime kümesi yok. Dört bilmece, dört rahat mola, dört baş harfli ve yalnız bir tamamen gizli hedef; yeni tahtalar 6–8 satır / 4–5 kelimedir.
+
+Önceki 144 numara ve 181 oynanabilir yolculuk tahtası aynı hashlerle korunur. Eski kayıtlar, 3/5/6 açılışları, albümler, ödüller, tarihli içerik ve Arena geçmişi değişmez. 642 test / 133 grup, 239 tahta / 4780 alternatif içerik denetimi, tip, web/mobil derleme ve 639 Worker HTTP kontrolü geçti. Destekli yerel 414×628 ve 320×568 tarayıcı önizlemesinde yeni normal bölüm sürüklenerek tamamlandı, kısmi kayıt yenilemeyle korundu, kutlama ve sonraki bölüm görüldü; bilmece ve gizli hedef yerleşimi kontrol edildi. Önizleme ayrı yerel test kaydı kullanır. Fiziksel iPhone testi veya kurulu uygulama güncellemesi yapılmadı. Ayrıntı `studio-agents/journal/entries/2026-11-04-everyday-pack.md`.
+
 ## 0.31.0 · Kesintisiz çizim ve sade oyun akışı
 
 Çizgi ucu parmağı hücre içinde de izler; hücre kabulü, yön kilidi ve erken kelime tanıma ayrı kalır. Çizim sırasında ölçüm ertelenir; üst bildirimler tahtayı itmez. Onaylanan kelime kısa bir etiket hareketiyle hedefine ulaşır; gizli çok parçalı cevap ancak tamamlandığında açılır. Sahne üstündeki sonuç ekranı tek devam eylemiyle sürer. Ortak bölüm seçici, doğrudan hikâye devamı, sade ek oyun menüsü ve tek ayarlar görünümü eski girişlerin yerini alır. Native menü dokunuşu tercihe bağlı hafif titreşim verir; web sessiz kalır.

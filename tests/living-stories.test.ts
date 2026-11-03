@@ -8,8 +8,8 @@ import {MAIN_JOURNEY_IDS,mainJourneyState} from '../lib/game/main-journey.ts';
 import {match} from '../lib/game/engine.ts';
 
 describe('living story content and existing saved worlds',()=>{
- it('adds five distinct deterministic stories without changing the 144 chapter campaign',()=>{
-  assert.equal(LIVING_STORIES.length,5);assert.equal(ALL_JOURNEYS.length,144);assert.equal(MAIN_JOURNEY_IDS.length,144);
+ it('adds five distinct deterministic stories without changing the 168 chapter campaign',()=>{
+  assert.equal(LIVING_STORIES.length,5);assert.equal(ALL_JOURNEYS.length,168);assert.equal(MAIN_JOURNEY_IDS.length,168);
   assert.equal(new Set(LIVING_STORIES.map(s=>s.id)).size,5);
   assert.equal(LIVING_STORIES.flatMap(s=>s.steps).length,24);
   for(const story of LIVING_STORIES){

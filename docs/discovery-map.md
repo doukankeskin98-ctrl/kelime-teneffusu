@@ -1,5 +1,9 @@
 # Keşif Haritası
 
+## 0.32.0 · Günün Renkleri
+
+Ana sıra168 bölüm /28 rota içerir. Önceki144 numara korunarak145–168 arasına dört altılı rota eklenir: Meyve Bahçesi, Mutfakta Bir Gün, El İşi Atölyesi, Müzik Sokağı. Yeni `renkler-*` kimlikleri kendi beşli kümeleri/bonusları/albümleriyle kayıtlıdır; eski beşli kümeler büyümez. Başlık, seçicide ve tahtada aynı konu olarak gösterilir; mevcut sahneler kullanılır. Eski yayımların aşağıdaki kayıtları tarihseldir.
+
 ## 0.26.0 sunumu
 
 On altı mevcut dünya, altışar kalıcı durak ve kendine ait sahneyle sunulur. Önerilen devam dünyayı tamamlar; eski küresel bölüm numaraları ve kayıt kimlikleri değişmez. Dünya içi konu/kelime gizleme yalnız sunumdur; eski tahtalar ve açılış eşikleri korunur. İlk üç dünyanın aşağıdaki özgün kuralları ve tarihli eklemeler tarihsel kayıt olarak tutulur. Güncel raster sahneler `docs/world-art.md` içinde belgelenir.
