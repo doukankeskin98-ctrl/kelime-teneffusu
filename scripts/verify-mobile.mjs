@@ -5,6 +5,7 @@ const config=JSON.parse(await read('ios/App/App/capacitor.config.json'));
 assert.equal(config.appId,'com.kelimeteneffusu.game');assert.equal(config.webDir,'dist-mobile');
 assert.equal(config.server,undefined,'A mobile release must bundle its own game; no remote server.url');
 assert.equal(config.plugins.CapacitorHttp.enabled,false,'Global fetch patch would break web streaming');
+assert.notEqual(config.ios?.scrollEnabled,false,'Native document scrolling must remain available for Collection and settings');
 const html=await read('dist-mobile/index.html');assert.match(html,/viewport-fit=cover/);assert.match(html,/lang="tr"/);assert(!html.includes('http://'));
 for(const asset of html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g))assert((await stat('dist-mobile'+asset[1])).size>0);
 // Scene path is taken from the actual catalogue, not a guessed directory.

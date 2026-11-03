@@ -1,6 +1,6 @@
 # iOS yayın dosyası · 3 Kasım 2026
 
-Durum: ilk iOS simülatör uygulaması derlendi ve oynandı. Bu belge App Store kabulü veya hukuki uygunluk onayı değildir. Kullanıcı Apple Developer hesabının henüz bulunmadığını belirtti. İşletmeci adı/destek e-postası yanıtı bekleniyor. Kesinleşmemiş bir politika canlıya konmadı.
+Durum: iOS uygulaması simülatörde ve kişisel imzayla iPhone 14 Pro Max üzerinde kuruldu/açıldı. Bu belge App Store kabulü veya hukuki uygunluk onayı değildir. Kişisel Apple hesabı Xcode’a bağlandı; ücretli Apple Developer Program üyeliği ve TestFlight henüz yok. İşletmeci adı/destek e-postası yanıtı bekleniyor. Kesinleşmemiş bir politika canlıya konmadı.
 
 ## Şimdi uygulanan temel
 
@@ -12,14 +12,14 @@ App Privacy manifest kaynakta gerçekten işlenen kategorileri gösterir: kullan
 
 | Koşul | Somut tamamlanma ölçütü | Durum |
 |---|---|---|
-| Yayıncı/Apple hesabı | Bireysel veya şirket hesabı, Team ID, imzalı arşiv, uygun bundle ID | Kullanıcı hesabı yok |
+| Yayıncı/Apple hesabı | Bireysel veya şirket hesabı, Team ID, imzalı arşiv, uygun bundle ID | Kişisel cihaz imzası var; mağaza hesabı/arşivi açık |
 | Mevcut oyuncunun geçişi | Safari'deki aynı kimliğin, solo/ek bölümlerin ve Arena geçmişinin uygulamada güvenli devamı; ikinci cihaz ve eski yanıt testi | Açık; solo JSON kimlik aktarımı değildir |
 | Hesap silme | Uygulamadan başlatma, sahiplik/yeniden doğrulama, tüm oturumları iptal, D1 ve sağlayıcı kapsamı, ortak maçları bozmadan silme/anonimleştirme | Açık; çıkış yalnız oturum kapatır |
 | Paylaşılan adlar | Uygunsuz adı bildirme, engelleme, moderasyon kuyruğu ve cevap veren destek kanalı | Açık |
 | Gizlilik/KVKK | Gerçek işletmeci, amaç/hukuki sebep, sağlayıcı/aktarım, saklama ve imha uygulaması, hak başvurusu, çalışan kamu URL'si | Bilgi + işletim kararı bekliyor |
 | Native giriş | ChatGPT/Sites hesabı için güvenli geçiş, gerekiyorsa 4.8 eşdeğer giriş; e-posta sağlayıcısının cihaz testi | Açık; işlevsiz ChatGPT yönlendirmesi native'de gösterilmez |
 | Yaş ve haklar | Gerçek özelliklerle yaş anketi; marka/karakter/isim/sahne/ses/font hak envanteri | Açık; 4+ veya Kids iddiası yok |
-| Cihaz kalitesi | Küçük ve düşük güçlü gerçek iPhone, 20 dk oyun, kilit/arama/bağlantı kesintisi, VoiceOver, ses/haptics, kare süreleri, iki gerçek Arena oyuncusu | Simülatör bu testlerin yerine geçmez |
+| Cihaz kalitesi | Küçük ve düşük güçlü gerçek iPhone, 20 dk oyun, kilit/arama/bağlantı kesintisi, VoiceOver, ses/haptics, kare süreleri, iki gerçek Arena oyuncusu | Fiziksel iPhone açılış/ayar/kaydırma/seçim görüldü; uzun oturum, his/FPS ve diğer cihazlar açık |
 
 ## Gizlilik metni için hazırlanmış içerik
 
@@ -50,4 +50,4 @@ Destek URL'si ve gelen kutusu doğrulandıktan sonra hata bildirimi; uygulama s�
 - [Yaş derecelendirmesi](https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating/)
 - [KVKK aydınlatma](https://www.kvkk.gov.tr/Icerik/6765/AYDINLATMA-YUKUMLULUGUNUN-YERINE-GETIRILMESI-HAKKINDA-KAMUOYU-DUYURUSU)
 
-Kaynak temelli ayrıntılı veri envanteri: `studio-agents/journal/entries/2026-11-03-ios-policy-review.md`. App Store hesabında herhangi bir beyan gönderilmedi; sözleşme kabul edilmedi ve ücretli kayıt açılmadı.
+Kaynak temelli ayrıntılı veri envanteri: `studio-agents/journal/entries/2026-11-03-ios-policy-review.md`. App Store hesabında herhangi bir beyan gönderilmedi ve ücretli kayıt açılmadı. Kişisel cihaz testi Xcode’daki kullanıcı hesabıyla imzalandı.

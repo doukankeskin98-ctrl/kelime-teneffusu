@@ -1,5 +1,17 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.30.3 · Harf çizerken yerleşim yükü
+
+Gerçek iPhone kullanıcısı titreşimin çalıştığını, takılmanın harf üzerinde kaydırırken oluştuğunu doğruladı. ResizeObserver bulunan cihazlarda salt canlı seçim metni mutasyonları artık bütün ekranı tekrar ölçtürmez; gerçek boyut değişimi, yapısal bildirim ve eski tarayıcı yolu korunur. Değişmeyen önizleme metni/görünürlüğü tekrar yazılmaz. Tahta kabulü, yön kilidi, erken kelime tanıma ve titreşim mantığı değişmez.
+
+Kabul, regresyonlar ve fiziksel cihaz tekrar denemesinin sınırı: `studio-agents/journal/entries/2026-11-03-device-drag.md`.
+
+### Gerçek iPhone ayarları
+
+Üst dişli menüsünde destekli uygulama için Dokunma titreşimi anahtarı bulunur; mevcut tercih ve kayıt yolu kullanılır. Native belge kaydırması açılarak Koleksiyon'un altındaki ayarlar yeniden erişilebilir hale gelir. Tahta seçim korumaları, web'in sessiz davranışı, içerik ve ilerleme değişmez. İlk fiziksel kurulum iPhone 14 Pro Max / iOS 27.2 üzerinde kendi kişisel Apple takımıyla yapıldı; Safari kaydı uygulamadan ayrı kalır.
+
+Doğrulama ve fiziksel cihaz sınırları: `studio-agents/journal/entries/2026-11-03-device-settings.md`. Ücretsiz kişisel imza App Store/TestFlight yayını değildir; Apple hesabı ve sertifikalar kaynakta tutulmaz.
+
 ## 0.30.2 · Hızlı Tur geçişini tek kaydet
 
 Zamanlayıcı ve sekmeye dönüş olayı repaint öncesi peş peşe gelse de yalnız gerçek sonraki tahta geçmişe yazılır. Görülmeyen ek kelimeler makbuza eklenmez; süre/puan/rekor ve sonraki normal geçişler değişmez.0.30.1 iOS titreşim ve144 bölüm korunur. Bugünün tarihli çifti çoğaltılmaz. Kabul/kanıt studio-agents/journal/entries/2026-11-03_evening-sprint.md; fiziksel cihaz/VoiceOver/PWA ve native his kabulü açık.

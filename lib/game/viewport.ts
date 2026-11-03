@@ -66,7 +66,12 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,
  const watch=[screen,...Array.from(screen.querySelectorAll<HTMLElement>('.play-heading,.play-hud,.targets-panel,.selection-preview,.play-controls,.duel-controls,.sprint-footer,.board-word-access,.board-input-tools'))];
  const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(fit):null;
  watch.forEach(element=>observer?.observe(element));if(screen.parentElement)observer?.observe(screen.parentElement);
- const mutation=typeof view.MutationObserver==='function'?new view.MutationObserver(records=>{if(records.some(record=>!stage.contains(record.target)))fit();}):null;
+ const mutation=typeof view.MutationObserver==='function'?new view.MutationObserver(records=>{
+  // Live letters change on every selected cell, but do not normally resize.
+  // ResizeObserver still catches real wrapping; legacy browsers keep the fallback.
+  const previews=observer?Array.from(screen.querySelectorAll<HTMLElement>('.selection-preview,.mobile-selection')):[];
+  if(records.some(record=>!stage.contains(record.target)&&!previews.some(preview=>preview.contains(record.target))))fit();
+ }):null;
  mutation?.observe(screen.parentElement??screen,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['class','hidden']});
  for(const event of ['resize','orientationchange','pageshow'])view.addEventListener(event,fit);if(!view.visualViewport)view.addEventListener('scroll',fit,{passive:true});
  view.visualViewport?.addEventListener('resize',fit);view.visualViewport?.addEventListener('scroll',fit);

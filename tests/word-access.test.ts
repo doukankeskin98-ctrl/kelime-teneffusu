@@ -224,6 +224,16 @@ describe('actual numbered Solo completes, advances and replays without new award
 });
 
 describe('imperative selection label owns its mode transitions',()=>{
+ it('does not mutate unchanged preview text or visibility during repeated pointer samples',()=>{
+  const h=view('components/game/common.tsx');h.start('PlayLayout',{...base,board:{...content.TUTORIAL,size:10}});
+  let writes=0;const slots=new Map<string,any>();
+  for(const key of ['message','word','count','loupe']){let value='',hidden=true;slots.set('[data-selection-'+key+']',{get textContent(){return value;},set textContent(next:string){writes++;value=next;},get hidden(){return hidden;},set hidden(next:boolean){writes++;hidden=next;}});}
+  const preview=walk(h.tree).find(n=>String(n.props['className']??'').startsWith('selection-preview'))!;
+  preview.props['ref'].current={classList:{toggle(){}},querySelector:(s:string)=>slots.get(s)};
+  h.find('Board').props['onPreview']('KALE');const first=writes;assert(first>0);
+  for(let i=0;i<60;i++)h.find('Board').props['onPreview']('KALE');assert.equal(writes,first);
+  h.find('Board').props['onPreview']('KAL');assert.equal(slots.get('[data-selection-word]')!.textContent,'KAL');assert(writes>first);h.close();
+ });
  it('updates the word and loupe without parent callbacks, then restores blocked/review/pause messages',()=>{
   const upstream:string[]=[],props={...base,board:{...content.TUTORIAL,size:10},onPreview:(s:string)=>upstream.push(s)},h=view('components/game/common.tsx');h.start('PlayLayout',props);
   const slots=new Map<string,{textContent:string;hidden:boolean}>();for(const key of ['message','word','count','loupe'])slots.set('[data-selection-'+key+']',{textContent:'',hidden:true});

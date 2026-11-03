@@ -96,7 +96,7 @@ export function PlayLayout({title,kicker,onBack,board,strokes,paused,readOnly=fa
  const paintPreview=(text:string)=>{
   const locked=readOnly||inputBlocked||paused,root=selectionRef.current;if(!root){if(!locked)onPreview(text);return;}if(locked)text='';
   const valid=/^[A-ZÇĞİÖŞÜ0-9]+$/u.test(text),characters=[...text];
-  const update=(selector:string,value:string,shown:boolean)=>{const nodes=screenRef.current?Array.from(screenRef.current.querySelectorAll<HTMLElement>(selector)):[root.querySelector<HTMLElement>(selector)];for(const node of nodes)if(node){node.textContent=value;node.hidden=!shown;}};
+  const update=(selector:string,value:string,shown:boolean)=>{const nodes=screenRef.current?Array.from(screenRef.current.querySelectorAll<HTMLElement>(selector)):[root.querySelector<HTMLElement>(selector)];for(const node of nodes)if(node){if(node.textContent!==value)node.textContent=value;if(node.hidden===shown)node.hidden=!shown;}};
   screenRef.current?.classList.toggle('has-selection',!!text);
   root.classList.toggle('selecting',!!text);
   update('[data-selection-message]',instruction,!text);update('[data-selection-word]',text,!!text);
