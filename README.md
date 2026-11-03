@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.28.1 · 3 Kasım: Yağmur sonrası / Laboratuvar masası
+
+Rahat6×6/dört hava kelimesi ve Dengeli8×8/yedi laboratuvar terimi. İki çapraz eğim, sabit UTC tarih/slot/kimlik/hash ve kalıcı arşiv; mevcut kitaplık/dünya yolları üzerinden erişim ve iki tamamlamayla3Kasım damgası. Yeni0.28 sahne düzeni,120 ana bölüm ve eski13 çift/kayıt/ödül/Arena aynen korunur. Kabul/kanıt studio-agents/journal/entries/2026-11-03_maintenance.md; fiziksel cihaz/provider/PWA/VoiceOver/ses kabulü açık.
+
 ## 0.28.0 · Sahne odaklı oyun ve Kıyı Günlüğü
 
 Ana gezinme Yolculuk, Arena ve Koleksiyon olarak sadeleştirildi. İlk ekran tek sahne ve tek devam eylemi; hikâyeler, günlük, eski oyun kitaplığı ve davet adresleri korunur. Arena hızlı eşleşme/arkadaşla oynama ayrımıyla açılır; gerçek asenkron meydan okuma ve arkadaşlar erişilebilir. Sonraki farklı sahne oyun sırasında, veri tasarrufu açık değilse önceden hazırlanır. Sol el ve hareket azaltma tercihleri cihazda saklanır. Solo ipuçları ilk harf → yön → yol olarak yardım eder; toplam üç ipucu, yıldız ve rekabet kuralları değişmez.

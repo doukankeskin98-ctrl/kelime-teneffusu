@@ -1,5 +1,7 @@
 # Öncelikler
 
+3 Kasım bakım,0.28.1: Yağmur sonrası/Laboratuvar masası tek sabit çift; güncel0.28 sahne kabuğu/120 bölüm korunur. Kabul/kanıt ../journal/entries/2026-11-03_maintenance.md. Öncelik fiziksel Safari/iki gerçek telefon/provider/PWA/VoiceOver/ses; yeni büyük özellik yok.
+
 3 Kasım 2026,0.26.1: kullanıcının fazla gizli hedef geri bildirimiyle en fazla bir tamamen gizli ve bir baş harfli hedef; açık kelimeler çoğunlukta. Yalnız maske dağılımı değişti. Kabul `../journal/entries/2026-11-03_veil-balance.md`; fiziksel cihaz kabulü açık.
 
 3 Kasım 2026,0.26.0: 16 sahne, 96 bölüm konusu, dünya içinde altı durak, kademeli gizli hedefler ve bütünlüklü sonuç/Arena. Kabul ve hedefli gerçek tarayıcı kanıtı `../journal/entries/2026-11-03_world-renewal.md`. Sonraki açık kabul fiziksel iPhone 8 Plus Safari, iki gerçek Arena oyuncusu, büyük yazı/VoiceOver ve uzun oturum gözlemi; otomatik başarı bu kanıtların yerine geçmez.

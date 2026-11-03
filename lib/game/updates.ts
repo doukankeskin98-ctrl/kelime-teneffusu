@@ -1,4 +1,5 @@
 export const GAME_UPDATES=[
+ {version:'0.28.1',date:'3 Kasım 2026',title:'Yağmurdan deney masasına',items:[{where:'Oyun kitaplığı · Tarihli keşifler',detail:'Yağmur sonrası: 6×6 tahtada dört kelime. Laboratuvar masası: 8×8 tahtada yedi terim. Dünya listelerinde ve kalıcı arşivde durur.'},{where:'Koleksiyon · Tarihli damga',detail:'İki bölümü tamamlayarak 3 Kasım damganı aç. Süre veya ipucu şartı yok; daha sonra da tamamlayabilirsin.'}]},
  {version:'0.28.0',date:'3 Kasım 2026',title:'Yeni bir yolculuk',items:[
   {where:'Oyun ekranları',detail:'Yolculuk, Arena ve Koleksiyon. Kaldığın bölüm ana ekranda; hikâyeler ve günlük bulmaca bir dokunuş uzağında.'},
   {where:'Kıyı Günlüğü',detail:'Dört yeni rota, 24 yeni bölüm. Limandan çarşıya, patikadan fenere uzanan yolculukla ana seri 120 bölüme ulaştı.'},
