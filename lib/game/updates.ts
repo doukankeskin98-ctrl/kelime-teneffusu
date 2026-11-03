@@ -1,5 +1,5 @@
 export const GAME_UPDATES=[
- {version:'0.27.0',date:'3 Kasım 2026',title:'Daha akıcı oyun',items:[
+ {version:'0.27.1',date:'3 Kasım 2026',title:'Daha akıcı oyun',items:[
   {where:'İpucu',detail:'Seçtiğin kelimenin ilk harfini gösterir. Hedef seçmediysen listedeki sıradaki kelimeyi izler.'},
   {where:'Kaydırma',detail:'Kelime tamamlandığında parmağını kaldırmadan kabul edilir. Bulduğun kelime kısa bir parıltıyla işaretlenir.'},
   {where:'Bölüm sonu',detail:'Aynı manzara üzerinde yıldızlarını ve albüm ilerlemeni gör, sonraki bölüme geç. Mevcut ilerlemen korunur.'}

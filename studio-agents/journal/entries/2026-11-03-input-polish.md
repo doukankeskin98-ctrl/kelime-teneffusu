@@ -22,3 +22,9 @@ Uzmanlar salt okunur etkileşim/güvenilirlik ve deneyim incelemeleri yaptı; uy
 - 360×568: Doğanın sırları bölümünde 2/4 kayıt korundu; sonraki hedef BAYKUŞ seçilince ipucu [4,5]'e gitti. BAYKUŞ/ZÜRAFA ters yönde çizilip bölüm tamamlandı, sonraki farklı bilmeceye geçildi. Sonuç gövdesi/CTA çakışması görsel incelemede düzeltilip tekrar kontrol edildi.
 - Görseller depo dışında: ../world-review/0.27.0-result-414.png, 0.27.0-result-360.png, 0.27.0-selected-hint-360.png, 0.27.0-riddle-result-360.png. Yerel gerçek UI kanıtlarıdır; Arena görsel veya fiziksel cihaz kanıtı değildir.
 - GitHub tam ağaç/CI ve Sites yayın sonucu uygulama sonrası depo dışı release-0.27.0.json makbuzuna yazılır. Bu yerel kayıt yayın sonucunu önceden varsaymaz.
+
+## Son tarayıcı uyarısı ve 0.27.1 düzeltmesi
+
+0.27.0 canlı yayını sonrası yerel sunucu kapanış günlüğü kardeş MobileTargets ve WordList anahtarlarının aynı olduğunu gösterdi. Uygulanan animasyon sıfırlama anahtarına words: öneki eklendi. Gerçek PlayLayout testi varsayılan ve oda/maç kimliğinde anahtarların farklı olduğunu doğrular. Bu bir kayıt/puan işlemi değişikliği değildir. Düzeltmenin tam proje/CI/yayın kanıtı depo dışı release-0.27.1.json makbuzunda tamamlanır.
+
+0.27.1 doğrulaması: 584 test/125 grup, içerik denetimi, tip/üretim derlemesi ve 615 Worker HTTP kontrolü geçti. Destekli tarayıcıda ilk bölüm tekrar açılıp MARS son hücresinin ötesine kaydırılarak kabul edildi. Yeni geliştirme sunucusunun günlüğünde yinelenen anahtar uyarısı yok; tarayıcıdaki önceki uyarılar yalnız eski 00:01 zamanlarına ait.

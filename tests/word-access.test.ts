@@ -441,3 +441,8 @@ describe('hint target follows visible selection, not placement ordering',()=>{
   try{assert.deepEqual(h.find('Board').props['earlyTargets'],wordList.board.targets);}finally{h.close();}
  });
 });
+
+
+it('gives the compact target selector and animated list distinct identities on every board',()=>{
+ for(const wordListKey of [undefined,'room:2']){const h=shared({wordListKey,wordList:{board:content.TUTORIAL,strokes:[]}});try{const selector=h.find('MobileTargets'),list=h.find('WordList');assert.notEqual(list.key,selector.key);assert.equal(list.key,'words:'+(wordListKey??content.TUTORIAL.grid.map(row=>row.join('')).join('|')));}finally{h.close();}}
+});
