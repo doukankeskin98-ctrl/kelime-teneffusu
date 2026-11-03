@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.32.0',date:'4 Kasım 2026',title:'Günün Renkleri',items:[
+  {where:'Yolculuk · Bölüm 145–168',detail:'Meyve Bahçesi, Mutfakta Bir Gün, El İşi Atölyesi ve Müzik Sokağı: dört rotada 24 yeni bölüm. Her bölümde başlığıyla ilgili kelimeler seni bekliyor.'},
+  {where:'Kaldığın yerden',detail:'Ana yolculuk 168 bölüme ulaştı. Önceki bölümlerin, yıldızların ve albümlerin korunur.'}
+ ]},
  {version:'0.30.2',date:'3 Kasım 2026',title:'Hızlı Turda doğru kelime geçmişi',items:[{where:'Hızlı Tur · Sonraki tahta',detail:'Sekmeye dönerken aynı geçiş iki kez işlense de yalnız gördüğün yeni tahta kaydedilir. Süre, puan ve rekor kuralları korunur.'}]},
  {version:'0.30.0',date:'3 Kasım 2026',title:'Bulmanın keyfi',items:[
   {where:'Kelime ve bölüm sonu',detail:'Bulduğun kelimeler kısa bir ışık iziyle yerine oturur. Yıldızların ve albüm parçan aynı manzara üzerinde belirir; hazır olduğunda sonraki bölüme geç.'},

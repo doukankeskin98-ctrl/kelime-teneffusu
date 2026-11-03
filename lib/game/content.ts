@@ -1,3 +1,4 @@
+import {EVERYDAY_CHAPTERS} from './everyday-content.ts';
 import {NATURE_CHAPTERS} from './nature-content.ts';
 import {COAST_CHAPTERS} from './coast-content.ts';
 import {ATLAS_JOURNEYS,ATLAS_REGIONS} from './atlas-content.ts';
@@ -44,6 +45,8 @@ JOURNEYS.push(...COAST_CHAPTERS.filter((_,i)=>i%6!==5));
 JOURNEY_BONUSES.push(...COAST_CHAPTERS.filter((_,i)=>i%6===5));
 JOURNEYS.push(...NATURE_CHAPTERS.filter((_,i)=>i%6!==5));
 JOURNEY_BONUSES.push(...NATURE_CHAPTERS.filter((_,i)=>i%6===5));
+JOURNEYS.push(...EVERYDAY_CHAPTERS.filter((_,i)=>i%6!==5));
+JOURNEY_BONUSES.push(...EVERYDAY_CHAPTERS.filter((_,i)=>i%6===5));
 export const ALL_JOURNEYS=[...JOURNEYS,...JOURNEY_BONUSES];
 /** Optional clue chapters never grow the fixed main path or its earned album gates. */
 export const PLAYABLE_JOURNEYS=[...ALL_JOURNEYS,...RIDDLE_CHAPTERS,...LIVING_STORIES];
