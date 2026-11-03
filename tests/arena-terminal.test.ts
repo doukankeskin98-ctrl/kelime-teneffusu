@@ -71,7 +71,7 @@ describe('Arena sound follows confirmed events',()=>{
 describe('Arena next and overlay lifecycle',()=>{
  it('dispatches one next mutation for rapid clicks and accepts the successor without leaving the room',async()=>{
   const initial=room('finished',NOW-121_000,NOW-1),gate=deferredRoom(),h=harness(initial,()=>gate.promise);
-  try{await h.settle();h.click(/Sonraki maç/);h.click(/Sonraki maç/);assert.equal(h.apiCalls.length,1);assert.equal((h.apiCalls[0]!.data as any).round,1);gate.resolve({...initial,phase:'ready',round:2,revision:4,board:null,you:{...initial.you,ready:false,strokes:[],score:0}});await h.settle();assert.equal(h.has('PlayLayout'),false);assert.equal(h.modalCount(),0);h.click(/Hazırım/);await h.settle();assert.equal(h.apiCalls[1]!.action,'ready');assert.equal((h.apiCalls[1]!.data as any).round,2);}finally{h.close();}
+  try{await h.settle();h.click(/Tekrar oyna/);h.click(/Tekrar oyna/);assert.equal(h.apiCalls.length,1);assert.equal((h.apiCalls[0]!.data as any).round,1);gate.resolve({...initial,phase:'ready',round:2,revision:4,board:null,you:{...initial.you,ready:false,strokes:[],score:0}});await h.settle();assert.equal(h.has('PlayLayout'),false);assert.equal(h.modalCount(),0);h.click(/Hazırım/);await h.settle();assert.equal(h.apiCalls[1]!.action,'ready');assert.equal((h.apiCalls[1]!.data as any).round,2);}finally{h.close();}
  });
  for(const label of [/Sıralama/,/Kurallar/])it(`keeps one modal if a match finishes with ${label} open`,async()=>{
   const h=harness(room('active',NOW-1,NOW+119_999));try{await h.settle();h.click(label);await h.settle();assert.equal(h.modalCount(),1);h.push({...room('finished',NOW-121_000,NOW-1),revision:4});await h.settle();assert.equal(h.modalCount(),1);assert.equal(h.layout().props['readOnly'],true);h.closeModal();await h.settle();assert.equal(h.modalCount(),1);h.closeModal();await h.settle();assert.equal(h.modalCount(),0);}finally{h.close();}
@@ -115,6 +115,6 @@ it('shows current/next group mode, passes frozen clues and never names an unconf
  const active:RoomView={...room('active',NOW-1000,NOW+119000),mode:'group',roundKind:'clue',nextRoundKind:'words',clues:Object.fromEntries(TUTORIAL.targets.map((t,i)=>[t.text,'Tanım '+(i+1)])),you:{...room('active',0,1).you,strokes:[]}};
  const next:RoomView={...active,revision:5,round:2,phase:'ready',roundKind:'words',nextRoundKind:'clue',board:null,clues:undefined,starts:null,ends:null};
  const h=harness(active,async()=>next);try{await h.settle();assert.equal(h.layout().props['wordList'].clues,active.clues);const aside=text(h.layout().props['aside']);assert(aside.includes('İşaretli tanım'));for(const t of TUTORIAL.targets)assert(!aside.includes(t.label));
-  h.push({...active,revision:4,phase:'finished',ends:NOW,winner:'alice'});await h.settle();assert(h.copy().includes('Normal kelime turu'));h.click(/Sonraki maç/);await h.settle();assert.match(h.copy(),/Maç\s+2/,h.copy());assert(h.copy().includes('Bilmeceli tur'));assert.equal(h.apiCalls.filter(c=>c.action==='next').length,1);
+  h.push({...active,revision:4,phase:'finished',ends:NOW,winner:'alice'});await h.settle();assert(h.copy().includes('Normal kelime turu'));h.click(/Tekrar oyna/);await h.settle();assert.match(h.copy(),/Maç\s+2/,h.copy());assert(h.copy().includes('Bilmeceli tur'));assert.equal(h.apiCalls.filter(c=>c.action==='next').length,1);
  }finally{h.close();}
 });

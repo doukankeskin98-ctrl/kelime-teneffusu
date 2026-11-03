@@ -19,7 +19,7 @@ describe('atlas continuation and clue hunts',()=>{
   for(const [id,sha] of Object.entries(legacyHashes))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),sha,id);
  });
  it('gives a completed old atlas a new unlocked recommended map and real next chapter',()=>{
-  const p=veteran(),states=discoveryState(p);assert.equal(states.length,20);assert(states.slice(0,3).every(s=>s.complete));assert.equal(states[3]!.unlocked,true);assert.equal(states[4]!.unlocked,false);
+  const p=veteran(),states=discoveryState(p);assert.equal(states.length,24);assert(states.slice(0,3).every(s=>s.complete));assert.equal(states[3]!.unlocked,true);assert.equal(states[4]!.unlocked,false);
   assert.equal(recommendedExpedition(p).expedition.id,'hayvanlar');assert.equal(nextDiscovery(p).config.journey,'hayvanlar-atlas-1');assert.equal(nextJourneyAfter(p,'hababam-yillik')?.id,'hayvanlar-atlas-1');
  });
  it('registers 78 immutable chapters with distinct IDs, playable clues and bounded boards',()=>{

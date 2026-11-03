@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.30.0',date:'3 Kasım 2026',title:'Bulmanın keyfi',items:[
+  {where:'Kelime ve bölüm sonu',detail:'Bulduğun kelimeler kısa bir ışık iziyle yerine oturur. Yıldızların ve albüm parçan aynı manzara üzerinde belirir; hazır olduğunda sonraki bölüme geç.'},
+  {where:'Görünüm ve menü',detail:'Yeni yazı tipi, sade Etkinlikler menüsü ve albümlerin önde olduğu Koleksiyon. Arena girişinden maç sonuna aynı görünüm.'},
+  {where:'Doğa Günlüğü',detail:'Bahçe, dere, kamp ve gözlemevinde 24 yeni bölüm. Ana yolculuk 144 bölüm; eski ilerlemen ve Arena geçmişin korunur.'}
+ ]},
  {version:'0.28.1',date:'3 Kasım 2026',title:'Yağmurdan deney masasına',items:[{where:'Oyun kitaplığı · Tarihli keşifler',detail:'Yağmur sonrası: 6×6 tahtada dört kelime. Laboratuvar masası: 8×8 tahtada yedi terim. Dünya listelerinde ve kalıcı arşivde durur.'},{where:'Koleksiyon · Tarihli damga',detail:'İki bölümü tamamlayarak 3 Kasım damganı aç. Süre veya ipucu şartı yok; daha sonra da tamamlayabilirsin.'}]},
  {version:'0.28.0',date:'3 Kasım 2026',title:'Yeni bir yolculuk',items:[
   {where:'Oyun ekranları',detail:'Yolculuk, Arena ve Koleksiyon. Kaldığın bölüm ana ekranda; hikâyeler ve günlük bulmaca bir dokunuş uzağında.'},

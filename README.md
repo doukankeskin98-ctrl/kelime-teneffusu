@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.30.0 · Kelime hissi ve Doğa Günlüğü
+
+Doğru kelimeden hedefe kısa ışık hareketi, aynı manzarada yıldız/hatıra kutlaması ve tek devam eylemi. Yerel paketli Manrope yazı tipi; Etkinlikler menüsü, yatay dünya albümleri ve okunaklı Arena lobisi. Yeni 24 bölümle 144 ana bölüm/24 rota; mevcut 16 özgün sahne kullanılır. Eski 120 bölümün sıra/kimlik/kelime/tohum/tahta hashleri, kayıtlar ve ödüller korunur.
+
+611 test, 215 tahta/4300 alternatif içerik denetimi, tip kontrolü, web/mobil derleme, Xcode simülatör derlemesi ve 628 üretim Worker HTTP kontrolü geçti. 359×568 ve 414×622 tarayıcı önizlemesinde gerçek sürükleme, taşan seçim, sonuç/devam, kayıtla dönüş, hikâye/bilmece ve Arena lobisi oynandı. Fiziksel iPhone, iki telefonlu maç, FPS ve ses/haptics hissi bu sürümde doğrulanmadı. Ayrıntı [kabul günlüğünde](studio-agents/journal/entries/2026-11-03-studio-polish.md).
+
 ## 0.29.0 · İlk iOS test uygulaması
 
 Mevcut oyun çekirdeği ve 120 ana bölüm, 16 sahnesiyle iOS paketine alındı. Xcode projesi, uygulama simgesi/açılışı, yerel haptics köprüsü ve arka plan duraklatması eklendi. Native JSON istekleri yalnız mevcut HTTPS sunucuya gider; Arena tek uçuşlu sorguyla güncellenir, web SSE/PWA yolu korunur. Sunucu kimliği, bölüm/tahta/kayıt/ödül ve tekrar önleme kuralları değiştirilmedi.

@@ -1,3 +1,15 @@
+## 0.30.0 · Kelime hissi ve Doğa Günlüğü
+
+Onaylanan yeni kelime, en fazla dört eşzamanlı ve 600 ms içinde temizlenen dekoratif ışık hareketi üretir. Ağ isteği beklerken, kayıtla yeniden girişte, döndürmede veya gizli/paused ekranda başarı üretilmez. Giriş, kayıt ve ödüller animasyon bitişine bağlı değildir. Aynı sahnede gerçek yıldızlar, kazanılmış hatıra, altı parça ilerlemesi ve sonraki konuyu gösteren devam düğmesi; kısa ses ritmi ve azaltılmış hareket desteği.
+
+Lisansı paketlenmiş Manrope Türkçe yazı tipi çevrimdışı/web/native için ortaktır. Üç ana sekme korunur; ek oyunlar Etkinlikler'dedir. Koleksiyon albümleri yatay şerittir; avatar oyuncu profilini açar. Arena lobisi küçük ekranda okunaklıdır. Arena sunucusu, ortak bulmaca ve kalıcı tekrar geçmişi değişmedi.
+
+Doğa Günlüğü dört rotada 24 yeni bölüm ekler: Bahçede İlkbahar, Dere Boyunca, Vadide Kamp, Yıldızlı Gece. 6–8 satır, 4–5 hedef, dört bilmeceli bölüm, yalnız bir tamamen gizli hedef. Toplam 144 ana bölüm/24 rota; 16 mevcut sahne. Önceki 120 bölüm kimliği/sırası/tohumu/hedefi/tahtası tam hash snapshot ile eşittir; bitmiş/yarım kayıtlar, ödüller ve göçler korunur.
+
+611 test/130 grup, 215 tahta+4300 alternatif, 64 grup tahtası, 774 Arena tanımı/919 kelime, 96 taze rekabet tahtası ve 714 Hızlı Tur kelimesi denetlendi. Tip, web/mobil paket, Xcode simülatör derlemesi, DB göç farkı yok ve 628 Worker HTTP başarılı. 359×568/414×622 tarayıcıda gerçek sürükleme, son harfi aşan seçim, onaylı ışık hareketi, sonuç/devam, eski kayıt ve yıldızların korunması, hikâye/bilmece, ana menü/etkinlikler/profil ve özel Arena lobi oluştur/çık görüldü. Yoğun eski 12×12 kayıt 359×568'de bütün satırlarıyla ve 18px harfle görünür; dokunma rahatlığı fiziksel cihazda ayrıca değerlendirilir.
+
+Görseller `../world-review/0.30.0-*.png`; kabul `studio-agents/journal/entries/2026-11-03-studio-polish.md`. Fiziksel Safari/iPhone, iki gerçek Arena cihazı, VoiceOver, uzun oturum/FPS ve ses/haptics dinlemesi doğrulanmadı. App Store hazır olma iddiası yok; 0.29 yayın kapıları sürer. GitHub/Sites tam ağaç ve yayın makbuzu depo dışındaki `../world-review/release-0.30.0.json` ile ayrıca kaydedilir.
+
 ## 0.29.0 · İlk iOS test uygulaması
 
 Mevcut oyun çekirdeği ve 120 ana bölüm, 16 sahnesiyle iOS paketine alındı. Xcode projesi, uygulama simgesi/açılışı, yerel haptics köprüsü ve arka plan duraklatması eklendi. Native JSON istekleri yalnız mevcut HTTPS sunucuya gider; Arena tek uçuşlu sorguyla güncellenir, web SSE/PWA yolu korunur. Sunucu kimliği, bölüm/tahta/kayıt/ödül ve tekrar önleme kuralları değiştirilmedi.

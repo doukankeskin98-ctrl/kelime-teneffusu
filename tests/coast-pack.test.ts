@@ -17,7 +17,7 @@ describe('Kıyı Günlüğü append-only release',()=>{
  it('preserves all 96 published numbers and complete puzzle hashes',()=>{
   assert.equal(baseline.ids.length,96);assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,96),baseline.ids);
   for(const [id,hash] of Object.entries(baseline.boards))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),hash,id);
-  assert.deepEqual(MAIN_JOURNEY_IDS.slice(96),COAST_CHAPTERS.map(c=>c.id));
+  assert.deepEqual(MAIN_JOURNEY_IDS.slice(96,120),COAST_CHAPTERS.map(c=>c.id));
  });
  it('continues a completed old campaign at97 and keeps a new partial across load and merge',()=>{
   const p=veteran();assert.equal(mainJourneyState(p).current?.number,97);assert.equal(mainJourneyState(p).completed,96);

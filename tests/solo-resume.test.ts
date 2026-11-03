@@ -182,7 +182,7 @@ describe('Solo completed board review',()=>{
   const page=harness({initial:saved([0,1,2,3],18,1)});
   try{
    await page.settle();const before=JSON.stringify(page.save);assert.equal(page.controls().props['completed'],true);assert.equal(page.layout().props['readOnly'],true);
-   page.closeResult();await page.settle();assert.equal(page.has('Modal'),false);assert.equal(page.layout().props['paused'],false);assert.match(textOf(page.layout().props['aside']),/Bu keşif tamamlandı/);
+   page.closeResult();await page.settle();assert.equal(page.has('Modal'),false);assert.equal(page.layout().props['paused'],false);assert.match(textOf(page.layout().props['aside']),/Bölüm tamamlandı/);
    page.pause();await page.settle();assert.equal(page.layout().props['paused'],false);assert.equal(page.controls().props['completed'],true);
    page.help();await page.settle();assert.equal(page.has('Help'),true);assert.equal(page.has('Modal'),false);assert.equal(page.layout().props['paused'],true);
    page.closeHelp();await page.settle();assert.equal(page.layout().props['paused'],false);page.showResult();await page.settle();assert.equal(page.has('Modal'),true);
