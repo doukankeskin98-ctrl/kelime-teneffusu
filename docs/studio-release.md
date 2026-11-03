@@ -1,5 +1,11 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.30.2 · Gerçek iPhone ayarları
+
+Üst dişli menüsünde destekli uygulama için Dokunma titreşimi anahtarı bulunur; mevcut tercih ve kayıt yolu kullanılır. Native belge kaydırması açılarak Koleksiyon'un altındaki ayarlar yeniden erişilebilir hale gelir. Tahta seçim korumaları, web'in sessiz davranışı, içerik ve ilerleme değişmez. İlk fiziksel kurulum iPhone 14 Pro Max / iOS 27.2 üzerinde kendi kişisel Apple takımıyla yapıldı; Safari kaydı uygulamadan ayrı kalır.
+
+Doğrulama ve fiziksel cihaz sınırları: `studio-agents/journal/entries/2026-11-03-device-settings.md`. Ücretsiz kişisel imza App Store/TestFlight yayını değildir; Apple hesabı ve sertifikalar kaynakta tutulmaz.
+
 ## 0.30.1 · Harf geçişi titreşimi
 
 Ortak harf sinyali artık iOS seçim titreşimine ulaşır; native generator ilk harften önce hazırlanır. Mantıksal seçim bittiğinde, ayar kapatıldığında, pause/blur/arka plan veya ekran değişiminde temizlenir. Tek native seçim işlemi ve gerçek değişim çağrısından 50 ms aralık; hızlı harfler kuyruk oluşturmaz, geciken hazırlık iptalden sonra titreşim üretmez. Kelime/bölüm başarı titreşimleri ayrı kalır. Ses ve titreşim tercihi bağımsız; varsayılan kapalı tercih ve web'in sessiz davranışı korunur.

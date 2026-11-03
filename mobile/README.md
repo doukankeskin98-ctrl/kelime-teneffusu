@@ -8,6 +8,10 @@ Aynı React GameApp, tahta, 144 ana bölüm ve sahneler yerel Vite paketiyle iOS
 
 `pnpm mobile:open` mevcut Xcode projesini açar. Simülatör derlemesinde Apple Developer üyeliği gerekmez. Fiziksel cihazın imzalama takımı ve TestFlight dağıtımı yayıncı hesabında ayarlanır; kimlik, sertifika, profil veya parola repoya konmaz.
 
+## Gerçek cihaz denemesi
+
+Kişisel Apple hesabıyla Xcode imzalaması kullanılabilir; takım/sertifika bilgisi kaynak deposuna yazılmaz. Üst sağ dişli → Dokunma titreşimi mevcut tercihi açar/kapatır. Koleksiyon ve diğer uzun sayfalar native belge kaydırmasını kullanır; tahta dokunma korumaları kendi alanında kalır. Kişisel test imzası süreli olduğundan profil süresi bitince yeniden derleyip kurmak gerekir.
+
 ## Ağ ve kayıt
 
 Sabit HTTPS API adresi mevcut Sites sunucusudur. Native JSON taşıması kendi `Origin` başlığını bu sunucuya bağlar; sunucudaki same-origin/kimlik kontrolleri aynen kalır. Kimlik çerezi iOS HTTP cookie store'dadır. JavaScript yedeğine veya URL'ye oturum anahtarı yazılmaz. Global fetch patch açık değildir. Web SSE korunur; iOS Arena aynı sunucu durumunu tek uçuşlu, arka planda durdurulan sorguyla yeniler. İstek iptali sonucu emekliye ayırır; sunucuya ulaşmış mutation'ın iptali garanti edilmez.

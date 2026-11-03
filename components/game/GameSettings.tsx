@@ -1,7 +1,8 @@
 'use client';
 import {useEffect,useState} from 'react';
-import {Hand,Move,ShieldCheck} from 'lucide-react';
+import {Hand,Move,ShieldCheck,Smartphone} from 'lucide-react';
 import type {Progress} from '@/lib/game/progress';
+import {hapticsAvailable} from '@/lib/game/haptics';
 import {SoundSettings} from './SoundSettings';
 import {BoardColorSettings} from './BoardColorSettings';
 import {COMFORT_KEY as KEY,DEFAULT_COMFORT as DEFAULT,parseComfort,type Comfort} from '@/lib/game/comfort';
@@ -13,7 +14,10 @@ export function useComfort(){
  return {comfort,change};
 }
 export function GameSettings({progress,onProgress,comfort,onComfort}:{progress:Progress;onProgress:(p:Progress)=>void;comfort:Comfort;onComfort:(c:Comfort)=>void}){
+ const [vibration,setVibration]=useState(false);
+ useEffect(()=>setVibration(hapticsAvailable()),[]);
  return <div className="game-settings"><SoundSettings enabled={progress.sound} onChange={sound=>onProgress({...progress,sound})}/>
+ {vibration&&<button className="comfort-setting" role="switch" aria-checked={progress.haptics} onClick={()=>onProgress({...progress,haptics:!progress.haptics})}><Smartphone/><span><b>Dokunma titreşimi</b><small>Harf seçimi ve kelime bulma</small></span><i>{progress.haptics?'Açık':'Kapalı'}</i></button>}
  <button className="comfort-setting" role="switch" aria-checked={progress.contrast} onClick={()=>onProgress({...progress,contrast:!progress.contrast})}><ShieldCheck/><span><b>Belirgin harfler</b><small>Daha yüksek kontrast</small></span><i>{progress.contrast?'Açık':'Kapalı'}</i></button>
  <button className="comfort-setting" role="switch" aria-checked={comfort.leftHanded} onClick={()=>onComfort({...comfort,leftHanded:!comfort.leftHanded})}><Hand/><span><b>Sol elle oynuyorum</b><small>İpucu düğmesi sağda, elinin dışında kalır</small></span><i>{comfort.leftHanded?'Açık':'Kapalı'}</i></button>
  <button className="comfort-setting" role="switch" aria-checked={comfort.reduceMotion} onClick={()=>onComfort({...comfort,reduceMotion:!comfort.reduceMotion})}><Move/><span><b>Hareketi azalt</b><small>Kısa ve sakin geçişler</small></span><i>{comfort.reduceMotion?'Açık':'Kapalı'}</i></button>
