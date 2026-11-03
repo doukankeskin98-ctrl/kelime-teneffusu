@@ -1,6 +1,6 @@
 import {describe,it} from 'node:test';
 import assert from 'node:assert/strict';
-import {advanceGesture,CELL_HIT_RADIUS} from '../lib/game/input-gesture.ts';
+import {advanceGesture,CELL_HIT_RADIUS,earlyWordEnd} from '../lib/game/input-gesture.ts';
 import type {Cell} from '../lib/game/engine.ts';
 const center=(cell:Cell):Cell=>[cell[0]+.5,cell[1]+.5];
 const directions:Cell[]=[[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
@@ -25,5 +25,17 @@ describe('center weighted eight-direction gestures',()=>{
    const start:Cell=[Math.floor(n/2),Math.floor(n/2)],step=advanceGesture(start,start,direction,[start[0]+.5+k*.2*direction[0],start[1]+.5+k*.2*direction[1]],n,true);
    assert(step.cell.every(v=>v>=0&&v<n&&Number.isInteger(v)));assert.ok((step.cell[0]-start[0])*direction[1]===(step.cell[1]-start[1])*direction[0]);
   }
+ });
+});
+
+
+describe('early match rays preserve straight-line rules',()=>{
+ for(const direction of directions)it('recognizes a fast skipped endpoint in direction '+direction,()=>{
+  const size=9,start:Cell=[4,4],end:Cell=[4+4*direction[0],4+4*direction[1]],grid=Array.from({length:size},()=>Array<string>(size).fill('X'));
+  [...'KALE'].forEach((ch,i)=>{grid[start[0]+i*direction[0]]![start[1]+i*direction[1]]=ch;});
+  const target={id:'0.0',group:0,label:'KALE',text:'KALE'},expected:Cell=[4+3*direction[0],4+3*direction[1]];
+  assert.deepEqual(earlyWordEnd({grid,size},[target],[],start,end),expected);
+  assert.equal(earlyWordEnd({grid,size},[target],[{id:target.id,a:start,b:expected}],start,end),null);
+  assert.equal(earlyWordEnd({grid,size},[],[],start,end),null);
  });
 });

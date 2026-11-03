@@ -93,7 +93,7 @@ describe('near-board word access uses confirmed, visible list data',()=>{
  it('opens read-only words, updates live data and requests focus return with preventScroll',()=>{
   const h=view('components/game/common.tsx'),board=content.TUTORIAL,words={board,strokes:[] as engine.Stroke[]};try{
    h.start('BoardWords',{words});const opener=h.find('button'),focus:any[]=[],button={isConnected:true,focus:(opts:unknown)=>focus.push(opts)};opener.props['ref'].current=button;assert.equal(opener.props['type'],'button');assert.equal(opener.props['aria-haspopup'],'dialog');assert.equal(opener.props['aria-expanded'],false);
-   opener.props['onClick']();h.paint();assert.equal(h.find('button').props['aria-expanded'],true);const dialog=h.find('Modal');assert.equal(dialog.props['title'],'Kelime listen');assert.equal(h.find('WordList').props['strokes'],words.strokes);assert.match(text(dialog),/süre işlemeye devam eder/);
+   opener.props['onClick']();h.paint();assert.equal(h.find('button').props['aria-expanded'],true);const dialog=h.find('Modal');assert.equal(dialog.props['title'],'Kelime listen');assert.equal(h.find('WordList').props['strokes'],words.strokes);assert.match(text(dialog),/Buldukların işaretli/);
    const updated={board,strokes:[board.placements[0]!],golden:board.targets[1]!.id};h.update('BoardWords',{words:updated});assert.equal(h.find('WordList').props['golden'],updated.golden);assert.equal(h.find('WordList').props['strokes'],updated.strokes);assert.equal(h.find('button').props['aria-expanded'],true);
    h.find('Modal').props['onClose']();h.paint();assert.equal(walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'),false);h.frame();assert.equal(focus.length,1);assert.equal(focus[0].preventScroll,true);
   }finally{h.close();}
@@ -167,7 +167,7 @@ describe('achievement loop uses real Solo results and compact target access',()=
   const before=JSON.stringify(p),calls:any[]=[],h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{
    h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-3'},progress:p,onProgress(){},onBack(){},onMap(){},onNext:(c:any)=>calls.push(c)});assert.equal(h.find('JourneyObjective').props['goal'].chapter.id,'uzay-3');const layout=h.find('PlayLayout');assert.equal(layout.props['inlineTargets'],true);assert.equal(walk(layout.props['aside']).some(n=>n.type==='WordList'),false);
    for(const stroke of layout.props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();const result=h.find('VictorySummary').props;assert.equal(result['goal'].chapter.id,'uzay-3');assert.equal(result['goal'].state.pieces,3);assert.equal(result['rewards'].filter((r:any)=>r.kind==='piece').length,1);assert.equal(result['rewards'].filter((r:any)=>r.kind==='world').length,1);
-   const next=h.find('NextJourneyPreview').props['goal'];walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).startsWith('Sıradaki:'))!.props['onClick']();assert.equal(calls[0].journey,next.chapter.id);walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).includes('Bir daha oyna'))!.props['onClick']();assert.equal(calls[1].journey,'uzay-3');assert.equal(calls[1].practice,true);assert.equal(JSON.stringify(p),before);
+   const next=h.find('NextJourneyPreview').props['goal'];walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Sonraki bölüm')!.props['onClick']();assert.equal(calls[0].journey,next.chapter.id);walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).includes('Bir daha oyna'))!.props['onClick']();assert.equal(calls[1].journey,'uzay-3');assert.equal(calls[1].practice,true);assert.equal(JSON.stringify(p),before);
   }finally{h.close();}
  });
  it('never shows a standard Hababam best on a completed classic board',async()=>{
@@ -206,7 +206,7 @@ describe('actual numbered Solo completes, advances and replays without new award
    for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}
    h.expire();await h.settle();assert.equal(p.saves['route:uzay-1']?.complete,true);assert.equal(p.saves['route:uzay-2'],undefined);
    assert.equal(h.find('JourneyResult').props['before'].state.pieces,0);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
-   const next=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Sıradaki bölüm')!;assert.ok(next);next.props['onClick']();assert.equal(calls[0].journey,'uzay-2');assert.equal(calls[0].campaign,true);
+   const next=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Sonraki bölüm')!;assert.ok(next);next.props['onClick']();assert.equal(calls[0].journey,'uzay-2');assert.equal(calls[0].campaign,true);
    const replay=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).includes('Bir daha oyna'))!;replay.props['onClick']();assert.equal(calls[1].journey,'uzay-1');assert.equal(calls[1].practice,true);
   }finally{h.close();}
  });
@@ -227,7 +227,7 @@ describe('imperative selection label owns its mode transitions',()=>{
   const slots=new Map<string,{textContent:string;hidden:boolean}>();for(const key of ['message','word','count','loupe'])slots.set('[data-selection-'+key+']',{textContent:'',hidden:true});
   const root={classList:{toggle(){}},querySelector:(s:string)=>slots.get(s)};const preview=walk(h.tree).find(n=>String(n.props['className']??'').startsWith('selection-preview'))!;preview.props['ref'].current=root;
   const before=upstream.length;h.find('Board').props['onPreview']('KELİME');assert.equal(upstream.length,before);assert.equal(slots.get('[data-selection-word]')!.textContent,'KELİME');assert.equal(slots.get('[data-selection-loupe]')!.textContent,'E');assert.equal(slots.get('[data-selection-message]')!.hidden,true);
-  for(const [mode,message] of [['inputBlocked','Sunucu onayı bekleniyor.'],['readOnly','Keşif tamamlandı'],['paused','Oyun duraklatıldı.']]){h.update('PlayLayout',{...props,[mode!]:true});assert.equal(slots.get('[data-selection-message]')!.hidden,false);assert.ok(slots.get('[data-selection-message]')!.textContent.startsWith(message!));for(const key of ['word','count','loupe'])assert.equal(slots.get('[data-selection-'+key+']')!.hidden,true);h.update('PlayLayout',props);h.find('Board').props['onPreview']('YENİ');}
+  for(const [mode,message] of [['inputBlocked','Sunucu onayı bekleniyor.'],['readOnly','Bölüm tamamlandı'],['paused','Oyun duraklatıldı.']]){h.update('PlayLayout',{...props,[mode!]:true});assert.equal(slots.get('[data-selection-message]')!.hidden,false);assert.ok(slots.get('[data-selection-message]')!.textContent.startsWith(message!));for(const key of ['word','count','loupe'])assert.equal(slots.get('[data-selection-'+key+']')!.hidden,true);h.update('PlayLayout',props);h.find('Board').props['onPreview']('YENİ');}
   h.close();
  });
 });
@@ -246,7 +246,7 @@ describe('optional riddle shelf and actual Solo continuation',()=>{
   try{h.start('Solo',{config:{themeId:first.themeId,level:0,journey:first.id},progress:p,onProgress(fn:any){p=fn(p);},onBack(){},onMap(){},onNext:(c:any)=>calls.push(c)});
    assert.equal(h.find('PlayLayout').props['wordList'].clues,first.clues);for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();
    assert.equal(p.saves['route:'+first.id]?.complete,true);assert.deepEqual(h.find('VictorySummary').props['rewards'],[]);assert.equal(h.find('VictorySummary').props['goal'],null);
-   const next=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).startsWith('Sıradaki:'))!;assert(next);next.props['onClick']();assert.equal(calls[0].journey,riddles.RIDDLE_CHAPTERS[1]!.id);assert.equal(calls[0].campaign,undefined);
+   const next=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Sonraki bölüm')!;assert(next);next.props['onClick']();assert.equal(calls[0].journey,riddles.RIDDLE_CHAPTERS[1]!.id);assert.equal(calls[0].campaign,undefined);
   }finally{h.close();}
  });
 });
@@ -281,7 +281,7 @@ describe('player-selected focus is guidance without extra rewards or hidden answ
    const replay=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 1:'))!;replay.props['onClick']();h.paint();assert.equal(calls[0].practice,true);assert.equal(calls[0].campaign,true);
    walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();
    const locked=walk(h.tree).find(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm 4:'))!;assert.equal(locked.props['disabled'],true);locked.props['onClick']();h.paint();assert.equal(calls.length,1);
-   walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();assert.equal(h.find('Modal').props['title'],'Senin yolculuğun');assert.equal(walk(h.find('Modal')).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm ')).length,96);
+   walk(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();assert.equal(h.find('Modal').props['title'],'Bölümler');assert.equal(walk(h.find('Modal')).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm ')).length,96);
   }finally{h.close();}
  });
 });
@@ -323,7 +323,7 @@ describe('living story sequential interaction, hints, replay and navigation',()=
  });
  it('keeps the chosen chapter view through a home remount',()=>{
   let selected:'stories'|'journey'='stories';const props={progress:progress.emptyProgress(),onPlay(){},onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
-  try{h.start('JourneyHome',props);const button=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Bölüm yolculuğu')!;button.props['onClick']();h.paint();assert.equal(selected,'journey');const next=view('components/game/JourneyHome.tsx',modules);try{next.start('JourneyHome',{...props,initialView:selected});assert.equal(walk(next.tree).find(n=>n.props?.['className']==='journey-classic-panel')!.props['hidden'],false);}finally{next.close();}}finally{h.close();}
+  try{h.start('JourneyHome',props);const button=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Bölümler')!;button.props['onClick']();h.paint();assert.equal(selected,'journey');const next=view('components/game/JourneyHome.tsx',modules);try{next.start('JourneyHome',{...props,initialView:selected});assert.equal(walk(next.tree).find(n=>n.props?.['className']==='journey-classic-panel')!.props['hidden'],false);}finally{next.close();}}finally{h.close();}
  });
 });
 
@@ -418,5 +418,26 @@ describe('world word veils survive every target surface and resume',()=>{
     walk(h.tree).find(n=>n.props?.['aria-label']==='Oyun araçları')!.props['onClick']();h.update('PlayControls',props());walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Nasıl oynanır')!.props['onClick']();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
    }finally{h.close();}
   }
+ });
+});
+
+
+describe('hint target follows visible selection, not placement ordering',()=>{
+ it('keeps split parts in list order and falls back after the selected group is completed',()=>{
+  const j=content.journeyById('uzay-5')!,board=content.journeyBoard(j),parts=board.targets.filter(t=>t.label==='KUYRUKLU YILDIZ');
+  assert.equal(parts.length,2);assert.equal(wordCard.hintTarget(board,[],parts[0]!.group)?.id,parts[0]!.id);
+  const first=board.placements.find(p=>p.id===parts[0]!.id)!;assert.equal(wordCard.hintTarget(board,[first],first.group)?.id,parts[1]!.id);
+  const both=board.placements.filter(p=>p.group===first.group);assert.equal(wordCard.hintTarget(board,both,first.group)?.id,board.targets.find(t=>t.group!==first.group)!.id);
+ });
+ it('Solo hint marks the selected target, including a concealed target, and preserves the board',async()=>{
+  const j=content.journeyById('uzay-5')!,p=progress.emptyProgress(),h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
+  try{h.start('Solo',{config:{themeId:j.themeId,level:0,journey:j.id,campaign:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});await h.settle();
+   const layout=h.find('PlayLayout').props,board=layout['board'],last=board.targets.at(-1),target=board.placements.find((t:any)=>t.id===last.id);
+   layout['wordList'].onFocusGroup(last.group);await h.settle();h.find('PlayControls').props['onHint']();await h.settle();assert.deepEqual(h.find('PlayLayout').props['hint'],target.a);assert.equal(h.find('PlayControls').props['hints'],2);assert.equal(h.find('PlayLayout').props['board'],board);
+  }finally{h.close();}
+ });
+ it('PlayLayout exposes only the caller unlocked targets for automatic acceptance',()=>{
+  const wordList={board:{targets:[content.TUTORIAL.targets[0]!]},strokes:[]},h=shared({wordList});
+  try{assert.deepEqual(h.find('Board').props['earlyTargets'],wordList.board.targets);}finally{h.close();}
  });
 });

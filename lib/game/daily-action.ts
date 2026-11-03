@@ -1,7 +1,7 @@
 import {match,type Cell,type Stroke} from './engine.ts';
 import type {DailyView} from './server.ts';
 export type DailyReply=DailyView&{hintCell?:Cell|null};
-export type DailyIntent={kind:'claim';stroke:Stroke;label:string}|{kind:'hint';requestId:string};
+export type DailyIntent={kind:'claim';stroke:Stroke;label:string}|{kind:'hint';requestId:string;targetId?:string};
 export type DailyActionPhase='idle'|'sending'|'checking'|'uncertain'|'storage-error'|'expired'|'account-changed'|'unavailable';
 export interface DailyActionState {phase:DailyActionPhase;intent:DailyIntent|null;message?:string}
 export class DailyRequestError extends Error {constructor(message:string,public status:number,public code?:string){super(message);}}
@@ -83,8 +83,8 @@ export class DailyActionSession {
    else{
     // A retry's rejection cannot disprove a still-running, earlier mutation.
     if(mutationAttempted){
-     const rejected=e instanceof DailyRequestError&&[400,409,429].includes(e.status),limit=intent.kind==='hint'&&e instanceof DailyRequestError&&e.status===400&&e.code==='DAILY_HINT_LIMIT';
-     if((rejected&&!pending.uncertainMutation)||limit){
+     const rejected=e instanceof DailyRequestError&&[400,409,429].includes(e.status),terminalHint=intent.kind==='hint'&&e instanceof DailyRequestError&&(e.status===400&&e.code==='DAILY_HINT_LIMIT'||e.status===409&&e.code==='DAILY_HINT_TARGET_FOUND');
+     if((rejected&&!pending.uncertainMutation)||terminalHint){
       pending.rejected=true;
       try{this.options.persistence?.clear(intent);}catch(f){this.report('storage-error',f instanceof Error?f.message:'Bekleyen kayıt temizlenemedi.');return;}
      }else if(!rejected)pending.uncertainMutation=true;

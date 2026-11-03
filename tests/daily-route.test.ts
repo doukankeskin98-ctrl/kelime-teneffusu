@@ -6,6 +6,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import {fixture} from './fixtures.ts';
 import {GameService,GameError} from '../lib/game/server.ts';
+import {dailySpec,makePuzzle} from '../lib/game/engine.ts';
 import {IdentityError} from '../lib/auth/verify.ts';
 import * as action from '../lib/game/daily-action.ts';
 const compile=(file:string)=>ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
@@ -49,6 +50,19 @@ describe('actual daily transport preserves id and owner through its auth boundar
   const exports:Record<string,any>={},calls:{url:string;init:RequestInit}[]=[];let fail=false;
   vm.runInNewContext(compile('components/game/daily-transport.ts'),{exports,require:(n:string)=>n==='@/lib/game/daily-action'?action:{memberFetch:async(url:string,init:RequestInit)=>{calls.push({url,init});return{ok:!fail,status:fail?409:200,json:async()=>fail?{error:'Changed',code:'DAILY_OWNER_CHANGED'}:{id:'attempt'}};}}});
   const signal=new AbortController().signal,send=exports['requestDaily'];await send('attempt','alice',null,signal);assert.equal(new URL(calls[0]!.url,'https://test').searchParams.get('action'),'dailyState');assert.equal(new URL(calls[0]!.url,'https://test').searchParams.get('id'),'attempt');assert.equal(new URL(calls[0]!.url,'https://test').searchParams.get('expectedOwnerId'),'alice');assert.equal(calls[0]!.init.signal,signal);
-  await send('attempt','alice',{kind:'hint',requestId:key},signal);const body=JSON.parse(String(calls[1]!.init.body));assert.equal(body.action,'dailyHint');assert.equal(body.requestId,key);assert.equal(body.expectedOwnerId,'alice');fail=true;await assert.rejects(()=>send('attempt','alice',null,signal),(e:any)=>e instanceof action.DailyRequestError&&e.code==='DAILY_OWNER_CHANGED');
+  await send('attempt','alice',{kind:'hint',requestId:key,targetId:'2.0'},signal);const body=JSON.parse(String(calls[1]!.init.body));assert.equal(body.action,'dailyHint');assert.equal(body.requestId,key);assert.equal(body.targetId,'2.0');assert.equal(body.expectedOwnerId,'alice');fail=true;await assert.rejects(()=>send('attempt','alice',null,signal),(e:any)=>e instanceof action.DailyRequestError&&e.code==='DAILY_OWNER_CHANGED');
+ });
+});
+
+
+describe('selected daily hint reaches the service without revealing placements',()=>{
+ it('marks the requested target, deduplicates its receipt and refuses invalid or already-found targets without charging',async()=>{
+  const h=await route(),spec=dailySpec(h.initial.day),board=makePuzzle(spec.themeId,spec.level,spec.seed),target=board.placements.at(-1)!;
+  const payload={action:'dailyHint',id:h.initial.id,requestId:key,targetId:target.id};
+  for(let i=0;i<2;i++){const response=await h.request('POST','','alice',payload),value=await response.json() as any;assert.equal(response.status,200);assert.deepEqual(value.hintCell,target.a);assert.equal(value.hints,1);assert.equal('placements' in value.board,false);}
+  await h.game.dailyClaim('alice',h.initial.id,target.a,target.b);
+  for(const targetId of [target.id,'999.0',{},null]){const response=await h.request('POST','','alice',{...payload,requestId:crypto.randomUUID(),targetId});assert(response.status>=400);}
+  assert.equal((await h.game.dailyState('alice',h.initial.id)).hints,1);
+  const retry=await h.request('POST','','alice',payload);assert.deepEqual((await retry.json() as any).hintCell,target.a);
  });
 });
