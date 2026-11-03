@@ -1,5 +1,7 @@
 # Öncelikler
 
+3 Kasım 2026, 0.29.0: kullanıcı iOS test uygulamasına geçişi istedi. Paketli Capacitor/Xcode temeli hazır. Sıradaki kapılar güvenli eski kimlik/ilerleme aktarımı, uygulama içinden hesap silme, moderasyon, yayıncı politikaları ve fiziksel cihaz kabulü. Apple Developer hesabı henüz yok. Kaynak: `../../docs/app-store-readiness.md`; ayrıntı `../journal/entries/2026-11-03-ios-foundation.md`.
+
 3 Kasım bakım,0.28.1: Yağmur sonrası/Laboratuvar masası tek sabit çift; güncel0.28 sahne kabuğu/120 bölüm korunur. Kabul/kanıt ../journal/entries/2026-11-03_maintenance.md. Öncelik fiziksel Safari/iki gerçek telefon/provider/PWA/VoiceOver/ses; yeni büyük özellik yok.
 
 3 Kasım 2026,0.26.1: kullanıcının fazla gizli hedef geri bildirimiyle en fazla bir tamamen gizli ve bir baş harfli hedef; açık kelimeler çoğunlukta. Yalnız maske dağılımı değişti. Kabul `../journal/entries/2026-11-03_veil-balance.md`; fiziksel cihaz kabulü açık.

@@ -1,12 +1,26 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {isNativeGame,gameIsActive} from '@/lib/platform/runtime';
+import {startRoomPolling} from '@/lib/platform/room-poll';
 import {memberFetch} from '@/lib/auth/firebase-client';
 import type {RoomView} from '@/lib/game/server';
 export function useLiveRoom(id:string|undefined,onRoom:(room:RoomView,sourceId:string)=>void,onClock:(time:number)=>void){
  const callbacks=useRef({onRoom,onClock});callbacks.current={onRoom,onClock};
  const [connection,setConnection]=useState<'connecting'|'connected'|'reconnecting'>('connecting');
  useEffect(()=>{
-  if(!id)return;let stopped=false,serial=0,timer:ReturnType<typeof setTimeout>,abort:AbortController|undefined,failures=0;
+  if(!id)return;
+  if(isNativeGame()){
+   let connected=false;
+   const poll=startRoomPolling<RoomView>({
+    active:()=>!document.hidden&&gameIsActive(),
+    read:async signal=>{const r=await memberFetch('/api/game?action=room&id='+encodeURIComponent(id),{signal});if(!r.ok)throw new Error('room');const room=await r.json() as RoomView;if(!room||typeof room.id!=='string')throw new Error('room');return room;},
+    accept:room=>{callbacks.current.onRoom(room,id);callbacks.current.onClock(room.serverNow);},
+    status:ok=>{if(ok)connected=true;setConnection(ok?'connected':connected?'reconnecting':'connecting');},
+   });
+   document.addEventListener('visibilitychange',poll.visibility);
+   return ()=>{poll.stop();document.removeEventListener('visibilitychange',poll.visibility);};
+  }
+  let stopped=false,serial=0,timer:ReturnType<typeof setTimeout>,abort:AbortController|undefined,failures=0;
   const connect=async()=>{
    if(stopped||document.hidden)return;const generation=++serial;abort?.abort();abort=new AbortController();setConnection(failures?'reconnecting':'connecting');
    try{

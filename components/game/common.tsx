@@ -1,4 +1,5 @@
 'use client';
+import {publicGameOrigin} from '@/lib/platform/runtime';
 import '@/lib/game/browser-compat';
 import {wordCardCopy,wordListProgress,focusedWordGroup,compactWordRack,veiledText,type WordVeil} from '@/lib/game/word-card';
 import {useEffect,useRef,useId,useState,type ReactNode,type CSSProperties} from 'react';

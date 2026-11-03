@@ -1,4 +1,5 @@
 'use client';
+import {gameIsActive} from '@/lib/platform/runtime';
 import {LIVING_STORIES,livingStory,storyStage} from '@/lib/game/story-content';
 import {StoryHud,StoryResult} from './StoryExperience';
 import {RIDDLE_CHAPTERS,isRiddleChapter} from '@/lib/game/riddle-content';
@@ -71,7 +72,7 @@ export function Solo({config,progress,onProgress,onBack,onMap,onNext,external,da
   const at=performance.now();let previousTick=0;
   const timer=setInterval(()=>{const tick=Math.floor((performance.now()-at)/1000),delta=tick-previousTick;previousTick=tick;
    if(delta>0)setSave(s=>s.complete?s:{...s,elapsed:s.elapsed+delta});},1000);
-  const hide=()=>{if(document.hidden)setPaused(true);};document.addEventListener('visibilitychange',hide);
+  const hide=()=>{if(document.hidden||!gameIsActive())setPaused(true);};document.addEventListener('visibilitychange',hide);
   return ()=>{clearInterval(timer);document.removeEventListener('visibilitychange',hide);};
  },[paused,completed,help,exit,!!daily]);
  useEffect(()=>{

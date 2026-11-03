@@ -119,6 +119,7 @@ function harness(owner:string,mode:'reject'|'timeout'|'success',initial:SavedLev
    dictionary:(key:string)=>cache.dictionary(key,storage),
    rememberChapter:(value:content.PlayableChapter)=>cache.rememberChapter(value,storage)},
   '@/lib/auth/firebase-client':{memberFetch:request},
+  '@/lib/platform/runtime':{appFetch:request},
   '@/lib/studio/release-stamps':{playableReleasePair:()=>null},
   './Solo':{Solo:'Solo'},
   './useChapterCards':{useChapterCards:()=>({values:{},status:'ready',retry(){}})}

@@ -1,3 +1,11 @@
+## 0.29.0 · İlk iOS test uygulaması
+
+Mevcut oyun çekirdeği ve 120 ana bölüm, 16 sahnesiyle iOS paketine alındı. Xcode projesi, uygulama simgesi/açılışı, yerel haptics köprüsü ve arka plan duraklatması eklendi. Native JSON istekleri yalnız mevcut HTTPS sunucuya gider; Arena tek uçuşlu sorguyla güncellenir, web SSE/PWA yolu korunur. Sunucu kimliği, bölüm/tahta/kayıt/ödül ve tekrar önleme kuralları değiştirilmedi.
+
+Xcode 27.2 ile iPhone simülatör derlemesi geçti. iPhone 16e / iOS 26.2 üzerinde ilk bölüm kaydırılarak tamamlandı; aynı sahnede sonuç, sonraki bölüm, arka plan→duraklama, misafir profil açılışı ve özel Arena lobisi görüldü. 601 test, içerik, tip, web/mobil derleme ve 622 yerel Worker HTTP kontrolü geçti. Simülatör görüntüleri `../world-review/0.29.0-ios-*.png`. Fiziksel iPhone, iki cihazlı maç, ses/haptics hissi, FPS ve uçak modu cold açılışı henüz doğrulanmadı.
+
+Bu bir App Store yayını değildir. Apple Developer hesabı, yayıncı/destek bilgisi, güvenli Safari→uygulama kimlik aktarımı, hesap silme, moderasyon ve gerçek cihaz kabulü açık. Kaynak temelli veri envanteri ve yayımlanmamış politika taslakları [yayın dosyasında](app-store-readiness.md); derleme adımları [mobil rehberde](../mobile/README.md). Bu açıklıklar kapanmadan mağazaya gönderim yapılmaz.
+
 ## 0.28.1 · 3 Kasım: Yağmur sonrası / Laboratuvar masası
 
 Rahat6×6/dört hava kelimesi ve Dengeli8×8/yedi laboratuvar terimi. İki çapraz eğim, sabit UTC tarih/slot/kimlik/hash ve kalıcı arşiv; mevcut kitaplık/dünya yolları üzerinden erişim ve iki tamamlamayla3Kasım damgası. Yeni0.28 sahne düzeni,120 ana bölüm ve eski13 çift/kayıt/ödül/Arena aynen korunur. Kabul/kanıt studio-agents/journal/entries/2026-11-03_maintenance.md; fiziksel cihaz/provider/PWA/VoiceOver/ses kabulü açık.

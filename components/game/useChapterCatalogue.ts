@@ -1,4 +1,5 @@
 'use client';
+import {appFetch} from '@/lib/platform/runtime';
 import {useEffect,useRef,useState} from 'react';
 import {parseChapterSpec,validChapterId,type PublishedChapter} from '@/lib/studio/content';
 import type {ChapterBrowseReturn} from '@/lib/studio/chapter-browse';
@@ -31,7 +32,7 @@ export function useChapterCatalogue({initial,initialCompanions,collection,themeI
   try{
    const query=new URLSearchParams({offset:String(offset)});
    if(collection==='releases'){query.set('collection','releases');if(themeId)query.set('theme',themeId);}
-   const response=await fetch('/api/chapters?'+query,{cache:'no-store',signal:controller.signal});
+   const response=await appFetch('/api/chapters?'+query,{cache:'no-store',signal:controller.signal});
    if(!response.ok)throw new Error('Catalogue unavailable');
    const data=await response.json() as Page;if(!current())return;
    request.current.failedOffset=undefined;

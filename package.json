@@ -1,6 +1,6 @@
 {
   "name": "kelime-teneffusu",
-  "version": "0.28.1",
+  "version": "0.29.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -14,7 +14,11 @@
     "db:generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --experimental-transform-types --test tests/*.test.ts",
-    "content:check": "node --experimental-strip-types --experimental-transform-types scripts/check-content.ts"
+    "content:check": "node --experimental-strip-types --experimental-transform-types scripts/check-content.ts",
+    "mobile:build": "vite build --config mobile/vite.config.ts",
+    "mobile:sync": "pnpm mobile:build && cap sync ios",
+    "mobile:open": "cap open ios",
+    "mobile:check": "node scripts/verify-mobile.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -42,7 +46,11 @@
     "vaul": "^1.1.2",
     "zod": "^3.25.76",
     "firebase": "12.19.0",
-    "jose": "6.2.12"
+    "jose": "6.2.12",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/haptics": "8.0.2"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",
@@ -64,7 +72,8 @@
     "typescript": "5.9.3",
     "vinext": "1.0.0-beta.5",
     "vite": "8.0.13",
-    "wrangler": "4.92.0"
+    "wrangler": "4.92.0",
+    "@capacitor/cli": "8.5.3"
   },
   "type": "module",
   "overrides": {

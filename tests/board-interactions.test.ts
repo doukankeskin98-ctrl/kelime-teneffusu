@@ -36,6 +36,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  if(options.legacy)delete (element as any).setPointerCapture;
  Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
+  if(name==='@/lib/platform/runtime')return {gameIsActive:()=>true};
   if(name==='@/lib/game/input-gesture')return gestures;if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
   if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
   if(name==='@/lib/game/engine')return {snapLine};if(name==='@/lib/game/telemetry')return {track(){}};

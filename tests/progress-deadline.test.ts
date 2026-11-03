@@ -24,7 +24,7 @@ describe('main sync deadline covers the actual auth and response pipeline',()=>{
    return {status:200,ok:true,json:()=>armed&&stage==='json'?gate.promise:Promise.resolve({progress:value})};
   };
   vm.runInNewContext(compiled+'\nexports.__testUser=user=>{active={auth:{currentUser:user},sdk:{}};};',{
-   exports,Headers,fetch,require:(name:string)=>{assert.equal(name,'./shared.ts');return {safeReturnTo:()=>'/'};},
+   exports,Headers,fetch,require:(name:string)=>{if(name==='../platform/runtime.ts')return {appFetch:fetch};assert.equal(name,'./shared.ts');return {safeReturnTo:()=>'/'};},
   });exports['__testUser'](user);
   const readRemote=async(s:AbortSignal,p?:Progress)=>{
    signal=s;

@@ -1,4 +1,5 @@
 'use client';
+import {gameIsActive} from '@/lib/platform/runtime';
 import '@/lib/game/browser-compat';
 import {useEffect,useMemo,useRef,useState,type CSSProperties,type KeyboardEvent} from 'react';
 import {attachBoardSize} from '@/lib/game/viewport';
@@ -30,7 +31,7 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
  const clear=()=>{selectionSound.current=false;soundedCells.current.clear();drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;setAnchor(null);paint([]);onPreview?.('');};
  const clearRef=useRef(clear);clearRef.current=clear;
  useEffect(()=>{
-  const blur=()=>clearRef.current(),visibility=()=>{if(document.hidden)clearRef.current();};
+  const blur=()=>clearRef.current(),visibility=()=>{if(document.hidden||!gameIsActive())clearRef.current();};
   window.addEventListener('blur',blur);document.addEventListener('visibilitychange',visibility);
   return ()=>{window.removeEventListener('blur',blur);document.removeEventListener('visibilitychange',visibility);};
  },[]);

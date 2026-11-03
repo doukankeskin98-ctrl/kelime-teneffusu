@@ -24,6 +24,9 @@ jobs:
       - run: pnpm content:check
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm mobile:build
+      - run: pnpm exec cap copy ios
+      - run: pnpm mobile:check
       - run: pnpm build
       - run: node scripts/verify-worker.mjs
       - uses: actions/upload-artifact@v4
