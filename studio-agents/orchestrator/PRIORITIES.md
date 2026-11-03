@@ -1,5 +1,7 @@
 # Öncelikler
 
+4 Kasım 2026, 0.31.0: kesintisiz görsel çizgi, fiziksel temas boyunca ölçüm erteleme, oyun dışı bildirim katmanı, tek bölüm/ayar görünümü, hikâye devamı ve menü titreşimi. Kabul ve gerçek cihaz sınırı `../journal/entries/2026-11-04-continuous-play.md`. Telefon yeniden bağlanınca çizim kare süreleri/haptics ve 20 dakika oturum kabulü önceliklidir; ekran görüntüsü FPS kanıtı değildir.
+
 3 Kasım 2026, 0.30.3: kullanıcı gerçek iPhone titreşimini doğruladı; kelime çizerken takılma bildirildi. Canlı önizlemenin gereksiz tam çerçeve ölçümü kaldırıldı; Board/kayıt kuralları değişmedi. Kabul ve fiziksel tekrar denemesi `../journal/entries/2026-11-03-device-drag.md`.
 
 3 Kasım 2026, 0.30.2: fiziksel iPhone kurulumunda erişilemeyen ayarlar düzeltildi; üst dişlide titreşim ve native belge kaydırması. Kabul/gerçek cihaz kanıtı `../journal/entries/2026-11-03-device-settings.md`. Fiziksel his kullanıcı geri bildirimiyle doğrulanır; Safari kayıt aktarımı ve mağaza kapıları açık.

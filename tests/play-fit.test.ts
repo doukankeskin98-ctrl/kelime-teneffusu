@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import vm from 'node:vm';
-import {measurePlayFrame,attachPlayFit,attachBoardSize} from '../lib/game/viewport.ts';
+import {measurePlayFrame,attachPlayFit,attachBoardSize,setBoardDrawing} from '../lib/game/viewport.ts';
 import {attachLegacyTouch,openGameDialog} from '../lib/game/legacy-ui.ts';
 import {installBrowserCompat} from '../lib/game/browser-compat.ts';
 
@@ -115,4 +115,11 @@ describe('legacy iOS input and results keep the same game',()=>{
   const result=await root.Promise.allSettled([root.Promise.resolve(3),root.Promise.reject('x')]);assert.equal(result[0].value,3);assert.equal(result[1].status,'rejected');
   const uuid=root.crypto.randomUUID;assert.match(uuid(),/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);assert(entropy>0);installBrowserCompat(root);assert.equal(root.crypto.randomUUID,uuid);
  });
+});
+
+it('defers changing HUD geometry during physical contact and fits once when contact ends',()=>{
+ const f=fixture(),stop=attachPlayFit(f.screen,f.stage,9,false,f.view);f.flush();const before=f.stage.style.getPropertyValue('height'),board=f.stage.querySelector('.letter-board');
+ setBoardDrawing(board,true,f.view);f.preview.rect.height+=40;
+ for(let i=0;i<5;i++){f.view.dispatchEvent(new Event('resize'));f.flush();assert.equal(f.stage.style.getPropertyValue('height'),before);}
+ setBoardDrawing(board,false,f.view);assert.equal(f.frames.size,1);f.flush();assert.notEqual(f.stage.style.getPropertyValue('height'),before);assert.equal(f.frames.size,0);stop();
 });

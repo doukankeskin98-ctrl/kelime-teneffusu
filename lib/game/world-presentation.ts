@@ -7,22 +7,26 @@ import type {WordVeil} from './word-card.ts';
 
 /** Presentation metadata only: never used in generation, save keys or rewards. */
 const TOPICS:Record<string,readonly string[]>={
+ 'doga-bahce':['Bahçe gereçleri','Filizler','Bahçe işleri','Renkler','Kokulu bitkiler','Sebzeler'],
+ 'doga-dere':['Dere kıyısı','Akarsular','Suyun hâlleri','Ahşap köprü','Dere canlıları','Vadi'],
+ 'doga-kamp':['Çadır kurma','Kamp çantası','Yürüyüş gereçleri','Sofra','Hava olayları','Yol bulma'],
+ 'doga-gozlem':['Gün batımı','Ay','Gözlem araçları','Gece sesleri','Gökyüzü haritası','Gözlem notları'],
  uzay:['Gökyüzüne bak','Gezegen komşuları','Uzay yolculuğu','Evrenin derinlikleri','Uzak uzay','Gözlemevinde bir gece'],
  turkiye:['Kıyıdan şehre','Türkiye sokakları','Dağlar ve göller','Tarihin izleri','Bir Türkiye gezisi','Anadolu hatıraları'],
- hababam:['Sınıfın içinden','Teneffüs zamanı','Tanıdık yüzler','Sınıf yoklaması','Bütün sınıf burada','Mezuniyet hatırası'],
- hayvanlar:['Küçük dostlarımız','Ormanın sakinleri','Yuvadaki sırlar','Suların ve kıyının sesi','Vahşi doğa','Ormanın gizli canlıları'],
- lezzetler:['Fırından sofraya','Ev yemekleri','Mutfağın sırları','Sofra hazır','Tatlı bir mola','Son lokmanın bilmecesi'],
+ hababam:['Sınıfın içinden','Teneffüs zamanı','Hababam anıları','Sınıf yoklaması','Bütün sınıf burada','Mezuniyet hatırası'],
+ hayvanlar:['Küçük dostlarımız','Ormanın sakinleri','Yuvadaki sırlar','Denizde ve karada','Vahşi doğa','Ormanın gizli canlıları'],
+ lezzetler:['Fırından sofraya','Ev yemekleri','Mutfağın sırları','Sofra hazır','Sofranın lezzetleri','Son lokmanın bilmecesi'],
  muzik:['Müziğin alfabesi','Çalgılar konuşuyor','Sahnede ne var?','Orkestranın sesi','Şarkının içinden','Konserin son alkışı'],
- dunya:['Dört şehir, dört durak','Dünya sokakları','Yol çantamda ne var?','Uzak şehirler','Yeryüzünün izleri','Kıyıdaki sırlar'],
+ dunya:['Dört şehir, dört durak','Dünya sokakları','Yol çantamda ne var?','Şehirler ve çöller','Yeryüzünün izleri','Kıyıdaki sırlar'],
  bilim:['En küçük yapı taşları','Fiziğin dünyası','Gözlem ve deney','Maddenin içinde','Bilimin peşinde','Laboratuvar bilmeceleri'],
  teknoloji:['İlk bağlantı','Bilgisayarın içinde','Masanın üzerindekiler','Bağlı bir dünya','Dijital izler','Atölyenin sırları'],
- doksanlar:['Çocukluğun sesleri','Doksanlara dönüş','Sokaktan haberler','Bir yaz öğleden sonrası','Hatıra çekmecesi','Kasetteki son şarkı'],
+ doksanlar:['Doksanlar','Doksanlara dönüş','Sokaktan haberler','Bir yaz öğleden sonrası','Hatıra çekmecesi','Müzik ve sinema'],
  futbol:['İlk düdük','Takım ruhu','Sahanın kuralları','Maçın içinden','Golün yolları','Son düdüğün bilmecesi'],
  basketbol:['Potaya doğru','Takım sahada','Oyunun dili','Hücum ve savunma','Sayının yolları','Parkenin sırları'],
- sinema:['İlk sahne','Kamera arkasında','Perdenin ipuçları','Film dünyası','Bir sahne hazırlanıyor','Salonda son ışık'],
+ sinema:['İlk sahne','Kamera arkasında','Perdenin ipuçları','Film dünyası','Setten salona','Salonda son ışık'],
  yesilcam:['Mahalleye hoş geldin','Perdeye yansıyanlar','Tanıdık replikler','Film setinde','Yazlık sinema','Mahalle hatıraları'],
- diziler:['Hikâye başlıyor','Setin insanları','Sıradaki bölüm','Mahalle hikâyeleri','Çekim arası','Ekranın sırları'],
- mitoloji:['Olimpos sakinleri','Tanrıların öyküleri','Efsanevi izler','Eski tanrılar','Destan kahramanları','Efsanenin son sayfası'],
+ diziler:['Hikâye başlıyor','Dizi seti','Sıradaki bölüm','Bir mahalle dizisi','Çekim arası','Ekranın sırları'],
+ mitoloji:['Olimpos sakinleri','Tanrıların öyküleri','Efsanevi izler','Yunan mitolojisi','Mitoloji dünyası','Efsanenin son sayfası'],
 };
 export function worldChapter(id?:string){
  const chapter=id?journeyById(id):null;if(!chapter)return null;

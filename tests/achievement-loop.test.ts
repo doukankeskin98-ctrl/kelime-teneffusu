@@ -132,11 +132,11 @@ const storyScenes=component('components/game/StoryScene.tsx',{});
 const storyExperience=component('components/game/StoryExperience.tsx',{'./StoryScene':storyScenes});
 describe('actual story collection, clue scene and result markup',()=>{
  it('leads a completed story collection forward and keeps replays explicit',()=>{const p=emptyProgress();for(const story of stories.LIVING_STORIES){const b=journeyBoard(story);p.saves['route:'+story.id]=cleanSave({strokes:b.placements,hints:0,elapsed:20,complete:false,stars:0},b);}const html=render(storyExperience['StoryShelf'],{progress:p,onPlay(){},onJourney(){}});assert.match(html,/Bölüm yolculuğuna geç/);assert.match(html,/5\/5/);assert.doesNotMatch(html,/Hikâyeye başla|Devam et/);});
- it('shows five distinct scenes with truthful empty and partial album states',()=>{
+ it('keeps unfinished stories in play and only completed keepsakes in the album',()=>{
   const p=emptyProgress(),story=stories.LIVING_STORIES[0]!,b=journeyBoard(story);
-  const empty=render(storyExperience['StoryCollection'],{progress:p,onPlay(){},album:true});assert.match(empty,/0\/5/);assert.equal((empty.match(/class="story-card"/g)??[]).length,5);assert.doesNotMatch(empty,/is-complete/);
+  const empty=render(storyExperience['StoryCollection'],{progress:p,onPlay(){},album:true});assert.match(empty,/0\/5/);assert.equal((empty.match(/class="story-card"/g)??[]).length,0);assert.doesNotMatch(empty,/is-complete/);
   p.saves['route:'+story.id]=cleanSave({strokes:[b.placements.find(p=>p.text==='KIYI')!],elapsed:10,hints:0,complete:false,stars:0},b);
-  const home=render(storyExperience['StoryShelf'],{progress:p,onPlay(){}});assert.match(home,/Devam et/);assert.match(home,/1\/4 adım/);assert.match(home,/0\/5/);
+  const home=render(storyExperience['StoryShelf'],{progress:p,onPlay(){}});assert.match(home,/Devam et/);assert.match(home,/1\/4 adım/);assert.match(home,/0\/5/);p.saves['route:'+story.id]=cleanSave({strokes:b.placements,elapsed:20,hints:0,complete:false,stars:0},b);const album=render(storyExperience['StoryCollection'],{progress:p,onPlay(){},album:true});assert.match(album,/1\/5/);assert.equal((album.match(/class="story-card is-complete"/g)??[]).length,1);
  });
  it('never labels undiscovered step answers and explains stars independently of speed',()=>{
   const story=stories.LIVING_STORIES[0]!,b=journeyBoard(story),hud=render(storyExperience['StoryHud'],{story,stage:1,hints:1});assert.match(hud,/aria-label="KIYI"/);assert.doesNotMatch(hud,/FENER|YELKEN|LİMAN/);assert.match(hud,/Tamamlarsan 2 yıldız/);

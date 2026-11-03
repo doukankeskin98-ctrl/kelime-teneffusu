@@ -39,7 +39,7 @@ function harness(file:string,modules:Record<string,unknown>={},globals:Record<st
   useId:()=> 'catalogue-test-id',useMemo:(fn:()=>any)=>fn()};
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
- vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/platform/runtime'?{appFetch:globals['fetch']}:name==='./GameSettings'?{useComfort:()=>({comfort:{leftHanded:false,reduceMotion:false},change(){}}),GameSettings:'GameSettings'}:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddleContent:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:modules[name]??new Proxy({},{get:(_t,key)=>String(key)}),URL,URLSearchParams,AbortController,Event,console,...globals});
+ vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/game/menu-feedback'?{attachMenuFeedback:()=>()=>{}}:name==='@/lib/platform/runtime'?{appFetch:globals['fetch']}:name==='./GameSettings'?{useComfort:()=>({comfort:{leftHanded:false,reduceMotion:false},change(){}}),GameSettings:'GameSettings'}:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddleContent:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:modules[name]??new Proxy({},{get:(_t,key)=>String(key)}),URL,URLSearchParams,AbortController,Event,document:new EventTarget(),console,...globals});
  const paint=()=>{for(let i=0;dirty&&i<30;i++){dirty=false;cursor=0;tree=render();while(effects.length)effects.shift()!();}return tree;};
  return {exports,start(fn:()=>any){render=fn;return paint();},paint,async settle(){for(let i=0;i<12;i++){await Promise.resolve();paint();}return tree;},unmount(){mounted=false;for(const slot of slots)slot.cleanup?.();},get afterUnmount(){return afterUnmount;}};
 }
@@ -147,9 +147,7 @@ describe('actual return UI wiring',()=>{
   }
   pick(h.paint(),'Explore').props['onExtra'](first,false,pair);pick(h.paint(),'PublishedPlay').props['onBack']();assert.equal(pick(h.paint(),'Explore').props['browseReturn'],undefined);
   const home=pick(h.paint(),'Explore'),theme=catalog.THEMES.find(t=>t.id===first.spec.themeId)!;
-  home.props['setTheme'](theme);const world=snapshot({source:'world',themeId:theme.id});pick(h.paint(),'PublishedChapters').props['onPlay'](first,false,pair,world);
-  pick(h.paint(),'PublishedPlay').props['onRelated'](pair.chapters[1],pair);pick(h.paint(),'PublishedPlay').props['onBack']();
-  const returnedWorld=pick(h.paint(),'PublishedChapters');assert.equal(returnedWorld.props['themeId'],theme.id);assert.equal(returnedWorld.props['browseReturn'],world);
+  home.props['setTheme'](theme);const modal=pick(h.paint(),'Modal');assert.equal(modal.props['title'],theme.title);const levels=nodes(modal).filter(n=>n.type==='button'&&n.props['onClick']);assert.equal(levels.length,6);levels[0]!.props['onClick']();pick(h.paint(),'Solo').props['onBack']();assert.equal(pick(h.paint(),'Modal').props['title'],theme.title);pick(h.paint(),'Modal').props['onClose']();
   pick(h.paint(),'Explore').props['setNav']('profil');await h.settle();const album=snapshot({source:'album',selectedDate:pair.date});pick(h.paint(),'ProfilePage').props['onExtra'](first,false,pair,album);pick(h.paint(),'PublishedPlay').props['onBack']();assert.equal(pick(h.paint(),'ProfilePage').props['browseReturn'],album);
  });
 });

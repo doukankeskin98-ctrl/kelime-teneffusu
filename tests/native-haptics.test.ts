@@ -60,3 +60,13 @@ it('a slow preparation starts the rate window at the actual tick, not the origin
  h.play('selection');h.time(500);start.resolve();await flush();assert.equal(ticks,1);
  h.time(501);h.play('selection');await flush();assert.equal(ticks,1);h.time(550);h.play('selection');await flush();assert.equal(ticks,2);h.stop();await flush();
 });
+
+it('menu pulses neither end an active selection nor queue delayed taps',async()=>{
+ const pending=gate();let menus=0;const h=setup({menu:()=>{menus++;return pending.promise;}});
+ h.play('selection');await flush();h.play('menu');h.time(100);h.play('menu');assert.equal(menus,1);assert.deepEqual(h.calls,['start','tick']);
+ pending.resolve();await flush();assert.equal(menus,1);h.time(200);h.play('selection');await flush();assert.deepEqual(h.calls,['start','tick','tick']);h.stop();await flush();
+});
+it('menu feedback has a quiet fallback and contains failure without blocking game input',async()=>{
+ const absent=setup();absent.play('menu');await flush();assert.deepEqual(absent.calls,[]);
+ const broken=setup({menu:()=>{throw Error('unavailable');}});assert.doesNotThrow(()=>broken.play('menu'));broken.play('selection');await flush();assert.deepEqual(broken.calls,['start','tick']);broken.stop();await flush();
+});

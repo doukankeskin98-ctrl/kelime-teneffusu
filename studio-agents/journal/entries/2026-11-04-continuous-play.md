@@ -1,0 +1,21 @@
+# Kesintisiz oyun: kabul ve uygulama kararı
+
+Kullanıcı 0.30.3 sonrası parmak çiziminin hâlâ kararsız olduğunu; ölçek, eski menülere dönüş, bölüm konusu ve devam akışının yetersizliğini bildirdi. 4 Kasım'da önceki ve son önerilerin tamamını uygulamayı açıkça istedi. Telefon bağlı değil; yeni WoW gözlemi bağlantı hatası nedeniyle yapılamadı. Bu çalışma gözlemlenmemiş referans animasyonlarını birebir kopyalama iddiası taşımaz.
+
+Seçim: ortak oyun katmanını ve giriş/sonuç akışını birlikte düzeltmek. Sürekli parmak izi ile mantıksal hücre seçimi ayrılır; çizim sırasında tahta geometri değişimleri ertelenir. Tek bölüm seçici, tek ayarlar, sade ek oyunlar ve doğrudan hikâyeye devam uygulanır. Dünya içi numara ve konu isimleri tutarlı sunulur. Onaylı kelime/sonuç hareketleri ve menü titreşimi ortak kurallarla çalışır. Arena aynı input/ölçek katmanını kullanır.
+
+Kabul: hücre içindeki hareket çizgi ucunu değiştirir; hızlı/yavaş/geri/çapraz hareket, erken kabul, iptal ve iki uç seçimi korunur. Sabit viewport'ta aktif çizim boyunca tahta yer değiştirmez; gerçek yön/boy değişimi güvenli iptal üretir. Menüde tek titreşim, devre dışı eylemde sıfır; tercih ve arka plan temizliği korunur. Eski bölüm kimliği, tahta, kelime, kayıt ve ödül snapshotları değişmez. Eski arşiv/ayar/harita girişlerinin tamamı ortak görünümlere bağlanır. Normal, bilmece, hikâye, Arena ve yoğun eski tahta mobil önizlemelerde denetlenir; 10 bölüm devam zinciri ve kayıtla geri dönüş sınanır. Zorunlu proje kapıları, bağımsız iki dar inceleme ve GitHub/Sites kaynak eşitliği gerekir. Fiziksel FPS, titreşim hissi ve iPhone Safari kabulü telefon yeniden bağlanana kadar açık kalır.
+
+## Sonuç
+
+0.31.0 (7) uygulaması tamamlandı. İlk 144 bölümün kimliği, kelimeleri ve tahtaları değişmedi; snapshot ve içerik testleri geçiyor. Yerleşim, menü ve görsel çizim değişir; zorluk veya adil Arena tahtası ekran boyutuna göre değişmez. Kayıt şeması ve Arena geçmişi değiştirilmedi.
+
+637 test / 132 grup geçti. Son bildirim kapatma değişikliği ardından 32 ilgili App/arşiv testi ve tip denetimi tekrar geçti. On gerçek Solo bölümünde devam düğmesiyle zincir ve JSON yeniden yükleme; kesirli uçta sıfır fazladan preview/haptic/render, sekiz yön, iptalden sonra rAF canlanmaması, fiziksel temasta fitter erteleme, menü olay temizliği ve gizli çok parçalı cevap korunması sınandı. İçerik kontrolü: 215 yazılmış tahta, 4300 alternatif düzen, 64 grup tahtası, 774 Arena tanımı / 919 kelime ve 714 Hızlı Tur kelimesi geçti. Web üretim/Safari 12 sözdizimi koruması, mobil build/sync/check ve Xcode simülatör derlemesi başarılı. 628 üretim Worker HTTP kontrolü iki eski oyuncu, sekiz özel grup ve on altı eşzamanlı açık grup oturumuyla geçti.
+
+Destekli yerel tarayıcıda 414×628 CSS piksel: normal ilk bölüm gerçek sürüklemelerle tamamlandı, otomatik sahne üstü kutlama açıldı, tek devamla bölüm 2 görüldü, yeniden yüklemede 1 tamamlanmış bölüm/3 yıldız ve bölüm 2 devamı korundu. Tahta yaklaşık 394 piksel; ortak seçici, ek oyun menüsü ve ayarlar görsel olarak incelendi. 320×568: hikâye, bilmece ve 9×9 Arena stres yerleşimi; eski 12×12 tahta 300 piksel/18 piksel harf ve alt kontroller görünür. Eski yoğun tahta için yalnız üst krom sıkıştırıldı. Arena görseli dokuz uzun tanımlı yerel test verisidir; gerçek eşleşme gözlemi değildir. API/rekabet doğrulaması Worker testlerindedir.
+
+Yerel gerçek Story/Board bileşeninde sürükleme sırasında 50 ms sonra kayıt uyarısı eklendi: bildirimsiz/sonraki board rect aynı 10.08/192.19/300/300 kaldı, yanlış başarı olmadı. Doğru KIYI sürüklemesi bir kez adım 2'ye geçti. Yerel fixture üretim girişine bağlı değildir ve gitignore kapsamındaki mobile/artifacts içindedir.
+
+Görseller depo dışında ../world-review/0.31.0 altında. İki bağımsız dar inceleme gizli etiket sızıntısı, bekleyen tap rAF, üst bildirim geometri riski, eski hikâye seçimi, panel iptali ve katalog kaynağı hatalarını yakaladı; hepsi düzeltildi. Ayrı inceleme günlüklerinde kalan kesin engel yok.
+
+Telefon bağlantısı yoktur. Bu sürüm fiziksel iPhone'a kurulmadı; fiziksel FPS, dokunma gecikmesi, menü titreşimi hissi, Safari motoru, VoiceOver ve uzun oturum kabulü açık. Yeni WoW yansıtma gözlemi yapılmadı. GitHub CI/Sites ağaç eşitliği ve yayın yanıtı depo dışındaki release-0.31.0.json makbuzunda tamamlanır.
