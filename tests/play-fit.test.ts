@@ -62,6 +62,25 @@ describe('complete board fits measured browser space',()=>{
   const stop=attachPlayFit(f.screen,f.stage,12,false,f.view);f.flush();const before=f.screen.style.getPropertyValue('--play-height');
   notify([{target:f.stage}]);assert.equal(f.frames.size,0);f.screen.rect.top=60;notify([{target:f.screen.parentElement}]);f.flush();assert.notEqual(f.screen.style.getPropertyValue('--play-height'),before);assert.equal(f.screen.style.getPropertyValue('--play-height'),'558px');stop();
  });
+ it('ignores live preview mutations with ResizeObserver while retaining actual resize and structural fitting',()=>{
+  const f=fixture(),mobile=element();let notify!:(records:any[])=>void,resize!:()=>void;
+  const word={},letter={};f.preview.contains=(node:unknown)=>node===f.preview||node===word;mobile.contains=(node:unknown)=>node===mobile||node===letter;
+  const original=f.screen.querySelectorAll;f.screen.querySelectorAll=(selector:string)=>selector==='.selection-preview,.mobile-selection'?[f.preview,mobile]:original(selector);
+  f.view.ResizeObserver=class{constructor(callback:()=>void){resize=callback;}observe(){}disconnect(){}};
+  f.view.MutationObserver=class{constructor(callback:(records:any[])=>void){notify=callback;}observe(){}disconnect(){}};
+  const stop=attachPlayFit(f.screen,f.stage,12,false,f.view);f.flush();
+  for(let i=0;i<60;i++)notify([{target:word,type:'childList'},{target:letter,type:'characterData'},{target:f.preview,type:'attributes'}]);
+  assert.equal(f.frames.size,0,'letter updates must not schedule whole-screen geometry reads');
+  const before=f.stage.style.getPropertyValue('height');f.preview.rect.height+=30;resize();assert.equal(f.frames.size,1);f.flush();assert.notEqual(f.stage.style.getPropertyValue('height'),before);
+  f.screen.rect.top=60;notify([{target:f.screen.parentElement,type:'childList'}]);assert.equal(f.frames.size,1);f.flush();assert.equal(f.screen.style.getPropertyValue('--play-height'),'558px');
+  stop();resize();notify([{target:f.hud}]);assert.equal(f.frames.size,0);
+ });
+ it('keeps preview-driven layout as a fallback when ResizeObserver is unavailable',()=>{
+  const f=fixture();let notify!:(records:any[])=>void;
+  f.view.MutationObserver=class{constructor(callback:(records:any[])=>void){notify=callback;}observe(){}disconnect(){}};
+  const stop=attachPlayFit(f.screen,f.stage,12,false,f.view);f.flush();const before=f.stage.style.getPropertyValue('height');
+  f.preview.rect.height+=30;notify([{target:f.preview,type:'childList'}]);assert.equal(f.frames.size,1);f.flush();assert.notEqual(f.stage.style.getPropertyValue('height'),before);stop();
+ });
  it('preserves pinch zoom and sizes a square/font without aspect-ratio or container units',()=>{
   const f=fixture();f.view.visualViewport={height:300,offsetTop:0,scale:2,addEventListener(){},removeEventListener(){}};const stop=attachPlayFit(f.screen,f.stage,12,false,f.view);f.flush();assert.equal(f.screen.style.getPropertyValue('--fitted-board'),'');stop();
   const b=browser(),board=element(300,0);let cancelled=0;const clean=attachBoardSize(board,10,false,()=>cancelled++,b.view);assert.equal(board.style.getPropertyValue('height'),'300px');assert.equal(board.style.getPropertyValue('--board-letter-size'),'16px');

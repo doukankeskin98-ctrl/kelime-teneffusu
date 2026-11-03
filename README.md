@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.30.3 · Harf çizerken yerleşim yükü
+
+Gerçek iPhone kullanıcısı titreşimin çalıştığını, takılmanın harf üzerinde kaydırırken oluştuğunu doğruladı. ResizeObserver bulunan cihazlarda salt canlı seçim metni mutasyonları artık bütün ekranı tekrar ölçtürmez; gerçek boyut değişimi, yapısal bildirim ve eski tarayıcı yolu korunur. Değişmeyen önizleme metni/görünürlüğü tekrar yazılmaz. Tahta kabulü, yön kilidi, erken kelime tanıma ve titreşim mantığı değişmez.
+
+Kabul, regresyonlar ve fiziksel cihaz tekrar denemesinin sınırı: `studio-agents/journal/entries/2026-11-03-device-drag.md`.
+
 ## 0.30.2 · Gerçek iPhone ayarları
 
 Üst dişli menüsünde destekli uygulama için Dokunma titreşimi anahtarı bulunur; mevcut tercih ve kayıt yolu kullanılır. Native belge kaydırması açılarak Koleksiyon'un altındaki ayarlar yeniden erişilebilir hale gelir. Tahta seçim korumaları, web'in sessiz davranışı, içerik ve ilerleme değişmez. İlk fiziksel kurulum iPhone 14 Pro Max / iOS 27.2 üzerinde kendi kişisel Apple takımıyla yapıldı; Safari kaydı uygulamadan ayrı kalır.

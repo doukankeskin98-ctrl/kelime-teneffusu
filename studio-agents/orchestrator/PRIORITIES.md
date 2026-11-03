@@ -1,5 +1,7 @@
 # Öncelikler
 
+3 Kasım 2026, 0.30.3: kullanıcı gerçek iPhone titreşimini doğruladı; kelime çizerken takılma bildirildi. Canlı önizlemenin gereksiz tam çerçeve ölçümü kaldırıldı; Board/kayıt kuralları değişmedi. Kabul ve fiziksel tekrar denemesi `../journal/entries/2026-11-03-device-drag.md`.
+
 3 Kasım 2026, 0.30.2: fiziksel iPhone kurulumunda erişilemeyen ayarlar düzeltildi; üst dişlide titreşim ve native belge kaydırması. Kabul/gerçek cihaz kanıtı `../journal/entries/2026-11-03-device-settings.md`. Fiziksel his kullanıcı geri bildirimiyle doğrulanır; Safari kayıt aktarımı ve mağaza kapıları açık.
 
 3 Kasım 2026, 0.30.1: iOS harf titreşimi, kuyruksuz native seçim yaşam döngüsü ve iptal temizliği tamamlandı. 624 test/65 hedef test, 628 Worker HTTP ve web/mobil/Xcode derlemesi geçti. Fiziksel Taptic Engine hissi ve gecikmesi açık kabul; web titreşimi kapalı. Kanıt `../journal/entries/2026-11-03-haptics-fix.md`.
