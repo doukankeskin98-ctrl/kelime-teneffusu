@@ -1,3 +1,11 @@
+## 0.28.0 · Sahne odaklı oyun ve Kıyı Günlüğü
+
+Ana gezinme Yolculuk, Arena ve Koleksiyon olarak sadeleştirildi. İlk ekran tek sahne ve tek devam eylemi; hikâyeler, günlük, eski oyun kitaplığı ve davet adresleri korunur. Arena hızlı eşleşme/arkadaşla oynama ayrımıyla açılır; gerçek asenkron meydan okuma ve arkadaşlar erişilebilir. Sonraki farklı sahne oyun sırasında, veri tasarrufu açık değilse önceden hazırlanır. Sol el ve hareket azaltma tercihleri cihazda saklanır. Solo ipuçları ilk harf → yön → yol olarak yardım eder; toplam üç ipucu, yıldız ve rekabet kuralları değişmez.
+
+İlk 96 bölümün sıra ve tam tahta SHA-256 karşılaştırması değişmez. Yeni 24 bölüm 97–120 olarak eklenir: Limanda Sabah, Çarşı Sokakları, Kıyı Patikası, Fenerde Akşam. 20 rota, mevcut 16 sahne; 6–8 satırlı yeni tahtalar, 4–5 hedef, dört bilmeceli bölüm ve yalnız bir tamamen gizli hedef. Rota kimliği görsel temadan ayrıdır; bonus/album/ödül ve eski tema menüleri karışmaz. İçerik Atölyesi tekrar, boyut, Türkçe tanım ve eksik bilmece kontrolleri içerir. Yeni altyapı/bağımlılık/ücret yok.
+
+594 test / 127 grup; 189 tahta + 3780 alternatif, 64 grup tahtası, 774 Arena tanımı/919 kelime ve 714 hızlı oyun kelimesi; tip/üretim derlemesi ve 622 Worker HTTP kontrolü geçti. 360×568 ve 414×622 tarayıcı önizlemesi: ana ekran, Arena giriş/özel oda oluştur-çık, hikâye seçimi, koleksiyon, gerçek normal bölüm kaydırması/taşan seçim/kademeli ipucu/sonuç/devam; tercihin yeniden yüklenmesi doğrulandı. Yeni bilmeceli taslak Atölyede açıldı. Fiziksel Safari, iki gerçek telefon, VoiceOver, ses dinleme ve FPS ölçümü yapılmadı. 300/600 bölüm hedefi gerçek oyuncu gözlemi sonrası ilerleyecek; bu sürüm 120 ana bölüm içerir. Aynı kaydın korunduğu ve sonucun açıldığı görseller ../world-review/0.28.0-*.jpg; yayın/CI makbuzu ../world-review/release-0.28.0.json içinde tutulur.
+
 ## 0.27.1 · Hedef listesinin geçiş kimliği
 
 0.27.0 son tarayıcı günlüğünde, aynı tahtanın mobil seçicisi ve animasyonlu listesi için eşit React anahtarları görüldü. Listeye ayrı bir ad alanı verildi; sonraki tahta için sıfırlanma korunurken kardeşler çakışmaz. Gerçek PlayLayout çıktısında hem oda anahtarıyla hem varsayılan tahta anahtarıyla regresyon kontrolü eklendi. Oyun, ipucu, kayıt ve sunucu kuralları değişmedi. Yayın kanıtı ../world-review/release-0.27.1.json içinde tutulur.

@@ -38,7 +38,7 @@ function harness(initial:RoomView|null,claim?:(action?:string)=>Promise<RoomView
 
 describe('Arena terminal board review',()=>{
  it('opens quick groups from the main action and retains a separate ranked duel action',async()=>{
-  for(const [button,group] of [[/Hızlı eşleş/,true],[/Dereceli düello · 2 kişi/,false]] as const){const h=harness(null,async()=>room('ready',null,null));try{await h.settle();h.click(button);await h.settle();assert.equal(h.apiCalls.length,1);const data=h.apiCalls[0]!.data as {kind:string;mode?:string};assert.equal(data.kind,'quick');assert.equal(data.mode,group?'group':undefined);assert.equal(h.scrolls.length,2);assert.equal(h.scrolls[1]!.top,0);h.push({...room('ready',null,null),revision:4});await h.settle();assert.equal(h.scrolls.length,2,'live updates must not move the page');}finally{h.close();}}
+  for(const [button,group] of [[/Hızlı eşleş/,true],[/Dereceli düello/,false]] as const){const h=harness(null,async()=>room('ready',null,null));try{await h.settle();h.click(button);await h.settle();assert.equal(h.apiCalls.length,1);const data=h.apiCalls[0]!.data as {kind:string;mode?:string};assert.equal(data.kind,'quick');assert.equal(data.mode,group?'group':undefined);assert.equal(h.scrolls.length,2);assert.equal(h.scrolls[1]!.top,0);h.push({...room('ready',null,null),revision:4});await h.settle();assert.equal(h.scrolls.length,2,'live updates must not move the page');}finally{h.close();}}
  });
  it('opens the result first, then preserves a visible read-only board and can reopen the same result',async()=>{
   const h=harness(room('finished',NOW-121_000,NOW-1_000));
@@ -79,7 +79,7 @@ describe('Arena next and overlay lifecycle',()=>{
  it('ignores an older recovery after successful leave, even when a new room is already open',async()=>{
   const initial={...room('ready',null,null),board:null},gate=deferredRoom();let gets=0,failed=false;
   const h=harness(initial,async action=>{if(action==='ready'&&!failed){failed=true;throw new Error('Retry');}if(action==='enter')return {...initial,id:'arena-2',revision:0};return initial;},async()=>++gets===1?initial:gate.promise);
-  try{await h.settle();h.click(/Hazırım|Hazırsın/);await h.settle();h.click(/Odayı kontrol et/);h.click(/Odadan ayrıl/);await h.settle();h.click(/Özel oda oluştur/);await h.settle();gate.resolve({...initial,revision:9});await h.settle();h.click(/Hazırım|Hazırsın/);await h.settle();assert.equal((h.apiCalls.at(-1)!.data as any).id,'arena-2');}finally{h.close();}
+  try{await h.settle();h.click(/Hazırım|Hazırsın/);await h.settle();h.click(/Odayı kontrol et/);h.click(/Odadan ayrıl/);await h.settle();h.click(/Arkadaşlarınla oyna/);await h.settle();h.click(/Özel oda oluştur/);await h.settle();gate.resolve({...initial,revision:9});await h.settle();h.click(/Hazırım|Hazırsın/);await h.settle();assert.equal((h.apiCalls.at(-1)!.data as any).id,'arena-2');}finally{h.close();}
  });
 });
 

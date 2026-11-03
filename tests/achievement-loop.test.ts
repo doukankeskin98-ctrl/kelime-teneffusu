@@ -1,3 +1,4 @@
+import * as coast from '../lib/game/coast-content.ts';
 import * as worldPresentation from '../lib/game/world-presentation.ts';
 import * as scenic from '../lib/game/scene.ts';
 import * as expeditionData from '../lib/game/discovery.ts';
@@ -29,7 +30,7 @@ const art={WorldArt:({themeId}:{themeId:string})=>React.createElement('svg',{'da
 function component(file:string,imports:Record<string,unknown>){
  const exports:Record<string,any>={};
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
- const modules:Record<string,unknown>={react:React,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/world-presentation':worldPresentation,'@/lib/game/scene':scenic,'@/lib/game/discovery':expeditionData,'./SceneArt':{SceneArt:({theme,scene}:{theme?:string;scene?:any})=>React.createElement('img',{src:scenic.sceneImage(scene??scenic.sceneForTheme(theme)),alt:''})},'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,'@/lib/game/riddle-content':riddleContent,'@/lib/game/story-content':stories,'@/lib/game/content':{journeyBoard},...imports};
+ const modules:Record<string,unknown>={react:React,'@/lib/game/coast-content':coast,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/world-presentation':worldPresentation,'@/lib/game/scene':scenic,'@/lib/game/discovery':expeditionData,'./SceneArt':{SceneArt:({theme,scene}:{theme?:string;scene?:any})=>React.createElement('img',{src:scenic.sceneImage(scene??scenic.sceneForTheme(theme)),alt:''})},'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,'@/lib/game/riddle-content':riddleContent,'@/lib/game/story-content':stories,'@/lib/game/content':{journeyBoard},...imports};
  vm.runInNewContext(code,{exports,require:(name:string)=>modules[name]??{}});return exports;
 }
 const collection=component('components/game/Discovery.tsx',{'./WorldArt':art});
@@ -101,13 +102,13 @@ const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery
 describe('numbered journey home and real result',()=>{
  it('shows one primary action, the correct chapter and nearby reward without mode cards',()=>{
   const html=render(numberedHome['JourneyHome'],{progress:emptyProgress(),onPlay(){},onExplore(){}});
-  assert.match(html,/Oyna · 1\/6/);assert.match(html,/İlk yıldız/);assert.match(html,/3 BÖLÜM SONRA/);assert.match(html,/Anadolu Patikası/);assert.equal((html.match(/class="button primary/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
+  assert.match(html,/Oyna/);assert.match(html,/Bölüm 1/);assert.match(html,/3 bölüm sonra/);assert.match(html,/Anadolu Patikası/);assert.equal((html.match(/class="stage-play/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
  });
  it('continues an existing route and shows a truthful complete-catalogue state',()=>{
   const p=emptyProgress(),b=journeyBoard(journeyById('uzay-2')!);p.saves['route:uzay-2']=cleanSave({strokes:[b.placements[0]!],hints:0,elapsed:10,complete:false,stars:0},b);p.last={themeId:'uzay',level:0,journey:'uzay-2'};
-  let html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Bölüm 2/);assert.match(html,/Devam et · 2\/6/);assert.match(html,/0\/96/);
+  let html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Bölüm 2/);assert.match(html,/Devam et/);assert.match(html,/0\/120/);
   for(const item of mainJourney.MAIN_JOURNEY)finish(p,item.chapter.id);
-  html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/96 bölüm tamamlandı/);assert.doesNotMatch(html,/— Oyna|Devam et/);
+  html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/120 bölüm tamamlandı/);assert.doesNotMatch(html,/— Oyna|Devam et/);
  });
  it('renders actual album before/after and the new world, then keeps replay unchanged',()=>{
   const before=first(2),p=finish(copy(before),'uzay-3'),props={before:achievement.journeyGoal(before,'uzay-3'),after:achievement.journeyGoal(p,'uzay-3'),rewards:discoveryRewards(before,p),save:p.saves['route:uzay-3']};
@@ -140,4 +141,10 @@ describe('actual story collection, clue scene and result markup',()=>{
   const story=stories.LIVING_STORIES[0]!,b=journeyBoard(story),hud=render(storyExperience['StoryHud'],{story,stage:1,hints:1});assert.match(hud,/aria-label="KIYI"/);assert.doesNotMatch(hud,/FENER|YELKEN|LİMAN/);assert.match(hud,/Tamamlarsan 2 yıldız/);
   const save=cleanSave({strokes:b.placements,elapsed:44,hints:1,complete:false,stars:0},b),result=render(storyExperience['StoryResult'],{story,save,best:{...save,stars:3,elapsed:20}});assert.match(result,/TEKRAR TAMAMLANDI/);assert.match(result,/2 yıldız/);assert.match(result,/0:44/);assert.match(result,/Süre yıldızları etkilemez/);assert.match(result,/En iyi sonucun albümünde korunur/);assert.doesNotMatch(result,/ALBÜMÜNE BİR HATIRA/);
  });
+});
+
+it('does not celebrate a same-named piece from another route as a new coast reward',()=>{
+ const p=emptyProgress();finish(p,'kiyi-liman-2');const after=achievement.journeyGoal(p,'kiyi-liman-2')!;
+ const foreign={id:'piece:dunya:1',kind:'piece',themeId:'dunya',title:after.piece,description:'Eski rota'};
+ const html=render(numberedResult['JourneyResult'],{before:after,after,rewards:[foreign],save:p.saves['route:kiyi-liman-2']});assert.doesNotMatch(html,/YENİ ALBÜM PARÇASI/);assert.match(html,/ALBÜMÜNDEKİ PARÇA/);
 });
