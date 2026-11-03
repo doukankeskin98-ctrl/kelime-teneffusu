@@ -1,0 +1,20 @@
+import {readFile,stat} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const read=path=>readFile(path,'utf8');
+const config=JSON.parse(await read('ios/App/App/capacitor.config.json'));
+assert.equal(config.appId,'com.kelimeteneffusu.game');assert.equal(config.webDir,'dist-mobile');
+assert.equal(config.server,undefined,'A mobile release must bundle its own game; no remote server.url');
+assert.equal(config.plugins.CapacitorHttp.enabled,false,'Global fetch patch would break web streaming');
+const html=await read('dist-mobile/index.html');assert.match(html,/viewport-fit=cover/);assert.match(html,/lang="tr"/);assert(!html.includes('http://'));
+for(const asset of html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g))assert((await stat('dist-mobile'+asset[1])).size>0);
+// Scene path is taken from the actual catalogue, not a guessed directory.
+const sceneSource=await read('lib/game/scene.ts');
+const worldMap=sceneSource.match(/WORLD_SCENES=\{([^}]+)\}/)?.[1]??'';
+const sceneNames=[...worldMap.matchAll(/:'([^']+)'/g)].map(m=>m[1]);
+const paths=sceneNames.map(name=>`/art/scenes/${name}-v1.webp`);
+assert(paths.length>=16,'All world backgrounds must be packaged');
+for(const path of paths)assert((await stat('dist-mobile'+path)).size>0,path+' missing');
+const manifest=await read('ios/App/App/PrivacyInfo.xcprivacy');assert.match(manifest,/NSPrivacyCollectedDataTypeGameplayContent/);assert.match(manifest,/NSPrivacyCollectedDataTypeUserID/);
+assert.match(await read('ios/App/App.xcodeproj/project.pbxproj'),/PrivacyInfo.xcprivacy in Resources/);
+const plist=await read('ios/App/App/Info.plist');assert(!plist.includes('NSAllowsArbitraryLoads'));assert(!plist.includes('NSCameraUsageDescription'));assert(!plist.includes('NSMicrophoneUsageDescription'));
+console.log(`Mobile package verified: local entry, ${paths.length} world scenes, HTTPS API, privacy resource, no blanket network exceptions.`);

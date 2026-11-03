@@ -1,4 +1,5 @@
 'use client';
+import {gameIsActive} from '@/lib/platform/runtime';
 import {useEffect,useRef} from 'react';
 import {GameSound,readSoundLevel,setSoundLevel,DEFAULT_SOUND_LEVEL,SOUND_LEVEL_EVENT,type SoundCue} from '@/lib/game/sound';
 import {playHaptic} from '@/lib/game/haptics';
@@ -10,13 +11,13 @@ let sharedEngine:GameSound|null=null;
 export function useChime(enabled:boolean,haptics=false){
  const engine=useRef<GameSound|null>(null),alive=useRef(true),pageActive=useRef(true),settings=useRef({enabled,haptics});
  settings.current={enabled,haptics};
- const get=()=>{const sound=engine.current??=(sharedEngine??=new GameSound());sound.setEnabled(settings.current.enabled);sound.setVisible(!document.hidden&&pageActive.current);return sound;};
+ const get=()=>{const sound=engine.current??=(sharedEngine??=new GameSound());sound.setEnabled(settings.current.enabled);sound.setVisible(!document.hidden&&gameIsActive()&&pageActive.current);return sound;};
  useEffect(()=>{
   alive.current=true;
   const unlock=(event:Event)=>{if(event.isTrusted&&settings.current.enabled)get().unlock();};
-  const hide=()=>engine.current?.setVisible(!document.hidden);
+  const hide=()=>engine.current?.setVisible(!document.hidden&&gameIsActive());
   const pageHide=()=>{pageActive.current=false;engine.current?.setVisible(false);};
-  const pageShow=()=>{pageActive.current=true;engine.current?.setVisible(!document.hidden);};
+  const pageShow=()=>{pageActive.current=true;engine.current?.setVisible(!document.hidden&&gameIsActive());};
   const volume=()=>engine.current?.refreshVolume();
   const gestures=['pointerdown','pointerup','touchstart','touchend','mousedown','keydown','click'];
   for(const type of gestures)document.addEventListener(type,unlock,{capture:true,passive:true});
@@ -30,7 +31,7 @@ export function useChime(enabled:boolean,haptics=false){
   if(action==='mute'){settings.current.enabled=false;engine.current?.setEnabled(false);return;}
   if(action==='enable'){settings.current.enabled=true;if(readSoundLevel()===0)setSoundLevel(DEFAULT_SOUND_LEVEL);} // Explicit unmute also recovers from a zero slider.
   const cue:SoundCue=action==='enable'?'start':typeof action==='boolean'?(action?'complete':'word'):action;
-  if(document.hidden||!pageActive.current)return;
+  if(document.hidden||!gameIsActive()||!pageActive.current)return;
   if(cue==='select'||cue==='word'||cue==='complete'||cue==='reveal')playHaptic(cue==='select'?'selection':cue==='word'?'word':'complete',settings.current.haptics);
   if(settings.current.enabled){const sound=get();if(action==='enable')sound.unlock();sound.play(cue,step);}
  };

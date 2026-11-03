@@ -1,4 +1,5 @@
 'use client';
+import {isNativeGame} from '@/lib/platform/runtime';
 import {useEffect,useState} from 'react';
 import {ArrowDownToLine,Check,RefreshCw,Share,Smartphone,WifiOff,X} from 'lucide-react';
 import {metricsConsent,recordVisit,track} from '@/lib/game/telemetry';
@@ -13,6 +14,7 @@ export function Platform({consent,playing=false}:{consent:boolean;playing?:boole
  },[]);
  useEffect(()=>{
   const change=()=>setOffline(!navigator.onLine);change();window.addEventListener('online',change);window.addEventListener('offline',change);
+  if(isNativeGame())return ()=>{window.removeEventListener('online',change);window.removeEventListener('offline',change);};
   const standalone=window.matchMedia('(display-mode: standalone)').matches||('standalone' in navigator&&navigator.standalone===true);
   setIos(/iPhone|iPad|iPod/.test(navigator.userAgent)&&!standalone);
   try{setHidden(standalone||sessionStorage.getItem('kt-install-hidden')==='1');}catch{setHidden(standalone);}
