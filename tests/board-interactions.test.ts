@@ -19,7 +19,7 @@ const compiled=ts.transpileModule(readFileSync('components/game/Board.tsx','utf8
 function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
- let selections=0,renders=0;
+ let selections=0,selectionEnds=0,renders=0;
  const dom=new Map<string,any>();
  const mount=(node:Node)=>{const r=node.props?.['ref'];if(!r)return;if(node.props['role']==='application'){r.current=element;return;}const key=node.props['data-cell']??node.props['className']??'selection-line';let el=dom.get(key);if(!el){const names=new Set<string>();el={attributes:new Map(),classList:{add:(v:string)=>names.add(v),remove:(v:string)=>names.delete(v),contains:(v:string)=>names.has(v)},setAttribute(k:string,v:string){this.attributes.set(k,v);}};dom.set(key,el);}if(typeof r==='function')r(el);else r.current=el;};
  const letters:number[]=[],commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
@@ -32,7 +32,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- const props={earlyTargets:undefined as Target[]|undefined,board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;}};
+ const props={earlyTargets:undefined as Target[]|undefined,board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;},onSelectEnd:()=>{selectionEnds++;}};
  if(options.legacy)delete (element as any).setPointerCapture;
  Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
@@ -52,7 +52,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
   rotate(){windowTarget.dispatchEvent(new Event('orientationchange'));paint();},
   rejectCapture(){element.setPointerCapture=()=>{throw new Error('No active pointer');};},
-  get selections(){return selections;},
+  get selections(){return selections;},get selectionEnds(){return selectionEnds;},
   flush(){const callbacks=[...frames.values()];frames.clear();for(const fn of callbacks)fn();paint();},
   globalBlur(){windowTarget.dispatchEvent(new Event('blur'));paint();},
   visibility(hidden:boolean){documentTarget.hidden=hidden;documentTarget.dispatchEvent(new Event('visibilitychange'));paint();},
@@ -285,5 +285,22 @@ describe('early word acceptance consumes the gesture before release',()=>{
   const h=setup(),long={...target,id:'1.0',group:1,label:'KALEM',text:'KALEM'};
   h.setProps({board:{...board,grid:board.grid.map((row,r)=>r===0?row.map((ch,c)=>c===4?'M':ch):row)},earlyTargets:[target,long]});
   h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,3]);assert.equal(h.commits.length,0);h.send('onPointerMove',[0,4]);assert.deepEqual(h.commits,[{a:[0,0],b:[0,4]}]);h.unmount();
+ });
+});
+
+describe('logical selection feedback lifecycle',()=>{
+ it('two taps share one selection and end exactly once before committing',()=>{
+  const h=harness();h.tap(a);assert.equal(h.selections,1);assert.equal(h.selectionEnds,0);h.tap(b);assert.equal(h.selectionEnds,1);assert.equal(h.commits.length,1);h.unmount();assert.equal(h.selectionEnds,1);assert.equal(h.afterUnmount,0);
+ });
+ it('ends on keyboard cancel, early accept, pause and unmount without stale state updates',()=>{
+  const keyboard=harness();keyboard.key('Enter');keyboard.key('ArrowRight');keyboard.key('Escape');assert.equal(keyboard.selectionEnds,1);keyboard.unmount();assert.equal(keyboard.selectionEnds,1);
+  const early=harness(),target=TUTORIAL.placements[0]!;early.setProps({earlyTargets:TUTORIAL.targets});early.send('onPointerDown',target.a);early.send('onPointerMove',target.b);assert.equal(early.commits.length,1);assert.equal(early.selectionEnds,1);early.send('onPointerUp',target.b);early.unmount();assert.equal(early.selectionEnds,1);
+  const paused=harness();drag(paused);paused.setProps({paused:true});assert.equal(paused.selectionEnds,1);paused.unmount();assert.equal(paused.selectionEnds,1);
+  const left=harness();drag(left);left.unmount();assert.equal(left.selectionEnds,1);assert.equal(left.afterUnmount,0);
+ });
+ it('visibility, pointer cancellation and viewport changes end without accepting a word',()=>{
+  for(const cancel of [(h:ReturnType<typeof harness>)=>h.visibility(true),(h:ReturnType<typeof harness>)=>h.send('onPointerCancel',b),(h:ReturnType<typeof harness>)=>h.rotate()]){
+   const h=harness();drag(h);cancel(h);h.flush();assert.equal(h.selectionEnds,1);assert.equal(h.commits.length,0);h.unmount();assert.equal(h.selectionEnds,1);
+  }
  });
 });

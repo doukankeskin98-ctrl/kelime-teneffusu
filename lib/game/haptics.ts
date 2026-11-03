@@ -1,8 +1,9 @@
-/** Web is intentionally silent. A future native shell can register its own adapter. */
+/** Web stays silent; the native shell registers optional, non-blocking feedback. */
 export type HapticCue='selection'|'word'|'complete';
-export type HapticsAdapter=(cue:HapticCue)=>void|Promise<void>;
+export type HapticsAdapter=((cue:HapticCue)=>void|Promise<void>)&{stopSelection?:()=>void};
 let adapter:HapticsAdapter|null=null;
-export function setHapticsAdapter(next:HapticsAdapter|null){adapter=next;}
+export function stopHapticSelection(){try{adapter?.stopSelection?.();}catch{/* Optional cleanup never blocks play. */}}
+export function setHapticsAdapter(next:HapticsAdapter|null){stopHapticSelection();adapter=next;}
 export function hapticsAvailable(){return adapter!==null;}
 export function playHaptic(cue:HapticCue,enabled:boolean){
  if(!enabled||!adapter)return;

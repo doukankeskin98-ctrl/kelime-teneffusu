@@ -6,13 +6,13 @@ import vm from 'node:vm';
 import ts from 'typescript';
 const compiled=ts.transpileModule(readFileSync('components/game/useGameSound.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
 function setup(){
- const slots:any[]=[],effects:(()=>void)[]=[],listeners=new Map<string,Set<(event:any)=>void>>(),engines:FakeSound[]=[],vibrations:unknown[]=[];let cursor=0,level=.3;
+ const slots:any[]=[],effects:(()=>void)[]=[],listeners=new Map<string,Set<(event:any)=>void>>(),engines:FakeSound[]=[],vibrations:unknown[]=[];let cursor=0,level=.3,hapticStops=0;
  class FakeSound{enabled=false;visible=true;disposed=false;unlocks=0;played:unknown[]=[];stops=0;volumes:number[]=[];refreshVolume(){this.volumes.push(level);}constructor(){engines.push(this);}setEnabled(v:boolean){this.enabled=v;if(!v)this.stops++;}setVisible(v:boolean){this.visible=v;if(!v)this.stops++;}stop(){this.stops++;}unlock(){if(this.enabled&&this.visible)this.unlocks++;}play(v:unknown){if(this.enabled&&this.visible&&!this.disposed)this.played.push(v);}dispose(){this.disposed=true;}}
  const doc={hidden:false,addEventListener(type:string,fn:(e:any)=>void){if(!listeners.has(type))listeners.set(type,new Set());listeners.get(type)!.add(fn);},removeEventListener(type:string,fn:(e:any)=>void){listeners.get(type)?.delete(fn);}};
  const hooks={useRef(value:unknown){return slots[cursor++]??={current:value};},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((v,i)=>!Object.is(v,slot.deps[i]))){slot.deps=deps;slot.setup=fn;effects.push(()=>{slot.cleanup?.();slot.cleanup=fn();});}}};
- const exports:Record<string,any>={};vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='react'?hooks:name==='@/lib/platform/runtime'?{gameIsActive:()=>!doc.hidden}:name==='@/lib/game/haptics'?{playHaptic:(cue:string,enabled:boolean)=>{if(enabled)vibrations.push(cue);}}:{GameSound:FakeSound,readSoundLevel:()=>level,setSoundLevel:(value:number)=>{level=value;},DEFAULT_SOUND_LEVEL:.3,SOUND_LEVEL_EVENT:'kt-sound-level'},document:doc,window:doc,navigator:{vibrate:(v:unknown)=>vibrations.push(v)}});
+ const exports:Record<string,any>={};vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='react'?hooks:name==='@/lib/platform/runtime'?{gameIsActive:()=>!doc.hidden}:name==='@/lib/game/haptics'?{playHaptic:(cue:string,enabled:boolean)=>{if(enabled)vibrations.push(cue);},stopHapticSelection:()=>{hapticStops++;}}:{GameSound:FakeSound,readSoundLevel:()=>level,setSoundLevel:(value:number)=>{level=value;},DEFAULT_SOUND_LEVEL:.3,SOUND_LEVEL_EVENT:'kt-sound-level'},document:doc,window:doc,navigator:{vibrate:(v:unknown)=>vibrations.push(v)}});
  const render=(enabled:boolean,haptics=false)=>{cursor=0;const play=exports['useChime'](enabled,haptics);while(effects.length)effects.shift()!();return play;};
- return {engines,vibrations,doc,render,setLevel:(value:number)=>{level=value;},get level(){return level;},emit(type:string,trusted=true){for(const fn of listeners.get(type)??[])fn({isTrusted:trusted});},close(){for(const slot of slots)slot.cleanup?.();},remount(){for(const slot of slots)slot.cleanup?.();slots.length=0;},strictReplay(){for(const slot of slots)slot.cleanup?.();for(const slot of slots)if(slot.setup)slot.cleanup=slot.setup();},listenerCount:()=>[...listeners.values()].reduce((n,set)=>n+set.size,0)};
+ return {engines,vibrations,doc,render,get hapticStops(){return hapticStops;},setLevel:(value:number)=>{level=value;},get level(){return level;},emit(type:string,trusted=true){for(const fn of listeners.get(type)??[])fn({isTrusted:trusted});},close(){for(const slot of slots)slot.cleanup?.();},remount(){for(const slot of slots)slot.cleanup?.();slots.length=0;},strictReplay(){for(const slot of slots)slot.cleanup?.();for(const slot of slots)if(slot.setup)slot.cleanup=slot.setup();},listenerCount:()=>[...listeners.values()].reduce((n,set)=>n+set.size,0)};
 }
 describe('audio hook lifecycle and preference authority',()=>{
  it('arms trusted keyboard, pointer and assistive clicks without synthetic activation',()=>{
@@ -42,4 +42,13 @@ describe('native touch, page restoration and screen transitions',()=>{
 });
 it('applies a live volume event to the shared engine and explicit unmute recovers a zero slider',()=>{
  const h=setup(),play=h.render(true);h.emit('touchstart');h.setLevel(.73);h.emit('kt-sound-level');assert.deepEqual(h.engines[0]!.volumes,[.73]);h.setLevel(0);play('mute');play('enable');assert.equal(h.level,.3);assert.equal(h.engines.length,1);h.close();
+});
+
+it('letter ticks vibrate with sound off and stop at preference/lifecycle boundaries without replay',()=>{
+ const h=setup(),play=h.render(false,true);play('letter',1);play('letter',2);assert.deepEqual(h.vibrations,['selection','selection']);assert.equal(h.engines.length,0);
+ const before=h.hapticStops;play('pause');assert.equal(h.hapticStops,before+1);h.emit('blur');assert.equal(h.hapticStops,before+2);
+ h.render(false,false);assert.equal(h.hapticStops,before+3);play('letter',3);assert.equal(h.vibrations.length,2);
+ h.render(false,true);h.doc.hidden=true;h.emit('visibilitychange');assert.equal(h.hapticStops,before+4);play('letter',4);assert.equal(h.vibrations.length,2);
+ h.doc.hidden=false;h.emit('visibilitychange');assert.equal(h.vibrations.length,2);play('letter',5);assert.equal(h.vibrations.length,3);
+ h.emit('pagehide');assert.equal(h.hapticStops,before+5);play('letter',6);assert.equal(h.vibrations.length,3);h.close();assert.equal(h.hapticStops,before+6);play('letter',7);assert.equal(h.vibrations.length,3);assert.equal(h.listenerCount(),0);
 });
