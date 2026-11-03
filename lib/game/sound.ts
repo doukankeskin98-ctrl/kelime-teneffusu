@@ -8,13 +8,13 @@ export const SOUND_PHRASES:Record<SoundCue,Phrase>={
  letter:{notes:[note(392,0,.035,.04)],priority:0,gap:.04},
  miss:{notes:[note(329.63,0,.09,.035),note(293.66,.045,.11,.025)],priority:1,gap:.25},
  select:{notes:[note(392,0,.09,.045)],priority:0,gap:.12},
- word:{notes:[note(523.25,0,.23,.1),note(659.25,.075,.27,.075)],priority:2,gap:.18},
+ word:{notes:[note(523.25,0,.18,.085),note(659.25,.065,.25,.065)],priority:2,gap:.18},
  hint:{notes:[note(392,0,.28,.075),note(523.25,.12,.34,.07)],priority:2,gap:.35},
  reveal:{notes:[note(392,0,.3,.08),note(523.25,.12,.35,.09),note(783.99,.26,.4,.07)],priority:3,gap:.65},
  start:{notes:[note(392,0,.2,.065),note(523.25,.1,.27,.08)],priority:1,gap:.35},
  pause:{notes:[note(392,0,.2,.055),note(329.63,.08,.24,.045)],priority:1,gap:.35},
  ready:{notes:[note(392,0,.16,.055),note(659.25,.08,.2,.045)],priority:1,gap:.35},
- complete:{notes:[note(523.25,0,.32,.09),note(659.25,.14,.34,.075),note(783.99,.28,.42,.065),note(523.25,.43,.48,.065)],priority:4,gap:.9},
+ complete:{notes:[note(523.25,0,.24,.08),note(523.25,.52,.24,.07),note(659.25,.63,.25,.065),note(783.99,.74,.25,.06)],priority:4,gap:.9},
  finish:{notes:[note(392,0,.36,.075),note(523.25,.15,.44,.065)],priority:4,gap:.75},
 };
 export const SOUND_LEVEL_KEY='kt-sound-level-v1';
