@@ -15,3 +15,11 @@ Kabul: sabit boyutlu önizlemede tekrarlayan harf değişimleri yeni ölçüm pl
 0.30.3 (5) mevcut uygulama silinmeden iPhone 14 Pro Max / iOS 27.2 üzerine kuruldu ve açıldı. Güncelleme sonrası 4 tamamlanmış bölüm / 12 yıldız görüntülendi; haptics tercihi ve kayıt şeması değişmedi. Kullanıcıdan aynı hareketi titreşim açıkken tekrar denemesi istendi. Bu kayıt anında akıcılık geri bildirimi bekleniyor; FPS ölçülmedi ve takılmanın tamamen giderildiği iddia edilmiyor. 0.30.2'de kullanıcı titreşimi doğrulamıştı.
 
 GitHub/Sites kaynak eşitliği, CI/yayın sonucu ve sonraki kullanıcı cevabı depo dışındaki sürüm makbuzuna yazılır. Fiziksel cihaz testi için Apple takım bilgisi yalnız derleme argümanı olarak kullanıldı; sertifika/özel anahtar kaynakta yok.
+
+## Eşzamanlı bakımın korunması
+
+Bu çalışma sırasında main/Sites 65 üzerine yayımlanan 0.30.2 Hızlı Tur tek-geçiş düzeltmesi, güncelleme metni, regresyon testi ve günlüğü son kaynaktan alındı. Çakışmalar iki değişiklik korunarak birleştirildi. Son birleşik native paket 0.30.3 (6) olarak yeniden doğrulanır; önceki (5) gözlemi birleşik paket kabulü yerine geçmez.
+
+Birleşik kaynakta 628 test / 131 grup, tip, içerik ve mobile:sync/check tekrar geçti. Dar birleşim incelemesinde Sprint.tsx HEAD ile aynı ve yeni çift-geçiş regresyonu korunmuş; çatışma belirteci yok. Paket ve iki Xcode yapılandırması 0.30.3 (6).
+
+Birleşik web üretim paketi, 628 Worker HTTP ve imzalı Xcode cihaz derlemesi de geçti. Son (6) paketinin fiziksel kurulum sonucu ve son görüntü depo dışındaki yayın makbuzunda izlenir.

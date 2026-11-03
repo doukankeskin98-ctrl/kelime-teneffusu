@@ -6,11 +6,15 @@ Gerçek iPhone kullanıcısı titreşimin çalıştığını, takılmanın harf 
 
 Kabul, regresyonlar ve fiziksel cihaz tekrar denemesinin sınırı: `studio-agents/journal/entries/2026-11-03-device-drag.md`.
 
-## 0.30.2 · Gerçek iPhone ayarları
+### Gerçek iPhone ayarları
 
 Üst dişli menüsünde destekli uygulama için Dokunma titreşimi anahtarı bulunur; mevcut tercih ve kayıt yolu kullanılır. Native belge kaydırması açılarak Koleksiyon'un altındaki ayarlar yeniden erişilebilir hale gelir. Tahta seçim korumaları, web'in sessiz davranışı, içerik ve ilerleme değişmez. İlk fiziksel kurulum iPhone 14 Pro Max / iOS 27.2 üzerinde kendi kişisel Apple takımıyla yapıldı; Safari kaydı uygulamadan ayrı kalır.
 
 Doğrulama ve fiziksel cihaz sınırları: `studio-agents/journal/entries/2026-11-03-device-settings.md`. Ücretsiz kişisel imza App Store/TestFlight yayını değildir; Apple hesabı ve sertifikalar kaynakta tutulmaz.
+
+## 0.30.2 · Hızlı Tur geçişini tek kaydet
+
+Zamanlayıcı ve sekmeye dönüş olayı repaint öncesi peş peşe gelse de yalnız gerçek sonraki tahta geçmişe yazılır. Görülmeyen ek kelimeler makbuza eklenmez; süre/puan/rekor ve sonraki normal geçişler değişmez.0.30.1 iOS titreşim ve144 bölüm korunur. Bugünün tarihli çifti çoğaltılmaz. Kabul/kanıt studio-agents/journal/entries/2026-11-03_evening-sprint.md; fiziksel cihaz/VoiceOver/PWA ve native his kabulü açık.
 
 ## 0.30.1 · Harf geçişi titreşimi
 
