@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.27.1 · Hedef listesinin geçiş kimliği
+
+0.27.0 son tarayıcı günlüğünde, aynı tahtanın mobil seçicisi ve animasyonlu listesi için eşit React anahtarları görüldü. Listeye ayrı bir ad alanı verildi; sonraki tahta için sıfırlanma korunurken kardeşler çakışmaz. Gerçek PlayLayout çıktısında hem oda anahtarıyla hem varsayılan tahta anahtarıyla regresyon kontrolü eklendi. Oyun, ipucu, kayıt ve sunucu kuralları değişmedi. Yayın kanıtı ../world-review/release-0.27.1.json içinde tutulur.
+
 ## 0.27.0 · Seçili ipucu, anında kabul ve aynı sahnede sonuç
 
 İpucu, seçili grubun sıradaki eksik parçasına gider; seçim yoksa görünür liste sırası izlenir. Günlükte hedef, işlem kimliğiyle birlikte yeniden denemeye taşınır; eski hedef belirtmeyen istekler ve makbuzlar uyumludur. Başka cihazda bulunan hedefin kesin reddi belirsiz işlemi kilitlemez. Hikâye sırası, ücretsiz ilk hikâye ipucu ve Gizli Tema kilidi korunur.
