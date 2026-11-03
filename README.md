@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.30.2 · Hızlı Tur geçişini tek kaydet
+
+Zamanlayıcı ve sekmeye dönüş olayı repaint öncesi peş peşe gelse de yalnız gerçek sonraki tahta geçmişe yazılır. Görülmeyen ek kelimeler makbuza eklenmez; süre/puan/rekor ve sonraki normal geçişler değişmez.0.30.1 iOS titreşim ve144 bölüm korunur. Bugünün tarihli çifti çoğaltılmaz. Kabul/kanıt studio-agents/journal/entries/2026-11-03_evening-sprint.md; fiziksel cihaz/VoiceOver/PWA ve native his kabulü açık.
+
 ## 0.30.1 · Harf geçişi titreşimi
 
 Ortak harf sinyali artık iOS seçim titreşimine ulaşır; native generator ilk harften önce hazırlanır. Mantıksal seçim bittiğinde, ayar kapatıldığında, pause/blur/arka plan veya ekran değişiminde temizlenir. Tek native seçim işlemi ve gerçek değişim çağrısından 50 ms aralık; hızlı harfler kuyruk oluşturmaz, geciken hazırlık iptalden sonra titreşim üretmez. Kelime/bölüm başarı titreşimleri ayrı kalır. Ses ve titreşim tercihi bağımsız; varsayılan kapalı tercih ve web'in sessiz davranışı korunur.
