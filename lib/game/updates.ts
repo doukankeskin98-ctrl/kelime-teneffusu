@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.28.0',date:'3 Kasım 2026',title:'Yeni bir yolculuk',items:[
+  {where:'Oyun ekranları',detail:'Yolculuk, Arena ve Koleksiyon. Kaldığın bölüm ana ekranda; hikâyeler ve günlük bulmaca bir dokunuş uzağında.'},
+  {where:'Kıyı Günlüğü',detail:'Dört yeni rota, 24 yeni bölüm. Limandan çarşıya, patikadan fenere uzanan yolculukla ana seri 120 bölüme ulaştı.'},
+  {where:'Oyun rahatlığı',detail:'Kademeli ipucu, sol el düzeni ve hareketi azaltma seçeneği. İlerlemen, albümlerin ve Arena geçmişin korunur.'}
+ ]},
  {version:'0.27.1',date:'3 Kasım 2026',title:'Daha akıcı oyun',items:[
   {where:'İpucu',detail:'Seçtiğin kelimenin ilk harfini gösterir. Hedef seçmediysen listedeki sıradaki kelimeyi izler.'},
   {where:'Kaydırma',detail:'Kelime tamamlandığında parmağını kaldırmadan kabul edilir. Bulduğun kelime kısa bir parıltıyla işaretlenir.'},

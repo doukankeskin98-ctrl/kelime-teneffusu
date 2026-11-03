@@ -19,7 +19,7 @@ describe('atlas continuation and clue hunts',()=>{
   for(const [id,sha] of Object.entries(legacyHashes))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),sha,id);
  });
  it('gives a completed old atlas a new unlocked recommended map and real next chapter',()=>{
-  const p=veteran(),states=discoveryState(p);assert.equal(states.length,16);assert(states.slice(0,3).every(s=>s.complete));assert.equal(states[3]!.unlocked,true);assert.equal(states[4]!.unlocked,false);
+  const p=veteran(),states=discoveryState(p);assert.equal(states.length,20);assert(states.slice(0,3).every(s=>s.complete));assert.equal(states[3]!.unlocked,true);assert.equal(states[4]!.unlocked,false);
   assert.equal(recommendedExpedition(p).expedition.id,'hayvanlar');assert.equal(nextDiscovery(p).config.journey,'hayvanlar-atlas-1');assert.equal(nextJourneyAfter(p,'hababam-yillik')?.id,'hayvanlar-atlas-1');
  });
  it('registers 78 immutable chapters with distinct IDs, playable clues and bounded boards',()=>{
@@ -36,7 +36,7 @@ describe('atlas continuation and clue hunts',()=>{
  });
  it('retains every new save and destination through device merge and cloud owner isolation',async()=>{
   const p=veteran();for(const j of ATLAS_JOURNEYS)complete(p,j.id);p.last={themeId:'mitoloji',level:0,journey:'mitoloji-atlas-6'};
-  const loaded=loadProgress(JSON.stringify(p));assert.equal(Object.keys(loaded.saves).length,96);assert.equal(loaded.last?.journey,p.last.journey);assert.equal(discoveryState(loaded).filter(s=>s.complete).length,16);assert.equal(nextJourneyAfter(loaded,'mitoloji-atlas-6'),null);
+  const loaded=loadProgress(JSON.stringify(p));assert.equal(Object.keys(loaded.saves).length,96);assert.equal(loaded.last?.journey,p.last.journey);assert.equal(discoveryState(loaded).filter(s=>s.complete).length,16);assert.equal(nextJourneyAfter(loaded,'mitoloji-atlas-6')?.id,'kiyi-liman-1');
   assert.equal(Object.keys(mergeProgress(loaded,emptyProgress()).saves).length,96);
   const f=fixture(),cloud=new CloudProgress(f.db,f.clock);await cloud.save('atlas-owner',loaded);assert.equal(Object.keys((await cloud.read('atlas-owner')).progress.saves).length,96);assert.equal(Object.keys((await cloud.read('other-owner')).progress.saves).length,0);f.sqlite.close();
  });

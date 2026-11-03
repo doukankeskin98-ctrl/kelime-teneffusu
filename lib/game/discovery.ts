@@ -1,10 +1,11 @@
+import {COAST_ROUTES} from './coast-content.ts';
 import {ATLAS_REGIONS} from './atlas-content.ts';
 import {ALBUMS,JOURNEYS,JOURNEY_BONUSES,type Journey} from './content.ts';
 import type {Progress,SavedLevel} from './progress.ts';
 
 export const DISCOVERY_GATE=3;
 export interface Expedition {
- id:string;title:string;subtitle:string;place:string;pieces:readonly string[];accent:string;chapterIds:readonly string[];
+ id:string;title:string;subtitle:string;place:string;pieces:readonly string[];accent:string;chapterIds:readonly string[];themeId?:string;bonusId?:string;album?:{themeId:string;title:string;description:string;stamp:string};
 }
 const launchChapters=(theme:string)=>[1,2,3,4,5].map(n=>`${theme}-${n}`);
 export const EXPEDITIONS:readonly Expedition[]=[
@@ -12,7 +13,11 @@ export const EXPEDITIONS:readonly Expedition[]=[
  {id:'turkiye',title:'Anadolu Patikası',subtitle:'Bir sokak, bir manzara, bir yeni hikâye.',place:'02',pieces:['Yol bileti','Şehir ışığı','Dağ esintisi','Tarihin izi','Yol defteri','Son kartpostal'],accent:'#ccaa79',chapterIds:launchChapters('turkiye')},
  {id:'hababam',title:'Teneffüs Bahçesi',subtitle:'Tanıdık bir sınıfta yeni hatıralar.',place:'03',pieces:['İlk zil','Arka sıranın notu','Sınıfın neşesi','Yoklama defteri','Son ders','Yıllık fotoğrafı'],accent:'#8eaf91',chapterIds:launchChapters('hababam')},
  ...ATLAS_REGIONS.map((r,i)=>({id:r.id,title:r.title,subtitle:r.subtitle,place:String(i+4).padStart(2,'0'),pieces:r.pieces,accent:r.accent,chapterIds:[1,2,3,4,5].map(n=>`${r.id}-atlas-${n}`)})),
+ ...COAST_ROUTES.map((r,i)=>({id:r.id,themeId:r.chapters[0]!.themeId,title:r.title,subtitle:r.subtitle,place:String(i+17).padStart(2,'0'),pieces:r.pieces,accent:'#87bdc1',chapterIds:r.chapters.slice(0,5).map(c=>c.id),bonusId:r.chapters[5]!.id,album:{themeId:r.id,title:r.album,description:r.subtitle,stamp:'KIYI GÜNLÜĞÜ'}})),
 ];
+export const expeditionTheme=(world:Expedition)=>world.themeId??world.id;
+export const expeditionBonusId=(world:Expedition)=>world.bonusId??JOURNEY_BONUSES.find(j=>j.themeId===world.id)!.id;
+export const expeditionForChapter=(id?:string)=>EXPEDITIONS.find(w=>w.chapterIds.includes(id??'')||expeditionBonusId(w)===id);
 export interface ExpeditionState {
  expedition:Expedition;chapters:Journey[];bonus:Journey;done:number;pieces:number;earned:boolean[];
  unlocked:boolean;bonusUnlocked:boolean;complete:boolean;remaining:number;previousTitle:string|null;
@@ -22,7 +27,7 @@ export interface ExpeditionState {
 export function discoveryState(progress:Pick<Progress,'saves'>):ExpeditionState[]{
  const states:ExpeditionState[]=[];
  for(const expedition of EXPEDITIONS){
-  const chapters=expedition.chapterIds.map(id=>JOURNEYS.find(j=>j.id===id)!),bonus=JOURNEY_BONUSES.find(j=>j.themeId===expedition.id)!;
+  const chapters=expedition.chapterIds.map(id=>JOURNEYS.find(j=>j.id===id)!),bonus=JOURNEY_BONUSES.find(j=>j.id===expeditionBonusId(expedition))!;
   const earned=chapters.map(j=>progress.saves['route:'+j.id]?.complete===true);
   const done=earned.filter(Boolean).length,previous=states.at(-1);
   // Returning players retain access to any route they already started in the old open catalogue.
@@ -31,7 +36,7 @@ export function discoveryState(progress:Pick<Progress,'saves'>):ExpeditionState[
   const bonusUnlocked=unlocked&&done===chapters.length,bonusDone=progress.saves['route:'+bonus.id]?.complete===true;
   earned.push(bonusDone);
   const next=unlocked?(chapters.find((_,i)=>!earned[i])??(bonusUnlocked&&!bonusDone?bonus:null)):null;
-  states.push({expedition,chapters,bonus,done,pieces:earned.filter(Boolean).length,earned,unlocked,bonusUnlocked,complete:earned.every(Boolean),remaining:previous?Math.max(0,DISCOVERY_GATE-previous.done):0,previousTitle:previous?.expedition.title??null,next,nextPiece:next?expedition.pieces[[...chapters,bonus].findIndex(j=>j.id===next.id)]!:null,album:ALBUMS.find(a=>a.themeId===expedition.id)!});
+  states.push({expedition,chapters,bonus,done,pieces:earned.filter(Boolean).length,earned,unlocked,bonusUnlocked,complete:earned.every(Boolean),remaining:previous?Math.max(0,DISCOVERY_GATE-previous.done):0,previousTitle:previous?.expedition.title??null,next,nextPiece:next?expedition.pieces[[...chapters,bonus].findIndex(j=>j.id===next.id)]!:null,album:expedition.album??ALBUMS.find(a=>a.themeId===expedition.id)!});
  }
  return states;
 }
@@ -44,10 +49,10 @@ export function discoveryRewards(before:Pick<Progress,'saves'>,after:Pick<Progre
  const previous=discoveryState(before),current=discoveryState(after),rewards:DiscoveryReward[]=[];
  for(let i=0;i<current.length;i++){
   const old=previous[i]!,now=current[i]!;
-  now.earned.forEach((earned,k)=>{if(earned&&!old.earned[k])rewards.push({id:`piece:${now.expedition.id}:${k}`,kind:'piece',title:now.expedition.pieces[k]!,description:`${now.album.title} · ${now.pieces}/6 parça`,themeId:now.expedition.id});});
-  if(now.unlocked&&!old.unlocked)rewards.push({id:'world:'+now.expedition.id,kind:'world',title:now.expedition.title,description:'Keşif haritanda yeni bir durak açıldı.',themeId:now.expedition.id});
-  if(now.bonusUnlocked&&!old.bonusUnlocked)rewards.push({id:'bonus:'+now.bonus.id,kind:'bonus',title:now.bonus.title,description:'Beş durağı tamamladın. Bonus bölüm açıldı.',themeId:now.expedition.id});
-  if(now.complete&&!old.complete)rewards.push({id:'album:'+now.expedition.id,kind:'album',title:now.album.title,description:'Altı parçalık sahnen tamamlandı. Hatıran hep senin.',themeId:now.expedition.id});
+  now.earned.forEach((earned,k)=>{if(earned&&!old.earned[k])rewards.push({id:`piece:${now.expedition.id}:${k}`,kind:'piece',title:now.expedition.pieces[k]!,description:`${now.album.title} · ${now.pieces}/6 parça`,themeId:expeditionTheme(now.expedition)});});
+  if(now.unlocked&&!old.unlocked)rewards.push({id:'world:'+now.expedition.id,kind:'world',title:now.expedition.title,description:'Keşif haritanda yeni bir durak açıldı.',themeId:expeditionTheme(now.expedition)});
+  if(now.bonusUnlocked&&!old.bonusUnlocked)rewards.push({id:'bonus:'+now.bonus.id,kind:'bonus',title:now.bonus.title,description:'Beş durağı tamamladın. Bonus bölüm açıldı.',themeId:expeditionTheme(now.expedition)});
+  if(now.complete&&!old.complete)rewards.push({id:'album:'+now.expedition.id,kind:'album',title:now.album.title,description:'Altı parçalık sahnen tamamlandı. Hatıran hep senin.',themeId:expeditionTheme(now.expedition)});
  }
  return rewards;
 }

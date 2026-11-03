@@ -11,7 +11,7 @@ import {SceneArt} from './SceneArt';
 
 export function JourneyResult({before,after,rewards,save,best}:{before:ReturnType<typeof journeyGoal>;after:ReturnType<typeof journeyGoal>;rewards:DiscoveryReward[];save:SavedLevel;best?:SavedLevel}){
  if(!after)return null;
- const newPiece=rewards.some(r=>r.kind==='piece'&&r.themeId===after.chapter.themeId&&r.title===after.piece),unlocks=rewards.filter(r=>r.kind!=='piece'),mastery=masteryCopy(save.hints);
+ const newPiece=rewards.some(r=>r.id===`piece:${after.state.expedition.id}:${after.position}`),unlocks=rewards.filter(r=>r.kind!=='piece'),mastery=masteryCopy(save.hints);
  return <div className={'journey-result'+(newPiece?' has-new-piece':'')}>
   <p className="world-result-heading">{after.state.expedition.title} · {worldChapter(after.chapter.id)?.topic}</p>
   <div className="journey-result-piece"><span className="journey-result-check" aria-hidden="true"><Check size={24}/></span><small>{newPiece?'YENİ ALBÜM PARÇASI':'ALBÜMÜNDEKİ PARÇA'}</small><h3>{after.piece}</h3><p>{after.state.album.title}</p></div>
