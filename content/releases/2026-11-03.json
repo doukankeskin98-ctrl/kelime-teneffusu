@@ -1,0 +1,422 @@
+{
+  "date": "2026-11-03",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261103-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Yağmur sonrası",
+          "themeId": "dunya",
+          "words": [
+            "DAMLA",
+            "YAĞMUR",
+            "ISLAK",
+            "BULUT"
+          ],
+          "size": 6,
+          "seed": 2026110301,
+          "difficulty": "Rahat",
+          "note": "Yağmurun bıraktığı dört kelimeyi bul. Çaprazlara da bak."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "R",
+              "D",
+              "D",
+              "D",
+              "A",
+              "Ö"
+            ],
+            [
+              "U",
+              "T",
+              "A",
+              "I",
+              "S",
+              "K"
+            ],
+            [
+              "M",
+              "Ö",
+              "U",
+              "M",
+              "A",
+              "J"
+            ],
+            [
+              "Ğ",
+              "N",
+              "P",
+              "L",
+              "L",
+              "Ö"
+            ],
+            [
+              "A",
+              "J",
+              "S",
+              "İ",
+              "U",
+              "A"
+            ],
+            [
+              "Y",
+              "I",
+              "J",
+              "E",
+              "D",
+              "B"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "DAMLA",
+              "text": "DAMLA",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "YAĞMUR",
+              "text": "YAĞMUR",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "ISLAK",
+              "text": "ISLAK",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "BULUT",
+              "text": "BULUT",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "1.0",
+              "label": "YAĞMUR",
+              "text": "YAĞMUR",
+              "group": 1,
+              "a": [
+                5,
+                0
+              ],
+              "b": [
+                0,
+                0
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "DAMLA",
+              "text": "DAMLA",
+              "group": 0,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                4,
+                5
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "ISLAK",
+              "text": "ISLAK",
+              "group": 2,
+              "a": [
+                5,
+                1
+              ],
+              "b": [
+                1,
+                5
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "BULUT",
+              "text": "BULUT",
+              "group": 3,
+              "a": [
+                5,
+                5
+              ],
+              "b": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "contentHash": "08543a325f4bc26118625608975f0cbdee2c782ccd7b4f7899af83326e58df99",
+        "publishedAt": 1793664000000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261103-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Laboratuvar masası",
+          "themeId": "bilim",
+          "words": [
+            "PİPET",
+            "LAM",
+            "TÜP",
+            "DENEY",
+            "ÖLÇÜM",
+            "ÖRNEK",
+            "ÇÖZELTİ"
+          ],
+          "size": 8,
+          "seed": 2026110302,
+          "difficulty": "Dengeli",
+          "note": "Deney masasında yedi kelime saklı. Ters yönde ve çaprazda da araştır."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "Ç",
+              "P",
+              "Ö",
+              "D",
+              "O",
+              "T",
+              "Y",
+              "H"
+            ],
+            [
+              "Ö",
+              "Ö",
+              "İ",
+              "R",
+              "Ü",
+              "J",
+              "N",
+              "C"
+            ],
+            [
+              "Z",
+              "A",
+              "L",
+              "P",
+              "N",
+              "S",
+              "K",
+              "Y"
+            ],
+            [
+              "E",
+              "H",
+              "D",
+              "Ç",
+              "E",
+              "E",
+              "E",
+              "V"
+            ],
+            [
+              "L",
+              "P",
+              "E",
+              "V",
+              "Ü",
+              "T",
+              "K",
+              "F"
+            ],
+            [
+              "T",
+              "G",
+              "N",
+              "L",
+              "U",
+              "M",
+              "A",
+              "Ö"
+            ],
+            [
+              "İ",
+              "L",
+              "E",
+              "E",
+              "A",
+              "İ",
+              "Z",
+              "Z"
+            ],
+            [
+              "K",
+              "B",
+              "Y",
+              "I",
+              "L",
+              "M",
+              "L",
+              "N"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "PİPET",
+              "text": "PİPET",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "LAM",
+              "text": "LAM",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "TÜP",
+              "text": "TÜP",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "DENEY",
+              "text": "DENEY",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "ÖLÇÜM",
+              "text": "ÖLÇÜM",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "ÖRNEK",
+              "text": "ÖRNEK",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "ÇÖZELTİ",
+              "text": "ÇÖZELTİ",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "6.0",
+              "label": "ÇÖZELTİ",
+              "text": "ÇÖZELTİ",
+              "group": 6,
+              "a": [
+                0,
+                0
+              ],
+              "b": [
+                6,
+                0
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "PİPET",
+              "text": "PİPET",
+              "group": 0,
+              "a": [
+                0,
+                1
+              ],
+              "b": [
+                4,
+                5
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "DENEY",
+              "text": "DENEY",
+              "group": 3,
+              "a": [
+                3,
+                2
+              ],
+              "b": [
+                7,
+                2
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "ÖLÇÜM",
+              "text": "ÖLÇÜM",
+              "group": 4,
+              "a": [
+                1,
+                1
+              ],
+              "b": [
+                5,
+                5
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "ÖRNEK",
+              "text": "ÖRNEK",
+              "group": 5,
+              "a": [
+                0,
+                2
+              ],
+              "b": [
+                4,
+                6
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "LAM",
+              "text": "LAM",
+              "group": 1,
+              "a": [
+                5,
+                3
+              ],
+              "b": [
+                7,
+                5
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "TÜP",
+              "text": "TÜP",
+              "group": 2,
+              "a": [
+                0,
+                5
+              ],
+              "b": [
+                2,
+                3
+              ]
+            }
+          ]
+        },
+        "contentHash": "5acfb2ec7dbaeab8f8311c768f8b6214e904673148305aad7d639a991aa5f37a",
+        "publishedAt": 1793664000000,
+        "archived": false
+      }
+    }
+  ]
+}
