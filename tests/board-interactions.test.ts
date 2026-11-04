@@ -44,10 +44,10 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  },window:windowTarget,document:documentTarget,performance:{now:()=>100},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id),ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}}});
  const boardNode=()=>{const n=nodes(tree).find(n=>n.props?.['role']==='application');assert.ok(n);return n;};
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);renders++;for(const node of nodes(tree))mount(node);}if(commit)while(effects.length)effects.shift()!();}return tree;};
- const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
+ const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/props.board.size,clientY:top+(cell[0]+.5)*height/props.board.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
  return {letters,commits,previews,accepted,props,paint,boardNode,send,get pathBuilds(){return pathBuilds;},
-  native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
+  native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/props.board.size,clientY:top+(cell[0]+.5)*height/props.board.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
   reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
   toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
   rotate(){windowTarget.dispatchEvent(new Event('orientationchange'));paint();},
@@ -284,7 +284,12 @@ describe('early word acceptance consumes the gesture before release',()=>{
  it('leaves a short prefix selectable on release without blocking its longer target',()=>{
   const h=setup(),long={...target,id:'1.0',group:1,label:'KALEM',text:'KALEM'};
   h.setProps({board:{...board,grid:board.grid.map((row,r)=>r===0?row.map((ch,c)=>c===4?'M':ch):row)},earlyTargets:[target,long]});
-  h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,3]);assert.equal(h.commits.length,0);h.send('onPointerMove',[0,4]);assert.deepEqual(h.commits,[{a:[0,0],b:[0,4]}]);h.unmount();
+  try{
+   h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,3]);assert.equal(h.commits.length,0);
+   h.send('onPointerUp',[0,3]);assert.deepEqual(h.commits,[{a:[0,0],b:[0,3]}]);
+   h.send('onPointerDown',[0,0]);h.send('onPointerMove',[0,3]);assert.equal(h.commits.length,1);
+   h.send('onPointerMove',[0,4]);h.send('onPointerUp',[0,4]);assert.deepEqual(h.commits,[{a:[0,0],b:[0,3]},{a:[0,0],b:[0,4]}]);
+  }finally{h.unmount();}
  });
 });
 
@@ -424,5 +429,45 @@ describe('paused board resume surface',()=>{
   const h=harness({paused:true,strokes:[TUTORIAL.placements[0]!]});let resumes=0;h.setProps({onResume:()=>resumes++});
   const button=nodes(h.tree).find(n=>n.type==='button')!;h.visibility(true);button.props['onClick']();assert.equal(resumes,0);
   h.visibility(false);button.props['onClick']();assert.equal(resumes,1);assert.equal(h.props.strokes.length,1);assert.equal(h.commits.length,0);h.unmount();
+ });
+});
+
+
+describe('TROYA corner regression through the actual Board',()=>{
+ const grid=Array.from({length:8},()=>Array<string>(8).fill('X'));
+ [...'TROYA'].forEach((letter,i)=>{grid[3+i]![2+i]=letter;});
+ const target={id:'0.0',group:0,label:'TROYA',text:'TROYA'};
+
+ it('keeps the touch ink on Y until the finger enters A, then accepts exactly once',()=>{
+  const h=harness();
+  try{
+   h.setProps({board:{...TUTORIAL,size:8,grid},earlyTargets:[target]});
+   h.send('onPointerDown',[3,2]);h.native('touchstart',[[3,2]]);
+   h.native('touchmove',[[6,5]]);h.flush();
+   h.native('touchmove',[[6.49,6.49]]);h.flush(); // Board point [6.99,6.99] is beside A.
+   assert.equal(h.previews.at(-1),'TROY');assert.equal(h.commits.length,0);
+   assert.equal(h.ink().get('x2'),'5.5');assert.equal(h.ink().get('y2'),'6.5');
+   h.native('touchmove',[[6.51,6.49]]);assert.deepEqual(h.commits,[{a:[3,2],b:[7,6]}]);
+   h.native('touchend',[],[[6.51,6.49]]);h.send('onPointerUp',[7,6]);h.flush();
+   assert.equal(h.commits.length,1);assert.equal(h.selected().length,0);
+  }finally{h.unmount();}
+ });
+
+ for(const native of [false,true])for(const releaseOnly of [false,true])it('accepts once at the visible A corner: native '+native+', release '+releaseOnly,()=>{
+  const h=harness();
+  try{
+   h.setProps({board:{...TUTORIAL,size:8,grid},earlyTargets:[target]});
+   // The harness adds .5: this sample is board point [7.01,6.99].
+   const corner:Cell=[6.51,6.49];
+   h.send('onPointerDown',[3,2]);
+   if(native){
+    h.native('touchstart',[[3,2]]);
+    if(!releaseOnly)h.native('touchmove',[corner]);
+    h.native('touchend',[],[corner]);
+   }else h.send(releaseOnly?'onPointerUp':'onPointerMove',corner);
+   h.send('onPointerUp',corner);h.send('onLostPointerCapture',corner);h.flush();
+   assert.deepEqual(h.commits,[{a:[3,2],b:[7,6]}]);assert.equal(h.selected().length,0);
+   assert.equal(h.selections,h.selectionEnds);
+  }finally{h.unmount();}
  });
 });

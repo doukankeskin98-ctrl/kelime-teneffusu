@@ -1,5 +1,7 @@
 # Öncelikler
 
+5 Kasım 2026, 0.36.1: TROYA çapraz köşesi, görsel çizgi ile kabul edilen harfin uyumu, güvenli sonuç penceresi ve alt kontrol yuvası. Fiziksel parmak denemesi ve uzun oturum FPS ölçümü açık. Kanıt: ../journal/entries/2026-11-05-troya.md.
+
 5 Kasım 2026, 0.36.0: sabit hedef rafı, yukarı alınmış tahta, boşluklu kelimelerde doğru uçuş hedefi. iPhone üzerine kurulum ve beş kayıt değerinin eşitliği doğrulandı. Sonraki kabul: fiziksel başparmak konforu, dokuz dar Arena yuvası, uzun oturum/FPS ve VoiceOver. Kanıt `../journal/entries/2026-11-05-comfort.md`.
 
 4 Kasım2026,0.35.0: net hedef/tahta, güvenli native üst çubuk, dokunarak Solo resume ve sahneli Koleksiyon. Kullanıcının 0.34.1 animasyon hızı ve0.34.0 haptik dengesi kabul edildi; aynı kalır. Yeni fiziksel iPhone safe-area/kontrast denemesi açık. Kanıt `../journal/entries/2026-11-04-clarity.md`.

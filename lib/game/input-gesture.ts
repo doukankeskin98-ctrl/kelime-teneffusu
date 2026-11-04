@@ -1,7 +1,10 @@
 import type {Cell,Puzzle,Stroke,Target} from './engine';
-/** A .47-cell ellipse covers 69.4% of a cell, independent of pixel aspect ratio. */
+/** Extra center tolerance between cells; on-ray cell interiors are also valid. */
 export const CELL_HIT_RADIUS=.47;
 export type GestureStep={cell:Cell;axis:Cell|null};
+function isInsideCell(point:Cell,cell:Cell){
+ return point[0]>=cell[0]&&point[0]<cell[0]+1&&point[1]>=cell[1]&&point[1]<cell[1]+1;
+}
 /** Search the sampled ray, including endpoints skipped by a fast swipe.
  * Ambiguous prefixes wait for release so the longer target stays selectable.
  * Only caller-supplied unlocked targets are eligible; no placements are needed.
@@ -27,8 +30,7 @@ export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell
  if(Math.hypot(dy,dx)<.5&&!axis)return unchanged;
  // The first letter is the anchor, not the first direction. Re-evaluate the ray
  // from the current contact so a player can pivot without lifting or backtracking.
- // The hit radius below commits the new ray only near a letter center; drifting
- // between rays keeps the last selection rather than flickering between sectors.
+ // Entering an on-ray cell selects it. Between rays the last selection is retained.
  const angle=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*Math.PI/4;
  const direction:Cell=[Math.round(Math.sin(angle))||0,Math.round(Math.cos(angle))||0];
  const [dr,dc]=direction,projection=(dy*dr+dx*dc)/(dr*dr+dc*dc),step=Math.round(projection);
@@ -40,22 +42,32 @@ export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell
  const outside=point.some(value=>value<=0||value>=size);
  const excess=outside?projection-Math.max(low,Math.min(high,projection)):0;
  const distance=Math.hypot(point[0]-dr*excess-cell[0]-.5,point[1]-dc*excess-cell[1]-.5);
- // A slightly wider release boundary also allows a last-sample direction change.
- if(distance>(release?.65:CELL_HIT_RADIUS))return unchanged;
+ // A finger inside this on-ray letter must select it, including its corners.
+ // The old circular gate rejected diagonal corners while the ink already covered
+ // the final glyph. Do not clamp here: outside capture keeps its bounded drift test.
+ // Center tolerance still absorbs small gaps and a last-sample direction change.
+ if(!isInsideCell(point,cell)&&distance>(release?.65:CELL_HIT_RADIUS))return unchanged;
  return {cell,axis:direction};
 }
 
 /** Continuous ink in board coordinates; never used to accept a letter or a word. */
-export function gestureTip(start:Cell,axis:Cell|null,point:Cell,size:number):Cell{
+export function gestureTip(start:Cell,current:Cell,axis:Cell|null,point:Cell,size:number):Cell{
  const origin:Cell=[start[0]+.5,start[1]+.5];
  if(!point.every(Number.isFinite)||size<1)return origin;
  const dy=point[0]-origin[0],dx=point[1]-origin[1];
  const angle=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*Math.PI/4;
  const direction=axis??[Math.round(Math.sin(angle))||0,Math.round(Math.cos(angle))||0];
- const [dr,dc]=direction;let step=(dy*dr+dx*dc)/(dr*dr+dc*dc),low=-Infinity,high=Infinity;
- for(let i=0;i<2;i++){const d=direction[i]!,at=origin[i]!;if(d){const a=(.5-at)/d,b=(size-.5-at)/d;low=Math.max(low,Math.min(a,b));high=Math.min(high,Math.max(a,b));}}
- // Until a new ray passes the hit test, its preview must not cross the anchor
- // onto the opposite side while the selected letters still belong to this ray.
- step=Math.max(0,low,Math.min(high,step));
+ const [dr,dc]=direction;
+ const projection=(dy*dr+dx*dc)/(dr*dr+dc*dc);
+ // Follow the finger freely within the selected letter. A sample in an adjacent
+ // cell can project onto the next letter even though the word still ends here.
+ const selectedLength=Math.max(Math.abs(current[0]-start[0]),Math.abs(current[1]-start[1]));
+ let limit=isInsideCell(point,current)?Infinity:selectedLength;
+ for(let i=0;i<2;i++){
+  const delta=direction[i]!;
+  if(delta>0)limit=Math.min(limit,size-1-start[i]!);
+  else if(delta<0)limit=Math.min(limit,start[i]!);
+ }
+ const step=Math.max(0,Math.min(limit,projection));
  return [origin[0]+dr*step,origin[1]+dc*step];
 }

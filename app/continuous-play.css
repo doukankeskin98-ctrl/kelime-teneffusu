@@ -23,7 +23,7 @@
 .scenic-play .word-tag[data-word-arriving=true]>span{opacity:0}
 .scenic-play .word-tag[data-word-arriving=true]{animation:none!important}
 .scenic-play .word-tag.found{animation:none!important}
-.scenic-play .journey-skip-reward{position:absolute;z-index:6;left:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;padding:0 16px;min-height:44px;background:#f6d778;border-radius:24px;box-shadow:0 2px 0 #70582040}
+.scenic-play .play-controls .journey-skip-reward{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;height:44px;padding:0 12px;white-space:nowrap;background:#f6d778;border-radius:24px;box-shadow:0 2px 0 #70582040}
 .play-comfort-settings{border-top:1px solid #dce4d5;margin-top:12px;padding-top:4px}
 .stage-trail-caption{display:block;text-align:center;font-size:11px;line-height:16px;color:#e0e5d5;margin-top:14px}.stage-trail-caption+.stage-trail{margin-top:7px}
 .scenic-play .found-stroke.is-new{animation:word-lock 280ms var(--settle-ease) both;transform-origin:center;transform-box:fill-box}

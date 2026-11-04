@@ -13,7 +13,7 @@ function element(width=380,height=40){
 }
 function browser(height=628){
  const frames=new Map<number,()=>void>(),view:any=new EventTarget();let id=0;
- Object.assign(view,{innerHeight:height,Event,getComputedStyle:(node:any)=>node.css,requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
+ Object.assign(view,{innerHeight:height,Event,getComputedStyle:(node:any)=>({...node.css,getPropertyValue:(name:string)=>node.css[name]??''}),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  return {view,frames,flush(){const f=[...frames.values()];frames.clear();f.forEach(fn=>fn());}};
 }
 function fixture(width=384,height=628,stacked=true){
@@ -126,4 +126,26 @@ it('defers changing HUD geometry during physical contact and fits once when cont
  setBoardDrawing(board,true,f.view);f.preview.rect.height+=40;
  for(let i=0;i<5;i++){f.view.dispatchEvent(new Event('resize'));f.flush();assert.equal(f.stage.style.getPropertyValue('height'),before);}
  setBoardDrawing(board,false,f.view);assert.equal(f.frames.size,1);f.flush();assert.notEqual(f.stage.style.getPropertyValue('height'),before);assert.equal(f.frames.size,0);stop();
+});
+
+
+describe('dialog safe viewport bounds',()=>{
+ for(const native of [false,true])it('keeps native/fallback results inside safe insets and follows viewport offset: '+native,()=>{
+  const {view}=browser(932),dialog=element(430,1000),old=element();let restored=0;
+  const vv=Object.assign(new EventTarget(),{height:932,offsetTop:0});view.visualViewport=vv;
+  dialog.css['--dialog-safe-top']='59px';dialog.css['--dialog-safe-bottom']='34px';
+  const doc:any={activeElement:old,body:{style:{overflow:'auto'},appendChild(){}},createElement:()=>Object.assign(element(),{remove(){}})};
+  old.focus=()=>restored++;dialog.ownerDocument=doc;dialog.focus=()=>{doc.activeElement=dialog;};
+  Object.defineProperty(dialog,'offsetHeight',{get:()=>Math.min(dialog.rect.height,Number.parseFloat(dialog.style.maxHeight)||1000)});
+  // A scaled entrance must not feed transformed height back into centering.
+  dialog.getBoundingClientRect=()=>({height:dialog.offsetHeight*.9});
+  if(native){dialog.showModal=()=>{dialog.open=true;};dialog.close=()=>{dialog.open=false;};}
+  const stop=openGameDialog(dialog,()=>{},view);
+  assert.equal(dialog.style.maxHeight,'815px');assert.equal(dialog.style.top,'71px');
+  dialog.rect.height=600;view.dispatchEvent(new Event('resize'));assert.equal(dialog.style.top,'178.5px');
+  vv.offsetTop=17;vv.dispatchEvent(new Event('scroll'));assert.equal(dialog.style.top,'195.5px');
+  vv.height=160;vv.dispatchEvent(new Event('resize'));assert.equal(dialog.style.maxHeight,'43px');assert.equal(dialog.style.top,'88px');
+  stop();const last=dialog.style.top;vv.offsetTop=77;vv.dispatchEvent(new Event('scroll'));assert.equal(dialog.style.top,last);
+  assert.equal(doc.body.style.overflow,'auto');assert.equal(restored,1);
+ });
 });
