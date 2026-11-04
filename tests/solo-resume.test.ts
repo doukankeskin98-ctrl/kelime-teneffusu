@@ -1,3 +1,4 @@
+import * as wordFeedback from '../lib/game/word-feedback.ts';
 import * as worldPresentation from '../lib/game/world-presentation.ts';
 import * as scenePresentation from '../lib/game/scene.ts';
 import * as boardPresentation from '../lib/game/board-view.ts';
@@ -39,9 +40,9 @@ function textOf(value:unknown):string{
  if(Array.isArray(value))return value.map(textOf).join(' ');
  return value&&typeof value==='object'?textOf((value as Node).props?.['children']):'';
 }
-function harness({initial=saved([]),practice=false,known=false}:{initial?:SavedLevel;practice?:boolean;known?:boolean}={}){
+function harness({initial=saved([]),practice=false,known=false,reduced=true}:{initial?:SavedLevel;practice?:boolean;known?:boolean;reduced?:boolean}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],writes:SavedLevel[]=[];
- const timers=new Map<number,{fn:()=>void;repeat:boolean}>();
+ const timers=new Map<number,{fn:()=>void;repeat:boolean;at:number}>();
  let cursor=0,timerId=0,now=0,pending=true,tree:unknown,resume:SavedLevel|undefined;
  const changed=(slot:Slot,deps:unknown[])=>!slot.deps||slot.deps.length!==deps.length||deps.some((v,i)=>!Object.is(v,slot.deps![i]));
  const hooks={
@@ -56,13 +57,13 @@ function harness({initial=saved([]),practice=false,known=false}:{initial?:SavedL
    if(changed(slot,deps)){slot.deps=deps;effects.push(()=>{slot.cleanup?.();const cleanup=effect();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;});}
   }
  };
- const timer=(repeat:boolean)=>(fn:()=>void)=>{const id=++timerId;timers.set(id,{fn,repeat});return id;};
- const windowTarget=Object.assign(new EventTarget(),{matchMedia:()=>({matches:true})});
+ const timer=(repeat:boolean)=>(fn:()=>void,ms:number)=>{const id=++timerId;timers.set(id,{fn,repeat,at:now+ms});return id;};
+ const windowTarget=Object.assign(new EventTarget(),{matchMedia:()=>({matches:reduced})});
  const documentTarget=Object.assign(new EventTarget(),{hidden:false});
  const modules:Record<string,unknown>={
   react:hooks,'react/jsx-runtime':{jsx:(type:unknown,props:Record<string,unknown>)=>({type,props}),jsxs:(type:unknown,props:Record<string,unknown>)=>({type,props}),Fragment:'Fragment'},
   '@/lib/game/story-content':stories,'./StoryExperience':{StoryHud:'StoryHud',StoryResult:'StoryResult'},'@/lib/game/riddle-content':riddleContent,'@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
-  '@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,
+  '@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,
   '@/lib/studio/chapter-progress':chapterProgress,'@/lib/game/telemetry':{track(){}},
   './common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}},
   './AchievementLoop':{JourneyObjective:'JourneyObjective',VictorySummary:'VictorySummary',NextJourneyPreview:'NextJourneyPreview'}
@@ -84,7 +85,7 @@ function harness({initial=saved([]),practice=false,known=false}:{initial?:SavedL
  };
  const find=(type:string)=>{const node=nodes(tree).find(n=>n.type===type);assert.ok(node,type+' should be present');return node;};
  return {
-  writes,
+  writes,hasModal:()=>nodes(tree).some(n=>n.type==='Modal'),advance(ms:number){now+=ms;for(const [id,t] of [...timers])if(!t.repeat&&t.at<=now){timers.delete(id);t.fn();}},
   layout:()=>find('PlayLayout'),controls:()=>find('PlayControls'),result:()=>find('VictorySummary'),
   closeResult(){(find('Modal').props['onClose'] as ()=>void)();},
   showResult(){const button=nodes(tree).find(n=>n.type==='button'&&/Sonucu göster/.test(textOf(n)));assert.ok(button);(button.props['onClick'] as ()=>void)();},
@@ -198,4 +199,8 @@ describe('Solo completed board review',()=>{
    page.closeResult();await page.settle();page.tick(10);await page.settle();assert.equal(page.save.elapsed,20);
   }finally{page.close();}
  });
+});
+
+it('saves the last word immediately while the result waits for its visible landing',async()=>{
+ const page=harness({initial:saved([0,1,2]),reduced:false});try{await page.settle();page.commit(3);await page.settle();assert.equal(page.save.complete,true);assert.equal(page.layout().props['readOnly'],true);assert.equal(page.hasModal(),false);page.advance(wordFeedback.WORD_RESULT_DELAY_MS-1);await page.settle();assert.equal(page.hasModal(),false);page.advance(1);await page.settle();assert.equal(page.hasModal(),true);}finally{page.close();}
 });
