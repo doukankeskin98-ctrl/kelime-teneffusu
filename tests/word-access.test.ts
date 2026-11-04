@@ -284,7 +284,7 @@ describe('player-selected focus is guidance without extra rewards or hidden answ
   try{h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:p,onProgress(){writes++;},onBack(){},onMap(){},onNext(){}});await h.settle();
    const beforeWrites=writes,beforeSounds=sounds.length,layout=h.find('PlayLayout').props,controls=h.find('PlayControls').props,strokes=JSON.stringify(layout['strokes']),group=layout['board'].targets[2].group;
    layout['wordList'].onFocusGroup(group);await h.settle();const after=h.find('PlayLayout').props;
-   assert.equal(after['wordList'].focusedGroup,group);assert.match(text(h.find('PlayLayout')),/Hedefin: MARS/);assert.equal(JSON.stringify(after['strokes']),strokes);assert.equal(h.find('PlayControls').props['hints'],controls['hints']);assert.equal(writes,beforeWrites);assert.equal(sounds.length,beforeSounds);
+   assert.equal(after['wordList'].focusedGroup,group);assert(!text(h.find('PlayLayout')).includes('Hedefin:'));assert.equal(after['wordList'].board.targets.find((t:any)=>t.group===group).text,'MARS');assert.equal(JSON.stringify(after['strokes']),strokes);assert.equal(h.find('PlayControls').props['hints'],controls['hints']);assert.equal(writes,beforeWrites);assert.equal(sounds.length,beforeSounds);
    const target=after['board'].placements.find((x:any)=>x.id===after['board'].targets[2].id);after['onCommit'](target.a,target.b);await h.settle();assert.notEqual(h.find('PlayLayout').props['wordList'].focusedGroup,group);
   }finally{h.close();}
  });
@@ -310,9 +310,9 @@ function storyPage(index=0,initial=progress.emptyProgress(),practice=false){
 }
 describe('living story sequential interaction, hints, replay and navigation',()=>{
  it('keeps the full input board, exposes one clue and rejects a later answer without progress or penalty',()=>{
-  const h=storyPage();try{const l=h.find('PlayLayout');assert.equal(l.props['board'].targets.length,4);assert.equal(l.props['wordList'].board.targets.length,1);assert.equal(l.props['wordList'].board.targets[0].text,'KIYI');assert.equal(l.props['wordList'].onFocusGroup,undefined);
+  const h=storyPage();try{const l=h.find('PlayLayout');assert.equal(l.props['board'].targets.length,4);assert.equal(l.props['wordList'].board.targets.length,4);assert.equal(l.props['earlyTargets'].length,1);assert.equal(l.props['earlyTargets'][0].text,'KIYI');assert.equal(l.props['wordList'].activeOnly,l.props['earlyTargets'][0].group);assert.equal(l.props['wordList'].onFocusGroup,undefined);
    h.commit(2);h.paint();assert.equal(h.find('PlayLayout').props['strokes'].length,0);assert.equal(h.find('PlayControls').props['hints'],3);assert.match(h.find('StoryHud').props['notice'],/Bu kelime birazdan/);assert.equal(h.events.includes('story_step'),false);
-   h.commit(0);h.paint();assert.equal(h.find('PlayLayout').props['wordList'].board.targets[0].text,'FENER');assert.equal(h.find('PlayLayout').props['board'].targets.length,4);assert.equal(h.find('StoryHud').props['stage'],1);assert.equal(h.saved.saves['route:'+h.story.id]!.complete,false);
+   h.commit(0);h.paint();assert.equal(h.find('PlayLayout').props['earlyTargets'][0].text,'FENER');assert.equal(h.find('PlayLayout').props['board'].targets.length,4);assert.equal(h.find('StoryHud').props['stage'],1);assert.equal(h.saved.saves['route:'+h.story.id]!.complete,false);
   }finally{h.close();}
  });
  it('does not charge for the already visible first letter, then hints only the current step and caps rapid requests',()=>{
@@ -327,7 +327,7 @@ describe('living story sequential interaction, hints, replay and navigation',()=
  });
  it('resumes the actual clue, retains campaign continuation and never treats a completed review as a new story completion',()=>{
   const initial=progress.emptyProgress(),story=stories.LIVING_STORIES[1]!,b=content.journeyBoard(story);initial.last={themeId:'uzay',level:0,journey:'uzay-2'};initial.saves['route:'+story.id]=progress.cleanSave({strokes:b.placements.filter(p=>story.steps.slice(0,2).some(s=>s.word===p.text)),elapsed:41,hints:1,complete:false,stars:0},b);
-  const h=storyPage(1,initial);try{assert.equal(h.find('StoryHud').props['stage'],2);assert.equal(h.find('PlayLayout').props['wordList'].board.targets[0].text,'FİLİZ');assert.equal(h.saved.last?.journey,'uzay-2');for(let i=2;i<5;i++){h.commit(i);h.paint();}h.expire();assert.equal(h.saved.last?.journey,'uzay-2');
+  const h=storyPage(1,initial);try{assert.equal(h.find('StoryHud').props['stage'],2);assert.equal(h.find('PlayLayout').props['earlyTargets'][0].text,'FİLİZ');assert.equal(h.saved.last?.journey,'uzay-2');for(let i=2;i<5;i++){h.commit(i);h.paint();}h.expire();assert.equal(h.saved.last?.journey,'uzay-2');
    const review=storyPage(1,progress.loadProgress(JSON.stringify(h.saved)));try{assert.equal(review.find('PlayLayout').props['readOnly'],true);assert.equal(review.events.includes('story_complete'),false);assert.equal(review.events.includes('story_start'),false);}finally{review.close();}
   }finally{h.close();}
  });
@@ -350,7 +350,7 @@ describe('mobile target navigation keeps the puzzle authoritative',()=>{
   const board=engine.makeCustomPuzzle(['ASLAN','KAPLAN','PANDA'],73,9),clues={ASLAN:'Erkeğinin yelesi olan büyük kedi.',KAPLAN:'Turuncu kürkünde siyah çizgiler olan büyük kedi.',PANDA:'Bambu yiyen siyah beyaz ayı.'},words={board,strokes:[],clues,golden:board.targets[1]!.id};
   const h=view('components/game/common.tsx');try{
    h.start('MobileTargets',{words});assert.match(text(h.tree),/Erkeğinin yelesi/);assert(!text(h.tree).includes('ASLAN'));assert(!text(h.tree).includes('Turuncu'));
-   walk(h.tree).find(n=>n.props['aria-label']==='Sonraki hedef')!.props['onClick']();h.paint();assert.match(text(h.tree),/Turuncu/);assert.match(text(h.tree),/×2/);assert.equal(words.strokes.length,0);
+   walk(h.tree).filter(n=>n.type==='button'&&typeof n.props['aria-pressed']==='boolean')[1]!.props['onClick']();h.paint();assert.match(text(h.tree),/Turuncu/);assert.match(text(h.tree),/×2/);assert.equal(words.strokes.length,0);
    const opener=walk(h.tree).find(n=>n.props['aria-haspopup']==='dialog')!;opener.props['onClick']();h.paint();assert.equal(h.find('WordList').props['board'],board);assert.equal(h.find('WordList').props['strokes'],words.strokes);
    h.find('WordList').props['onFocusGroup'](board.targets[2]!.group);h.paint();assert.match(text(h.tree),/Bambu/);assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));
    h.update('MobileTargets',{words:{...words,strokes:[board.placements.find(p=>p.id===board.targets[2]!.id)!]}});assert.match(text(h.tree),/Erkeğinin yelesi/);
@@ -360,7 +360,7 @@ describe('mobile target navigation keeps the puzzle authoritative',()=>{
   const board=engine.makeCustomPuzzle(['AKİL HOCA','SOBA'],91,8),calls:number[]=[],words={board,strokes:[] as engine.Stroke[],focusedGroup:board.targets[0]!.group,onFocusGroup:(g:number)=>calls.push(g)};
   const h=view('components/game/common.tsx');try{
    h.start('MobileTargets',{words});assert.match(text(h.tree),/AKİL/);const second=board.targets.find(t=>t.group!==words.focusedGroup)!.group;
-   walk(h.tree).find(n=>n.props['aria-label']==='Sonraki hedef')!.props['onClick']();assert.deepEqual(calls,[second]);
+   walk(h.tree).filter(n=>n.type==='button'&&typeof n.props['aria-pressed']==='boolean')[1]!.props['onClick']();assert.deepEqual(calls,[second]);
    h.update('MobileTargets',{words:{...words,focusedGroup:second}});assert.match(text(h.tree),/SOBA/);
    walk(h.tree).find(n=>n.props['aria-haspopup']==='dialog')!.props['onClick']();h.paint();assert(h.find('Modal'));
    h.update('MobileTargets',{words,unavailable:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));assert(walk(h.tree).filter(n=>n.type==='button').every(n=>n.props['disabled']));
@@ -382,10 +382,10 @@ describe('clear phone targets and persisted fast play',()=>{
   try{h.start('__SprintRun',{seed:914,owner:'alice',progress:progress.emptyProgress(),onProgress(){},onBack(){},onReplay(){}});const click=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'))!.props['onClick'];click();click();click();h.paint();const board=h.find('PlayLayout').props['board'],history=sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!);assert.equal(history.sequence,1);assert.equal(history.sets.length,1);assert.deepEqual(Object.keys(history.words).sort(),board.targets.map((t:any)=>t.text).sort());assert.equal(Object.keys(history.words).length,4);assert.equal(h.find('PlayLayout').props['paused'],true);}finally{h.close();}
  });
 
- it('uses the compact rack only for short normal words and never changes the authoritative board',()=>{
+ it('keeps long and split normal words together without changing the authoritative board',()=>{
   const board=engine.makeCustomPuzzle(['BULUT','ORMAN','KİTAP','DENİZ'],81,6);
   for(const clues of [undefined,{BULUT:'Gökyüzündeki su damlacıkları.'}]){const h=shared({board,wordList:{board,strokes:[],clues}});try{const wrapper=walk(h.tree).find(n=>String(n.props['className']).startsWith('viewport-targets'))!;assert.equal(wrapper.props['className'].includes('has-word-rack'),!clues);assert.equal(h.find('Board').props['board'],board);}finally{h.close();}}
-  assert.equal(wordCard.compactWordRack(engine.makeCustomPuzzle(['AKİL HOCA','SOBA'],91,8)),false);
+  assert.equal(wordCard.compactWordRack(engine.makeCustomPuzzle(['AKİL HOCA','SOBA'],91,8)),true);
  });
  it('persists an abandoned actual Sprint before another mount chooses targets, keeping the old record',()=>{
   const values=new Map([['kt-sprint-best-v1:alice','987']]),runs:string[][]=[];
@@ -422,7 +422,7 @@ describe('world word veils survive every target surface and resume',()=>{
   const loaded=progress.loadProgress(JSON.stringify(p)),h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
   try{h.start('Solo',{config:{themeId:j.themeId,level:0,journey:j.id,campaign:true},progress:loaded,onProgress(){},onBack(){},onMap(){},onNext(){}});await h.settle();
    const layout=h.find('PlayLayout').props;assert.deepEqual(layout['wordList'].veils,worldPresentation.chapterVeils(j.id,board.targets));assert.deepEqual(layout['strokes'],loaded.saves['route:'+j.id]!.strokes);assert.equal(layout['board'].grid.flat().join(''),board.grid.flat().join(''));
-   const remaining=board.targets.find(t=>t.id!==stroke.id&&layout['wordList'].veils[t.group]==='hidden')!;layout['wordList'].onFocusGroup(remaining.group);await h.settle();assert(!visible(h.find('PlayLayout')).includes(remaining.label));assert.match(visible(h.find('PlayLayout')),/Saklı kelime/);
+   const remaining=board.targets.find(t=>t.id!==stroke.id&&layout['wordList'].veils[t.group]==='hidden')!;layout['wordList'].onFocusGroup(remaining.group);await h.settle();assert(!visible(h.find('PlayLayout')).includes(remaining.label));const actual=h.find('PlayLayout').props['wordList'];assert.equal(actual.focusedGroup,remaining.group);assert.equal(actual.veils[remaining.group],'hidden');
   }finally{h.close();}
  });
  it('announces only the found part of a multi-part name until its final part is confirmed',async()=>{
@@ -468,8 +468,8 @@ describe('hint target follows visible selection, not placement ordering',()=>{
 });
 
 
-it('gives the compact target selector and animated list distinct identities on every board',()=>{
- for(const wordListKey of [undefined,'room:2']){const h=shared({wordListKey,wordList:{board:content.TUTORIAL,strokes:[]}});try{const selector=h.find('MobileTargets'),list=h.find('WordList');assert.notEqual(list.key,selector.key);assert.equal(list.key,'words:'+(wordListKey??content.TUTORIAL.grid.map(row=>row.join('')).join('|')));}finally{h.close();}}
+it('renders one persistent normal rack instead of a competing carousel on every board',()=>{
+ for(const wordListKey of [undefined,'room:2']){const h=shared({wordListKey,wordList:{board:content.TUTORIAL,strokes:[]}});try{assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='MobileTargets'));const list=h.find('WordList');assert.equal(list.props['rack'],true);assert.equal(list.key,'words:'+(wordListKey??content.TUTORIAL.grid.map(row=>row.join('')).join('|')));}finally{h.close();}}
 });
 
 it('continues ten actual Solo chapters directly, keeping each completed save through reload',()=>{
@@ -500,7 +500,7 @@ describe('result and play preference surfaces',()=>{
   }finally{h.close();}
  });
  it('blocks an open target sheet on celebration even when the board becomes read-only; review restores access',()=>{
-  const words={board:content.TUTORIAL,strokes:[]},h=shared({readOnly:true,wordList:words,wordListUnavailable:true,celebrating:true});
+  const words={board:content.TUTORIAL,strokes:[],clues:{KELİME:'Harflerden oluşur.'}},h=shared({readOnly:true,wordList:words,wordListUnavailable:true,celebrating:true});
   try{assert.equal(h.find('MobileTargets').props['unavailable'],true);h.update('PlayLayout',{...base,readOnly:true,wordList:words,wordListUnavailable:true,celebrating:false});assert.equal(h.find('MobileTargets').props['unavailable'],false);}finally{h.close();}
  });
  it('timed tools expose comfort controls without pausing and disappear when the match ends',()=>{
@@ -523,4 +523,31 @@ describe('Solo explicit pause resumes without changing progress',()=>{
  it('passes a resume callback only when supplied by the game owner',()=>{
   let called=0;const h=shared({paused:true,onResume:()=>called++});try{h.find('Board').props['onResume']();assert.equal(called,1);}finally{h.close();}
  });
+});
+
+
+describe('stable shared target shelf',()=>{
+ it('retains every group and split-letter flight destination after each confirmation',()=>{
+  const board=engine.makeCustomPuzzle(['KUYRUKLU YILDIZ','KERVAN','KÖPRÜ','ÇİNİ','HAN','KİLİM'],91,8),h=view('components/game/common.tsx');
+  try{const props={board,strokes:[] as engine.Stroke[],rack:true,onFocusGroup(){}};h.start('WordList',props);
+   const groups=()=>walk(h.tree).filter(n=>n.props['data-word-group']!==undefined);const before=groups().map(n=>[n.key,n.props['data-word-group'],n.props['style']['--word-rows']]);assert.equal(before.length,6);
+   const split=board.targets.filter(t=>t.label==='KUYRUKLU YILDIZ');assert.equal(split.length,2);
+   for(const target of split){props.strokes.push(board.placements.find(t=>t.id===target.id)!);h.update('WordList',{...props,strokes:[...props.strokes]});assert.deepEqual(groups().map(n=>[n.key,n.props['data-word-group'],n.props['style']['--word-rows']]),before);for(const part of split)assert.equal(walk(h.tree).filter(n=>n.props['data-word-part']===part.id).length,1);}
+   assert(groups().find(n=>n.props['data-word-group']===split[0]!.group)!.props['className'].includes('found'));
+  }finally{h.close();}
+ });
+ it('keeps story slots while future answers and early acceptance remain locked',()=>{
+  const story=stories.LIVING_STORIES[0]!,board=content.journeyBoard(story),h=view('components/game/common.tsx');
+  try{const words={board,strokes:[] as engine.Stroke[],clues:story.clues,activeOnly:board.targets[0]!.group};h.start('MobileTargets',{words});assert.equal(walk(h.tree).filter(n=>n.props['data-word-group']!==undefined).length,4);for(const target of board.targets.slice(1))assert(!JSON.stringify(h.tree).includes(target.text));assert.equal(walk(h.tree).filter(n=>n.type==='button'&&n.props['aria-pressed']!==undefined&&!n.props['disabled']).length,1);
+   const layout=shared({wordList:words,board,earlyTargets:[board.targets[0]!]});try{assert.equal(layout.find('Board').props['earlyTargets'].length,1);assert.equal(layout.find('MobileTargets').props['words'].board.targets.length,4);}finally{layout.close();}
+   words.strokes=[board.placements.find(p=>p.id===board.targets[0]!.id)!];words.activeOnly=board.targets[1]!.group;h.update('MobileTargets',{words});assert.equal(walk(h.tree).filter(n=>n.props['data-word-group']!==undefined).length,4);assert.match(JSON.stringify(h.tree),/KIYI bulundu/);for(const target of board.targets.slice(1))assert(!JSON.stringify(h.tree).includes(target.text));
+  }finally{h.close();}
+ });
+ it('never reveals an extra initial for the second part of a concealed name',()=>{
+  const board=engine.makeCustomPuzzle(['AKİL HOCA','SOBA'],91,8),group=board.targets[0]!.group,h=view('components/game/common.tsx');try{h.start('WordList',{board,strokes:[],rack:true,veils:{[group]:'initial'}});const label=walk(h.tree).find(n=>n.props['data-word-label']!==undefined)!;assert.equal(text(label),'A··· ····');assert(!JSON.stringify(h.tree).includes('AKİL HOCA'));}finally{h.close();}
+ });
+});
+
+it('does not expose future story clues through the enlarged-board word sheet',()=>{
+ const story=stories.LIVING_STORIES[0]!,board=content.journeyBoard(story),h=view('components/game/common.tsx');try{h.start('BoardWords',{words:{board,strokes:[],clues:story.clues,activeOnly:board.targets[0]!.group}});h.find('button').props['onClick']();h.paint();const sheet=h.find('WordList').props;assert.deepEqual(sheet['board'].targets,[board.targets[0]]);assert.equal(sheet['strokes'].length,0);}finally{h.close();}
 });
