@@ -1,4 +1,5 @@
 export const GAME_UPDATES=[
+ {version:'0.35.0',date:'4 Kasım 2026',title:'Daha net, aynı yolculuk',items:[{where:'Tahtada',detail:'Harfler ve hedef kelimeler daha belirgin. Ara verdiğinde tahtaya dokunarak devam edebilirsin.'},{where:'Koleksiyon',detail:'Albümlerin, hatıraların ve menüler artık aynı sahneli görünümde. iPhone üst çubuğunda saat ve kamera alanı için yer ayrıldı.'}]},
  {version:'0.34.2',date:'4 Kasım 2026',title:'Sonuca dilediğinde geç',items:[{where:'Bölüm sonu',detail:'Hikâye, İpucu Avı, Günlük ve diğer solo oyunlarda da Sonuca geç düğmesi var. Son kelimenin hareketini beklemeden sonucunu görebilirsin; ilerlemen anında kaydedilir.'}]},
  {version:'0.34.1',date:'4 Kasım 2026',title:'Kelimen yerine otursun',items:[
   {where:'Kelime bulma',detail:'Harfler daha belirgin yükselir, acele etmeden listedeki yerlerine ulaşır. Kelimenin işareti varışta tamamlanır; sen sonraki kelimeyi çizmeye devam edebilirsin.'},

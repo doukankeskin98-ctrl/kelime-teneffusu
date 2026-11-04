@@ -1,5 +1,7 @@
 # Öncelikler
 
+4 Kasım2026,0.35.0: net hedef/tahta, güvenli native üst çubuk, dokunarak Solo resume ve sahneli Koleksiyon. Kullanıcının 0.34.1 animasyon hızı ve0.34.0 haptik dengesi kabul edildi; aynı kalır. Yeni fiziksel iPhone safe-area/kontrast denemesi açık. Kanıt `../journal/entries/2026-11-04-clarity.md`.
+
 4 Kasım 2026 bakım,0.34.2: bütün Solo modlarında atlanabilir sonuç geçişi. Kanıt `../journal/entries/2026-11-04_celebration-control.md`. Fiziksel iPhone yeni hareket hissi/FPS, VoiceOver, iki gerçek Arena cihazı ve provider/PWA kuyruğu açık. Haftalık değerlendirme31Ekim bakım günlüğünde mevcut; sonraki7Kasım veya ilk uygun çalışmada.
 
 4 Kasım2026,0.34.1: ölçülmüş harf kaynak/hedef geometrisi, okunur720ms uçuş ve varışta görsel onay; son kelime boyunca sabit tahta ve sonucu1040ms sonra gösterme. Haptik dengesi kullanıcı tarafından0.34.0 üzerinde onaylı; değiştirilmedi. Yeni animasyonun fiziksel his kabulü açık. Kanıt `../journal/entries/2026-11-04-word-arrival.md`.

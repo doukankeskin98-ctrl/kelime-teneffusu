@@ -32,7 +32,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- const props={earlyTargets:undefined as Target[]|undefined,board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;},onSelectEnd:()=>{selectionEnds++;}};
+ const props={onResume:undefined as (()=>void)|undefined,earlyTargets:undefined as Target[]|undefined,board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;},onSelectEnd:()=>{selectionEnds++;}};
  if(options.legacy)delete (element as any).setPointerCapture;
  Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
@@ -403,4 +403,26 @@ describe('continuous drag work and board-edge capture',()=>{
 it('accepts a skipped diagonal word at the exact bottom-right corner on release',()=>{
  const h=harness(),grid=Array.from({length:6},()=>Array(6).fill('X'));[...'KALE'].forEach((ch,i)=>grid[i]![i]=ch);
  try{h.setProps({board:{...TUTORIAL,size:6,grid},earlyTargets:[{id:'0.0',group:0,label:'KALE',text:'KALE'}]});h.send('onPointerDown',[0,0]);h.send('onPointerUp',[5.5,5.5]);assert.deepEqual(h.commits,[{a:[0,0],b:[3,3]}]);}finally{h.unmount();}
+});
+
+// A completed tap resumes; it must never become the first cell of a new word.
+describe('paused board resume surface',()=>{
+ it('offers one semantic button only for an explicitly resumable pause',()=>{
+  const h=harness({paused:true});let resumes=0;h.setProps({onResume:()=>{resumes++;h.setProps({paused:false});}});
+  const button=nodes(h.tree).find(n=>n.type==='button'&&n.props['aria-label']==='Oyuna devam et')!;assert.ok(button);
+  h.tap(a);assert.equal(resumes,0);assert.equal(h.selected().length,0);
+  button.props['onClick']();h.paint();assert.equal(resumes,1);assert.equal(h.selected().length,0);assert.equal(h.commits.length,0);
+  h.tap(b);assert.deepEqual(h.selected(),[b.join(',')]);assert.equal(h.commits.length,0);h.unmount();
+ });
+ it('does not expose resume for countdown, blocked or completed boards',()=>{
+  for(const options of [{paused:true},{paused:true,blocked:true},{paused:true,readOnly:true}]){
+   const h=harness(options);if(options.blocked||options.readOnly)h.setProps({onResume:()=>assert.fail('unexpected resume')});
+   assert.equal(nodes(h.tree).some(n=>n.type==='button'&&n.props['aria-label']==='Oyuna devam et'),false);h.unmount();
+  }
+ });
+ it('ignores a background click and keeps accepted paths',()=>{
+  const h=harness({paused:true,strokes:[TUTORIAL.placements[0]!]});let resumes=0;h.setProps({onResume:()=>resumes++});
+  const button=nodes(h.tree).find(n=>n.type==='button')!;h.visibility(true);button.props['onClick']();assert.equal(resumes,0);
+  h.visibility(false);button.props['onClick']();assert.equal(resumes,1);assert.equal(h.props.strokes.length,1);assert.equal(h.commits.length,0);h.unmount();
+ });
 });
