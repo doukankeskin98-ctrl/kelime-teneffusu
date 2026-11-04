@@ -1,5 +1,15 @@
 # Kelime Teneffüsü
 
+## 0.34.0 · Her kelimede bir dokunuş
+
+Doğrulanan kelimenin harfleri kendi hücrelerinden hedef listesine uçar; ters ve döndürülmüş seçimlerde harf sırası korunur. Çizgi kısa bir vurguyla sabitlenir. Efekt yalnız doğrulanmış durumu izler, puan/kelime kabulü üretmez. Eşzamanlı dört kelime sınırı, iptal/arka plan temizliği, gizli cevap ve azaltılmış hareket davranışı korunur.
+
+iOS uygulamasına yerel GameHaptics köprüsü eklendi: hazırlanmış rigid harf darbesi, ayrı medium doğru kelime, light menü ve mevcut bölüm başarı sinyali. İşlemler ana kuyrukta tamamlanır; eski darbeler ve arka plan çağrıları bırakılır. Web davranışı ve mevcut titreşim tercihi korunur.
+
+685 test / 139 grup, içerik, tip, şema değişmezliği, web/çevrimdışı/Safari sözdizimi, mobil paket, fiziksel iPhone için imzalı Release derlemesi ve 639 izole Worker HTTP kontrolü geçti. 414×628 tarayıcıda dört kelime çizildi, harf uçuşunun varışı, kısmi kayıtla dönüş, bölüm sonu ve sonraki bölüm görüldü; 320×568 görünümde 300×300 tahta bütünüyle görünür ve yatay taşma yok. Bu önizleme ayrı yerel test kaydı kullanır.
+
+iPhone 14 Pro Max üzerinde mevcut uygulama silinmeden 0.34.0 (11) kuruldu ve başlatıldı. Kurulum öncesi/sonrası beş yerel kayıt girdisinin SHA-256 değerleri birebir aynı; SQLite bütünlüğü geçti. Bu, titreşim yoğunluğu veya fiziksel kare süresi ölçümü değildir; yeni dokunma hissi için oyuncu geri bildirimi bekleniyor. İçerik, ilerleme, ödül ve Arena kuralları değişmedi. Kanıt: `studio-agents/journal/entries/2026-11-04-tactile.md`.
+
 ## 0.33.1 · Parmağını kaldırmadan
 
 Başlangıç harfi sabitken aynı dokunuşta sekiz yön arasında geçiş yapılır. İlk yöne kilitlenme kaldırıldı; merkez toleransı yeni yön ve son harfi birlikte kabul eder. Küçük sapmalar, hızlı son örnek/kenar taşması, erken kelime tanıma ve KALE/KALEM belirsizliği korunur. Kabul edilmemiş ters yönde çizginin başlangıcın öbür tarafına geçmesi önlendi. Ortak tahta normal, hikâye ve Arena ekranlarında aynı davranışı kullanır.

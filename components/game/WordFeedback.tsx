@@ -1,12 +1,11 @@
 'use client';
 import {useEffect,useRef,type RefObject} from 'react';
 import type {Puzzle,Stroke} from '@/lib/game/engine';
-import {wordFeedbackLedger} from '@/lib/game/word-feedback';
-import {viewCell} from '@/lib/game/board-view';
+import {wordFeedbackLedger,wordFlightPlan} from '@/lib/game/word-feedback';
 import {gameIsActive} from '@/lib/platform/runtime';
 
 /** Decoration observes confirmed state; input and save callbacks never enter here. */
-export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:RefObject<HTMLElement|null>;scope:string;board:Pick<Puzzle,'size'|'targets'>;confirmed:Stroke[];turned:boolean;paused:boolean}){
+export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:RefObject<HTMLElement|null>;scope:string;board:Pick<Puzzle,'size'|'targets'|'grid'>;confirmed:Stroke[];turned:boolean;paused:boolean}){
  const ledger=useRef(wordFeedbackLedger(scope,confirmed.map(s=>s.id)));
  const work=useRef(new Set<()=>void>()),previousTurn=useRef(turned);
  const clear=()=>{for(const stop of [...work.current])stop();};
@@ -33,31 +32,31 @@ export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:Re
   const flights=[];
   for(const id of fresh.slice(-4)){
    const stroke=confirmed.find(s=>s.id===id),target=board.targets.find(t=>t.id===id);if(!stroke||!target)continue;
-   const end=viewCell(stroke.b,board.size,turned);
    const destination=candidates.find(el=>el.dataset['wordGroup']===String(target.group)&&measure(el).width>0)
     ??screen.querySelector<HTMLElement>('.solo-found,.game-status,.duel-scorebar,.play-hud');
    if(!destination)continue;
    const dest=measure(destination);
-   const x=rect.left-bounds.left+(end[1]+.5)*rect.width/board.size,y=rect.top-bounds.top+(end[0]+.5)*rect.height/board.size;
-   const tx=dest.left-bounds.left+dest.width/2,ty=dest.top-bounds.top+dest.height/2;
-   const label=board.targets.filter(t=>t.group===target.group).every(t=>confirmed.some(s=>s.id===t.id))?target.label:target.text;
-   flights.push({x,y,tx,ty,label,destination});
+   const plan=wordFlightPlan(board,stroke,target,turned,rect,bounds,dest);
+   if(plan)flights.push({...plan,destination});
   }
-  for(const {x,y,tx,ty,label,destination} of flights){
+  for(const {fontSize,letters,destination} of flights){
    while(work.current.size>=4)work.current.values().next().value?.();
-   const spark=document.createElement('span');spark.className='word-flight word-flight-label';spark.textContent=label;spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
+   const spark=document.createElement('span');spark.className='word-flight word-flight-letters';spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
    const animations:Animation[]=[];let timer:ReturnType<typeof setTimeout>|undefined,stopped=false;
    const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);for(const animation of animations)animation.cancel();spark.remove();work.current.delete(stop);};
    work.current.add(stop);
    try{
-    animations.push(spark.animate([
-     {transform:`translate(${x}px,${y}px) translate(-50%,-50%) scale(.8)`,opacity:0,offset:0},
-     {transform:`translate(${x}px,${y}px) translate(-50%,-50%) scale(1.06)`,opacity:1,offset:.12},
-     {transform:`translate(${x+(tx-x)*.35}px,${Math.min(y,ty)-20}px) translate(-50%,-50%) scale(1)`,opacity:1,offset:.55},
-     {transform:`translate(${tx}px,${ty}px) translate(-50%,-50%) scale(.55)`,opacity:0,offset:1},
-    ],{duration:360,easing:'cubic-bezier(.2,.7,.3,1)',fill:'both'}));
-    if(destination.hasAttribute('data-word-group'))animations.push(destination.animate([{transform:'scale(1)'},{transform:'scale(1.045)'},{transform:'scale(1)'}],{delay:180,duration:220}));
-    timer=setTimeout(stop,600);
+    for(const [i,{text,x,y,tx,ty}] of letters.entries()){
+     const glyph=document.createElement('span');glyph.className='word-flight-glyph';glyph.textContent=text;glyph.style.fontSize=fontSize+'px';spark.appendChild(glyph);
+     animations.push(glyph.animate([
+      {transform:`translate(${x}px,${y}px) translate(-50%,-50%) scale(1)`,opacity:1,offset:0},
+      {transform:`translate(${x}px,${y-9}px) translate(-50%,-50%) scale(1.18)`,opacity:1,offset:.22},
+      {transform:`translate(${x+(tx-x)*.65}px,${Math.min(y,ty)-12}px) translate(-50%,-50%) scale(.9)`,opacity:1,offset:.72},
+      {transform:`translate(${tx}px,${ty}px) translate(-50%,-50%) scale(.55)`,opacity:0,offset:1},
+     ],{duration:440,delay:i*10,easing:'cubic-bezier(.2,.7,.25,1)',fill:'both'}));
+    }
+    if(destination.hasAttribute('data-word-group'))animations.push(destination.animate([{transform:'scale(1)'},{transform:'scale(1.1)',offset:.35},{transform:'scale(1)'}],{delay:360+(letters.length-1)*10,duration:200,easing:'ease-out'}));
+    timer=setTimeout(stop,800);
    }catch{stop();}
   }
  },[scope,confirmed,turned,paused,board]);

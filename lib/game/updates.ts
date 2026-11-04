@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.34.0',date:'4 Kasım 2026',title:'Her kelimede bir dokunuş',items:[
+  {where:'Kelime bulma',detail:'Bulduğun harfler tahtadan yükselip kelime listesine yerleşir. Çizgin kısa bir vurguyla sabitlenir; hemen sonraki kelimeye geçebilirsin.'},
+  {where:'iPhone uygulaması',detail:'Harf geçişleri daha belirgin, doğru kelime ve menü dokunuşları birbirinden farklı. Titreşim ve hareket tercihlerin korunur.'}
+ ]},
  {version:'0.33.1',date:'4 Kasım 2026',title:'Parmağını kaldırmadan',items:[
   {where:'Kelime seçimi',detail:'Yanlış yöne başladığında parmağını kaldırmadan başka yöne geç. İlk harfin sabit kalır; çizgin yatay, dikey ve çapraz yönlerde döner.'}
  ]},
