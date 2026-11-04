@@ -1,4 +1,7 @@
 export const GAME_UPDATES=[
+ {version:'0.33.1',date:'4 Kasım 2026',title:'Parmağını kaldırmadan',items:[
+  {where:'Kelime seçimi',detail:'Yanlış yöne başladığında parmağını kaldırmadan başka yöne geç. İlk harfin sabit kalır; çizgin yatay, dikey ve çapraz yönlerde döner.'}
+ ]},
  {version:'0.33.0',date:'4 Kasım 2026',title:'Çiz, bul, devam et',items:[
   {where:'Tahtada',detail:'Hızlı çizimlerde tahta kenarından taşan kelimeler daha iyi yakalanır. Çizgi, harfler arasında daha az işlemle ilerler.'},
   {where:'Oyun ayarları',detail:'Destekleyen telefonlarda titreşimi ve hareketleri artık oyun içinden ayarlayabilirsin. Arena ve Hızlı Turda süre işlemeye devam eder.'},
