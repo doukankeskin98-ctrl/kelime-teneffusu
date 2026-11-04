@@ -67,7 +67,7 @@ describe('rotated live layout keeps the original puzzle authoritative',()=>{
 });
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
 const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',MatchTools:'MatchTools',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
-const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
+const modules={'@/lib/platform/runtime':{gameIsActive:()=>true},'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
  it('defaults an enlarged board to drawing and offers explicit reversible panning outside the board',()=>{
@@ -506,5 +506,21 @@ describe('result and play preference surfaces',()=>{
  it('timed tools expose comfort controls without pausing and disappear when the match ends',()=>{
   const h=view('components/game/common.tsx');let sound=0;const props={sound:true,onSound:()=>sound++};
   try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);walk(h.tree).find(n=>n.type==='button'&&text(n)==='Ses açık')!.props['onClick']();assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahtayı inceleyebilirsin/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
+ });
+});
+
+describe('Solo explicit pause resumes without changing progress',()=>{
+ it('routes a pause resume through shared layout, stays running on duplicate callback, and protects help',()=>{
+  const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});const p=progress.emptyProgress();
+  try{h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1'},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});
+   assert.equal(h.find('PlayLayout').props['onResume'],undefined);h.find('PlayControls').props['onPause']();h.paint();
+   const resume=h.find('PlayLayout').props['onResume'];assert.equal(typeof resume,'function');resume();resume();h.paint();
+   assert.equal(h.find('PlayLayout').props['paused'],false);assert.equal(h.find('PlayLayout').props['strokes'].length,0);assert.equal(h.find('PlayControls').props['hints'],3);
+   h.find('PlayControls').props['onPause']();h.paint();h.find('PlayControls').props['onHelp']();h.paint();
+   assert.equal(h.find('PlayLayout').props['paused'],true);assert.equal(h.find('PlayLayout').props['onResume'],undefined);
+  }finally{h.close();}
+ });
+ it('passes a resume callback only when supplied by the game owner',()=>{
+  let called=0;const h=shared({paused:true,onResume:()=>called++});try{h.find('Board').props['onResume']();assert.equal(called,1);}finally{h.close();}
  });
 });
