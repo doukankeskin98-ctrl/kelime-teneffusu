@@ -68,7 +68,20 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
   const rect=d.rect,point:Cell=[(y-rect.top)/rect.height*n,(x-rect.left)/rect.width*n],step=advanceGesture(d.start,d.current,d.axis,point,n,release);
   d.axis=step.axis;if(same(d.current,step.cell))return false;d.current=step.cell;d.cells=snapLine(d.start,d.current,n);if(!same(d.start,step.cell))d.moved=true;return true;
  };
- const move=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;if(disabled.current)return clear();if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}const changed=advance(d,e.clientX,e.clientY);if(changed&&d.moved){setAnchor(null);const end=earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current);if(end){commit(d.start,end);return;}}const point:Cell=[(e.clientY-d.rect.top)/d.rect.height*n,(e.clientX-d.rect.left)/d.rect.width*n];schedule(d.cells,gestureTip(d.start,d.axis,point,n),changed);};
+ const move=(e:BoardPointer)=>{
+  const d=drag.current;
+  if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;
+  if(disabled.current)return clear();
+  if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}
+  const changed=advance(d,e.clientX,e.clientY);
+  if(changed&&d.moved){
+   setAnchor(null);
+   const end=earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current);
+   if(end){commit(d.start,end);return;}
+  }
+  const point:Cell=[(e.clientY-d.rect.top)/d.rect.height*n,(e.clientX-d.rect.left)/d.rect.width*n];
+  schedule(d.cells,gestureTip(d.start,d.current,d.axis,point,n),changed);
+ };
  const up=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;d.rect=ref.current!.getBoundingClientRect();const cell=cellAt(e.clientX,e.clientY,d.rect);drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;releaseContact();if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else{advance(d,e.clientX,e.clientY,true);if(d.moved)commit(d.start,earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current)||d.current);else if(same(cell,d.start))tap(d.start);else clear();}};
  const cancel=(e:BoardPointer)=>{if(drag.current?.id===e.pointerId&&drag.current.source===(e.input??'pointer'))clear();};
  const key=(e:KeyboardEvent)=>{if(paused)return;const dirs:Record<string,Cell>={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};const dir=dirs[e.key];if(dir){e.preventDefault();const next:Cell=[Math.max(0,Math.min(n-1,cursor[0]+dir[0])),Math.max(0,Math.min(n-1,cursor[1]+dir[1]))];setCursor(next);if(anchor&&!disabled.current)show(snapLine(anchor,next,n));}else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!disabled.current)tap(cursor);}else if(e.key==='Escape')clear();};

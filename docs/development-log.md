@@ -1,3 +1,7 @@
+## 0.36.1 · Son harf ve bölüm sonu
+
+TROYA'nın son A'sına köşeden girildiğinde geçerli diyagonal ilk çizimde kabul edilir. Parmak komşu hücreye kaydığında çizgi bulunmamış harfe uzanmaz. Son kelimeden sonra “Sonuca geç”, tahtanın altındaki İpucu yuvasında görünür. Kutlamanın başlığı, kapanış ve devam düğmeleri iPhone'un güvenli alanı içinde kalır; kısa ekranda uzun sonuçlar kaydırılabilir. Bölüm kimlikleri, kayıtlar, puanlama ve titreşim ayarları değişmedi.
+
 ## 0.36.0 · Tahta önde, hedefler birlikte
 
 Normal bölümlerde uzun ve parçalı kelimeler dahil bütün hedefler sabit raf üzerinde görünür; bulunan hedef yerini korur. Bilmecede numaralı/harf sayılı yuvalar ve seçili tanım, hikâyede yalnız etkin adımın cevabı açılır. Üst bilgi kısalır, konu başlığı öne çıkar, tekrar eden hedef/sıra metinleri kaldırılır. Portrede kalan boşluk tahtanın üstüne dağıtılmaz. Eski yoğun 12×12 kayıtları değişmez; kısa ekranda yalnız hedef rafı kayabilir. Uçuş boşluklu kelimelerin gerçek harflerine iner; kabul edilmiş 720/180/1040 ms ritmi ve haptik ayarları korunur.
