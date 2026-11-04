@@ -26,7 +26,7 @@
 .scenic-play .letter-selected{color:#153d32!important;text-shadow:none!important}
 .scenic-play .active-stroke-outline{opacity:.32}.scenic-play .active-selection{filter:none}
 .scenic-play .found-stroke.is-new{animation:ink-settle 360ms var(--game-ease) both;transform-box:fill-box;transform-origin:center}
-.scenic-play .word-end-flash{animation:end-bloom 420ms ease-out both}
+.scenic-play .word-end-flash{animation:end-bloom 360ms ease-out both;transform-box:fill-box;transform-origin:center}
 .word-flight{position:absolute;left:-5px;top:-5px;width:10px;height:10px;z-index:15;border-radius:50%;background:#fff6cb;box-shadow:0 0 0 4px #f6d78360,0 0 18px 8px #f6d78380;pointer-events:none;will-change:transform,opacity}
 .word-flight:after{content:'';position:absolute;inset:2px;background:#fff;border-radius:50%}
 .scenic-play .viewport-targets.has-word-rack>.word-list,.game-app .scenic-play .viewport-targets.has-word-rack>.word-list{border-radius:14px;padding:5px 8px;background:#fffdf4f5;box-shadow:0 3px 0 #143f3826;gap:0 8px}
@@ -63,8 +63,8 @@
 .collection-heading{margin:8px 0 28px}.collection-heading>span{font-size:12px;color:#7e8e7c}.collection-heading h1{font-size:36px;margin:7px 0}.collection-heading p{font-size:13px;color:#5f7869}.collection-player{border-top:1px solid #cbd7c6;border-bottom:1px solid #cbd7c6;margin:20px 0}.collection-player>summary{min-height:54px;display:flex;align-items:center;justify-content:space-between;font-size:13px;cursor:pointer;color:#476657}.collection-player .collection-stats{margin-bottom:0;border:0}.native-shell .profile-page .section-title h2{font-size:23px}.native-shell .profile-page .section-title p{font-size:12px}
 .scenery-observatory .scenery-motes i{animation-duration:8s}.scenery-harbor .scenery-motes i,.scenery-bosphorus .scenery-motes i{width:26px;height:2px;box-shadow:0 0 12px #f6df9a66;animation:water-glimmer 7s ease-in-out infinite}.scenery-garden .scenery-motes i,.scenery-valley .scenery-motes i{border-radius:70% 0 70% 0;animation:leaf-drift 12s ease-in-out infinite}
 @keyframes ink-settle{0%{opacity:.6;transform:scale(.97)}55%{opacity:1;transform:scale(1.015)}100%{opacity:1;transform:scale(1)}}
-@keyframes end-bloom{from{opacity:.9;stroke-width:.14}to{opacity:0;stroke-width:.01;r:.8}}
-@keyframes target-settle{0%{filter:brightness(1)}45%{filter:brightness(1.12)}100%{filter:brightness(1)}}
+@keyframes end-bloom{from{opacity:.85;transform:scale(.75)}to{opacity:0;transform:scale(1.9)}}
+@keyframes target-settle{from{opacity:.65}to{opacity:1}}
 @keyframes reward-star{0%{opacity:0;transform:translateY(22px) scale(.25) rotate(-12deg)}65%{opacity:1;transform:translateY(-3px) scale(1.12) rotate(3deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
 @keyframes reward-reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes album-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}

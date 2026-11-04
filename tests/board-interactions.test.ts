@@ -19,7 +19,7 @@ const compiled=ts.transpileModule(readFileSync('components/game/Board.tsx','utf8
 function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
- let selections=0,selectionEnds=0,renders=0;
+ let selections=0,selectionEnds=0,renders=0,pathBuilds=0;
  const dom=new Map<string,any>();
  const mount=(node:Node)=>{const r=node.props?.['ref'];if(!r)return;if(node.props['role']==='application'){r.current=element;return;}const key=node.props['data-cell']??node.props['className']??'selection-line';let el=dom.get(key);if(!el){const names=new Set<string>();el={attributes:new Map(),classList:{add:(v:string)=>names.add(v),remove:(v:string)=>names.delete(v),contains:(v:string)=>names.has(v)},setAttribute(k:string,v:string){this.attributes.set(k,v);}};dom.set(key,el);}if(typeof r==='function')r(el);else r.current=el;};
  const letters:number[]=[],commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
@@ -39,14 +39,14 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   if(name==='@/lib/platform/runtime')return {gameIsActive:()=>true};
   if(name==='@/lib/game/input-gesture')return gestures;if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
   if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
-  if(name==='@/lib/game/engine')return {snapLine};if(name==='@/lib/game/telemetry')return {track(){}};
+  if(name==='@/lib/game/engine')return {snapLine:(...args:Parameters<typeof snapLine>)=>{pathBuilds++;return snapLine(...args);}};if(name==='@/lib/game/telemetry')return {track(){}};
   throw new Error('Unexpected module: '+name);
  },window:windowTarget,document:documentTarget,performance:{now:()=>100},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id),ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}}});
  const boardNode=()=>{const n=nodes(tree).find(n=>n.props?.['role']==='application');assert.ok(n);return n;};
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);renders++;for(const node of nodes(tree))mount(node);}if(commit)while(effects.length)effects.shift()!();}return tree;};
  const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
- return {letters,commits,previews,accepted,props,paint,boardNode,send,
+ return {letters,commits,previews,accepted,props,paint,boardNode,send,get pathBuilds(){return pathBuilds;},
   native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/TUTORIAL.size,clientY:top+(cell[0]+.5)*height/TUTORIAL.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
   reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
   toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
@@ -325,3 +325,23 @@ describe('continuous ink remains independent from logical cells',()=>{
 });
 
 it('releasing fractional movement within the initial cell retires queued ink before tap anchoring',()=>{const h=harness();h.send('onPointerDown',[1,1]);h.send('onPointerMove',[1,1.2]);h.send('onPointerUp',[1,1.2]);h.flush();assert.equal(h.commits.length,0);assert.equal(Number(h.ink().get('x2')),1.5);assert.equal(Number(h.ink().get('y2')),1.5);h.tap([1,3]);assert.deepEqual(h.commits,[{a:[1,1],b:[1,3]}]);h.unmount();});
+
+
+describe('continuous drag work and board-edge capture',()=>{
+ it('moves the ink without rebuilding a path, re-rendering or repeating letter feedback inside a cell',()=>{
+  const h=harness();try{drag(h,[0,0],[0,3]);h.flush();const paths=h.pathBuilds,renders=h.renders,letters=h.letters.length,previews=h.previews.length;
+   for(let i=0;i<300;i++){h.send('onPointerMove',[0,3+(i%20)/100]);h.flush();}
+   assert.equal(h.pathBuilds,paths);assert.equal(h.renders,renders);assert.equal(h.letters.length,letters);assert.equal(h.previews.length,previews);assert.equal(h.commits.length,0);
+   assert(Number(h.ink().get('x2'))>3.5);h.send('onPointerUp',[0,3]);assert.equal(h.commits.length,1);
+  }finally{h.unmount();}
+ });
+ for(const releaseOnly of [false,true])it('recognizes a word crossed before a fast sample outside the board '+releaseOnly,()=>{
+  const h=harness(),grid=Array.from({length:6},()=>Array(6).fill('X'));grid[0]=[...'KALEXX'];const target={id:'0.0',group:0,label:'KALE',text:'KALE'};
+  try{h.setProps({board:{...TUTORIAL,size:6,grid},earlyTargets:[target]});h.send('onPointerDown',[0,0]);h.send(releaseOnly?'onPointerUp':'onPointerMove',[0,7]);assert.deepEqual(h.commits,[{a:[0,0],b:[0,3]}]);h.send('onPointerUp',[0,7]);h.flush();assert.equal(h.commits.length,1);}finally{h.unmount();}
+ });
+});
+
+it('accepts a skipped diagonal word at the exact bottom-right corner on release',()=>{
+ const h=harness(),grid=Array.from({length:6},()=>Array(6).fill('X'));[...'KALE'].forEach((ch,i)=>grid[i]![i]=ch);
+ try{h.setProps({board:{...TUTORIAL,size:6,grid},earlyTargets:[{id:'0.0',group:0,label:'KALE',text:'KALE'}]});h.send('onPointerDown',[0,0]);h.send('onPointerUp',[5.5,5.5]);assert.deepEqual(h.commits,[{a:[0,0],b:[3,3]}]);}finally{h.unmount();}
+});

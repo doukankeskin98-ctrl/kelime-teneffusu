@@ -65,7 +65,7 @@ describe('rotated live layout keeps the original puzzle authoritative',()=>{
  });
 });
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
-const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
+const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',MatchTools:'MatchTools',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
 const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
@@ -130,7 +130,7 @@ describe('caller wiring keeps timers, hidden targets and pending claims separate
   const board=content.TUTORIAL,claim=deferred<any>(),room={id:'room-1',round:1,revision:1,phase:'active',themeId:'uzay',serverNow:10000,starts:9000,ends:129000,you:{id:'alice',name:'Alice',score:0,strokes:[],rematch:false},opponent:{name:'Bob',score:0,count:0,online:true},board};
   const h=view('components/game/Arena.tsx',{...modules,'./common':{...commonStubs,getApi:async()=>room,api:async()=>claim.promise},'./useLiveRoom':{useLiveRoom:()=> 'connected'}});try{
    h.start('Arena',{authenticated:true,progress:progress.emptyProgress(),onProgress(){},onLogin(){},practice(){}});await h.settle();const layout=h.find('PlayLayout');assert.equal(layout.props['wordList'].strokes,room.you.strokes);assert.equal(layout.props['wordList'].golden,engine.goldenId(board.targets,9000,10000));const p=board.placements[0]!;layout.props['onCommit'](p.a,p.b);await h.settle();assert.equal(h.find('PlayLayout').props['strokes'].length,1);assert.equal(h.find('PlayLayout').props['wordList'].strokes.length,0);
-   const sheet=openWords(h.find('PlayLayout').props['wordList']);const before=text(h.tree);h.time(12000);assert.notEqual(text(h.tree),before);assert.equal(sheet.find('WordList').props['strokes'].length,0);sheet.find('Modal').props['onClose']();sheet.paint();sheet.close();const controls=h.find('PlayLayout').props['footer'];walk(controls).find(n=>n.type==='button'&&text(n)==='Kurallar')!.props['onClick']();h.paint();assert.equal(h.find('PlayLayout').props['wordListUnavailable'],true);
+   const sheet=openWords(h.find('PlayLayout').props['wordList']);const before=text(h.tree);h.time(12000);assert.notEqual(text(h.tree),before);assert.equal(sheet.find('WordList').props['strokes'].length,0);sheet.find('Modal').props['onClose']();sheet.paint();sheet.close();const controls=h.find('PlayLayout').props['footer'];walk(controls).find(n=>n.type==='MatchTools')!.props['onHelp']();h.paint();assert.equal(h.find('PlayLayout').props['wordListUnavailable'],true);
   }finally{h.close();}
  });
  it('uses confirmed Challenge strokes and blocks the word popup for exit and result',async()=>{
@@ -478,4 +478,16 @@ it('continues ten actual Solo chapters directly, keeping each completed save thr
   try{h.start('Solo',{config,progress:p,onProgress:(fn:any)=>{p=fn(p);},onBack(){},onMap(){},onNext:(c:any)=>next=c});const b=h.find('PlayLayout').props['board'];for(const stroke of b.placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);h.paint();}h.expire();assert.equal(p.saves['route:'+id]?.complete,true);const result=h.find('Modal');walk(result.props['footer']).find(n=>n.type==='button'&&String(n.props['className']).includes('primary'))!.props['onClick']();assert(next);config=next;p=progress.loadProgress(JSON.stringify(p));}finally{h.close();}
  }
  assert(expected.every(id=>p.saves['route:'+id]?.complete));assert.equal(Object.keys(p.saves).length,10);
+});
+
+
+describe('result and play preference surfaces',()=>{
+ it('blocks an open target sheet on celebration even when the board becomes read-only; review restores access',()=>{
+  const words={board:content.TUTORIAL,strokes:[]},h=shared({readOnly:true,wordList:words,wordListUnavailable:true,celebrating:true});
+  try{assert.equal(h.find('MobileTargets').props['unavailable'],true);h.update('PlayLayout',{...base,readOnly:true,wordList:words,wordListUnavailable:true,celebrating:false});assert.equal(h.find('MobileTargets').props['unavailable'],false);}finally{h.close();}
+ });
+ it('timed tools expose comfort controls without pausing and disappear when the match ends',()=>{
+  const h=view('components/game/common.tsx');let sound=0;const props={sound:true,onSound:()=>sound++};
+  try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);walk(h.tree).find(n=>n.type==='button'&&text(n)==='Ses açık')!.props['onClick']();assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahtayı inceleyebilirsin/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
+ });
 });
