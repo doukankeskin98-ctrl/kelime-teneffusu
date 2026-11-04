@@ -10,12 +10,12 @@ describe('center weighted eight-direction gestures',()=>{
   const start:Cell=[2,2];let step=advanceGesture(start,start,null,[2.99,3.01],9);assert.equal(step.axis,null);assert.deepEqual(step.cell,start);
   step=advanceGesture(start,step.cell,step.axis,[3.5,3.5],9);assert.deepEqual(step.axis,[1,1]);assert.deepEqual(step.cell,[3,3]);
  });
- for(const direction of directions)it('locks, advances and reverses on axis '+direction.join(','),()=>{
+ for(const direction of directions)it('advances and shortens on ray '+direction.join(','),()=>{
   const start:Cell=[4,4],next:Cell=[4+direction[0],4+direction[1]],end:Cell=[4+3*direction[0],4+3*direction[1]];
   let step=advanceGesture(start,start,null,center(next),9);assert.deepEqual(step.axis,direction);step=advanceGesture(start,step.cell,step.axis,center(end),9);assert.deepEqual(step.cell,end);
   step=advanceGesture(start,step.cell,step.axis,center(next),9,true);assert.deepEqual(step.cell,next);step=advanceGesture(start,step.cell,step.axis,center(start),9);assert.deepEqual(step.cell,start);
  });
- it('keeps the previous endpoint when drifting onto another row instead of rotating a locked axis',()=>{const step=advanceGesture([2,0],[2,2],[0,1],[3.5,3.5],9,true);assert.deepEqual(step.cell,[2,2]);assert.deepEqual(step.axis,[0,1]);});
+ it('keeps the previous endpoint for a small drift between valid rays',()=>{const step=advanceGesture([2,0],[2,2],[0,1],[3.5,3.5],9,true);assert.deepEqual(step.cell,[2,2]);assert.deepEqual(step.axis,[0,1]);});
  it('supports a release without any move and rejects invalid/outside input',()=>{
   assert.deepEqual(advanceGesture([0,0],[0,0],null,[5.5,5.5],6,true).cell,[5,5]);
   for(const point of [[NaN,1],[Infinity,0],[-50,-50],[100,100],[1e12,-1e12]] as Cell[])assert.deepEqual(advanceGesture([0,0],[0,0],null,point,6,true).cell,[0,0]);
@@ -24,6 +24,28 @@ describe('center weighted eight-direction gestures',()=>{
   for(let n=6;n<=13;n++)for(const direction of directions)for(let k=-30;k<=30;k++){
    const start:Cell=[Math.floor(n/2),Math.floor(n/2)],step=advanceGesture(start,start,direction,[start[0]+.5+k*.2*direction[0],start[1]+.5+k*.2*direction[1]],n,true);
    assert(step.cell.every(v=>v>=0&&v<n&&Number.isInteger(v)));assert.ok((step.cell[0]-start[0])*direction[1]===(step.cell[1]-start[1])*direction[0]);
+  }
+ });
+});
+
+describe('fixed-anchor pivot selection',()=>{
+ for(const order of [directions,[...directions].reverse()])it('rotates through all eight rays without returning to the anchor '+order[0],()=>{
+  const start:Cell=[4,4];let step={cell:start,axis:null as Cell|null};
+  for(const direction of [...order,...order]){
+   const end:Cell=[4+direction[0]*3,4+direction[1]*3];
+   step=advanceGesture(start,step.cell,step.axis,center(end),9);
+   assert.deepEqual(step.cell,end);assert.deepEqual(step.axis,direction);
+  }
+ });
+ it('can change direction on release and then retract to the anchor',()=>{
+  const start:Cell=[3,3];const step=advanceGesture(start,[0,3],[-1,0],[3.5,6.6],9,true);
+  assert.deepEqual(step.cell,[3,6]);assert.deepEqual(step.axis,[0,1]);
+  assert.deepEqual(advanceGesture(start,step.cell,step.axis,center(start),9).cell,start);
+ });
+ it('does not flicker between rays at a sector boundary or force a remote sample into a new ray',()=>{
+  const start:Cell=[4,4],current:Cell=[4,7],axis:Cell=[0,1];
+  for(const point of [[5.73,7.5],[5.75,7.5],[5.77,7.5],[NaN,0],[100,100]] as Cell[]){
+   const step=advanceGesture(start,current,axis,point,9);assert.deepEqual(step,{cell:current,axis});
   }
  });
 });

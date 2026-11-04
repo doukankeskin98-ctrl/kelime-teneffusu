@@ -25,8 +25,12 @@ export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell
  if(point.some(value=>value< -2||value>size+2))return unchanged;
  const dy=point[0]-start[0]-.5,dx=point[1]-start[1]-.5;
  if(Math.hypot(dy,dx)<.5&&!axis)return unchanged;
- let direction=axis;
- if(!direction){const angle=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*Math.PI/4;direction=[Math.round(Math.sin(angle))||0,Math.round(Math.cos(angle))||0];}
+ // The first letter is the anchor, not the first direction. Re-evaluate the ray
+ // from the current contact so a player can pivot without lifting or backtracking.
+ // The hit radius below commits the new ray only near a letter center; drifting
+ // between rays keeps the last selection rather than flickering between sectors.
+ const angle=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*Math.PI/4;
+ const direction:Cell=[Math.round(Math.sin(angle))||0,Math.round(Math.cos(angle))||0];
  const [dr,dc]=direction,projection=(dy*dr+dx*dc)/(dr*dr+dc*dc),step=Math.round(projection);
  let low=-Infinity,high=Infinity;
  // Constant-time bounds, even if a captured pointer reports far outside the board.
@@ -36,7 +40,7 @@ export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell
  const outside=point.some(value=>value<=0||value>=size);
  const excess=outside?projection-Math.max(low,Math.min(high,projection)):0;
  const distance=Math.hypot(point[0]-dr*excess-cell[0]-.5,point[1]-dc*excess-cell[1]-.5);
- // A slightly wider release boundary preserves fast final samples, never a new axis.
+ // A slightly wider release boundary also allows a last-sample direction change.
  if(distance>(release?.65:CELL_HIT_RADIUS))return unchanged;
  return {cell,axis:direction};
 }
@@ -50,6 +54,8 @@ export function gestureTip(start:Cell,axis:Cell|null,point:Cell,size:number):Cel
  const direction=axis??[Math.round(Math.sin(angle))||0,Math.round(Math.cos(angle))||0];
  const [dr,dc]=direction;let step=(dy*dr+dx*dc)/(dr*dr+dc*dc),low=-Infinity,high=Infinity;
  for(let i=0;i<2;i++){const d=direction[i]!,at=origin[i]!;if(d){const a=(.5-at)/d,b=(size-.5-at)/d;low=Math.max(low,Math.min(a,b));high=Math.min(high,Math.max(a,b));}}
- step=Math.max(low,Math.min(high,step));
+ // Until a new ray passes the hit test, its preview must not cross the anchor
+ // onto the opposite side while the selected letters still belong to this ray.
+ step=Math.max(0,low,Math.min(high,step));
  return [origin[0]+dr*step,origin[1]+dc*step];
 }
