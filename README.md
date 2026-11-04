@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.34.2 · Sonuca dilediğinde geç
+
+“Sonuca geç” artık yalnız ana yolculukta değil; öğretici, hikâye, İpucu Avı, klasik, normal, tarihli bölüm ve Günlük sonuç geçişlerinde de görünür. Son kelimenin uçuşunu beklemeden gerçek sonuca ulaşılır. Mevcut tahta üzerindeki eylem kullanılır; kelime kabulü, kayıt, ödül ve Arena akışı değişmez.
+
+Kabul ve gerçek test/yayın kanıtı: `studio-agents/journal/entries/2026-11-04_celebration-control.md`. Bu Linux turunda destekli önizleme başka vinext sunucusunun kilidi nedeniyle açılamadı; yeni DOM/telefon/FPS/VoiceOver veya iOS kurulum doğrulaması yok.
+
 ## 0.34.1 · Kelimen yerine otursun
 
 Kelime uçuşu 440 ms yerine 720 ms; harf gecikmesi en fazla84 ms, hedefe iniş180 ms. Ayrılış, yolculuk ve yerleşme ayrı zamanlanır; harfler yol boyunca opak kalır. Kaynakta gerçek yazı boyutu/fontu ve hedefte Range ile ölçülen harf konumları kullanılır. Check/çizgi yalnız görsel olarak varışı bekler; kabul, kayıt ve sonraki kelime girişi anındadır. Paylaşılan hedeflerde sayaçlı temizlik ve iptal/gizli cevap/hareket azalt davranışı korunur.
