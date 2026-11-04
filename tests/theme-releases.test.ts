@@ -6,7 +6,9 @@ const now=Math.max(...RELEASE_BATCHES.flatMap(b=>b.chapters.map(c=>c.chapter.pub
 describe('source chapters in their existing worlds',()=>{
  it('filters before paging and returns global world counts without board payloads',()=>{
   const all=releaseCatalogue(0,now),theme=all.chapters[0]!.spec.themeId,filtered=releaseCatalogue(0,now,theme);
-  assert(filtered.chapters.every(c=>c.spec.themeId===theme));assert.equal(filtered.total,all.chapters.filter(c=>c.spec.themeId===theme).length);assert.equal(filtered.themeCounts[theme],filtered.total);
+  const expected=RELEASE_BATCHES.flatMap(batch=>batch.chapters.map(c=>c.chapter)).filter(c=>c.spec.themeId===theme&&c.publishedAt<=now);
+  assert(filtered.chapters.every(c=>c.spec.themeId===theme));assert.equal(filtered.total,expected.length);assert.equal(all.themeCounts[theme],expected.length);assert.equal(filtered.themeCounts[theme],filtered.total);
+  assert(filtered.chapters.every(c=>expected.some(e=>e.id===c.id)));assert.equal(new Set(filtered.chapters.map(c=>c.id)).size,Math.min(24,expected.length));
   assert(filtered.chapters.every(c=>!('board' in c)));assert(filtered.companions.every(c=>!('board' in c)&&c.spec.themeId!==theme));
  });
  it('keeps the original cross-world stamp pair available from a filtered selection',()=>{
