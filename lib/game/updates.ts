@@ -1,4 +1,9 @@
 export const GAME_UPDATES=[
+ {version:'0.33.0',date:'4 Kasım 2026',title:'Çiz, bul, devam et',items:[
+  {where:'Tahtada',detail:'Hızlı çizimlerde tahta kenarından taşan kelimeler daha iyi yakalanır. Çizgi, harfler arasında daha az işlemle ilerler.'},
+  {where:'Oyun ayarları',detail:'Destekleyen telefonlarda titreşimi ve hareketleri artık oyun içinden ayarlayabilirsin. Arena ve Hızlı Turda süre işlemeye devam eder.'},
+  {where:'Yolculuk',detail:'Dünya durakları ve bölüm adları daha açık. Kelime ve bölüm sonu efektleri sadeleştirildi. İlerlemen ve kazandıkların korunur.'}
+ ]},
  {version:'0.32.1',date:'4 Kasım 2026',title:'Posta kutusundan basketbol sahasına',items:[{where:'Tarihli keşifler',detail:'Posta kutusu: 6×6 tahtada dört kelime. Basketbol antrenmanı: 8×8 tahtada yedi terim. Dünya listelerinde ve kalıcı arşivde durur.'},{where:'Koleksiyon · Tarihli damga',detail:'İki bölümü tamamlayarak 4 Kasım damganı aç. Süre veya ipucu şartı yok; daha sonra da tamamlayabilirsin.'}]},
  {version:'0.32.0',date:'4 Kasım 2026',title:'Günün Renkleri',items:[
   {where:'Yolculuk · Bölüm 145–168',detail:'Meyve Bahçesi, Mutfakta Bir Gün, El İşi Atölyesi ve Müzik Sokağı: dört rotada 24 yeni bölüm. Her bölümde başlığıyla ilgili kelimeler seni bekliyor.'},

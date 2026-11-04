@@ -21,22 +21,31 @@ export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:Re
   const visible=!paused&&!changedTurn&&!document.hidden&&gameIsActive();
   const fresh=ledger.current.consume(scope,confirmed.map(s=>s.id),visible);
   if(!visible||reduced){clear();return;}
+  if(!fresh.length)return;
   const screen=root.current,letterBoard=screen?.querySelector<HTMLElement>('.letter-board');
   if(!screen||!letterBoard||typeof letterBoard.animate!=='function')return;
   const bounds=screen.getBoundingClientRect(),rect=letterBoard.getBoundingClientRect();
   if(!rect.width||!rect.height)return;
+  // Read all destinations before appending effects; rapid confirmations share a layout.
+  const candidates=Array.from(screen.querySelectorAll<HTMLElement>('[data-word-group]'));
+  const measured=new Map<HTMLElement,DOMRect>();
+  const measure=(element:HTMLElement)=>{let rect=measured.get(element);if(!rect){rect=element.getBoundingClientRect();measured.set(element,rect);}return rect;};
+  const flights=[];
   for(const id of fresh.slice(-4)){
-   while(work.current.size>=4)work.current.values().next().value?.();
    const stroke=confirmed.find(s=>s.id===id),target=board.targets.find(t=>t.id===id);if(!stroke||!target)continue;
    const end=viewCell(stroke.b,board.size,turned);
-   const candidates=Array.from(screen.querySelectorAll<HTMLElement>('[data-word-group]'));
-   const destination=candidates.find(el=>el.dataset['wordGroup']===String(target.group)&&el.getBoundingClientRect().width>0)
+   const destination=candidates.find(el=>el.dataset['wordGroup']===String(target.group)&&measure(el).width>0)
     ??screen.querySelector<HTMLElement>('.solo-found,.game-status,.duel-scorebar,.play-hud');
    if(!destination)continue;
-   const dest=destination.getBoundingClientRect();
+   const dest=measure(destination);
    const x=rect.left-bounds.left+(end[1]+.5)*rect.width/board.size,y=rect.top-bounds.top+(end[0]+.5)*rect.height/board.size;
    const tx=dest.left-bounds.left+dest.width/2,ty=dest.top-bounds.top+dest.height/2;
-   const spark=document.createElement('span');spark.className='word-flight word-flight-label';spark.textContent=board.targets.filter(t=>t.group===target.group).every(t=>confirmed.some(s=>s.id===t.id))?target.label:target.text;spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
+   const label=board.targets.filter(t=>t.group===target.group).every(t=>confirmed.some(s=>s.id===t.id))?target.label:target.text;
+   flights.push({x,y,tx,ty,label,destination});
+  }
+  for(const {x,y,tx,ty,label,destination} of flights){
+   while(work.current.size>=4)work.current.values().next().value?.();
+   const spark=document.createElement('span');spark.className='word-flight word-flight-label';spark.textContent=label;spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
    const animations:Animation[]=[];let timer:ReturnType<typeof setTimeout>|undefined,stopped=false;
    const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);for(const animation of animations)animation.cancel();spark.remove();work.current.delete(stop);};
    work.current.add(stop);

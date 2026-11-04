@@ -1,5 +1,7 @@
 # Öncelikler
 
+4 Kasım 2026, 0.33.0: çizim hot-path yükü ve tahta kenarı kaçırması giderildi; kelime/sonuç geri bildirimi, oyun içi rahatlık ayarları, Arena modal/kontrast ve durak adları düzeltildi. Kanıt `../journal/entries/2026-11-04-skill-polish.md`. Fiziksel iPhone'da 20 dakika çizim, kare süresi, titreşim ve VoiceOver kabulü hâlâ açık; tarayıcı/VM testi bunun yerine geçmez.
+
 4 Kasım bakım,0.32.1: Posta kutusu/Basketbol antrenmanı tek sabit çift; son0.32 Günün Renkleri/168ana bölüm ve kesintisiz çizim korunur. Kabul/kanıt ../journal/entries/2026-11-04_maintenance.md. Fiziksel cihaz/VoiceOver/iki gerçek hesap/PWA açık öncelikler.
 
 4 Kasım 2026, 0.32.0: kullanıcı isteğiyle 24 yeni başlık-uyumlu ana bölüm eklendi; toplam168/28 rota. 100 tekil hedef ve16 tanım editoryal incelemeden geçti. Eski144 numara/181 tahta ve kayıtlar korunur. Kanıt `../journal/entries/2026-11-04-everyday-pack.md`. 300/600 hedefi tamamlanmış değildir; fiziksel cihaz kabulü açık kalır.
