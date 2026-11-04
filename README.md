@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.33.1 · Parmağını kaldırmadan
+
+Başlangıç harfi sabitken aynı dokunuşta sekiz yön arasında geçiş yapılır. İlk yöne kilitlenme kaldırıldı; merkez toleransı yeni yön ve son harfi birlikte kabul eder. Küçük sapmalar, hızlı son örnek/kenar taşması, erken kelime tanıma ve KALE/KALEM belirsizliği korunur. Kabul edilmemiş ters yönde çizginin başlangıcın öbür tarafına geçmesi önlendi. Ortak tahta normal, hikâye ve Arena ekranlarında aynı davranışı kullanır.
+
+679 test / 138 grup, içerik ve tip denetimi, şema değişmezliği, web/çevrimdışı/Safari sözdizimi, iOS paket derlemesi ve 639 izole Worker HTTP kontrolü geçti. Sekiz yönlü tek temas, eski Touch yolu, tek kabul, iptal ve aynı kare öncesinde birkaç dönüş gerçek Board bileşeni testlerinde doğrulandı. 414×628 ve 320×568 tarayıcı önizlemesinde çapraz/dikey sürükleme ve kısmi kayıtla dönüş görüldü. Tarayıcı aracı çok parçalı tek sürükleme sunmadığı için serbest dönüşün fiziksel hissi gerçek iPhone'da açık kontroldür. Kurulu telefon uygulaması güncellenmedi. İçerik/tahta/ilerleme/ödül/Arena geçmişi değişmedi. Kanıt: `studio-agents/journal/entries/2026-11-04-pivot.md`.
+
 ## 0.33.0 · Çiz, bul, devam et
 
 Tahta çizgisi aynı hücre içindeki hareketlerde mevcut yolu kullanır; tekrar yol dizisi, harf titreşimi ve React render üretmez. Sekiz yönde, tam kenar/köşe dahil iki hücrelik taşma bandında hızlı seçim geçilen kelimeyi yakalar; yön kilidi, belirsiz kısa/uzun kelime ve sunucu doğrulaması korunur. Yeni kelime yokken efekt geometri okumaz; eşzamanlı efektlerin okumaları yazmalardan önce toplanır. Kelime etiketini örten eski beyaz katman kaldırıldı; bitiş halkası transform/opacity ile çalışır, yıldız/parça ritmi düzenlendi.

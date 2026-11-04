@@ -230,11 +230,11 @@ describe('touch drawing across devices and enlarged boards',()=>{
  });
 });
 
-describe('locked imperative selection',()=>{
+describe('imperative straight-line selection',()=>{
  it('does not render React during a drag or RAF paint, even with many move events',()=>{
   const h=harness(),before=h.renders;h.send('onPointerDown',a);for(let i=0;i<100;i++){h.send('onPointerMove',[i%5+1,i%5+1]);h.flush();}h.send('onPointerMove',b);h.flush();assert.equal(h.renders,before);assert.equal(h.selections,1);assert.deepEqual(h.selected().sort(),cells(a,b));assert.equal(h.ink().get('x2'),'2.5');h.unmount();
  });
- it('keeps a locked horizontal line through cross-axis drift and can shorten before RAF',()=>{
+ it('keeps a horizontal line through small cross-axis drift and can shorten before RAF',()=>{
   const h=harness();h.send('onPointerDown',[2,0]);h.send('onPointerMove',[2,1]);h.send('onPointerMove',[3,3]);h.flush();assert.deepEqual(h.selected().sort(),cells([2,0],[2,1]));h.send('onPointerMove',[2,4]);h.send('onPointerUp',[2,2]);assert.deepEqual(h.commits,[{a:[2,0],b:[2,2]}]);h.flush();assert.equal(h.selected().length,0);h.unmount();
  });
  it('preserves imperative ink and selected letters across an unrelated parent render',()=>{
@@ -314,13 +314,72 @@ describe('continuous ink remains independent from logical cells',()=>{
   assert.equal(h.previews.length,previews);assert.equal(h.letters.length,letters);assert.equal(h.renders,renders);assert.equal(h.commits.length,0);
   h.send('onPointerUp',[2,2.2]);assert.deepEqual(h.commits,[{a:[2,1],b:[2,2]}]);h.unmount();
  });
- it('keeps fractional ink on each locked ray and clears queued motion on cancellation',()=>{
+ it('keeps fractional ink on each active ray and clears queued motion on cancellation',()=>{
   for(const [dr,dc] of [[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]]){
    const h=harness(),start:Cell=[2,2];h.send('onPointerDown',start);h.send('onPointerMove',[2+dr!,2+dc!]);h.flush();
    h.send('onPointerMove',[2+dr!*1.2,2+dc!*1.2]);h.flush();
    assert(Math.abs(Number(h.ink().get('x2'))-(2.5+dc!*1.2))<.001);assert(Math.abs(Number(h.ink().get('y2'))-(2.5+dr!*1.2))<.001);
    h.send('onPointerMove',[2+dr!*1.3,2+dc!*1.3]);h.send('onPointerCancel',start);h.flush();assert.equal(h.selected().length,0);assert.equal(h.commits.length,0);h.unmount();
   }
+ });
+});
+
+describe('one-contact direction changes',()=>{
+ const start:Cell=[2,2],tour:Cell[]=[[0,2],[0,4],[2,4],[4,4],[4,2],[4,0],[2,0],[0,0]];
+ it('paints only the latest ray when several pivots arrive before one frame',()=>{
+  const h=harness();try{h.send('onPointerDown',start);const renders=h.renders;
+   for(const end of tour)h.send('onPointerMove',end);h.flush();
+   assert.deepEqual(h.selected().sort(),cells(start,[0,0]));assert.equal(h.ink().get('x2'),'0.5');assert.equal(h.ink().get('y2'),'0.5');
+   assert.equal(h.previews.at(-1),snapLine(start,[0,0],6).map(([r,c])=>TUTORIAL.grid[r]![c]).join(''));assert.equal(h.renders,renders);
+   h.send('onPointerUp',[2,4]);assert.deepEqual(h.commits,[{a:start,b:[2,4]}]);h.flush();assert.equal(h.selected().length,0);
+  }finally{h.unmount();}
+ });
+ it('does not paint a rejected opposite ray and commits only the accepted letters',()=>{
+  const h=harness();try{
+   h.send('onPointerDown',start);h.send('onPointerMove',[2,4]);h.flush();
+   h.send('onPointerMove',[2.5,.5]);h.flush();
+   assert.deepEqual(h.selected().sort(),cells(start,[2,4]));
+   assert.equal(h.ink().get('x2'),'2.5');assert.equal(h.ink().get('y2'),'2.5');
+   h.send('onPointerUp',[2.5,.5]);assert.deepEqual(h.commits,[{a:start,b:[2,4]}]);
+  }finally{h.unmount();}
+ });
+ for(const legacy of [false,true])it('pivots around the fixed first letter, including ink, preview and one final commit; legacy='+legacy,()=>{
+  const h=harness({legacy});try{
+   if(legacy)h.native('touchstart',[start]);else h.send('onPointerDown',start);
+   const renders=h.renders;
+   for(const end of [...tour,...tour]){
+    if(legacy)h.native('touchmove',[end]);else h.send('onPointerMove',end);h.flush();
+    assert.deepEqual(h.selected().sort(),cells(start,end));
+    assert.equal(h.ink().get('x1'),'2.5');assert.equal(h.ink().get('y1'),'2.5');
+    assert.equal(h.ink().get('x2'),String(end[1]+.5));assert.equal(h.ink().get('y2'),String(end[0]+.5));
+    assert.deepEqual(h.outline(),h.ink());
+    assert.equal(h.previews.at(-1),snapLine(start,end,6).map(([r,c])=>TUTORIAL.grid[r]![c]).join(''));
+    assert.equal(h.commits.length,0);
+   }
+   assert.equal(h.renders,renders);assert.equal(h.selections,1);assert.equal(h.letters.length,9);
+   if(legacy)h.native('touchend',[],[[0,0]]);else h.send('onPointerUp',[0,0]);
+   assert.deepEqual(h.commits,[{a:start,b:[0,0]}]);assert.equal(h.selectionEnds,1);
+  }finally{h.unmount();}
+ });
+ for(const releaseOnly of [false,true])it('accepts a target once after a wrong direction, without returning to the anchor; release='+releaseOnly,()=>{
+  const h=harness(),grid=Array.from({length:6},()=>Array(6).fill('X')),origin:Cell=[2,1];grid[2]=[...'XKALEX'];
+  try{h.setProps({board:{...TUTORIAL,grid},earlyTargets:[{id:'0.0',group:0,label:'KALE',text:'KALE'}]});
+   h.send('onPointerDown',origin);h.send('onPointerMove',[0,1]);h.send('onPointerMove',[0,3]);h.flush();assert.equal(h.commits.length,0);
+   h.send(releaseOnly?'onPointerUp':'onPointerMove',[2,5]);
+   assert.deepEqual(h.commits,[{a:origin,b:[2,4]}]);
+   h.send('onPointerMove',[5,1]);h.send('onPointerUp',[5,1]);h.flush();assert.equal(h.commits.length,1);assert.equal(h.selected().length,0);
+  }finally{h.unmount();}
+ });
+ it('preserves KALE/KALEM ambiguity after pivoting and can leave that ray again',()=>{
+  const h=harness(),grid=Array.from({length:6},()=>Array(6).fill('X'));grid[2]=[...'XKALEM'];
+  try{h.setProps({board:{...TUTORIAL,grid},earlyTargets:['KALE','KALEM'].map((text,group)=>({id:group+'.0',group,label:text,text}))});
+   h.send('onPointerDown',[2,1]);h.send('onPointerMove',[0,1]);h.send('onPointerMove',[2,4]);assert.equal(h.commits.length,0);
+   h.send('onPointerMove',[4,3]);h.flush();assert.deepEqual(h.selected().sort(),cells([2,1],[4,3]));
+   h.send('onPointerMove',[2,5]);assert.deepEqual(h.commits,[{a:[2,1],b:[2,5]}]);
+  }finally{h.unmount();}
+ });
+ it('cancels a pivot without leaving a stale commit or ink',()=>{
+  const h=harness();try{h.send('onPointerDown',start);for(const end of tour)h.send('onPointerMove',end);h.send('onPointerCancel',tour.at(-1)!);h.flush();h.send('onPointerUp',tour.at(-1)!);assert.equal(h.commits.length,0);assert.equal(h.selected().length,0);assert.equal(h.selectionEnds,1);}finally{h.unmount();}
  });
 });
 
