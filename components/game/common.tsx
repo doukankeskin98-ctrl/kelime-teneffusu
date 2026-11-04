@@ -4,7 +4,7 @@ import {publicGameOrigin} from '@/lib/platform/runtime';
 import '@/lib/game/browser-compat';
 import {wordCardCopy,wordListProgress,focusedWordGroup,compactWordRack,veiledText,type WordVeil} from '@/lib/game/word-card';
 import {useEffect,useRef,useId,useState,type ReactNode,type CSSProperties} from 'react';
-import {ArrowLeft,Check,HelpCircle,Lightbulb,ListChecks,LoaderCircle,Pause,Play,Volume2,VolumeX,X,ZoomIn,RotateCw,Settings2} from 'lucide-react';
+import {ArrowLeft,ArrowRight,Check,HelpCircle,Lightbulb,ListChecks,LoaderCircle,Pause,Play,Volume2,VolumeX,X,ZoomIn,RotateCw,Settings2} from 'lucide-react';
 import {Board,strokeColor} from './Board';
 import {stopHapticSelection} from '@/lib/game/haptics';
 import {WordFeedback} from './WordFeedback';
@@ -23,7 +23,7 @@ export async function getApi<T>(query='',signal?:AbortSignal):Promise<T>{const r
 export async function socialApi<T>(action:string,data:Record<string,unknown>={},signal?:AbortSignal):Promise<T>{const res=await memberFetch('/api/social',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data}),signal});const value=await res.json();if(!res.ok)throw new Error(errorText(value));return value as T;}
 export async function getSocial<T>(query='',signal?:AbortSignal):Promise<T>{const res=await memberFetch('/api/social'+query,{signal});const data=await res.json();if(!res.ok)throw new Error(errorText(data));return data as T;}
 export {useChime} from './useGameSound';
-export function Modal({title,onClose,children,className='',footer,scene}:{scene?:SceneKind;title:string;onClose:()=>void;children:ReactNode;className?:string;footer?:ReactNode}){const ref=useRef<HTMLDialogElement>(null),id=useId();useEffect(()=>{const d=ref.current;if(d)return openGameDialog(d,onClose,window);},[]);return <dialog className={'modal game-dialog'+(className?' '+className:'')+(scene?' scenic-outcome':'')} style={scene?{'--outcome-scene':`url("${sceneImage(scene)}")`} as CSSProperties:undefined} ref={ref} onCancel={e=>{e.preventDefault();onClose();}} onClick={e=>{if(e.target===ref.current){const bounds=e.currentTarget.getBoundingClientRect();if(e.clientX<bounds.left||e.clientX>bounds.right||e.clientY<bounds.top||e.clientY>bounds.bottom)onClose();}}} role="dialog" aria-modal="true" aria-labelledby={id}>{className.includes('celebration-outcome')&&<Celebration/>}<div className="modal-head"><h2 id={id}>{title}</h2><button className="icon-button" aria-label="Kapat" onClick={onClose}><X/></button></div>{footer?<><div className="modal-content">{children}</div><footer className="modal-actions" aria-label="Sonuç eylemleri">{footer}</footer></>:children}</dialog>;}
+export function Modal({title,onClose,children,className='',footer,scene}:{scene?:SceneKind;title:string;onClose:()=>void;children:ReactNode;className?:string;footer?:ReactNode}){const ref=useRef<HTMLDialogElement>(null),id=useId();useEffect(()=>{const d=ref.current;if(d)return openGameDialog(d,onClose,window);},[]);return <dialog className={'modal game-dialog'+(!footer?' dialog-scrolls':'')+(className?' '+className:'')+(scene?' scenic-outcome':'')} style={scene?{'--outcome-scene':`url("${sceneImage(scene)}")`} as CSSProperties:undefined} ref={ref} onCancel={e=>{e.preventDefault();onClose();}} onClick={e=>{if(e.target===ref.current){const bounds=e.currentTarget.getBoundingClientRect();if(e.clientX<bounds.left||e.clientX>bounds.right||e.clientY<bounds.top||e.clientY>bounds.bottom)onClose();}}} role="dialog" aria-modal="true" aria-labelledby={id}>{className.includes('celebration-outcome')&&<Celebration/>}<div className="modal-head"><h2 id={id}>{title}</h2><button className="icon-button" aria-label="Kapat" onClick={onClose}><X/></button></div>{footer?<><div className="modal-content">{children}</div><footer className="modal-actions" aria-label="Sonuç eylemleri">{footer}</footer></>:children}</dialog>;}
 export interface WordListData {veils?:Record<number,WordVeil>;board:Pick<Puzzle,'targets'>;strokes:Stroke[];golden?:string|null;clues?:Record<string,string>;focusedGroup?:number|null;onFocusGroup?:(group:number)=>void;activeOnly?:number|null}
 /** A read-only view. Opening it never pauses, selects or changes the board. */
 export function BoardWords({words}:{words:WordListData}){
@@ -126,12 +126,15 @@ export function MatchTools({sound,onSound,zoom,onZoom,onHelp,finished=false,revi
  {onHelp&&<button onClick={()=>{setOpen(false);onHelp();}}><HelpCircle/>Kurallar</button>}
  <button onClick={()=>setOpen(false)}><Play/>Oyuna dön</button></div><PlayComfortSettings/><p>{finished?'Tamamladığın tahtayı inceleyebilirsin.':'Yarış süresi devam ediyor.'}</p></Modal>}</>;
 }
-export function PlayControls({paused,onPause,zoom,onZoom,sound,onSound,hints,onHint,onHelp,canPause=true,completed=false,blocked=false,busy=false,onTurn,turned=false}:{onTurn?:()=>void;turned?:boolean;paused:boolean;onPause:()=>void;zoom:boolean;onZoom:()=>void;sound:boolean;onSound:()=>void;hints:number;onHint:()=>void;onHelp:()=>void;canPause?:boolean;completed?:boolean;blocked?:boolean;busy?:boolean}){
+export function PlayControls({paused,onPause,zoom,onZoom,sound,onSound,hints,onHint,onHelp,canPause=true,completed=false,blocked=false,busy=false,onTurn,turned=false,onSkipResult}:{onTurn?:()=>void;turned?:boolean;paused:boolean;onPause:()=>void;zoom:boolean;onZoom:()=>void;sound:boolean;onSound:()=>void;hints:number;onHint:()=>void;onHelp:()=>void;canPause?:boolean;completed?:boolean;blocked?:boolean;busy?:boolean;onSkipResult?:()=>void}){
  const [menu,setMenu]=useState(false),resume=useRef(false);
  const open=()=>{resume.current=canPause&&!paused&&!completed;if(resume.current)onPause();setMenu(true);};
  const close=()=>{setMenu(false);if(resume.current){resume.current=false;onPause();}};
  return <><div className={'play-controls'+(completed?' is-review':'')}>
- {completed?<span className="review-controls-label"><Check size={17}/>İnceleme</span>:<button className="button primary hint-button" disabled={paused||blocked||hints===0} aria-busy={busy||undefined} onClick={onHint}>{busy?<LoaderCircle size={19} className="spin"/>:<Lightbulb size={19}/>}İpucu <span>{hints}</span></button>}
+ {!completed&&<button className="button primary hint-button" disabled={paused||blocked||hints===0} aria-busy={busy||undefined} onClick={onHint}>{busy?<LoaderCircle size={19} className="spin"/>:<Lightbulb size={19}/>}İpucu <span>{hints}</span></button>}
+ {completed&&(onSkipResult
+  ? <button type="button" className="button journey-skip-reward" onClick={onSkipResult}>Sonuca geç<ArrowRight size={16} aria-hidden="true"/></button>
+  : <span className="review-controls-label"><Check size={17}/>İnceleme</span>)}
  {onTurn&&<button className="icon-button turn-board" onClick={onTurn} disabled={paused||blocked} aria-label="Tahtayı döndür" aria-pressed={turned}><RotateCw/></button>}
  {canPause&&!completed&&<button className="icon-button" onClick={onPause} aria-label={paused?'Devam et':'Duraklat'}>{paused?<Play/>:<Pause/>}</button>}
  <button className="icon-button" onClick={open} aria-label="Oyun araçları" aria-haspopup="dialog"><Settings2/></button></div>

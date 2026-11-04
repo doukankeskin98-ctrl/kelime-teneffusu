@@ -168,8 +168,9 @@ it('skips the daily final flight without resubmitting the day or duplicating its
   for(const stroke of h.board.placements.slice(0,-1))await h.f.game.dailyClaim('alice',h.initial.id,stroke.a,stroke.b);
   h.commit(h.board.placements.length-1);await h.settle();const last=h.board.placements.at(-1)!;h.gate.resolve(await h.f.game.dailyClaim('alice',h.initial.id,last.a,last.b));await h.settle();
   assert.equal(h.layout().props['readOnly'],true);assert.equal(nodes(h.tree).some(n=>n.type==='Modal'),false);
-  const skips=nodes(h.tree).filter(n=>n.type==='button'&&text(n)==='Sonuca geç');assert.equal(skips.length,1);const count=h.writes.length;
-  skips[0]!.props['onClick']();skips[0]!.props['onClick']();await h.settle();assert(h.find('Modal'));t.mock.timers.tick(wordFeedback.WORD_RESULT_DELAY_MS+100);await h.settle();
+  const controls=h.controls();assert.equal(h.layout().props['footer'],controls);
+  const skip=controls.props['onSkipResult'];assert.equal(typeof skip,'function');const count=h.writes.length;
+  skip();skip();await h.settle();assert(h.find('Modal'));assert.equal(h.controls().props['onSkipResult'],undefined);t.mock.timers.tick(wordFeedback.WORD_RESULT_DELAY_MS+100);await h.settle();
   assert.equal(h.calls.length,1);assert.equal(h.writes.length,count);assert.equal(JSON.stringify(h.value.days),JSON.stringify([h.initial.day]));assert.equal((await h.f.game.dailyState('alice',h.initial.id)).finished!==null,true);
  }finally{h.close();}
 });

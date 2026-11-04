@@ -23,6 +23,14 @@ const icons=new Proxy({},{get:(_t,key)=>String(key)}),common:Record<string,any>=
 vm.runInNewContext(compile('components/game/common.tsx'),{exports:common,require:(name:string)=>name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='react'?{useRef:()=>({current:null}),useEffect(){},useState:(initial:unknown)=>[initial,()=>{}]}:name==='lucide-react'?icons:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:name==='@/lib/game/word-card'?{wordCardCopy}:{}});
 
 describe('shared completed controls and review instructions',()=>{
+ it('offers one native result button in the existing control row during the completion delay',()=>{
+  let skipped=0;
+  const tree=common['PlayControls']({paused:false,completed:true,zoom:false,sound:false,hints:0,onSkipResult(){skipped++;}});
+  const row=nodes(tree).find(n=>String(n.props['className']??'').split(' ').includes('play-controls'));assert(row);
+  const skips=nodes(row).filter(n=>n.type==='button'&&text(n)==='Sonuca geç');assert.equal(skips.length,1);
+  assert.equal(skips[0]!.props['type'],'button');assert(!skips[0]!.props['disabled']);skips[0]!.props['onClick']();assert.equal(skipped,1);
+  assert.doesNotMatch(text(row),/İnceleme|İpucu/);
+ });
  it('replaces hint/pause with review and exposes the tools menu without resuming',()=>{
   const actions={onPause(){throw new Error('No resume in review');},onHint(){throw new Error('No hint in review');},onZoom(){},onSound(){},onHelp(){}};
   for(const paused of [false,true]){const tree=common['PlayControls']({...actions,paused,completed:true,zoom:false,sound:false,hints:2});

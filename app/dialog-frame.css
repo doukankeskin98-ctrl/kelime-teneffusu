@@ -1,0 +1,19 @@
+/* One safe, content-sized frame for native dialogs and the older Safari fallback. */
+.modal.game-dialog{
+ --dialog-safe-top:env(safe-area-inset-top,0px);
+ --dialog-safe-bottom:env(safe-area-inset-bottom,0px);
+ position:fixed;bottom:auto!important;height:auto!important;min-height:0;margin:0 auto!important;
+ max-width:calc(100% - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));
+}
+.modal.game-dialog.scene-result{padding:10px 8px 12px;border-radius:24px;scrollbar-gutter:auto}
+.modal.game-dialog.scene-result>.modal-head{flex:0 0 auto;margin:0;min-height:60px;padding:14px 48px 8px}
+.modal.game-dialog.scene-result>.modal-head h2{font-size:26px;line-height:1.2;letter-spacing:-.02em}
+.modal.game-dialog.scene-result>.modal-head>.icon-button{width:44px;height:44px;min-width:44px;min-height:44px;top:5px;right:0}
+.modal.game-dialog.scene-result>.modal-content{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 16px 10px}
+.modal.game-dialog.scene-result>.modal-actions{flex:0 0 auto;margin-top:8px;padding:8px 16px 10px}
+/* Results without a footer wrapper still expose every action on short screens. */
+.modal.game-dialog.dialog-scrolls{overflow-y:auto;overscroll-behavior:contain}
+@media(max-height:500px){
+ .modal.game-dialog.scene-result[open]{display:block;overflow-y:auto}
+ .modal.game-dialog.scene-result>.modal-content{overflow:visible}
+}

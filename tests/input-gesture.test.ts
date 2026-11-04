@@ -1,6 +1,6 @@
 import {describe,it} from 'node:test';
 import assert from 'node:assert/strict';
-import {advanceGesture,CELL_HIT_RADIUS,earlyWordEnd} from '../lib/game/input-gesture.ts';
+import {advanceGesture,CELL_HIT_RADIUS,earlyWordEnd,gestureTip} from '../lib/game/input-gesture.ts';
 import type {Cell} from '../lib/game/engine.ts';
 const center=(cell:Cell):Cell=>[cell[0]+.5,cell[1]+.5];
 const directions:Cell[]=[[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
@@ -79,4 +79,38 @@ describe('bounded edge capture preserves direction and target ambiguity',()=>{
 it('captures exact board edges and opposite corners but rejects beyond the two-cell grace band',()=>{
  for(const release of [false,true])for(const [start,point,expected] of [[[0,0],[6,6],[5,5]],[[5,5],[0,0],[0,0]],[[0,0],[.5,6],[0,5]],[[0,0],[.5,8],[0,5]],[[5,5],[5.5,-2],[5,0]]] as [Cell,Cell,Cell][])assert.deepEqual(advanceGesture(start,start,null,point,6,release).cell,expected);
  for(const point of [[.5,8.00001],[5.5,-2.00001]] as Cell[])assert.deepEqual(advanceGesture([0,0],[0,0],null,point,6,true).cell,[0,0]);
+});
+
+
+describe('whole-cell acceptance on an established word ray',()=>{
+ it('accepts the TROYA last-cell corner that previously painted A but kept TROY',()=>{
+  for(const release of [false,true]){
+   const step=advanceGesture([3,2],[6,5],[1,1],[7.01,6.99],8,release);
+   assert.deepEqual(step.cell,[7,6]);
+  }
+ });
+ for(const direction of directions)it('accepts all four corners of a distant on-ray letter '+direction,()=>{
+  const start:Cell=[4,4],end:Cell=[4+3*direction[0],4+3*direction[1]],previous:Cell=[4+2*direction[0],4+2*direction[1]];
+  for(const y of [.01,.99])for(const x of [.01,.99])for(const release of [false,true]){
+   const step=advanceGesture(start,previous,direction,[end[0]+y,end[1]+x],9,release);
+   assert.deepEqual(step.cell,end);assert.deepEqual(step.axis,direction);
+  }
+ });
+ it('does not turn an adjacent off-ray cell into the intended final letter',()=>{
+  for(const point of [[6.99,6.99],[7.01,7.01]] as Cell[]){
+   const step=advanceGesture([3,2],[6,5],[1,1],point,8);assert.deepEqual(step.cell,[6,5]);
+  }
+ });
+ it('keeps the ink at the last selected letter for off-ray samples in all eight directions',()=>{
+  const start:Cell=[4,4];
+  for(const [dr,dc] of directions){
+   const current:Cell=[4+2*dr,4+2*dc],axis:Cell=[dr,dc];
+   const besideNext:Cell=[4.5+3*dr+.6*dc,4.5+3*dc-.6*dr];
+   const selection=advanceGesture(start,current,axis,besideNext,9);
+   assert.deepEqual(selection.cell,current);
+   assert.deepEqual(gestureTip(start,selection.cell,selection.axis,besideNext,9),center(current));
+   const withinCurrent:Cell=[4.5+2.2*dr,4.5+2.2*dc];
+   assert.deepEqual(gestureTip(start,current,axis,withinCurrent,9),withinCurrent);
+  }
+ });
 });
