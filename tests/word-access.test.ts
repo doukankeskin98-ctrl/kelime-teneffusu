@@ -483,6 +483,22 @@ it('continues ten actual Solo chapters directly, keeping each completed save thr
 
 
 describe('result and play preference surfaces',()=>{
+ for(const mode of ['main','tutorial','story','riddle','classic','ordinary','external'])it(`lets ${mode} Solo skip its final flight without saving or rewarding twice`,()=>{
+  let p=progress.emptyProgress(),writes=0;const storage=new Map<string,string>();
+  const journey=mode==='main'?mainJourney.MAIN_JOURNEY[0]?.chapter:mode==='story'?stories.LIVING_STORIES[0]:mode==='riddle'?riddles.RIDDLE_CHAPTERS[0]:null;
+  const config={themeId:journey?.themeId??'uzay',level:0,...(journey?{journey:journey.id}:{}),...(mode==='main'?{campaign:true}:mode==='tutorial'?{tutorial:true}:mode==='classic'?{classic:true}:{})};
+  const h=view('components/game/Solo.tsx',{...modules,'@/lib/game/legacy':legacy,'./common':commonStubs},undefined,storage);
+  try{
+   h.start('Solo',{config,progress:p,onProgress:(fn:any)=>{p=fn(p);writes++;},onBack(){},onMap(){},onNext(){},...(mode==='external'?{external:{board:content.TUTORIAL,title:'Tarihli bölüm',note:'',onSave(){writes++;}}}:{})});
+   const board=h.find('PlayLayout').props['board'];assert(!walk(h.tree).some(n=>n.type==='button'&&text(n)==='Sonuca geç'));
+   for(const target of board.targets){const stroke=board.placements.find((s:any)=>s.id===target.id)!;h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);h.paint();}
+   assert.equal(h.find('PlayLayout').props['readOnly'],true);assert(!walk(h.tree).some(n=>n.type==='Modal'));
+   const skip=walk(h.tree).filter(n=>n.type==='button'&&text(n)==='Sonuca geç');assert.equal(skip.length,1);
+   const before=JSON.stringify(p),count=writes,legacySave=storage.get(legacy.SAVE_KEY);
+   skip[0]!.props['onClick']();skip[0]!.props['onClick']();h.paint();assert(h.find('Modal'));assert.equal(h.find('PlayLayout').props['board'],board);
+   h.expire();assert.equal(writes,count);assert.equal(JSON.stringify(p),before);assert.equal(storage.get(legacy.SAVE_KEY),legacySave);
+  }finally{h.close();}
+ });
  it('blocks an open target sheet on celebration even when the board becomes read-only; review restores access',()=>{
   const words={board:content.TUTORIAL,strokes:[]},h=shared({readOnly:true,wordList:words,wordListUnavailable:true,celebrating:true});
   try{assert.equal(h.find('MobileTargets').props['unavailable'],true);h.update('PlayLayout',{...base,readOnly:true,wordList:words,wordListUnavailable:true,celebrating:false});assert.equal(h.find('MobileTargets').props['unavailable'],false);}finally{h.close();}
