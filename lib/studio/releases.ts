@@ -12,13 +12,14 @@ import eleventhRelease from '../../content/releases/2026-10-31.json' with {type:
 import twelfthRelease from '../../content/releases/2026-11-01.json' with {type:'json'};
 import thirteenthRelease from '../../content/releases/2026-11-02.json' with {type:'json'};
 import fourteenthRelease from '../../content/releases/2026-11-03.json' with {type:'json'};
+import fifteenthRelease from '../../content/releases/2026-11-04.json' with {type:'json'};
 import type {PlayableChapter} from './content.ts';
 import type {ReleaseSummary} from './release-identity.ts';
 export {releaseChapterId,type ReleaseSummary} from './release-identity.ts';
 
 export interface ReleaseBatch {date:string;chapters:{slot:number;chapter:PlayableChapter}[]}
 /** Append one immutable snapshot per UTC date. Never regenerate a published file. */
-export const RELEASE_BATCHES:readonly ReleaseBatch[]=[firstRelease as ReleaseBatch,secondRelease as ReleaseBatch,thirdRelease as ReleaseBatch,fourthRelease as ReleaseBatch,fifthRelease as ReleaseBatch,sixthRelease as ReleaseBatch,seventhRelease as ReleaseBatch,eighthRelease as ReleaseBatch,ninthRelease as ReleaseBatch,tenthRelease as ReleaseBatch,eleventhRelease as ReleaseBatch,twelfthRelease as ReleaseBatch,thirteenthRelease as ReleaseBatch,fourteenthRelease as ReleaseBatch];
+export const RELEASE_BATCHES:readonly ReleaseBatch[]=[firstRelease as ReleaseBatch,secondRelease as ReleaseBatch,thirdRelease as ReleaseBatch,fourthRelease as ReleaseBatch,fifthRelease as ReleaseBatch,sixthRelease as ReleaseBatch,seventhRelease as ReleaseBatch,eighthRelease as ReleaseBatch,ninthRelease as ReleaseBatch,tenthRelease as ReleaseBatch,eleventhRelease as ReleaseBatch,twelfthRelease as ReleaseBatch,thirteenthRelease as ReleaseBatch,fourteenthRelease as ReleaseBatch,fifteenthRelease as ReleaseBatch];
 export const reservedReleaseId=(id:unknown)=>RELEASE_BATCHES.some(batch=>batch.chapters.some(item=>item.chapter.id===id));
 function available(now:number){return RELEASE_BATCHES.filter(batch=>batch.date<=new Date(now).toISOString().slice(0,10)).flatMap(batch=>batch.chapters.filter(item=>item.chapter.publishedAt<=now).map(item=>({...item,releaseDate:batch.date}))).sort((a,b)=>b.releaseDate.localeCompare(a.releaseDate)||a.slot-b.slot);}
 export function releaseCatalogue(offset=0,now=Date.now(),themeId?:string){

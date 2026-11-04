@@ -1,3 +1,7 @@
+## 0.32.1 · 4 Kasım: Posta kutusu / Basketbol antrenmanı
+
+Rahat6×6/dört posta kelimesi ve Dengeli8×8/yedi basketbol terimi; iki çapraz eğim ve sabit UTCtarih/slot/ID/hash. Mevcut bölüm seçici/dünya/arşiv yolları ve iki tamamlamayla4Kasım damgası.168 ana bölüm/28rota, eski14 çift, ilerleme/ödül/Arena ve0.32 çizim davranışı değişmez. Kabul/kanıt studio-agents/journal/entries/2026-11-04_maintenance.md. Fiziksel iPhone/VoiceOver/iki gerçek hesap/PWA kabulü açıktır.
+
 ## 0.32.0 · Günün Renkleri
 
 145–168 numaralı 24 yeni ana bölüm: Meyve Bahçesi, Mutfakta Bir Gün, El İşi Atölyesi ve Müzik Sokağı. Her rotada altı bölüm ve altı kalıcı albüm parçası; toplam 168 bölüm / 28 rota. Başlıklar görünür konu olarak doğrudan kullanılır. 100 farklı hedef ve 16 tanım editoryal olarak incelendi; eski katalogla aynı kelime kümesi yok. Dört bilmece, dört rahat mola, dört baş harfli ve yalnız bir tamamen gizli hedef; yeni tahtalar 6–8 satır / 4–5 kelimedir.

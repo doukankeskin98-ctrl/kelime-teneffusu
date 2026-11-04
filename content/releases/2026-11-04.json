@@ -1,0 +1,422 @@
+{
+  "date": "2026-11-04",
+  "chapters": [
+    {
+      "slot": 1,
+      "chapter": {
+        "id": "20261104-0001-4000-8000-000000000001",
+        "spec": {
+          "title": "Posta kutusu",
+          "themeId": "teknoloji",
+          "words": [
+            "MEKTUP",
+            "ZARF",
+            "PUL",
+            "KART"
+          ],
+          "size": 6,
+          "seed": 2026110401,
+          "difficulty": "Rahat",
+          "note": "Bir mektubun yolculuğundaki dört kelimeyi bul. Çaprazlara da bak."
+        },
+        "board": {
+          "version": 2,
+          "size": 6,
+          "grid": [
+            [
+              "Ç",
+              "P",
+              "P",
+              "R",
+              "M",
+              "V"
+            ],
+            [
+              "T",
+              "İ",
+              "İ",
+              "Z",
+              "E",
+              "V"
+            ],
+            [
+              "F",
+              "U",
+              "A",
+              "Y",
+              "K",
+              "P"
+            ],
+            [
+              "B",
+              "R",
+              "H",
+              "P",
+              "T",
+              "M"
+            ],
+            [
+              "F",
+              "H",
+              "H",
+              "Ü",
+              "U",
+              "J"
+            ],
+            [
+              "T",
+              "R",
+              "A",
+              "K",
+              "P",
+              "L"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "MEKTUP",
+              "text": "MEKTUP",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "ZARF",
+              "text": "ZARF",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "PUL",
+              "text": "PUL",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "KART",
+              "text": "KART",
+              "group": 3
+            }
+          ],
+          "placements": [
+            {
+              "id": "0.0",
+              "label": "MEKTUP",
+              "text": "MEKTUP",
+              "group": 0,
+              "a": [
+                0,
+                4
+              ],
+              "b": [
+                5,
+                4
+              ]
+            },
+            {
+              "id": "1.0",
+              "label": "ZARF",
+              "text": "ZARF",
+              "group": 1,
+              "a": [
+                1,
+                3
+              ],
+              "b": [
+                4,
+                0
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "KART",
+              "text": "KART",
+              "group": 3,
+              "a": [
+                5,
+                3
+              ],
+              "b": [
+                5,
+                0
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "PUL",
+              "text": "PUL",
+              "group": 2,
+              "a": [
+                3,
+                3
+              ],
+              "b": [
+                5,
+                5
+              ]
+            }
+          ]
+        },
+        "contentHash": "7de3129423a8c5a4249637f7f4468a07d0a8a93eb90ff5e43374f62d8b52ac11",
+        "publishedAt": 1793750400000,
+        "archived": false
+      }
+    },
+    {
+      "slot": 2,
+      "chapter": {
+        "id": "20261104-0002-4000-8000-000000000001",
+        "spec": {
+          "title": "Basketbol antrenmanı",
+          "themeId": "basketbol",
+          "words": [
+            "POTA",
+            "RİBAUNT",
+            "TURNİKE",
+            "PAS",
+            "FAUL",
+            "SAVUNMA",
+            "FORMA"
+          ],
+          "size": 8,
+          "seed": 2026110402,
+          "difficulty": "Dengeli",
+          "note": "Sahada yedi basketbol kelimesi var. Çaprazları ve ters yönleri kontrol et."
+        },
+        "board": {
+          "version": 2,
+          "size": 8,
+          "grid": [
+            [
+              "T",
+              "D",
+              "Ş",
+              "L",
+              "U",
+              "A",
+              "F",
+              "T"
+            ],
+            [
+              "T",
+              "N",
+              "U",
+              "A",
+              "B",
+              "İ",
+              "R",
+              "P"
+            ],
+            [
+              "F",
+              "O",
+              "R",
+              "M",
+              "A",
+              "N",
+              "O",
+              "V"
+            ],
+            [
+              "İ",
+              "L",
+              "C",
+              "H",
+              "Ğ",
+              "T",
+              "Ğ",
+              "Ğ"
+            ],
+            [
+              "N",
+              "K",
+              "Ç",
+              "N",
+              "A",
+              "D",
+              "L",
+              "U"
+            ],
+            [
+              "R",
+              "N",
+              "T",
+              "Ğ",
+              "H",
+              "S",
+              "M",
+              "J"
+            ],
+            [
+              "S",
+              "A",
+              "V",
+              "U",
+              "N",
+              "M",
+              "A",
+              "Z"
+            ],
+            [
+              "T",
+              "U",
+              "R",
+              "N",
+              "İ",
+              "K",
+              "E",
+              "P"
+            ]
+          ],
+          "targets": [
+            {
+              "id": "0.0",
+              "label": "POTA",
+              "text": "POTA",
+              "group": 0
+            },
+            {
+              "id": "1.0",
+              "label": "RİBAUNT",
+              "text": "RİBAUNT",
+              "group": 1
+            },
+            {
+              "id": "2.0",
+              "label": "TURNİKE",
+              "text": "TURNİKE",
+              "group": 2
+            },
+            {
+              "id": "3.0",
+              "label": "PAS",
+              "text": "PAS",
+              "group": 3
+            },
+            {
+              "id": "4.0",
+              "label": "FAUL",
+              "text": "FAUL",
+              "group": 4
+            },
+            {
+              "id": "5.0",
+              "label": "SAVUNMA",
+              "text": "SAVUNMA",
+              "group": 5
+            },
+            {
+              "id": "6.0",
+              "label": "FORMA",
+              "text": "FORMA",
+              "group": 6
+            }
+          ],
+          "placements": [
+            {
+              "id": "1.0",
+              "label": "RİBAUNT",
+              "text": "RİBAUNT",
+              "group": 1,
+              "a": [
+                1,
+                6
+              ],
+              "b": [
+                1,
+                0
+              ]
+            },
+            {
+              "id": "2.0",
+              "label": "TURNİKE",
+              "text": "TURNİKE",
+              "group": 2,
+              "a": [
+                7,
+                0
+              ],
+              "b": [
+                7,
+                6
+              ]
+            },
+            {
+              "id": "5.0",
+              "label": "SAVUNMA",
+              "text": "SAVUNMA",
+              "group": 5,
+              "a": [
+                6,
+                0
+              ],
+              "b": [
+                6,
+                6
+              ]
+            },
+            {
+              "id": "6.0",
+              "label": "FORMA",
+              "text": "FORMA",
+              "group": 6,
+              "a": [
+                2,
+                0
+              ],
+              "b": [
+                2,
+                4
+              ]
+            },
+            {
+              "id": "0.0",
+              "label": "POTA",
+              "text": "POTA",
+              "group": 0,
+              "a": [
+                1,
+                7
+              ],
+              "b": [
+                4,
+                4
+              ]
+            },
+            {
+              "id": "4.0",
+              "label": "FAUL",
+              "text": "FAUL",
+              "group": 4,
+              "a": [
+                0,
+                6
+              ],
+              "b": [
+                0,
+                3
+              ]
+            },
+            {
+              "id": "3.0",
+              "label": "PAS",
+              "text": "PAS",
+              "group": 3,
+              "a": [
+                7,
+                7
+              ],
+              "b": [
+                5,
+                5
+              ]
+            }
+          ]
+        },
+        "contentHash": "8f453b20419e1c31ab2b2aed4e6f40ecb5af9794f63afe70ddec2ceb7c3ae543",
+        "publishedAt": 1793750400000,
+        "archived": false
+      }
+    }
+  ]
+}
