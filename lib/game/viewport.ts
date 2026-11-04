@@ -55,7 +55,9 @@ export function measurePlayFrame(screen:HTMLElement,stage:HTMLElement,cells:numb
  const board=stage.querySelector<HTMLElement>('.letter-board'),boardCSS=board?view.getComputedStyle(board):null;
  const insets=(scrollCSS?pixels(scrollCSS.paddingLeft)+pixels(scrollCSS.paddingRight)+pixels(scrollCSS.borderLeftWidth)+pixels(scrollCSS.borderRightWidth):0)+(boardCSS?pixels(boardCSS.borderLeftWidth)+pixels(boardCSS.borderRightWidth):0);
  const fitted=fitGameFrame(stage.clientWidth,height,overhead,zoom?0:cells,stacked?0:frameChrome+targetHeight,zoom?96:insets);
- return {...fitted,height,overhead,stageHeight:Math.max(0,Math.floor(Math.max(height,fitted.minHeight)-overhead)),overflow:fitted.minHeight>height};
+ // Portrait play keeps the square immediately below its targets. Spare vertical
+ // room belongs below the play area, never half above the board inside a centred track.
+ return {...fitted,height,overhead,stageHeight:stacked&&!zoom?fitted.boardSize:Math.max(0,Math.floor(Math.max(height,fitted.minHeight)-overhead)),overflow:fitted.minHeight>height};
 }
 
 /** ResizeObserver is an enhancement, never a requirement for the first fit. */

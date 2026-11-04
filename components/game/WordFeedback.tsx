@@ -41,12 +41,12 @@ export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:Re
    let plan=wordFlightPlan(board,stroke,target,turned,rect,bounds,dest);if(!plan)continue;
    const source=cells[plan.letters[0]!.viewIndex],style=source?getComputedStyle(source):null;
    const label=Array.from(destination.querySelectorAll<HTMLElement>('[data-word-part]')).find(el=>el.dataset['wordPart']===id)
-    ??Array.from(destination.querySelectorAll<HTMLElement>('[data-word-label]')).find(el=>el.textContent===target.text);
+    ??Array.from(destination.querySelectorAll<HTMLElement>('[data-word-label]')).find(el=>el.textContent?.replace(/\s/g,'')===target.text);
    const destinations:FlightRect[]=[];
    // Range geometry uses actual font kerning and inline positions, including Turkish letters.
-   if(label?.firstChild?.nodeType===3&&label.textContent===target.text&&typeof document.createRange==='function'){
+   if(label?.firstChild?.nodeType===3&&label.textContent?.replace(/\s/g,'')===target.text&&typeof document.createRange==='function'){
     const range=document.createRange();let offset=0;
-    for(const char of target.text){range.setStart(label.firstChild,offset);offset+=char.length;range.setEnd(label.firstChild,offset);destinations.push(range.getBoundingClientRect());}
+    for(const char of label.textContent??''){const start=offset;offset+=char.length;if(/\s/.test(char))continue;range.setStart(label.firstChild,start);range.setEnd(label.firstChild,offset);destinations.push(range.getBoundingClientRect());}
    }
    const fontSize=parseFloat(style?.fontSize??'');
    if(Number.isFinite(fontSize)&&fontSize>0){
