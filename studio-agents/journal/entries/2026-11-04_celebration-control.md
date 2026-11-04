@@ -1,0 +1,18 @@
+# Kutlama kontrolü · 4 Kasım 2026 bakım
+
+Başlangıç: Sites0.34.1/e0d14c4b390aa8b2ad2d51910da294afbfcc8650, GitHub164d339a4e4bbd6d1d42b1221226c5188e81d5bf, aynı tam ağaç b669b33b9984ce36544d671b0d7a9b2bba36e5c4. Site sahibi/yayın yetkisi mevcut. Bugünün Posta kutusu/Basketbol antrenmanı çifti var; çoğaltılmayacak. Üretim hata sorgusunda son180dakikada üç canceled kayıt, exception yok; bu kayıtlar uygulama kusuru kanıtı değildir.
+
+Adaylar: fiziksel iPhone yeni animasyon/FPS kabulü (yüksek değer, bu Linux oturumunda cihaz erişimi yok); canlı hareket tercihi değişiminde dekorasyon iptali (düşük etki, bir saniyelik sınır); bütün Solo modlarında kutlamayı atlama (kaynakta kesin eksik, küçük maliyet/risk). Seçim üçüncü: Solo.tsx içindeki main koşulu diğer modlardan Sonuca geç eylemini saklıyor; sürüm notundaki genel atlanabilirlik davranışıyla çelişiyor. Mevcut absolute yerleşim ve kayıt kuralları kullanılacak. Tek koordinatör; bağımsız uzman kapsamı gerektirmeyen dar hata. Hesap/kuyruk/cihaz öncelikleri tamamlandı sayılmadı.
+
+Uygulamadan önce kabul: ana yolculuk, öğretici, hikâye, İpucu Avı, klasik, tarihli dış bölüm ve Günlükte final onayından sonra tek Sonuca geç; tıklama sonucu hemen açar; tekrar tıklama/bekleyen zamanlayıcı yeniden kayıt/ödül üretmez; sonuçtan önce tahta readOnly ve kayıt tamamdır. Mevcut overlay sınıfıyla tahta ölçüsünü etkileyen yeni akış öğesi yok. Azaltılmış hareket/restore ve Arena davranışı korunur. Hedefli gerçek caller testleri, tam test/tip/içerik/şema, web/mobil paket, Worker HTTP, CI ve tam ağaç eşleşmesi yayın kapısı. Tarayıcı ve fiziksel cihaz sınırı ayrıca kaydedilecek.
+
+Önceki kaynakta yeni caller regresyonlarının ana yolculuk kontrolü geçti; diğer altı mod ve sunucu onaylı Günlük testi atlama düğmesi bulunamadığı için başarısız oldu (beklenen1, gerçek0). Tek uygulama farkı main koşulunun kaldırılmasıdır. Günlük testinin ilk düzeltilmiş koşusunda VM array-prototype karşılaştırması yakalandı; kayıt dizisi JSON değeriyle karşılaştırılarak düzeltildi. Yeni gerçek oyun hatası değildi.
+
+Dar birincil referans: [W3C Animation from Interactions](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html),4Kasım erişimi; gereksiz hareket üzerinde kullanıcı kontrolü ilkesi. Mevcut hareketi azalt seçeneği korunur; bu dar değişiklik bütün WCAG uyumluluğu iddiası değildir.
+
+Destekli sites-preview start, /site içindeki mevcut vinext sunucusu/PID14 kilidi nedeniyle healthy olamadı. Kaynak veya ağ izinleri değiştirilmedi, başka süreç sonlandırılmadı ve aynı deneme tekrarlanmadı. Bu tur DOM, fiziksel cihaz, FPS, VoiceOver, gerçek provider/PWA/iki gerçek telefon veya native kurulum kanıtı yok. Önceki0.34.1 fiziksel kurulum kanıtı bu sürümün cihaz testi değildir. Haftalık31Ekim değerlendirmesi kaynakta bulundu;7Kasım öncesi gereksiz tekrar yok.
+
+Nihai yerel kapılar:699test/140grup,0fail/skip; tip kontrolü;241 authored tahta/4820alternatif,64 ek grup tahtası,774Arena tanımı/919kelime/96rekabet tahtası ve714Sprint kelimesi;23tablo, yeni göç/fark yok.176korunan kaynak/asset/native/göç dosyası ve15 tarih snapshotı başlangıçla byte-eş. Bütünsekiz yeni caller regresyonu geçti; sekizinci test gerçek izole Günlük servisinin tamamlanma cevabını kullanır. Hızlı çift tıklama ve eski gecikme zamanlayıcısından sonra kayıt/ödül tekrarı yok. Tahta nesnesi aynı; absolute eylemin fiziksel geometrisi bu tur DOM ile ölçülmedi.
+
+Mobil web asset ve üretim web/çevrimdışı/Safari sözdizimi derlemeleri geçti. 639 production Worker HTTP checks passed with two legacy players, eight private-group and sixteen concurrent public-group sessions.
+GitHub CI/tam ağaç/birleşim ve Sites sürüm/yayın makbuzu PR metaverisinde tutulur.

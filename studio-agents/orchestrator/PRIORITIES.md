@@ -1,5 +1,7 @@
 # Öncelikler
 
+4 Kasım 2026 bakım,0.34.2: bütün Solo modlarında atlanabilir sonuç geçişi. Kanıt `../journal/entries/2026-11-04_celebration-control.md`. Fiziksel iPhone yeni hareket hissi/FPS, VoiceOver, iki gerçek Arena cihazı ve provider/PWA kuyruğu açık. Haftalık değerlendirme31Ekim bakım günlüğünde mevcut; sonraki7Kasım veya ilk uygun çalışmada.
+
 4 Kasım2026,0.34.1: ölçülmüş harf kaynak/hedef geometrisi, okunur720ms uçuş ve varışta görsel onay; son kelime boyunca sabit tahta ve sonucu1040ms sonra gösterme. Haptik dengesi kullanıcı tarafından0.34.0 üzerinde onaylı; değiştirilmedi. Yeni animasyonun fiziksel his kabulü açık. Kanıt `../journal/entries/2026-11-04-word-arrival.md`.
 
 4 Kasım 2026, 0.34.0: harf uçuşu ve ayrı native iOS harf/kelime/menü titreşimleri. 685 test, 639 Worker kontrolü; iPhone üzerine kayıt korunarak kurulum ve başlatma tamamlandı. Hissin dengesi ve fiziksel frame pacing için oyuncu denemesi açık. Kanıt `../journal/entries/2026-11-04-tactile.md`.
