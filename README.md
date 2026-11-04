@@ -1,5 +1,13 @@
 # Kelime Teneffüsü
 
+## 0.34.1 · Kelimen yerine otursun
+
+Kelime uçuşu 440 ms yerine 720 ms; harf gecikmesi en fazla84 ms, hedefe iniş180 ms. Ayrılış, yolculuk ve yerleşme ayrı zamanlanır; harfler yol boyunca opak kalır. Kaynakta gerçek yazı boyutu/fontu ve hedefte Range ile ölçülen harf konumları kullanılır. Check/çizgi yalnız görsel olarak varışı bekler; kabul, kayıt ve sonraki kelime girişi anındadır. Paylaşılan hedeflerde sayaçlı temizlik ve iptal/gizli cevap/hareket azalt davranışı korunur.
+
+Solo sonucu1040 ms görsel pay bırakır; Arena yalnız aktif maçtan yeni onaylı son kelimeyle bitişte bekler. Sonuca hemen geçilebilir, restore/azaltılmış hareket beklemez. Son kelimede sonuç düğmelerinin tahtayı küçültmesi giderildi; kontrol kilidi/puan/maç saati aynı kalır. Kullanıcının0.34.0'da fiziksel iPhone üzerinden belirgin ve dengeli bulduğu haptik ayarları değişmedi.
+
+691 test/140 grup, son yerleşim düzeltmesi için93 ilgili test, içerik/tip/değişmeyen23tablo, web/42offline/21Safari12parçası, mobil16sahne, imzalı fiziksel iPhone Release ve639 Worker HTTP kontrolleri geçti. Mobil tarayıcıda normal ve döndürülmüş-tersten çizim, uçuş sırasında hedefin çizgisiz hali ve sonra işareti görüldü. Son kelime uçarken tahta394×394 ve x10/y172.5 sabit kaldı;320×568 ekranda300×300 sekiz satırlı tahta taşmadan görünür. Gerçek cihazın yeni animasyon hissi/FPS kabulü ayrıca değerlendirilir. İçerik, kayıt şeması, ödül ve Arena geçmişi değişmedi. Kanıt: `studio-agents/journal/entries/2026-11-04-word-arrival.md`.
+
 ## 0.34.0 · Her kelimede bir dokunuş
 
 Doğrulanan kelimenin harfleri kendi hücrelerinden hedef listesine uçar; ters ve döndürülmüş seçimlerde harf sırası korunur. Çizgi kısa bir vurguyla sabitlenir. Efekt yalnız doğrulanmış durumu izler, puan/kelime kabulü üretmez. Eşzamanlı dört kelime sınırı, iptal/arka plan temizliği, gizli cevap ve azaltılmış hareket davranışı korunur.

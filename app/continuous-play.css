@@ -19,6 +19,11 @@
 .word-flight.word-flight-letters{left:0;top:0;width:0;height:0;background:none;box-shadow:none;border-radius:0;will-change:auto}
 .word-flight.word-flight-letters:after{content:none}
 .word-flight-glyph{position:absolute;left:0;top:0;font-family:var(--sans);font-weight:800;line-height:1;color:#173e36;text-shadow:0 1px 0 #fffdf4;will-change:transform,opacity;pointer-events:none}
+.scenic-play .word-tag.found[data-word-arriving=true],.scenic-play .word-tag.found[data-word-arriving=true]>div,.scenic-play .word-tag[data-word-arriving=true] .part-found{text-decoration:none!important}
+.scenic-play .word-tag[data-word-arriving=true]>span{opacity:0}
+.scenic-play .word-tag[data-word-arriving=true]{animation:none!important}
+.scenic-play .word-tag.found{animation:none!important}
+.scenic-play .journey-skip-reward{position:absolute;z-index:6;left:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;padding:0 16px;min-height:44px;background:#f6d778;border-radius:24px;box-shadow:0 2px 0 #70582040}
 .play-comfort-settings{border-top:1px solid #dce4d5;margin-top:12px;padding-top:4px}
 .stage-trail-caption{display:block;text-align:center;font-size:11px;line-height:16px;color:#e0e5d5;margin-top:14px}.stage-trail-caption+.stage-trail{margin-top:7px}
 .scenic-play .found-stroke.is-new{animation:word-lock 280ms var(--settle-ease) both;transform-origin:center;transform-box:fill-box}

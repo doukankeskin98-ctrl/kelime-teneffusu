@@ -1,4 +1,8 @@
 export const GAME_UPDATES=[
+ {version:'0.34.1',date:'4 Kasım 2026',title:'Kelimen yerine otursun',items:[
+  {where:'Kelime bulma',detail:'Harfler daha belirgin yükselir, acele etmeden listedeki yerlerine ulaşır. Kelimenin işareti varışta tamamlanır; sen sonraki kelimeyi çizmeye devam edebilirsin.'},
+  {where:'Son kelime',detail:'Bölüm ve Arena sonucu son kelimenin hareketini örtmez. Sonuca hemen geçmek de elinde; ilerlemen anında kaydedilir.'}
+ ]},
  {version:'0.34.0',date:'4 Kasım 2026',title:'Her kelimede bir dokunuş',items:[
   {where:'Kelime bulma',detail:'Bulduğun harfler tahtadan yükselip kelime listesine yerleşir. Çizgin kısa bir vurguyla sabitlenir; hemen sonraki kelimeye geçebilirsin.'},
   {where:'iPhone uygulaması',detail:'Harf geçişleri daha belirgin, doğru kelime ve menü dokunuşları birbirinden farklı. Titreşim ve hareket tercihlerin korunur.'}

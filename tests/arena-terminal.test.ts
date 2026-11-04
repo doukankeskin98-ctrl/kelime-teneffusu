@@ -1,3 +1,4 @@
+import * as wordFeedback from '../lib/game/word-feedback.ts';
 // Executes the real Arena caller with controlled hooks and server state.
 // This validates component state wiring, not a DOM, live room or physical device.
 import assert from 'node:assert/strict';
@@ -18,7 +19,8 @@ function text(value:unknown):string{if(typeof value==='string'||typeof value==='
 const NOW=2_000_000;
 const publicBoard=(({placements:_placements,...board})=>board)(TUTORIAL);
 function room(phase:RoomView['phase'],starts:number|null,ends:number|null):RoomView{return {revision:3,id:'arena-1',code:'ABCDEFGH',kind:'friend',phase,themeId:'uzay',starts,ends,winner:phase==='finished'?'alice':null,reason:phase==='finished'?'Süre doldu':'',round:1,serverNow:NOW,board:publicBoard,golden:null,you:{id:'alice',name:'Alice',ready:true,strokes:[TUTORIAL.placements[0]!],score:140,rematch:false},opponent:{name:'Bora',ready:true,count:1,score:120,online:true,rematch:false}};}
-function harness(initial:RoomView|null,claim?:(action?:string)=>Promise<RoomView>,get?:()=>Promise<RoomView|null>){
+function harness(initial:RoomView|null,claim?:(action?:string)=>Promise<RoomView>,get?:()=>Promise<RoomView|null>,reduced=false){
+ let clock=0,timerId=0;const timers=new Map<number,{at:number;fn:()=>void}>();
  const sounds:unknown[]=[],scrolls:{top:number}[]=[];let live:(room:RoomView,sourceId?:string)=>void=()=>{};
  const slots:Slot[]=[],effects:(()=>void)[]=[],apiCalls:{action:string;data:unknown}[]=[];let cursor=0,pending=true,tree:unknown;
  const changed=(slot:Slot,deps:unknown[])=>!slot.deps||slot.deps.length!==deps.length||deps.some((v,i)=>!Object.is(v,slot.deps![i]));
@@ -30,10 +32,10 @@ function harness(initial:RoomView|null,claim?:(action?:string)=>Promise<RoomView
  const common={PlayLayout:'PlayLayout',MatchTools:'MatchTools',WordList:'WordList',Modal:'Modal',useChime:()=>((cue:unknown=false)=>sounds.push(cue)),shareLink:async()=>false,getApi:async()=>get?get():initial,api:async(action:string,data:unknown)=>{apiCalls.push({action,data});return claim?claim(action):initial;}};
  const icons=new Proxy({}, {get:(_target,key)=>String(key)}),exports:Record<string,any>={};
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- vm.runInNewContext(compiled,{exports,require:(name:string)=>{if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};if(name==='lucide-react')return icons;if(name==='@/lib/game/catalog')return {findTheme:()=>({title:'Uzay'})};if(name==='@/lib/game/engine')return engine;if(name==='@/lib/game/telemetry')return {track(){}};if(name==='./common')return common;if(name==='./useLiveRoom')return {useLiveRoom:(_id:string,accept:(room:RoomView,sourceId:string)=>void)=>{live=(room,sourceId=_id)=>accept(room,sourceId);return 'connected';}};return {};},location:{search:'',origin:'https://example.test',href:'https://example.test/',pathname:'/'},history:{replaceState(){}},window:{scrollTo:(position:{top:number})=>scrolls.push(position)},URL,URLSearchParams,Event,AbortController,Date:{now:()=>NOW},setInterval:()=>1,clearInterval(){},setTimeout,clearTimeout});
+ vm.runInNewContext(compiled,{exports,require:(name:string)=>{if(name==='@/lib/game/word-feedback')return wordFeedback;if(name==='@/lib/platform/runtime')return {gameIsActive:()=>true};if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};if(name==='lucide-react')return icons;if(name==='@/lib/game/catalog')return {findTheme:()=>({title:'Uzay'})};if(name==='@/lib/game/engine')return engine;if(name==='@/lib/game/telemetry')return {track(){}};if(name==='./common')return common;if(name==='./useLiveRoom')return {useLiveRoom:(_id:string,accept:(room:RoomView,sourceId:string)=>void)=>{live=(room,sourceId=_id)=>accept(room,sourceId);return 'connected';}};return {};},location:{search:'',origin:'https://example.test',href:'https://example.test/',pathname:'/'},history:{replaceState(){}},document:{documentElement:{dataset:{}}},window:{matchMedia:()=>({matches:reduced}),scrollTo:(position:{top:number})=>scrolls.push(position)},URL,URLSearchParams,Event,AbortController,Date:{now:()=>NOW},setInterval:()=>1,clearInterval(){},setTimeout:(fn:()=>void,ms:number)=>{timers.set(++timerId,{at:clock+ms,fn});return timerId;},clearTimeout:(id:number)=>timers.delete(id)});
  const render=()=>{pending=false;cursor=0;for(const slot of slots)for(const update of slot.updates?.splice(0)??[])slot.value=typeof update==='function'?update(slot.value):update;tree=exports['Arena']({authenticated:true,onLogin(){},progress:progress.emptyProgress(),onProgress(){},practice(){}});for(const effect of effects.splice(0))effect();};
  const find=(type:string)=>{const found=nodes(tree).find(n=>n.type===type);assert.ok(found,type+' should exist');return found;};
- return {apiCalls,sounds,scrolls,copy:()=>text(tree),modalCount:()=>nodes(tree).filter(n=>n.type==='Modal').length,push:(next:RoomView,sourceId?:string)=>live(next,sourceId),layout:()=>find('PlayLayout'),has:(type:string)=>nodes(tree).some(n=>n.type===type),click(label:RegExp){const button=nodes(tree).find(n=>n.type==='button'&&label.test(text(n)));assert.ok(button,label+' should exist');button.props['onClick']();},closeModal(){find('Modal').props['onClose']();},async settle(){for(let i=0;i<20;i++){await Promise.resolve();if(pending)render();}},close(){for(const slot of slots)slot.cleanup?.();}};
+ return {advance(ms:number){clock+=ms;for(const [id,timer] of [...timers])if(timer.at<=clock){timers.delete(id);timer.fn();}},apiCalls,sounds,scrolls,copy:()=>text(tree),modalCount:()=>nodes(tree).filter(n=>n.type==='Modal').length,push:(next:RoomView,sourceId?:string)=>live(next,sourceId),layout:()=>find('PlayLayout'),has:(type:string)=>nodes(tree).some(n=>n.type===type),click(label:RegExp){const button=nodes(tree).find(n=>n.type==='button'&&label.test(text(n)));assert.ok(button,label+' should exist');button.props['onClick']();},closeModal(){find('Modal').props['onClose']();},async settle(){for(let i=0;i<20;i++){await Promise.resolve();if(pending)render();}},close(){for(const slot of slots)slot.cleanup?.();timers.clear();}};
 }
 
 describe('Arena terminal board review',()=>{
@@ -117,4 +119,16 @@ it('shows current/next group mode, passes frozen clues and never names an unconf
  const h=harness(active,async()=>next);try{await h.settle();assert.equal(h.layout().props['wordList'].clues,active.clues);const aside=text(h.layout().props['aside']);assert(aside.includes('İşaretli tanım'));for(const t of TUTORIAL.targets)assert(!aside.includes(t.label));
   h.push({...active,revision:4,phase:'finished',ends:NOW,winner:'alice'});await h.settle();assert(h.copy().includes('Normal kelime turu'));h.click(/Tekrar oyna/);await h.settle();assert.match(h.copy(),/Maç\s+2/,h.copy());assert(h.copy().includes('Bilmeceli tur'));assert.equal(h.apiCalls.filter(c=>c.action==='next').length,1);
  }finally{h.close();}
+});
+
+describe('Arena final word has time to land without reopening input',()=>{
+ it('commits the finished board immediately, delays only its result, and keeps final feedback enabled',async()=>{
+  const initial=room('active',NOW-1000,NOW+119000),h=harness(initial);try{await h.settle();h.push({...initial,phase:'finished',revision:4,winner:'alice',you:{...initial.you,strokes:TUTORIAL.placements}});await h.settle();assert.equal(h.layout().props['readOnly'],true);assert.equal(h.layout().props['wordListUnavailable'],true);assert.equal(h.layout().props['feedbackPaused'],false);assert.equal(h.has('Modal'),false);h.advance(wordFeedback.WORD_RESULT_DELAY_MS-1);await h.settle();assert.equal(h.has('Modal'),false);h.advance(1);await h.settle();assert.equal(h.has('Modal'),true);assert.deepEqual(h.sounds,['complete']);}finally{h.close();}
+ });
+ it('does not delay reduced motion or a restored result from the lobby',async()=>{
+  for(const [phase,reduced] of [['active',true],['ready',false]] as const){const initial=room(phase,NOW-1000,NOW+119000),h=harness(initial,undefined,undefined,reduced);try{await h.settle();h.push({...initial,phase:'finished',revision:4,you:{...initial.you,strokes:TUTORIAL.placements}});await h.settle();assert.equal(h.has('Modal'),true);}finally{h.close();}}
+ });
+ it('allows an immediate result action and cancels the old timer when another round arrives',async()=>{
+  for(const skip of [true,false]){const initial=room('active',NOW-1000,NOW+119000),h=harness(initial);try{await h.settle();h.push({...initial,phase:'finished',revision:4,you:{...initial.you,strokes:TUTORIAL.placements}});await h.settle();if(skip){h.click(/Sonuca geç/);await h.settle();assert.equal(h.has('Modal'),true);}else{h.push({...initial,round:2,phase:'ready',revision:5});await h.settle();h.advance(2000);await h.settle();assert.equal(h.has('Modal'),false);}}finally{h.close();}}
+ });
 });

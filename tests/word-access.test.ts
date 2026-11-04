@@ -1,3 +1,4 @@
+import * as wordFeedback from '../lib/game/word-feedback.ts';
 import * as everydayContent from '../lib/game/everyday-content.ts';
 import * as nature from '../lib/game/nature-content.ts';
 import * as coast from '../lib/game/coast-content.ts';
@@ -66,7 +67,7 @@ describe('rotated live layout keeps the original puzzle authoritative',()=>{
 });
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
 const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',MatchTools:'MatchTools',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
-const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
+const modules={'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
  it('defaults an enlarged board to drawing and offers explicit reversible panning outside the board',()=>{
