@@ -39,3 +39,22 @@ describe('early match rays preserve straight-line rules',()=>{
   assert.equal(earlyWordEnd({grid,size},[],[],start,end),null);
  });
 });
+
+
+describe('bounded edge capture preserves direction and target ambiguity',()=>{
+ for(const direction of directions)for(const release of [false,true])it('accepts fractional overshoot on axis '+direction+' release '+release,()=>{
+  const start:Cell=[3,3],size=7,edge:Cell=[3+direction[0]*3,3+direction[1]*3],outside:Cell=[3.5+direction[0]*4.23,3.5+direction[1]*4.23];
+  for(const axis of [null,direction])assert.deepEqual(advanceGesture(start,start,axis,outside,size,release).cell,edge);
+  const drift:Cell=[outside[0]+direction[1]*.8,outside[1]-direction[0]*.8];assert.deepEqual(advanceGesture(start,start,direction,drift,size,release).cell,start);
+ });
+ it('does not auto-accept KALE while KALEM remains possible on the same ray',()=>{
+  const targets=['KALE','KALEM'].map((text,group)=>({id:group+'.0',group,label:text,text})),board={size:6,grid:[[...'KALEMX'],...Array.from({length:5},()=>Array<string>(6).fill('X'))]};
+  assert.equal(earlyWordEnd(board,targets,[],[0,0],[0,3]),null);
+  const step=advanceGesture([0,0],[0,0],null,[.5,7.4],6);assert.deepEqual(earlyWordEnd(board,targets,[],[0,0],step.cell),[0,4]);
+ });
+});
+
+it('captures exact board edges and opposite corners but rejects beyond the two-cell grace band',()=>{
+ for(const release of [false,true])for(const [start,point,expected] of [[[0,0],[6,6],[5,5]],[[5,5],[0,0],[0,0]],[[0,0],[.5,6],[0,5]],[[0,0],[.5,8],[0,5]],[[5,5],[5.5,-2],[5,0]]] as [Cell,Cell,Cell][])assert.deepEqual(advanceGesture(start,start,null,point,6,release).cell,expected);
+ for(const point of [[.5,8.00001],[5.5,-2.00001]] as Cell[])assert.deepEqual(advanceGesture([0,0],[0,0],null,point,6,true).cell,[0,0]);
+});

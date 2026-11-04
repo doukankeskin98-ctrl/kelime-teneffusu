@@ -8,7 +8,7 @@ import {snapLine,type Cell,type Puzzle,type Stroke,type Target} from '@/lib/game
 import {advanceGesture,earlyWordEnd,gestureTip} from '@/lib/game/input-gesture';
 import {track} from '@/lib/game/telemetry';
 export const strokeColor=(id:string)=>`var(--word-${(Number(id.split('.')[0])||0)%8})`;
-type Drag={id:number;source:'pointer'|'touch';type:string;start:Cell;current:Cell;axis:Cell|null;moved:boolean;tapOnly:boolean;x:number;y:number;pan:boolean;rect:DOMRect};
+type Drag={cells:Cell[];id:number;source:'pointer'|'touch';type:string;start:Cell;current:Cell;axis:Cell|null;moved:boolean;tapOnly:boolean;x:number;y:number;pan:boolean;rect:DOMRect};
 export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,blocked=false,busy=false,pan=false,statusText='Sunucu onayı bekleniyor.',zoom=false,hint,hintEnd,onCommit,onPreview,onSelectStart,onSelectLetter,onSelectEnd}:{board:Pick<Puzzle,'grid'|'size'>;strokes:Stroke[];earlyTargets?:Target[];paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;pan?:boolean;statusText?:string;zoom?:boolean;hint?:Cell|null;hintEnd?:Cell|null;onCommit:(a:Cell,b:Cell)=>void;onPreview?:(text:string)=>void;onSelectStart?:()=>void;onSelectLetter?:(depth:number)=>void;onSelectEnd?:()=>void}){
  const selectionSound=useRef(false);
  const soundedCells=useRef(new Set<string>());
@@ -21,11 +21,13 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
  const signature=board.grid.map(row=>row.join('')).join('|');
  const same=(a:Cell,b:Cell)=>a[0]===b[0]&&a[1]===b[1];
  const paint=(cells:Cell[],tip?:Cell)=>{
+  if(cells!==selected.current){
   for(const [r,c] of selected.current)if(!cells.some(cell=>cell[0]===r&&cell[1]===c))letters.current[r*n+c]?.classList.remove('letter-selected');
   for(const [r,c] of cells)if(!selected.current.some(cell=>cell[0]===r&&cell[1]===c))letters.current[r*n+c]?.classList.add('letter-selected');
   selected.current=cells;
-  const a=cells[0],b=cells.at(-1),line=lineRef.current;
-  if(a&&b&&line){for(const [name,value] of Object.entries({x1:a[1]+.5,y1:a[0]+.5,x2:tip?.[1]??b[1]+.5,y2:tip?.[0]??b[0]+.5})){line.setAttribute(name,String(value));outlineRef.current?.setAttribute(name,String(value));}}
+  }
+  const a=cells[0],b=cells.at(-1);
+  if(a&&b)for(const line of [lineRef.current,outlineRef.current])if(line){line.setAttribute('x1',String(a[1]+.5));line.setAttribute('y1',String(a[0]+.5));line.setAttribute('x2',String(tip?.[1]??b[1]+.5));line.setAttribute('y2',String(tip?.[0]??b[0]+.5));}
   inkRef.current?.setAttribute('data-active',cells.length?'true':'false');
  };
  const endSelection=()=>{if(!selectionSound.current)return;selectionSound.current=false;onSelectEnd?.();};
@@ -49,24 +51,24 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
  },window);},[n,zoom]);
  const cellAt=(x:number,y:number,rect=drag.current?.rect??ref.current!.getBoundingClientRect()):Cell=>[Math.max(0,Math.min(n-1,Math.floor((y-rect.top)/rect.height*n))),Math.max(0,Math.min(n-1,Math.floor((x-rect.left)/rect.width*n)))];
  const notifyLetters=(cells:Cell[])=>{if(disabled.current)return;let added=false;for(const cell of cells){const key=cell.join(',');if(!soundedCells.current.has(key)){soundedCells.current.add(key);added=true;}}if(added)onSelectLetter?.(cells.length);};
- const show=(cells:Cell[],tip?:Cell)=>{if(!selectionSound.current&&cells.length){selectionSound.current=true;onSelectStart?.();}notifyLetters(cells);paint(cells,tip);const text=cells.map(([r,c])=>board.grid[r]![c]).join('');if(text!==previewText.current){previewText.current=text;onPreview?.(text);}};
+ const show=(cells:Cell[],tip?:Cell)=>{if(!selectionSound.current&&cells.length){selectionSound.current=true;onSelectStart?.();}const changed=cells!==selected.current;if(changed){notifyLetters(cells);const text=cells.map(([r,c])=>board.grid[r]![c]).join('');if(text!==previewText.current){previewText.current=text;onPreview?.(text);}}paint(cells,tip);};
  const showRef=useRef(show);showRef.current=show;
- const schedule=(cells:Cell[],tip?:Cell)=>{notifyLetters(cells);pending.current={cells,tip};if(frame.current)return;frame.current=requestAnimationFrame(()=>{frame.current=0;if(pending.current&&!disabled.current)showRef.current(pending.current.cells,pending.current.tip);pending.current=null;});};
+ const schedule=(cells:Cell[],tip:Cell,changed:boolean)=>{if(changed)notifyLetters(cells);pending.current={cells,tip};if(frame.current)return;frame.current=requestAnimationFrame(()=>{frame.current=0;if(pending.current&&!disabled.current)showRef.current(pending.current.cells,pending.current.tip);pending.current=null;});};
  const commit=(a:Cell,b:Cell)=>{if(!disabled.current&&!same(a,b))notifyLetters(snapLine(a,b,n));clear();if(!disabled.current&&!same(a,b))onCommit(a,b);};
  const tap=(cell:Cell)=>{if(disabled.current)return;if(anchor){if(same(anchor,cell))clear();else{const cells=snapLine(anchor,cell,n);commit(anchor,cells.at(-1)!);}}else{setAnchor(cell);show([cell]);}};
  const down=(e:BoardPointer)=>{
   if(disabled.current||!e.isPrimary||(e.pointerType==='mouse'&&e.button!==0))return;
   if(drag.current){const current=drag.current;if(e.input==='touch'&&current.source==='pointer'&&current.type==='touch'){current.id=e.pointerId;current.source='touch';current.rect=ref.current!.getBoundingClientRect();if(!current.tapOnly)e.preventDefault();}return;}
   const rect=ref.current!.getBoundingClientRect(),start=cellAt(e.clientX,e.clientY,rect),tapOnly=zoom&&pan&&e.pointerType!=='mouse';
-  drag.current={id:e.pointerId,source:e.input??'pointer',type:e.pointerType,start,current:start,axis:null,moved:false,tapOnly,x:e.clientX,y:e.clientY,pan:false,rect};
-  if(!tapOnly){contact.current=true;setBoardDrawing(ref.current!,true,window);e.preventDefault();try{if(e.input!=='touch'&&typeof window.PointerEvent==='function')ref.current?.setPointerCapture?.(e.pointerId);}catch{/* Capture is optional; an active in-board swipe still works. */}if(!anchor)show([start]);}
+  drag.current={cells:[start],id:e.pointerId,source:e.input??'pointer',type:e.pointerType,start,current:start,axis:null,moved:false,tapOnly,x:e.clientX,y:e.clientY,pan:false,rect};
+  if(!tapOnly){contact.current=true;setBoardDrawing(ref.current!,true,window);e.preventDefault();try{if(e.input!=='touch'&&typeof window.PointerEvent==='function')ref.current?.setPointerCapture?.(e.pointerId);}catch{/* Capture is optional; an active in-board swipe still works. */}if(!anchor)show(drag.current.cells);}
   const at=performance.now();requestAnimationFrame(()=>track('input_feedback',performance.now()-at));
  };
  const advance=(d:Drag,x:number,y:number,release=false)=>{
   const rect=d.rect,point:Cell=[(y-rect.top)/rect.height*n,(x-rect.left)/rect.width*n],step=advanceGesture(d.start,d.current,d.axis,point,n,release);
-  d.axis=step.axis;if(same(d.current,step.cell))return false;d.current=step.cell;if(!same(d.start,step.cell))d.moved=true;return true;
+  d.axis=step.axis;if(same(d.current,step.cell))return false;d.current=step.cell;d.cells=snapLine(d.start,d.current,n);if(!same(d.start,step.cell))d.moved=true;return true;
  };
- const move=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;if(disabled.current)return clear();if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}const changed=advance(d,e.clientX,e.clientY);if(changed&&d.moved){setAnchor(null);const end=earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current);if(end){commit(d.start,end);return;}}const point:Cell=[(e.clientY-d.rect.top)/d.rect.height*n,(e.clientX-d.rect.left)/d.rect.width*n];schedule(snapLine(d.start,d.current,n),gestureTip(d.start,d.axis,point,n));};
+ const move=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;if(disabled.current)return clear();if(d.tapOnly){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)>12)d.pan=true;return;}const changed=advance(d,e.clientX,e.clientY);if(changed&&d.moved){setAnchor(null);const end=earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current);if(end){commit(d.start,end);return;}}const point:Cell=[(e.clientY-d.rect.top)/d.rect.height*n,(e.clientX-d.rect.left)/d.rect.width*n];schedule(d.cells,gestureTip(d.start,d.axis,point,n),changed);};
  const up=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;d.rect=ref.current!.getBoundingClientRect();const cell=cellAt(e.clientX,e.clientY,d.rect);drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;releaseContact();if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else{advance(d,e.clientX,e.clientY,true);if(d.moved)commit(d.start,earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current)||d.current);else if(same(cell,d.start))tap(d.start);else clear();}};
  const cancel=(e:BoardPointer)=>{if(drag.current?.id===e.pointerId&&drag.current.source===(e.input??'pointer'))clear();};
  const key=(e:KeyboardEvent)=>{if(paused)return;const dirs:Record<string,Cell>={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};const dir=dirs[e.key];if(dir){e.preventDefault();const next:Cell=[Math.max(0,Math.min(n-1,cursor[0]+dir[0])),Math.max(0,Math.min(n-1,cursor[1]+dir[1]))];setCursor(next);if(anchor&&!disabled.current)show(snapLine(anchor,next,n));}else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!disabled.current)tap(cursor);}else if(e.key==='Escape')clear();};

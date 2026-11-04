@@ -1,5 +1,13 @@
 # Kelime Teneffüsü
 
+## 0.33.0 · Çiz, bul, devam et
+
+Tahta çizgisi aynı hücre içindeki hareketlerde mevcut yolu kullanır; tekrar yol dizisi, harf titreşimi ve React render üretmez. Sekiz yönde, tam kenar/köşe dahil iki hücrelik taşma bandında hızlı seçim geçilen kelimeyi yakalar; yön kilidi, belirsiz kısa/uzun kelime ve sunucu doğrulaması korunur. Yeni kelime yokken efekt geometri okumaz; eşzamanlı efektlerin okumaları yazmalardan önce toplanır. Kelime etiketini örten eski beyaz katman kaldırıldı; bitiş halkası transform/opacity ile çalışır, yıldız/parça ritmi düzenlendi.
+
+Normal oyun, Arena ve Hızlı Tur araçlarından uygulamanın aynı titreşim/hareket tercihleri erişilir. Arena bitişinde hedef/araç penceresi kapanır, incelemede yeniden açılır. Rekabet saati ayarlarda sürer. Dünya durakları 1–6 olarak açıklanır; gerçek Bölüm numaraları ve konu adları korunur. Arena HUD ve sıralama kontrastı sahne üzerinde artırıldı.
+
+667 test / 136 grup, 241 authored tahta / 4820 alternatif, tip, şema, web/mobil derleme, Safari sözdizimi, mobil paket ve izole veride 639 Worker HTTP kontrolü geçti. 414×628 ve 320×568 destekli tarayıcı önizlemesinde normal/bilmeceli/hikâye/Arena yerleşimi, gerçek sürükleme, kayıtla dönüş, kutlama ve sonraki bölüm kontrol edildi. Arena görünümü yerel örnektir; fiziksel iPhone/FPS/titreşim, VoiceOver ve iki gerçek telefon bu tur denenmedi. 168 ana bölüm/28 rota, içerik, kayıt şeması, ödül, Arena geçmişi ve göçler değişmedi. Kanıt: `studio-agents/journal/entries/2026-11-04-skill-polish.md`.
+
 ## 0.32.1 · 4 Kasım: Posta kutusu / Basketbol antrenmanı
 
 Rahat6×6/dört posta kelimesi ve Dengeli8×8/yedi basketbol terimi; iki çapraz eğim ve sabit UTCtarih/slot/ID/hash. Mevcut bölüm seçici/dünya/arşiv yolları ve iki tamamlamayla4Kasım damgası.168 ana bölüm/28rota, eski14 çift, ilerleme/ödül/Arena ve0.32 çizim davranışı değişmez. Kabul/kanıt studio-agents/journal/entries/2026-11-04_maintenance.md. Fiziksel iPhone/VoiceOver/iki gerçek hesap/PWA kabulü açıktır.
