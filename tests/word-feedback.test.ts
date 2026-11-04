@@ -11,18 +11,18 @@ describe('confirmed word feedback ledger',()=>{
  it('silently restores old words, consumes each new ID once and survives cancellation',()=>{const l=wordFeedbackLedger('A',['old']);assert.deepEqual(l.consume('A',['old']),[]);assert.deepEqual(l.consume('A',['old','new','new']),['new']);assert.deepEqual(l.consume('A',['old','new']),[]);assert.deepEqual(l.consume('A',['old','new','hidden'],false),[]);assert.deepEqual(l.consume('A',['old','new','hidden']),[]);});
  it('never invents success from a pending/rejected input and scopes explicit replays',()=>{const l=wordFeedbackLedger('A',[]);assert.deepEqual(l.consume('A',[]),[]);assert.deepEqual(l.consume('A',['0']),['0']);assert.deepEqual(l.consume('B',['0']),[]);assert.deepEqual(l.consume('replay',[]),[]);assert.deepEqual(l.consume('replay',['0']),['0']);});
 });
-function harness(initial:string[]=[],measured=false){
+function harness(initial:string[]=[],measured=false,labelText='KALE'){
  const slots:any[]=[],effects:(()=>void)[]=[],timers=new Map<number,()=>void>(),sparks=new Set<any>(),animations:any[]=[];
  let cursor=0,time=0,reduced=false,active=true,reads=0,wrote=false,readsAfterWrite=0;
  const measure=(value:unknown)=>{reads++;if(wrote)readsAfterWrite++;return value;};
  const rect={left:0,top:150,width:300,height:300},dest={left:10,top:70,width:80,height:40};
  const animate=(frames:unknown,options:unknown)=>{const animation={frames,options,cancelled:false,cancel(){this.cancelled=true;}};animations.push(animation);return animation;};
- const label={textContent:'KALE',firstChild:{nodeType:3}};
+ const label={textContent:labelText,firstChild:{nodeType:3}};
  const cells=Array.from({length:36},(_,i)=>({getBoundingClientRect:()=>measure({left:i%6*50,top:150+Math.floor(i/6)*50,width:50,height:50})}));
  const destination={dataset:{wordGroup:'0'} as Record<string,string>,querySelectorAll:(s:string)=>measured&&s==='[data-word-label]'?[label]:[],hasAttribute:(name:string)=>name==='data-word-group',getBoundingClientRect:()=>measure(dest),animate};
  const screen={getBoundingClientRect:()=>measure({left:0,top:0}),querySelector:(selector:string)=>selector==='.letter-board'?{getBoundingClientRect:()=>measure(rect),animate,querySelectorAll:()=>measured?cells:[]}:destination,querySelectorAll:()=>[destination],appendChild:(node:any)=>{wrote=true;sparks.add(node);}};
  const element=()=>{let label='';const children:any[]=[];return {className:'',style:{fontSize:''},children,setAttribute(){},appendChild(child:any){children.push(child);},get textContent():string{return label+children.map(c=>c.textContent).join('');},set textContent(v:string){label=v;},animate,remove(){sparks.delete(this);}};};
- const doc=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{} as Record<string,string>},createElement:element,createRange:()=>{let index=0;return{setStart(_node:unknown,start:number){index=start;},setEnd(){},getBoundingClientRect(){const xs=[20,32,39,50],widths=[12,7,11,8];return measure({left:xs[index],top:80,width:widths[index],height:14});}};}});
+ const doc=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{} as Record<string,string>},createElement:element,createRange:()=>{let index=0;return{setStart(_node:unknown,start:number){index=start;},setEnd(){},getBoundingClientRect(){const xs=[20,32,39,50,62],widths=[12,7,11,8,9];return measure({left:xs[index],top:80,width:widths[index],height:14});}};}});
  const win=Object.assign(new EventTarget(),{matchMedia:()=>({matches:reduced})});
  const hooks={useLayoutEffect:(fn:()=>any,deps:any[])=>hooks.useEffect(fn,deps),useRef(value:any){return slots[cursor++]??={current:value};},useEffect(fn:()=>any,deps:any[]){const i=cursor++,slot=slots[i];if(!slot||deps.some((d,j)=>!Object.is(d,slot.deps[j]))){slots[i]={deps,cleanup:slot?.cleanup};effects.push(()=>{slots[i].cleanup?.();slots[i].cleanup=fn();});}}};
  const exports:any={};
@@ -84,4 +84,8 @@ it('holds target decoration until arrival and releases every overlapping owner o
 });
 it('uses actual source font and measured unequal target glyph widths rather than a guessed midpoint',()=>{
  const h=harness([],true);try{h.confirm(['0']);assert.equal(h.glyphs[0].style.fontSize,'38px');assert.equal(h.glyphs[0].style.fontFamily,'Nunito Sans');assert.match(h.animations[0].frames.at(-1).transform,/translate\(26px,87px\)/);assert.match(h.animations[1].frames.at(-1).transform,/translate\(35.5px,87px\)/);assert.match(h.animations[0].frames[1].transform,/translate\(25px,161px\).*scale\(1.12\)/);assert.equal(h.animations[0].options.easing,'linear');assert.equal(h.readsAfterWrite,0);}finally{h.close();}
+});
+
+it('lands each glyph on a spaced display label while ignoring the non-grid space',()=>{
+ const h=harness([],true,'KA LE');try{h.confirm(['0']);assert.equal(h.glyphs.length,4);assert.match(h.animations[2].frames.at(-1).transform,/translate\(54px,87px\)/);assert.match(h.animations[3].frames.at(-1).transform,/translate\(66.5px,87px\)/);assert.equal(h.readsAfterWrite,0);}finally{h.close();}
 });

@@ -1,0 +1,81 @@
+/* A stable topic/target/board stack. Remaining height stays below the controls. */
+.scenic-play .play-context{display:block;font-size:11px;line-height:16px;font-weight:600;color:#e0e9df;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.game-app .scenic-play .play-heading,.main-content .scenic-play .play-heading{padding:6px 8px;background:#123b39e8;border-radius:14px;margin-top:0!important;margin-bottom:0!important}
+.scenic-play .play-title h1,.game-app .scenic-play .play-title h1{font-size:20px;line-height:24px;letter-spacing:-.02em;margin:0;color:#fffdf3}
+.scenic-play .play-heading>.icon-button{flex:0 0 44px;background:transparent;color:#fffdf3;border:0}
+.scenic-play .play-hud{margin-bottom:0}
+.scenic-play .game-message{position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;max-height:none!important;clip-path:inset(50%);overflow:hidden!important;white-space:nowrap}
+.scenic-play .play-hud{position:relative}
+.scenic-play .game-message.has-notice,.scenic-play .game-message.is-guidance{position:absolute!important;z-index:3;left:0;right:0;top:0;bottom:auto;width:100%!important;height:100%!important;min-height:28px!important;display:flex;align-items:center;justify-content:center;margin:0!important;padding:2px 8px!important;transform:none;clip-path:none!important;overflow:visible!important;white-space:normal;background:#163e38;color:#fffdf2;border-radius:9px;font-size:11px;line-height:14px;text-align:center;pointer-events:none}
+.scenic-play .target-rack,.game-app .scenic-play .target-rack{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-content:start!important;gap:0 6px!important;background:#fffdf4!important;padding:4px 8px!important;border:0!important;border-radius:14px;box-shadow:none!important}
+.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px!important;height:44px;padding:2px!important;margin:0;border:0;background:transparent!important;box-shadow:none!important;border-radius:8px!important;color:#183a31;font-size:17px!important;line-height:20px;font-weight:800;letter-spacing:0;white-space:normal;text-align:center;gap:0}
+.scenic-play .target-rack .word-tag>div{width:100%;min-width:0;font-size:inherit;line-height:inherit;overflow-wrap:anywhere}
+.scenic-play .target-rack .word-state,.scenic-play .target-rack .word-tag>div>small{display:none}
+.scenic-play .target-rack [data-word-label]{display:block;white-space:normal;max-width:100%;text-decoration:inherit}
+.scenic-play .target-rack [data-word-part]{display:inline;text-decoration:none}
+.scenic-play .target-rack .part-found{text-decoration:line-through;text-decoration-thickness:2px;color:#557467}
+.scenic-play .target-rack .word-tag.found,.game-app .scenic-play .target-rack .word-tag.found{color:#587366;background:transparent!important;text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:#587366}
+.scenic-play .target-rack .word-tag.is-focus-target::after{content:'';position:absolute;left:25%;right:25%;bottom:2px;height:2px;background:#ba8e36;border-radius:2px}
+.scenic-play .target-rack .target-focus-button{min-width:0;min-height:44px;border-radius:8px}
+.scenic-play .target-rack .word-tag.golden>b{position:absolute;right:0;top:0;font-size:10px;line-height:12px}
+.scenic-play .viewport-targets.long-word-rack .target-rack{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.scenic-play .viewport-targets.long-word-rack .word-tag{height:48px;min-height:48px!important}
+.scenic-play .viewport-targets[data-many] .target-rack{max-height:144px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#8aab98 #fffdf4}
+
+/* Numbered clue slots retain position and progress without exposing future answers. */
+.scenic-play .clue-targets{display:block;height:auto!important;min-height:0!important;padding:4px 8px;background:#fffdf4;border:0;border-radius:14px;box-shadow:none}
+.scenic-play .clue-slots{display:grid;grid-template-columns:repeat(var(--clue-count),minmax(0,1fr));gap:3px}
+.scenic-play .clue-slot{display:block;min-width:0;min-height:44px;padding:0!important;margin:0;border:0!important;background:transparent!important;box-shadow:none!important;position:relative;text-decoration:none!important}
+.scenic-play .clue-slot>button{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:44px;border:0;border-radius:8px;background:transparent;color:#24493a;padding:2px;font:inherit}
+.scenic-play .clue-slot>button>b{font-size:15px;line-height:18px}.scenic-play .clue-slot>button>span{display:flex;align-items:center;justify-content:center;gap:2px;height:17px;font-size:11px;line-height:17px}.scenic-play .clue-slot small{font-size:9px;font-weight:500}.scenic-play .clue-slot em{position:absolute;right:0;top:0;font-size:9px;font-style:normal;color:#896215}
+.scenic-play .clue-slot.is-focus-target>button{background:#e7efdd;box-shadow:inset 0 -2px #bd953f}
+.scenic-play .clue-slot.found>button{color:#47715a}.scenic-play .clue-slot>button:disabled{opacity:1}
+.scenic-play .clue-slot>button:focus-visible,.scenic-play .active-clue:focus-visible{outline:2px solid #886321;outline-offset:-2px}
+.scenic-play .active-clue{display:flex;align-items:center;gap:8px;text-align:left;width:100%;height:52px;border:0;border-top:1px solid #dbe4d7;border-radius:0;background:transparent;padding:5px 2px;color:#183a31;font:inherit}
+.scenic-play .active-clue>strong{flex:1;min-width:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:15px;line-height:20px;font-weight:700}
+.scenic-play .active-clue>svg{flex:0 0 19px;color:#52725d}.scenic-play .active-clue:disabled{opacity:1}.full-clue{font-size:17px;line-height:1.6}
+.scenic-play .found-stroke{opacity:1!important}
+
+@media(max-width:1100px) and (orientation:portrait){
+ .scenic-play .play-heading{height:58px;flex:0 0 58px;min-height:58px;overflow:visible}
+ .scenic-play .play-heading h1{display:block!important;-webkit-line-clamp:unset;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .scenic-play .play-hud{margin-top:4px!important}
+ .scenic-play .play-hud .solo-hud,.game-app .scenic-play .play-hud .solo-hud{height:28px;min-height:28px;padding:2px 6px;background:#123b39db;border-radius:9px}
+ .scenic-play .solo-found>b,.game-app .scenic-play .solo-found>b{font-size:18px;line-height:22px}
+ .scenic-play .solo-found>span{font-size:10px;line-height:12px;white-space:nowrap}
+ .scenic-play .solo-star-goal{font-size:13px;padding:0 2px}
+ .scenic-play .play-columns{margin-top:6px!important}
+ .scenic-play .targets-panel,.game-app .scenic-play .targets-panel{margin-bottom:6px!important}
+ .scenic-play .board-panel,.game-app .scenic-play .board-panel{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+ .scenic-play .board-scroll{padding:0!important}
+ .scenic-play .board-stage{align-items:start!important;align-content:start!important;margin-top:0!important}
+ .scenic-play .board-panel>.play-controls,.scenic-play .board-panel>.duel-controls{margin-top:16px!important;padding:0!important;min-height:46px;height:46px;align-items:center}
+ .scenic-play.has-selection:not(.is-zoomed) .play-title>h1,.scenic-play.has-selection:not(.is-zoomed) .play-title>.play-context{visibility:hidden}
+ .scenic-play.has-selection:not(.is-zoomed) .mobile-selection{background:#123b39;border:0;color:#fffdf3;padding:0}
+ .scenic-play .story-hud{margin:0;padding:4px 8px;min-height:0}
+ .scenic-play .story-hud-art,.scenic-play .story-step-dots{display:none}
+ .scenic-play .story-hud-copy>p{font-size:12px;line-height:16px;height:32px;overflow:hidden;margin:2px 0 0}
+ .scenic-play .story-hud-meta{font-size:10px;line-height:14px}
+}
+@media(max-width:380px){.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{font-size:15px!important;line-height:18px}.scenic-play .clue-slot small{font-size:8px}}
+@media(max-height:700px) and (orientation:portrait){
+ .scenic-play .play-heading{height:48px;min-height:48px;flex-basis:48px;padding:2px 6px}
+ .scenic-play .play-title h1,.game-app .scenic-play .play-title h1{font-size:18px;line-height:22px}
+ .scenic-play .play-context{font-size:10px;line-height:14px}
+ .scenic-play .active-clue{height:46px}
+ .scenic-play .board-panel>.play-controls,.scenic-play .board-panel>.duel-controls{margin-top:8px!important;height:44px;min-height:44px}
+}
+
+.scenic-play .clue-slot[data-word-arriving=true] svg{visibility:hidden}
+@media(min-width:1101px),(orientation:landscape){.game-app .scenic-play .board-panel,.main-content .scenic-play .board-panel{order:0}.game-app .scenic-play .targets-panel,.main-content .scenic-play .targets-panel{order:1}}
+
+/* Result titles share their row with a real close target, including narrow phones. */
+.modal.scenic-outcome.scene-result,.modal.achievement-modal.journey-outcome.scene-result{width:min(calc(100% - 20px),480px)}
+.modal.scene-result .modal-head{position:relative;padding:16px 48px 6px;min-height:60px}
+.modal.scene-result .modal-head h2{min-width:0;font-size:26px;line-height:1.2;text-align:center;letter-spacing:-.02em;overflow-wrap:normal}
+.modal.scene-result .modal-head>.icon-button{top:12px;right:8px}
+
+/* Legacy dense puzzles keep their saved board; only the target rack may scroll. */
+@media(max-height:700px) and (orientation:portrait){
+ .scenic-play[data-dense-board] .target-rack{max-height:104px!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#8aab98 #fffdf4}
+}

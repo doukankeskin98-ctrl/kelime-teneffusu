@@ -1,5 +1,7 @@
 # Öncelikler
 
+5 Kasım 2026, 0.36.0: sabit hedef rafı, yukarı alınmış tahta, boşluklu kelimelerde doğru uçuş hedefi. iPhone üzerine kurulum ve beş kayıt değerinin eşitliği doğrulandı. Sonraki kabul: fiziksel başparmak konforu, dokuz dar Arena yuvası, uzun oturum/FPS ve VoiceOver. Kanıt `../journal/entries/2026-11-05-comfort.md`.
+
 4 Kasım2026,0.35.0: net hedef/tahta, güvenli native üst çubuk, dokunarak Solo resume ve sahneli Koleksiyon. Kullanıcının 0.34.1 animasyon hızı ve0.34.0 haptik dengesi kabul edildi; aynı kalır. Yeni fiziksel iPhone safe-area/kontrast denemesi açık. Kanıt `../journal/entries/2026-11-04-clarity.md`.
 
 4 Kasım 2026 bakım,0.34.2: bütün Solo modlarında atlanabilir sonuç geçişi. Kanıt `../journal/entries/2026-11-04_celebration-control.md`. Fiziksel iPhone yeni hareket hissi/FPS, VoiceOver, iki gerçek Arena cihazı ve provider/PWA kuyruğu açık. Haftalık değerlendirme31Ekim bakım günlüğünde mevcut; sonraki7Kasım veya ilk uygun çalışmada.

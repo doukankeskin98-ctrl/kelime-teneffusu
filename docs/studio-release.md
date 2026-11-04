@@ -1,5 +1,11 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.36.0 · Tahta önde, hedefler birlikte
+
+Normal bölümlerde uzun ve parçalı kelimeler dahil bütün hedefler sabit raf üzerinde görünür; bulunan hedef yerini korur. Bilmecede numaralı/harf sayılı yuvalar ve seçili tanım, hikâyede yalnız etkin adımın cevabı açılır. Üst bilgi kısalır, konu başlığı öne çıkar, tekrar eden hedef/sıra metinleri kaldırılır. Portrede kalan boşluk tahtanın üstüne dağıtılmaz. Eski yoğun 12×12 kayıtları değişmez; kısa ekranda yalnız hedef rafı kayabilir. Uçuş boşluklu kelimelerin gerçek harflerine iner; kabul edilmiş 720/180/1040 ms ritmi ve haptik ayarları korunur.
+
+710 test / 143 grup, içerik, tip, değişmeyen 23 tablo, web/Safari sözdizimi, mobil paket, imzalı iPhone Release ve 639 Worker HTTP kontrolü geçti. 320×568, 375×667, 414×628, 430×932 ve yatay 844×390 tarayıcı önizlemeleri; normal çizim, ipucu, duraklatma, hikâye sonu ve sonraki bölüm kontrol edildi. iPhone 14 Pro Max'e 0.36.0 (14) silmeden kuruldu ve açıldı; kurulum öncesi/sonrası beş yerel kayıt değeri aynı ve SQLite bütünlüğü sağlam. Fiziksel parmak konforu/FPS/VoiceOver ve iki gerçek oyunculu Arena bu tur doğrulanmadı. Kaynak eşitliği, CI ve yayın durumu ayrı teslim makbuzundadır. Ayrıntı: `studio-agents/journal/entries/2026-11-05-comfort.md`.
+
 ## 0.35.0 · Daha net, aynı yolculuk
 
 Tahta harfleri ve hedef metinleri tek paketli fontta 800 ağırlıkla sunulur; eski Solo/Arena font çakışmaları giderilir. Solo molasında tüm tahta click/Enter ile devam ettirir; aynı temas harf seçmez. Arena, Günlük, yardım ve kilitli durumlar bu eylemi almaz. iPhone üst güvenli alanı kontrol satırının yüksekliğine eklenir, alt menü eski ikon dolgularından arındırılır. Koleksiyon, albüm/profil/damga/başarı raflarıyla aynı sahneli kabuğa geçer; açık renk pencerelerin kontrastı korunur.

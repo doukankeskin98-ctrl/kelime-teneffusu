@@ -4,9 +4,9 @@ export function veiledText(text:string,veil:WordVeil='open'){
  if(veil==='open')return text;
  let first=true;return [...text].map(char=>{if(/\s/.test(char))return char;const visible=first&&veil==='initial';first=false;return visible?char:'·';}).join('');
 }
-/** Only short, single-part normal targets fit the two/three-row phone rack. */
+/** Word length/parts never change normal play into a single-target carousel. */
 export function compactWordRack(board:{targets:Target[]},clues?:Record<string,string>){
- return !clues&&board.targets.length>1&&board.targets.length<=9&&new Set(board.targets.map(t=>t.group)).size===board.targets.length&&board.targets.every(t=>t.label.length<=9&&!/\s/.test(t.label));
+ return !clues&&board.targets.length>0;
 }
 /** Clue mode must not leak the answer through its accessible label. */
 export function wordCardCopy(target:Pick<Target,'text'|'label'>,done:boolean,clues?:Record<string,string>,veil:WordVeil='open'){

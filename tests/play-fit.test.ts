@@ -34,6 +34,10 @@ describe('complete board fits measured browser space',()=>{
   board.getBoundingClientRect=()=>({width:Number.parseFloat(board.style.getPropertyValue('width'))||706,height:Number.parseFloat(board.style.getPropertyValue('height'))||706,top:0,left:0});
   const stop=attachBoardSize(board,6,true,()=>{},b.view);assert.equal(board.style.getPropertyValue('width'),'706px');assert.equal(board.style.getPropertyValue('height'),'706px');assert.equal(board.style.getPropertyValue('--board-letter-size'),'48px');stop();
  });
+ it('keeps portrait board geometry unchanged when only spare screen height grows',()=>{
+  const f=fixture(414,800,true),short=measurePlayFrame(f.screen,f.stage,8,false,f.view);f.view.innerHeight=1000;const tall=measurePlayFrame(f.screen,f.stage,8,false,f.view);
+  assert.equal(short.boardSize,414);assert.equal(tall.boardSize,short.boardSize);assert.equal(short.stageHeight,short.boardSize);assert.equal(tall.stageHeight,short.stageHeight);assert.equal(tall.overhead,short.overhead);
+ });
  it('does not derive the new budget from an already stretched Safari stage',()=>{
   const f=fixture(),a=measurePlayFrame(f.screen,f.stage,12,false,f.view);assert(a.boardSize+a.overhead<=a.height);assert.equal(a.overflow,false);
   f.screen.rect.height=20000;f.stage.rect.height=19000;const b=measurePlayFrame(f.screen,f.stage,12,false,f.view);assert.deepEqual(b,a);
