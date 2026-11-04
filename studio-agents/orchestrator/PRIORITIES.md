@@ -1,5 +1,7 @@
 # Öncelikler
 
+4 Kasım 2026, 0.34.0: harf uçuşu ve ayrı native iOS harf/kelime/menü titreşimleri. 685 test, 639 Worker kontrolü; iPhone üzerine kayıt korunarak kurulum ve başlatma tamamlandı. Hissin dengesi ve fiziksel frame pacing için oyuncu denemesi açık. Kanıt `../journal/entries/2026-11-04-tactile.md`.
+
 4 Kasım 2026, 0.33.1: aynı dokunuşta sabit ilk harf etrafında yön değiştirme. Merkez toleransı/erken kabul/cache korunur. Kanıt `../journal/entries/2026-11-04-pivot.md`. İlk açık kontrol fiziksel iPhone’da serbest yön değiştirme hissi; kurulu uygulama bu tur güncellenmedi.
 
 4 Kasım 2026, 0.33.0: çizim hot-path yükü ve tahta kenarı kaçırması giderildi; kelime/sonuç geri bildirimi, oyun içi rahatlık ayarları, Arena modal/kontrast ve durak adları düzeltildi. Kanıt `../journal/entries/2026-11-04-skill-polish.md`. Fiziksel iPhone'da 20 dakika çizim, kare süresi, titreşim ve VoiceOver kabulü hâlâ açık; tarayıcı/VM testi bunun yerine geçmez.

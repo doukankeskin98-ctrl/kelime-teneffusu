@@ -16,10 +16,13 @@
 .scenic-play .mobile-selection>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .word-flight.word-flight-label{left:0;top:0;width:auto;height:auto;max-width:190px;padding:5px 12px;border-radius:20px;background:#f6d778;color:#173e36;box-shadow:0 3px 10px #102d3840;font:800 13px/1.2 var(--sans);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;will-change:transform,opacity}
 .word-flight.word-flight-label:after{content:none}
+.word-flight.word-flight-letters{left:0;top:0;width:0;height:0;background:none;box-shadow:none;border-radius:0;will-change:auto}
+.word-flight.word-flight-letters:after{content:none}
+.word-flight-glyph{position:absolute;left:0;top:0;font-family:var(--sans);font-weight:800;line-height:1;color:#173e36;text-shadow:0 1px 0 #fffdf4;will-change:transform,opacity;pointer-events:none}
 .play-comfort-settings{border-top:1px solid #dce4d5;margin-top:12px;padding-top:4px}
 .stage-trail-caption{display:block;text-align:center;font-size:11px;line-height:16px;color:#e0e5d5;margin-top:14px}.stage-trail-caption+.stage-trail{margin-top:7px}
-.scenic-play .found-stroke.is-new{animation:word-lock 240ms var(--settle-ease) both;transform-origin:center;transform-box:fill-box}
-@keyframes word-lock{from{opacity:.5}to{opacity:1}}
+.scenic-play .found-stroke.is-new{animation:word-lock 280ms var(--settle-ease) both;transform-origin:center;transform-box:fill-box}
+@keyframes word-lock{0%{opacity:.55;transform:scale(.97)}35%{opacity:1;transform:scale(1.035)}100%{opacity:.82;transform:scale(1)}}
 @media(max-width:1100px) and (orientation:portrait){
  .scenic-play .play-heading{height:52px;flex:0 0 52px;overflow:hidden}
  .scenic-play .play-heading h1{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.15;font-size:19px}
