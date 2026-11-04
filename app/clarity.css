@@ -1,0 +1,73 @@
+/* Safe-area space is additional to the controls, never taken from their row. */
+:root{--shell-safe-top:env(safe-area-inset-top,0px);--shell-safe-bottom:env(safe-area-inset-bottom,0px);--shell-bar-height:58px}
+.native-shell .native-topbar{height:calc(var(--shell-bar-height) + var(--shell-safe-top));min-height:calc(var(--shell-bar-height) + var(--shell-safe-top));padding:calc(7px + var(--shell-safe-top)) max(14px,env(safe-area-inset-right,0px)) 7px max(14px,env(safe-area-inset-left,0px));gap:8px}
+.native-topbar .native-brand{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:center;font-size:14px;font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.native-scene .main-content{padding-bottom:calc(72px + var(--shell-safe-bottom))}
+.native-topbar .native-top-actions{flex-shrink:0;gap:8px}.native-topbar .native-icon,.native-topbar .native-avatar{width:44px;height:44px;min-width:44px}
+.native-scene .native-topbar{background:linear-gradient(#0b293bd9,#0b293b00);color:#fff9e9}
+.native-scene .native-stars{background:#102f40e6;color:#ffe0a0;font-weight:800;white-space:nowrap}
+.native-shell .journey-stage,.native-shell .arena-stage{min-height:calc(100vh - var(--shell-bar-height) - 72px - var(--shell-safe-top) - var(--shell-safe-bottom));min-height:calc(100svh - var(--shell-bar-height) - 72px - var(--shell-safe-top) - var(--shell-safe-bottom))}
+.native-shell .mobile-nav{height:calc(72px + var(--shell-safe-bottom));padding-bottom:calc(4px + var(--shell-safe-bottom))}
+.native-shell .mobile-nav button svg,.native-shell .mobile-nav button.active svg{fill:none;background:none;box-shadow:none;border-radius:0;stroke-width:2.2}
+.native-scene .mobile-nav button.active{background:#e9d5a11a;color:#ffe0a0}
+@media(max-width:360px){.native-topbar .native-brand{font-size:12px}.native-topbar .native-stars{font-size:12px;padding:6px 8px}.native-topbar .native-top-actions{gap:5px}}
+
+/* Actual glyphs own the weight: legacy child rules must not make them lighter. */
+.scenic-play .letter-grid>span,.game-app .scenic-play .letter-grid>span{font-family:var(--sans);font-weight:800;color:var(--board-ink,#142f2c);text-shadow:none}
+.scenic-play .viewport-targets .word-tag,.game-app .scenic-play .viewport-targets .word-tag{color:#19382f;font-weight:800}
+.scenic-play .viewport-targets .word-tag>div,.game-app .scenic-play .viewport-targets .word-tag>div{font-weight:inherit}
+.scenic-play .viewport-targets.has-word-rack .word-tag,.game-app .scenic-play .viewport-targets.has-word-rack .word-tag{font-size:16px;font-weight:800;letter-spacing:.01em;color:#19382f}
+.scenic-play .viewport-targets.has-word-rack .word-tag.found,.game-app .scenic-play .viewport-targets.has-word-rack .word-tag.found{color:#426251;text-decoration-color:#55755f}
+.scenic-play .mobile-target-card>strong,.scenic-play .clue-tag .clue-copy{color:#19382f;font-weight:750}
+.scenic-play .mobile-target-card>small{color:#45604f}
+@media(max-width:380px){.scenic-play .viewport-targets.has-word-rack .word-tag,.game-app .scenic-play .viewport-targets.has-word-rack .word-tag{font-size:15px}}
+.board-scroll{position:relative}
+.board-paused.board-resume{position:absolute;inset:0;z-index:6;width:100%;height:100%;border:0;border-radius:inherit;pointer-events:auto;cursor:pointer;touch-action:manipulation;background:#f8f5eaf5;color:#19382f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px}
+.board-resume>span{font:800 clamp(23px,6vw,34px)/1.2 var(--sans);letter-spacing:-.02em}.board-resume>small{font:650 14px/1.4 var(--sans);color:#426251;text-align:center}
+.game-app .board-resume:active:not(:disabled){transform:none;background:#edeedfff}.board-resume:focus-visible{outline:3px solid #8e611b;outline-offset:-6px}
+
+/* Collection belongs to the same illustrated world as Journey and Arena. */
+.native-profil.native-scene{background:#102c38}
+.native-profil.native-scene .main-content{max-width:840px;padding:10px 22px calc(96px + var(--shell-safe-bottom))}
+.collection-stage{position:relative;isolation:isolate;color:#fff5df}
+.collection-stage-art{position:fixed;inset:0;z-index:-1;pointer-events:none;background:#102c38}
+.collection-stage-art>.scene-art{width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+.collection-stage-art>div{position:absolute;inset:0;background:linear-gradient(#102c38a6,#102c38e8 48%,#102c38 90%)}
+.collection-stage .collection-heading{margin:12px 0 32px;text-align:center}
+.collection-stage .collection-heading h1{font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1.15;color:#fff3d0;margin:8px 0}
+.collection-stage .collection-heading p{font-size:14px;font-weight:650;color:#e3e8d9;margin:10px 0}
+.native-shell .collection-stage .section-title{margin:0 0 14px;align-items:center}
+.native-shell .collection-stage .section-title h2{font-size:22px;letter-spacing:-.025em;color:#fff5df}
+.native-shell .collection-stage .section-title p{font-size:13px;color:#c8d9d3;margin-top:5px}
+.native-shell .collection-stage .section-title>svg{color:#efd495;flex-shrink:0}
+.native-shell .collection-stage .discovery-album-grid{gap:16px;padding:2px 0 20px;scroll-padding-inline:0}
+.native-shell .collection-stage .discovery-album-card{flex:0 0 min(300px,88%);max-width:88%;background:#173e49;border:1px solid #cbdcce40;border-radius:16px;color:#fff5df;box-shadow:none}
+.collection-stage .discovery-album-card .collection-scene{border-radius:15px 15px 0 0}
+.collection-stage .collection-mosaic .covered{background:#173e49ed;border-color:#b4cbbf33;color:#c8d9d3}
+.collection-stage .collection-mosaic .covered>b{background:#1f4c55;color:#e2e9d8;border-color:#cbdcce66}
+.collection-stage .discovery-album-card .eyebrow{color:#efd495;letter-spacing:.06em;font-weight:750}
+.native-shell .collection-stage .discovery-album-card h3{color:#fff5df;font-size:21px;line-height:1.25;margin:10px 0}
+.native-shell .collection-stage .discovery-album-card p{color:#d1e0d8;font-size:13px;line-height:1.5}
+.collection-stage .discovery-album-card small{color:#d1e0d8}.collection-stage .discovery-album-card small>span{color:#f1d89f}
+.collection-stage .album-piece-dots i{background:#0e303b;color:#b8cdc4;border-color:#cbdcce40}.collection-stage .album-piece-dots i.earned{background:#558367;color:#fff4d1;border-color:#a9c391}
+.collection-stage .collection-player{border-color:#dce8db40;margin:18px 0 26px}.collection-stage .collection-player>summary,.collection-stage .collection-stats>summary{color:#e3ece3;min-height:54px;font-size:14px}
+.collection-stage .collection-player .profile-header{background:#173e49;color:#fff5df}.collection-stage .profile-header h2{color:inherit}.collection-stage .auth-profile-handle,.collection-stage .progress-cloud-status{color:#d1e0d8}
+.collection-stage .stat-cards>div,.collection-stage .league-card,.collection-stage .account-settings{background:#173e49;border-color:#cbdcce40;color:#fff5df}
+.collection-stage .stat-cards b,.collection-stage .stat-cards span,.collection-stage .league-card b,.collection-stage .league-card strong,.collection-stage .account-settings h2,.collection-stage .account-settings p,.collection-stage .account-settings label{color:inherit}
+.collection-stage .league-card small,.collection-stage .auth-account small{color:#d1e0d8}.collection-stage .account-settings .text-button{color:#f1d89f}
+.collection-stage .story-collection-heading h2{color:#fff5df}.collection-stage .story-collection-heading p{color:#d1e0d8}.collection-stage .story-collection-heading>span{background:#173e49;color:#f1d89f}
+.native-shell .collection-stage .story-card{background:#173e49;border:1px solid #cbdcce40;border-radius:16px;color:#fff5df;box-shadow:none}
+.collection-stage .story-card-copy h3{color:#fff5df}.collection-stage .story-card-copy p,.collection-stage .story-card-copy small{color:#d1e0d8}.collection-stage .story-card-copy>span{color:#f1d89f}
+.collection-stage .profile-release-album{color:#fff5df}.collection-stage .published-catalogue-note,.collection-stage .published-catalogue-loading{color:#d1e0d8}.collection-stage .published-chapters .section-title .eyebrow{display:none}
+.collection-stage .release-album-card{background:#173e49;border-color:#cbdcce40;color:#fff5df;box-shadow:none}.collection-stage .release-album-card time,.collection-stage .release-album-card .text-button{color:#f1d89f}.collection-stage .release-album-titles{color:#d1e0d8}
+.collection-stage .achievement-row>div{background:#173e49;color:#d1e0d8;border-color:#cbdcce40;opacity:1;box-shadow:none}.collection-stage .achievement-row>div.earned{background:#244d46;color:#ffdfa0;border-color:#d5c18566}.collection-stage .achievement-row b,.collection-stage .achievement-row small{color:inherit}
+.collection-stage .collection-settings-link{color:#fff5df;border-color:#dce8db40;font-size:15px;min-height:56px}
+@media(max-width:360px){.native-profil.native-scene .main-content{padding-inline:16px}.collection-stage .collection-heading h1{font-size:29px}.native-shell .collection-stage .discovery-album-card{flex-basis:90%;max-width:90%}}
+@media(prefers-contrast:more){.collection-stage-art>div{background:#102c38ed}}
+.collection-stage .progress-cloud-status .cloud-status,.collection-stage .nickname-form .muted{color:#d1e0d8}
+.collection-stage .release-album-card.earned{background:#244d46;border-color:#d5c18566}.collection-stage .release-album-titles li{color:#d1e0d8}
+.collection-stage .release-album-card .release-stamp,.collection-stage .release-album-card .release-stamp h3{color:#fff5df}
+.collection-stage .release-album-card .release-stamp p,.collection-stage .release-album-card .release-stamp small{color:#d1e0d8}
+.collection-stage .release-album-card .release-stamp .eyebrow,.collection-stage .release-album-card .release-stamp-art,.collection-stage .release-album-card .release-stamp-loading{color:#f1d89f}
+.collection-stage .button.secondary{background:#e8eedf;color:#234a3e;border-color:#c3d4bd}
+.collection-stage .stat-cards svg,.collection-stage .league-card>svg,.collection-stage .account-settings h2>svg{color:#efd495}

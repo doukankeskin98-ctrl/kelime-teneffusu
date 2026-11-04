@@ -1,5 +1,12 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.35.0 · Daha net, aynı yolculuk
+
+Tahta harfleri ve hedef metinleri tek paketli fontta 800 ağırlıkla sunulur; eski Solo/Arena font çakışmaları giderilir. Solo molasında tüm tahta click/Enter ile devam ettirir; aynı temas harf seçmez. Arena, Günlük, yardım ve kilitli durumlar bu eylemi almaz. iPhone üst güvenli alanı kontrol satırının yüksekliğine eklenir, alt menü eski ikon dolgularından arındırılır. Koleksiyon, albüm/profil/damga/başarı raflarıyla aynı sahneli kabuğa geçer; açık renk pencerelerin kontrastı korunur.
+
+168 bölüm/28 rota, eski tahtalar/kayıt/ödüller/Arena geçmişi; kullanıcı tarafından onaylanmış 720 ms uçuş ve haptik denge değişmez. 704 test/142 grup, içerik kontrolü ve değişmeyen 23 tablo; gerçek tarayıcıda 320×568 ve414×628 normal/bilmece/hikâye/Arena, sürükleme ve dokunma/Enter resume kontrol edildi. 430×931 önizlemede üst59/alt34 inset simülasyonu header117px, ikonüst66px: çakışma yok. Koleksiyon detayları ve alt raflar gözle kontrol edildi. Bunlar fiziksel iPhone/VoiceOver/FPS doğrulaması değildir. Son yayın ve kurulum kanıtları `studio-agents/journal/entries/2026-11-04-clarity.md` ve ayrı teslim makbuzlarında.
+
+
 ## 0.34.2 · Sonuca dilediğinde geç
 
 “Sonuca geç” artık yalnız ana yolculukta değil; öğretici, hikâye, İpucu Avı, klasik, normal, tarihli bölüm ve Günlük sonuç geçişlerinde de görünür. Son kelimenin uçuşunu beklemeden gerçek sonuca ulaşılır. Mevcut tahta üzerindeki eylem kullanılır; kelime kabulü, kayıt, ödül ve Arena akışı değişmez.
