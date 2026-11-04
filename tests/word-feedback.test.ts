@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
-import {wordFeedbackLedger,wordFlightPlan} from '../lib/game/word-feedback.ts';
+import * as feedback from '../lib/game/word-feedback.ts';
+const {wordFeedbackLedger,wordFlightPlan,WORD_FLIGHT_MS,WORD_RESULT_DELAY_MS}=feedback;
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
@@ -10,24 +11,26 @@ describe('confirmed word feedback ledger',()=>{
  it('silently restores old words, consumes each new ID once and survives cancellation',()=>{const l=wordFeedbackLedger('A',['old']);assert.deepEqual(l.consume('A',['old']),[]);assert.deepEqual(l.consume('A',['old','new','new']),['new']);assert.deepEqual(l.consume('A',['old','new']),[]);assert.deepEqual(l.consume('A',['old','new','hidden'],false),[]);assert.deepEqual(l.consume('A',['old','new','hidden']),[]);});
  it('never invents success from a pending/rejected input and scopes explicit replays',()=>{const l=wordFeedbackLedger('A',[]);assert.deepEqual(l.consume('A',[]),[]);assert.deepEqual(l.consume('A',['0']),['0']);assert.deepEqual(l.consume('B',['0']),[]);assert.deepEqual(l.consume('replay',[]),[]);assert.deepEqual(l.consume('replay',['0']),['0']);});
 });
-function harness(initial:string[]=[]){
+function harness(initial:string[]=[],measured=false){
  const slots:any[]=[],effects:(()=>void)[]=[],timers=new Map<number,()=>void>(),sparks=new Set<any>(),animations:any[]=[];
  let cursor=0,time=0,reduced=false,active=true,reads=0,wrote=false,readsAfterWrite=0;
  const measure=(value:unknown)=>{reads++;if(wrote)readsAfterWrite++;return value;};
  const rect={left:0,top:150,width:300,height:300},dest={left:10,top:70,width:80,height:40};
  const animate=(frames:unknown,options:unknown)=>{const animation={frames,options,cancelled:false,cancel(){this.cancelled=true;}};animations.push(animation);return animation;};
- const destination={dataset:{wordGroup:'0'},hasAttribute:(name:string)=>name==='data-word-group',getBoundingClientRect:()=>measure(dest),animate};
- const screen={getBoundingClientRect:()=>measure({left:0,top:0}),querySelector:(selector:string)=>selector==='.letter-board'?{getBoundingClientRect:()=>measure(rect),animate}:destination,querySelectorAll:()=>[destination],appendChild:(node:any)=>{wrote=true;sparks.add(node);}};
+ const label={textContent:'KALE',firstChild:{nodeType:3}};
+ const cells=Array.from({length:36},(_,i)=>({getBoundingClientRect:()=>measure({left:i%6*50,top:150+Math.floor(i/6)*50,width:50,height:50})}));
+ const destination={dataset:{wordGroup:'0'} as Record<string,string>,querySelectorAll:(s:string)=>measured&&s==='[data-word-label]'?[label]:[],hasAttribute:(name:string)=>name==='data-word-group',getBoundingClientRect:()=>measure(dest),animate};
+ const screen={getBoundingClientRect:()=>measure({left:0,top:0}),querySelector:(selector:string)=>selector==='.letter-board'?{getBoundingClientRect:()=>measure(rect),animate,querySelectorAll:()=>measured?cells:[]}:destination,querySelectorAll:()=>[destination],appendChild:(node:any)=>{wrote=true;sparks.add(node);}};
  const element=()=>{let label='';const children:any[]=[];return {className:'',style:{fontSize:''},children,setAttribute(){},appendChild(child:any){children.push(child);},get textContent():string{return label+children.map(c=>c.textContent).join('');},set textContent(v:string){label=v;},animate,remove(){sparks.delete(this);}};};
- const doc=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{} as Record<string,string>},createElement:element});
+ const doc=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{} as Record<string,string>},createElement:element,createRange:()=>{let index=0;return{setStart(_node:unknown,start:number){index=start;},setEnd(){},getBoundingClientRect(){const xs=[20,32,39,50],widths=[12,7,11,8];return measure({left:xs[index],top:80,width:widths[index],height:14});}};}});
  const win=Object.assign(new EventTarget(),{matchMedia:()=>({matches:reduced})});
- const hooks={useRef(value:any){return slots[cursor++]??={current:value};},useEffect(fn:()=>any,deps:any[]){const i=cursor++,slot=slots[i];if(!slot||deps.some((d,j)=>!Object.is(d,slot.deps[j]))){slots[i]={deps,cleanup:slot?.cleanup};effects.push(()=>{slots[i].cleanup?.();slots[i].cleanup=fn();});}}};
+ const hooks={useLayoutEffect:(fn:()=>any,deps:any[])=>hooks.useEffect(fn,deps),useRef(value:any){return slots[cursor++]??={current:value};},useEffect(fn:()=>any,deps:any[]){const i=cursor++,slot=slots[i];if(!slot||deps.some((d,j)=>!Object.is(d,slot.deps[j]))){slots[i]={deps,cleanup:slot?.cleanup};effects.push(()=>{slots[i].cleanup?.();slots[i].cleanup=fn();});}}};
  const exports:any={};
- vm.runInNewContext(ts.transpileModule(readFileSync('components/game/WordFeedback.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText,{exports,require:(name:string)=>name==='react'?hooks:name==='@/lib/game/word-feedback'?{wordFeedbackLedger,wordFlightPlan}:name==='@/lib/game/board-view'?{viewCell}:name==='@/lib/platform/runtime'?{gameIsActive:()=>active}:{},window:win,document:doc,setTimeout:(fn:()=>void)=>{timers.set(++time,fn);return time;},clearTimeout:(id:number)=>timers.delete(id)});
+ vm.runInNewContext(ts.transpileModule(readFileSync('components/game/WordFeedback.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText,{exports,require:(name:string)=>name==='react'?hooks:name==='@/lib/game/word-feedback'?feedback:name==='@/lib/game/board-view'?{viewCell}:name==='@/lib/platform/runtime'?{gameIsActive:()=>active}:{},window:win,document:doc,getComputedStyle:(el:any)=>({fontSize:el===label?'14px':'38px',fontFamily:'Nunito Sans',fontWeight:'800',color:'#173e36'}),setTimeout:(fn:()=>void)=>{timers.set(++time,fn);return time;},clearTimeout:(id:number)=>timers.delete(id)});
  const stroke=(id:string)=>({id,a:[0,0],b:[0,3]});
  const props:any={root:{current:screen},scope:'A',board:{size:6,grid:Array.from({length:6},()=>[...'KALEXX']),targets:Array.from({length:8},(_,i)=>({id:String(i),group:0,text:'KALE',label:'KALE'}))},confirmed:initial.map(stroke),turned:false,paused:false};
  const render=(changes:any={})=>{Object.assign(props,changes);cursor=0;wrote=false;exports.WordFeedback(props);while(effects.length)effects.shift()!();};render();
- return {render,get reads(){return reads;},get readsAfterWrite(){return readsAfterWrite;},confirm:(ids:string[])=>render({confirmed:ids.map(stroke)}),get sparks(){return sparks.size;},get labels(){return [...sparks].map(s=>s.textContent);},get timers(){return timers.size;},animations,props,reduced(value:boolean){reduced=value;},hide(){doc.hidden=true;doc.dispatchEvent(new Event('visibilitychange'));},show(){doc.hidden=false;},blur(){win.dispatchEvent(new Event('blur'));},pause(){active=false;render({paused:true});},expire(){for(const fn of [...timers.values()])fn();},close(){for(const slot of slots)slot.cleanup?.();}};
+ return {render,destination,get glyphs(){return [...sparks].flatMap(s=>s.children);},get reads(){return reads;},get readsAfterWrite(){return readsAfterWrite;},confirm:(ids:string[])=>render({confirmed:ids.map(stroke)}),get sparks(){return sparks.size;},get labels(){return [...sparks].map(s=>s.textContent);},get timers(){return timers.size;},animations,props,reduced(value:boolean){reduced=value;},hide(){doc.hidden=true;doc.dispatchEvent(new Event('visibilitychange'));},show(){doc.hidden=false;},blur(){win.dispatchEvent(new Event('blur'));},pause(){active=false;render({paused:true});},expire(){for(const fn of [...timers.values()])fn();},close(){for(const slot of slots)slot.cleanup?.();}};
 }
 describe('actual decorative effect lifecycle',()=>{
  it('keeps resumed ink silent; final confirmed words animate without waiting for input or awarding state',()=>{const h=harness(['0']);try{assert.equal(h.sparks,0);h.confirm(['0','1']);assert.equal(h.sparks,1);h.render();assert.equal(h.sparks,1);h.expire();assert.equal(h.sparks,0);assert.equal(h.timers,0);h.confirm(['0','1']);assert.equal(h.sparks,0);}finally{h.close();}});
@@ -69,9 +72,16 @@ describe('letter flight geometry',()=>{
  });
  it('animates glyphs together and reaches the target before cleanup',()=>{
   const h=harness();try{h.confirm(['0']);assert.equal(h.animations.length,5);
-   const letters=h.animations.slice(0,4);assert.deepEqual(letters.map(a=>a.options.delay),[0,10,20,30]);
-   for(const a of letters){assert.equal(a.frames.at(-1).opacity,0);assert(a.options.duration+a.options.delay<800);}
+   const letters=h.animations.slice(0,4);assert.deepEqual(letters.map(a=>a.options.delay),[0,12,24,36]);
+   for(const a of letters){assert.equal(a.options.duration,WORD_FLIGHT_MS);assert.equal(a.frames.at(-2).opacity,1);assert.equal(a.frames.at(-1).opacity,0);assert(a.options.duration+a.options.delay<WORD_RESULT_DELAY_MS);}
    assert.equal(h.readsAfterWrite,0);h.expire();assert(h.animations.every(a=>a.cancelled));assert.equal(h.sparks,0);
   }finally{h.close();}
  });
+});
+
+it('holds target decoration until arrival and releases every overlapping owner on interruption',()=>{
+ const h=harness();try{h.confirm(['0']);assert.equal(h.destination.dataset['wordArriving'],'true');h.confirm(['0','1']);h.animations[3].onfinish();assert.equal(h.destination.dataset['wordArriving'],'true');h.animations[8].onfinish();assert.equal(h.destination.dataset['wordArriving'],undefined);h.confirm(['0','1','2']);assert.equal(h.destination.dataset['wordArriving'],'true');h.hide();assert.equal(h.destination.dataset['wordArriving'],undefined);h.animations[13].onfinish();assert.equal(h.destination.dataset['wordArriving'],undefined);}finally{h.close();}
+});
+it('uses actual source font and measured unequal target glyph widths rather than a guessed midpoint',()=>{
+ const h=harness([],true);try{h.confirm(['0']);assert.equal(h.glyphs[0].style.fontSize,'38px');assert.equal(h.glyphs[0].style.fontFamily,'Nunito Sans');assert.match(h.animations[0].frames.at(-1).transform,/translate\(26px,87px\)/);assert.match(h.animations[1].frames.at(-1).transform,/translate\(35.5px,87px\)/);assert.match(h.animations[0].frames[1].transform,/translate\(25px,161px\).*scale\(1.12\)/);assert.equal(h.animations[0].options.easing,'linear');assert.equal(h.readsAfterWrite,0);}finally{h.close();}
 });

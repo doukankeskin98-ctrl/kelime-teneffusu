@@ -1,5 +1,7 @@
 # Öncelikler
 
+4 Kasım2026,0.34.1: ölçülmüş harf kaynak/hedef geometrisi, okunur720ms uçuş ve varışta görsel onay; son kelime boyunca sabit tahta ve sonucu1040ms sonra gösterme. Haptik dengesi kullanıcı tarafından0.34.0 üzerinde onaylı; değiştirilmedi. Yeni animasyonun fiziksel his kabulü açık. Kanıt `../journal/entries/2026-11-04-word-arrival.md`.
+
 4 Kasım 2026, 0.34.0: harf uçuşu ve ayrı native iOS harf/kelime/menü titreşimleri. 685 test, 639 Worker kontrolü; iPhone üzerine kayıt korunarak kurulum ve başlatma tamamlandı. Hissin dengesi ve fiziksel frame pacing için oyuncu denemesi açık. Kanıt `../journal/entries/2026-11-04-tactile.md`.
 
 4 Kasım 2026, 0.33.1: aynı dokunuşta sabit ilk harf etrafında yön değiştirme. Merkez toleransı/erken kabul/cache korunur. Kanıt `../journal/entries/2026-11-04-pivot.md`. İlk açık kontrol fiziksel iPhone’da serbest yön değiştirme hissi; kurulu uygulama bu tur güncellenmedi.
