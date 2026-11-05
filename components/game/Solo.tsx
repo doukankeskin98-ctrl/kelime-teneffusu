@@ -19,7 +19,7 @@ import {worldChapter,chapterVeils,veilInstruction} from '@/lib/game/world-presen
 import {SceneArt} from './SceneArt';
 import {JourneyResult} from './JourneyResult';
 import {journeyGoal,masteryCopy} from '@/lib/game/achievement-view';
-import {soloHintGuide,hintTarget,focusedWordGroup,wordListProgress} from '@/lib/game/word-card';
+import {nearMissMessage,soloHintGuide,hintTarget,focusedWordGroup,wordListProgress} from '@/lib/game/word-card';
 import {JourneyObjective,VictorySummary,NextJourneyPreview} from './AchievementLoop';
 import * as legacy from '@/lib/game/legacy';
 import type {DailyView} from '@/lib/game/server';
@@ -104,7 +104,15 @@ export function Solo({config,progress,onProgress,onBack,onMap,onNext,external,da
  useEffect(()=>{if(dailyRetired.current)dailySession.current?.dispose();},[ownerId]);
  const commit=async(a:Cell,b:Cell)=>{
   if(paused||completed||dailyLocked)return;
-  const target=match(board,a,b);if(!target){chime('miss');setMessage('Tekrar dene.');track('selection_miss');return;}
+  const target=match(board,a,b);
+  if(!target){
+   const visible=story||journey?.clues||daily||external?[]:board.targets.filter(t=>
+    (veils[t.group]??'open')==='open'&&!foundRef.current.some(s=>s.id===t.id));
+   chime('miss');
+   setMessage(nearMissMessage(board,a,b,visible));
+   track('selection_miss');
+   return;
+  }
   if(foundRef.current.some(s=>s.id===target.id)){setMessage('Bu kelimeyi zaten buldun.');return;}
   if(story&&storyStage(story,board,foundRef.current).target?.id!==target.id){setMessage('Bu kelime birazdan. Şimdiki ipucunu çöz.');return;}
   const stroke={id:target.id,a,b},finish=foundRef.current.length+1===board.targets.length;
