@@ -18,4 +18,5 @@ for(const path of paths)assert((await stat('dist-mobile'+path)).size>0,path+' mi
 const manifest=await read('ios/App/App/PrivacyInfo.xcprivacy');assert.match(manifest,/NSPrivacyCollectedDataTypeGameplayContent/);assert.match(manifest,/NSPrivacyCollectedDataTypeUserID/);
 assert.match(await read('ios/App/App.xcodeproj/project.pbxproj'),/PrivacyInfo.xcprivacy in Resources/);
 const plist=await read('ios/App/App/Info.plist');assert(!plist.includes('NSAllowsArbitraryLoads'));assert(!plist.includes('NSCameraUsageDescription'));assert(!plist.includes('NSMicrophoneUsageDescription'));
+assert.match(plist,/<key>LSSupportsGameMode<\/key>\s*<true\s*\/>/);
 console.log(`Mobile package verified: local entry, ${paths.length} world scenes, HTTPS API, privacy resource, no blanket network exceptions.`);

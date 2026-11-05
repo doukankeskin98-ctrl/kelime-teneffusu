@@ -1,4 +1,4 @@
-import type {Target,Stroke,Cell} from './engine.ts';
+import {exactLine,match,type Puzzle,type Target,type Stroke,type Cell} from './engine.ts';
 export type WordVeil='open'|'initial'|'hidden';
 export function veiledText(text:string,veil:WordVeil='open'){
  if(veil==='open')return text;
@@ -43,4 +43,22 @@ export function hintTarget(board:{targets:Target[]},strokes:Stroke[],preferred:n
 export function soloHintGuide(placement:Pick<Stroke,'a'|'b'>,used:number):{start:Cell;end:Cell|null;message:string}{
  const {a,b}=placement;
  return used<=1?{start:a,end:null,message:'Kelimenin ilk harfi burada.'}:used===2?{start:a,end:[a[0]+Math.sign(b[0]-a[0]),a[1]+Math.sign(b[1]-a[1])],message:'İlk harften işaretli yönde ilerle.'}:{start:a,end:b,message:'İşaretli yolu çizerek kelimeyi tamamla.'};
+}
+
+
+/** Explain a near miss only when it extends to one already visible answer on
+ * this exact line. This is feedback on release and never awards a word. */
+export function nearMissMessage(board:Pick<Puzzle,'grid'|'size'|'targets'>,start:Cell,end:Cell,visible:Target[]):string{
+ const cells=exactLine(start,end,board.size);
+ if(!cells||cells.length<4||!visible.length)return 'Tekrar dene.';
+ const dr=Math.sign(end[0]-start[0]),dc=Math.sign(end[1]-start[1]);
+ const answers=new Set<string>();
+ const puzzle={...board,targets:visible};
+ for(const gap of [1,2]){
+  const first:Cell=[start[0]-dr*gap,start[1]-dc*gap];
+  const last:Cell=[end[0]+dr*gap,end[1]+dc*gap];
+  if(match(puzzle,first,end))answers.add(board.grid[first[0]]![first[1]]+' harfinden başla.');
+  if(match(puzzle,start,last))answers.add(board.grid[last[0]]![last[1]]+' harfine kadar kaydır.');
+ }
+ return answers.size===1?[...answers][0]!:'Tekrar dene.';
 }

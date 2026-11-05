@@ -79,3 +79,6 @@
 @media(max-height:700px) and (orientation:portrait){
  .scenic-play[data-dense-board] .target-rack{max-height:104px!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#8aab98 #fffdf4}
 }
+
+/* Let the current stroke speak while the previous attempt's notice is active. */
+.scenic-play.has-selection .game-message.has-notice{visibility:hidden}

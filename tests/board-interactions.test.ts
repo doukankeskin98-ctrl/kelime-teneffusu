@@ -9,7 +9,8 @@ import {describe,it} from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
 import {snapLine,type Cell,type Stroke,type Target} from '../lib/game/engine.ts';
-import {TUTORIAL} from '../lib/game/content.ts';
+import {match} from '../lib/game/engine.ts';
+import {TUTORIAL,journeyBoard,journeyById} from '../lib/game/content.ts';
 
 type Node={type:unknown;props:Record<string,any>};
 type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void;setup?:()=>void|(()=>void)};
@@ -468,6 +469,25 @@ describe('TROYA corner regression through the actual Board',()=>{
    h.send('onPointerUp',corner);h.send('onLostPointerCapture',corner);h.flush();
    assert.deepEqual(h.commits,[{a:[3,2],b:[7,6]}]);assert.equal(h.selected().length,0);
    assert.equal(h.selections,h.selectionEnds);
+  }finally{h.unmount();}
+ });
+});
+
+describe('Hababam chapter 12 edge-to-edge name through native input',()=>{
+ for(const releaseOnly of [true,false])it('accepts BADİ EKREM once at the outer top-left corner, release only '+releaseOnly,()=>{
+  const board=journeyBoard(journeyById('hababam-3')!);
+  assert.equal(board.grid[0]!.join(''),'MERKEİDAB');
+  const h=harness();
+  try{
+   h.setProps({board,earlyTargets:board.targets});
+   h.send('onPointerDown',[0,8]);h.native('touchstart',[[0,8]]);
+   h.native('touchmove',[[0,1]]);h.flush();
+   assert.equal(h.previews.at(-1),'BADİEKRE');
+   const end:Cell=[-.66,-.55]; // Touch is just outside both physical board edges.
+   if(!releaseOnly)h.native('touchmove',[end]);
+   h.native('touchend',[],[end]);h.send('onPointerUp',end);
+   assert.deepEqual(h.commits,[{a:[0,8],b:[0,0]}]);
+   assert.equal(match(board,h.commits[0]!.a,h.commits[0]!.b)?.label,'BADİ EKREM');
   }finally{h.unmount();}
  });
 });

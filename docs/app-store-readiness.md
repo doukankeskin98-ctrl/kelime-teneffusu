@@ -1,10 +1,27 @@
-# iOS yayın dosyası · 3 Kasım 2026
+# iOS yayın dosyası · 5 Kasım 2026
 
-Durum: iOS uygulaması simülatörde ve kişisel imzayla iPhone 14 Pro Max üzerinde kuruldu/açıldı. Bu belge App Store kabulü veya hukuki uygunluk onayı değildir. Kişisel Apple hesabı Xcode’a bağlandı; ücretli Apple Developer Program üyeliği ve TestFlight henüz yok. İşletmeci adı/destek e-postası yanıtı bekleniyor. Kesinleşmemiş bir politika canlıya konmadı.
+İlk sürüm için yayıncının seçtiği hedef genel kitle. Yayıncı adı ve takip edilen destek adresi henüz belirlenmedi. Ücretli üyelik, dağıtım arşivi, TestFlight ve inceleme kaydı açık. Bu çalışma sürümünde gerçek reklam veya satış bulunmuyor. Mevcut App Store Connect beyanı, politika veya yaş derecesi yayımlanmış sayılmaz.
+
+## 0.36.2 sürüm kararı
+
+| Sıra | Teslim | Kabul kanıtı |
+|---|---|---|
+| 1 · Dokunma ve oturum | Gerçek tahtada sağ ve sol elle uzun kenar kelimeleri; çaprazlar, pivot, son örnek, kenardan taşma; kesilen çizim, kilit ve geri dönüş | Bölüm 12 tek sürüklemede BADİ EKREM. Özgün iOS dokunma testi ve eski kayıt kontrolleri var. Fiziksel telefonda kısa ve uzun oturum ile kare sürelerini ayrıca ölç |
+| 2 · Oyuncu hesabı ve Arena | Ayarlardan yeniden doğrulanmış silme; misafir, e-posta, tüm oturumlar ve sağlayıcı silmesini kapsayan yeniden denenebilir işlem. Ortak maç kayıtlarında diğer oyuncuyu koru. İsimleri bildir/engelle ve işleten bir moderasyon kuyruğu veya önceden denetlenen isimler | İki deneme hesabıyla silme ve yeniden giriş, iki gerçek cihazla Arena engelleme/rövanş, inceleme notu ve yanıt veren destek kanalı |
+| 3 · Mağaza paketi ve erişilebilirlik | Gerçek yayıncı, herkese açık çalışan gizlilik ve destek URL’leri, iletişim ve saklama uygulaması, hesap/sağlayıcı veri envanteri, arşiv gizlilik raporu, yaş anketi, telif envanteri. İlk oynanış/sonraki bölüm VoiceOver ve azaltılmış hareketle kontrol edilir | İmzalı dağıtım arşivi, uygun üyelik, TestFlight, ekran görüntüleri ve inceleme erişimi. Çevrimdışı solo, yeniden kurulum/ilerleme aktarımı, düşük güçlü cihazda uzun oyun ve ağ kesintisi doğrulanır |
+| 4 · İçerik ve ekonomi | Oynayarak açılan bölümler/albüm parçaları ilk ödül döngüsü. Bir sonraki özgün bölüm paketi için konu/kelime editör kontrolü, eski tahta kimlikleri ve Arena tekrar kontrolü | Mağaza paketinde dağıtım hakkı doğrulanmış metin/görsel/font/ses bulunur. Ayrı bir gelir denemesi ancak temel oyun ve hesap güvenliği kabul edildikten sonra başlar |
+
+## Oyun Modu, reklam ve satın alma
+
+iOS oyun paketi `LSSupportsGameMode` ile sistem Oyun Modu desteğini bildiriyor. Uygun iPhone'da sistem, oyun tam ekrandayken durumu ve bildirimi yönetir. Oyun içi açılış bildirimi taklit edilmez. Apple, arka plan işlerini sınırlar ve bazı kablosuz aksesuarların gecikmesini azaltır. Oyunun dokunma doğruluğu ve uzun oturum performansı ayrıca test edilir. [Apple WWDC](https://developer.apple.com/videos/play/wwdc2025/209/) · [Apple Oyun Modu](https://support.apple.com/en-ie/105118)
+
+Önerilen ilk TestFlight reklamsızdır. Daha sonra oyuncunun kendi isteğiyle açtığı tek deneme önerisi bir **solo pratik ipucudur**. Ödül ve koşul düğmeye basılmadan görünür. Reklam yüklenmezse oyuncu oynamaya devam eder. Kullanılmayan bir ipucu yıldız hesabını etkilemez; kullanılınca mevcut ipucu kuralları geçerlidir. Hikâye geçişine zorunlu reklam veya Arena'da puan/süre üstünlüğü eklenmez.
+
+Ürün sahibi gelir modelini seçtikten sonra ağda uygulama ve reklam birimi oluşturulur. Test kimlikleriyle yükleme, vazgeçme, tamamlama ve tekrar gelen bildirim denenir. Sunucu imza ve işlem kimliğini doğrular, ödülü tek kez kaydeder. Arka plana alma veya geç onay oyuncuya iki ödül vermez. Yeni SDK için veri etiketleri ve saklama incelenir. Bölgeye göre rıza akışı, Apple'ın tanımladığı şekilde uygulamalar arası takip yapılacaksa ATT kararı gerekir. Kişiselleştirme veya izin reddi oyun girişini engellemez. Dijital içerik satışı seçilirse StoreKit satın alma, işlem doğrulama ve uygulanabilir geri yükleme akışları ayrı test edilir. [Ödüllü reklam](https://developers.google.com/admob/ios/rewarded) · [AdMob ödül kuralları](https://support.google.com/admob/answer/7313578?hl=en) · [Sunucu doğrulaması](https://developers.google.com/admob/ios/ssv) · [Apple veri kullanımı](https://developer.apple.com/app-store/user-privacy-and-data-use/) · [StoreKit](https://developer.apple.com/documentation/storekit/in-app-purchase)
 
 ## Şimdi uygulanan temel
 
-Aynı GameApp, tahta ve 120 bölüm; paketli sahneler; iOS 15+; yerel açılış; opsiyonel haptics; arka plan→ön plan sınırı; sabit HTTPS JSON API; native tek-uçuşlu Arena sorgusu, mevcut web SSE; mevcut sunucu yetki/puan/anti-repeat kuralları. Apple takım/sertifika/profil bilgisi yok. Bundle ID geliştirme kimliği, Apple'da rezervasyon iddiası yok.
+Ana yolculukta 168 bölüm ve 28 rota; paketli sahneler; iOS 15+; yerel açılış; opsiyonel haptics; arka plan→ön plan sınırı; sabit HTTPS JSON API; native tek-uçuşlu Arena sorgusu, mevcut web SSE; mevcut sunucu yetki/puan/anti-repeat kuralları. Kişisel geliştirme imzası cihaz kurulumu için doğrulandı. Dağıtım imzası açık. Bundle ID geliştirme kimliği, Apple'da rezervasyon iddiası yok.
 
 App Privacy manifest kaynakta gerçekten işlenen kategorileri gösterir: kullanıcı kimliği, oyun içeriği, arkadaş grafiği, yapılandırılmış üyelikte e-posta; isteğe bağlı ürün etkileşimi/performans, toplu hata sayımları. Reklam/IDFA/tracking SDK yok; bu, sunucuda veri toplanmıyor demek değildir. Son arşiv privacy raporu ve ağ denetimi yapılmadan App Store Connect beyanı tamamlandı sayılmaz. Sistem HTTPS/Web Crypto kullanımı için export alanı exempt olarak hazırlanmıştır; yeni kripto/SDK eklenirse yayıncı yeniden değerlendirir.
 

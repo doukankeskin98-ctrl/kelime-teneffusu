@@ -1,3 +1,7 @@
+## 0.36.2 · Dış kenarda kelime seçimi
+
+Bölüm 12'deki BADİ EKREM dokuz harfle üst satırın iki ucuna dayanıyor. Geçerli yön boyunca parmak tahta sınırını az aştığında çizgi artık son harfe ulaşır. Açık bir hedefe bir veya iki harf kala bırakınca oyun eksik ucu tarif eder; sonraki çizim sırasında eski uyarı görünmez. iOS paketi sistem Oyun Modu desteğini bildirir. Tekrarlanabilir native kontrol: açık bir iPhone simülatörüyle `npm run mobile:edge-test -- SIMULATOR_UDID`. Mağaza kararı ve açık işler `docs/app-store-readiness.md` içinde.
+
 ## 0.36.1 · Son harf ve bölüm sonu
 
 TROYA'nın son A'sına köşeden girildiğinde geçerli diyagonal ilk çizimde kabul edilir. Parmak komşu hücreye kaydığında çizgi bulunmamış harfe uzanmaz. Son kelimeden sonra “Sonuca geç”, tahtanın altındaki İpucu yuvasında görünür. Kutlamanın başlığı, kapanış ve devam düğmeleri iPhone'un güvenli alanı içinde kalır; kısa ekranda uzun sonuçlar kaydırılabilir. Bölüm kimlikleri, kayıtlar, puanlama ve titreşim ayarları değişmedi.

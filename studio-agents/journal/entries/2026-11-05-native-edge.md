@@ -1,0 +1,10 @@
+# 0.36.2 · Dış kenarda uzun kelime
+
+Kabul ölçütü: mobil kayıttaki Bölüm 12 hababam-3, BADİ EKREM üst sıranın tamamı. B→M çiziminde parmak son harfle aynı hizada, tahta üstünün 0,16 hücre dışındayken erken kabul bir kez çalışmalı. Dört dış kenar, ters yön, kenarın köşesi, kısa/uzak/yanlış çizim, önceki TROYA, dönüş ve çift olay korunmalı. Bir harf eksik çizimi kendiliğinden puanlama; açık hedefe özgü yararlı geri bildirim ver. Çizim sırasında eski hata mesajı üstte kalmasın. Genel kitle için iOS Game Mode ve mevcut App Store hazırlığı resmî gereksinimlerle karşılaştırılacak; son yayıncı/destek adresi henüz yok.
+
+## Sonuç
+
+- 10,17 saniyelik kayıtta görülen iki farklı deneme BADİEKRE ve ADİEKREM. Parmak koordinatları kaydedilmemiş. İkisi de 2/5 olarak kalıyor. Kanonik hababam-3 ızgarasının ilk satırı MERKEİDAB. Eski ortak Board'da E'den M hizasına, sınırın 0,16 hücre dışına hareket son harfi kabul etmiyordu. Yeni testler önce eski kodda kırıldı.
+- Kenarın dışına taşan parmak yalnız izlenen dış satıra/sütuna, en çok 0,45 hücrelik dar bantta yansıtılır. Komşu satır, uzak dokunuş ve eksik isim puan kazandırmaz. Tamamlanmamış bir çizim gerçekten tahtadaki açık hedefe uzanıyorsa başlangıç/son harf geri bildirimi verilir. Gizli hedef ve bilmecede ipucu sızmaz.
+- Yerel 738 test / 149 grup ve 639 Worker kontrolü geçti. 241 tahta ve 4820 alternatif yerleşim, tipler, şema, web/mobil üretim ve imza kontrolleri geçti. iPhone 8 Plus Safari ölçüsünde 414×628 tarayıcı denemesi ile iPhone 16e simülatöründe gerçek XCTest sürüklemesi 2/5 → 3/5 verdi. İki test de gerçek Solo ekranını ve bölüm 12 tahtasını ayrı test kaydıyla açtı. Kalıcı test ilk A→M denemesinde B harfinden başla mesajını, sonraki B→sol üst köşenin dışına sürüklemede bulunan kelimeyi doğrular. Test paketi ayrı bundle kimliği kullanır.
+- iOS Release 0.36.2 (16) imzası ve paketlenmiş LSSupportsGameMode doğrulandı. Telefon kurulumu oyuncunun tercihiyle ertelendi. Fiziksel parmak hissi, uzun oturum performansı ve sistemin Oyun Modu bildirimi açık kontroller. StoreKit, canlı reklam ve mağazaya gönderim için kararlar docs/app-store-readiness.md içinde.

@@ -1,5 +1,7 @@
 # Öncelikler
 
+5 Kasım 2026, 0.36.2. Hababam kenar çizimi, kısa çizim geri bildirimi ve native simülatör regresyonu. Sonraki teslim önceliği gerçek cihazda iki elle uzun oyun, hesap silme ve Arena isim moderasyonu. Mağaza yayıncı/destek bilgileri açık.
+
 5 Kasım 2026, 0.36.1: TROYA çapraz köşesi, görsel çizgi ile kabul edilen harfin uyumu, güvenli sonuç penceresi ve alt kontrol yuvası. Fiziksel parmak denemesi ve uzun oturum FPS ölçümü açık. Kanıt: ../journal/entries/2026-11-05-troya.md.
 
 5 Kasım 2026, 0.36.0: sabit hedef rafı, yukarı alınmış tahta, boşluklu kelimelerde doğru uçuş hedefi. iPhone üzerine kurulum ve beş kayıt değerinin eşitliği doğrulandı. Sonraki kabul: fiziksel başparmak konforu, dokuz dar Arena yuvası, uzun oturum/FPS ve VoiceOver. Kanıt `../journal/entries/2026-11-05-comfort.md`.

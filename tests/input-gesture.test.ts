@@ -1,3 +1,5 @@
+import {nearMissMessage} from '../lib/game/word-card.ts';
+import {journeyBoard,journeyById} from '../lib/game/content.ts';
 import {describe,it} from 'node:test';
 import assert from 'node:assert/strict';
 import {advanceGesture,CELL_HIT_RADIUS,earlyWordEnd,gestureTip} from '../lib/game/input-gesture.ts';
@@ -112,5 +114,43 @@ describe('whole-cell acceptance on an established word ray',()=>{
    const withinCurrent:Cell=[4.5+2.2*dr,4.5+2.2*dc];
    assert.deepEqual(gestureTip(start,current,axis,withinCurrent,9),withinCurrent);
   }
+ });
+});
+
+describe('a captured swipe can follow the outside edge of the board',()=>{
+ const cases:[Cell,Cell,Cell,Cell][]=[
+  [[0,8],[0,2],[-.16,.5],[0,0]],
+  [[8,0],[8,6],[9.16,8.5],[8,8]],
+  [[8,0],[2,0],[.5,-.16],[0,0]],
+  [[0,8],[6,8],[8.5,9.16],[8,8]],
+ ];
+ for(const [start,previous,point,end] of cases){
+  it('accepts move and release along the edge from '+start,()=>{
+   for(const release of [false,true]){
+    const axis:Cell=[Math.sign(end[0]-start[0]),Math.sign(end[1]-start[1])];
+    assert.deepEqual(advanceGesture(start,previous,axis,point,9,release).cell,end);
+   }
+  });
+ }
+ it('preserves fractional ink outside the top border without reaching a different letter',()=>{
+  const [row,column]=gestureTip([0,8],[0,1],[0,-1],[-.2,1.21],9);
+  assert.equal(row,.5);assert(Math.abs(column-1.21)<1e-10);
+ });
+ it('rejects a distant excursion above the row and a touch on another row',()=>{
+  for(const y of [-1,1.42])assert.deepEqual(advanceGesture([0,8],[0,2],[0,-1],[y,.5],9,true).cell,[0,2]);
+ });
+});
+
+describe('useful misses do not award or expose masked answers',()=>{
+ const board=journeyBoard(journeyById('hababam-3')!);
+ const visible=board.targets.filter(t=>t.label==='BADİ EKREM');
+ it('distinguishes missing start, missing end and an unrelated stroke in both directions',()=>{
+  assert.equal(nearMissMessage(board,[0,8],[0,1],visible),'M harfine kadar kaydır.');
+  assert.equal(nearMissMessage(board,[0,8],[0,2],visible),'M harfine kadar kaydır.');
+  assert.equal(nearMissMessage(board,[0,7],[0,0],visible),'B harfinden başla.');
+  assert.equal(nearMissMessage(board,[0,0],[0,7],visible),'B harfine kadar kaydır.');
+  assert.equal(nearMissMessage(board,[1,8],[1,1],visible),'Tekrar dene.');
+  assert.equal(nearMissMessage(board,[0,8],[0,1],[]),'Tekrar dene.');
+  assert.equal(nearMissMessage(board,[0,8],[0,6],visible),'Tekrar dene.');
  });
 });
