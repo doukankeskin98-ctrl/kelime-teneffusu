@@ -11,4 +11,4 @@ export function appFetch(path:string,init:RequestInit={}):Promise<Response>{
  if(!/^\/api\/[a-z][a-z0-9/-]*(?:\?[^#]*)?$/.test(path)||path.includes('..')||path.includes('\\'))return Promise.reject(new Error('Geçersiz istek adresi.'));
  return transport?transport(path,init):fetch(path,init);
 }
-export const publicGameOrigin=()=>isNativeGame()?GAME_ORIGIN:location.origin;
+export const publicGameOrigin=()=>isNativeGame()||typeof location==='undefined'?GAME_ORIGIN:location.origin;

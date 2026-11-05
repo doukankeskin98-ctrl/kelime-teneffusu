@@ -1,5 +1,7 @@
 # iOS yayın dosyası · 5 Kasım 2026
 
+0.36.4 ek kanıtı: iOS native sistem paylaşımı ve herkese açık davet URL'leri düzeltildi. Simülatörde üç tür için Copy; ayrıca oda davetinin sistem Paste içeriği, iptal ve yeniden açma geçti. Bu sonuç fiziksel cihaz, iki oyuncu, Universal Links veya App Store yayın kabulü değildir. Telefon kurulumu ertelendi; aşağıdaki mağaza kapıları açık kalır.
+
 İlk sürüm için yayıncının seçtiği hedef genel kitle. Yayıncı adı ve takip edilen destek adresi henüz belirlenmedi. Ücretli üyelik, dağıtım arşivi, TestFlight ve inceleme kaydı açık. Bu çalışma sürümünde gerçek reklam veya satış bulunmuyor. Mevcut App Store Connect beyanı, politika veya yaş derecesi yayımlanmış sayılmaz.
 
 ## 0.36.2 sürüm kararı

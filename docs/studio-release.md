@@ -1,5 +1,11 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.36.4 · iPhone davet paylaşımı
+
+Arena odası, arkadaş ve meydan okuma davetleri iOS paketinde herkese açık HTTPS oyun adresini kullanır. Davet sorgusu giriş dönüşünde korunur; yerel uygulama adresi ve ilgisiz sayfa parametreleri paylaşılmaz. Native sistem paneli kopyalama, paylaşma, iptal ve hatayı ayırır; aynı anda tek panel açılır ve kapanmış ekrana geç yanıt yazılmaz. iOS Copy işleminde başlıkla bağlantı tek metin olarak korunur.
+
+755 test, içerik/tip/şema, web ve mobil üretim derlemeleri, 639 Worker HTTP kontrolü geçti. İzole iPhone simülatöründe üç davet türünün panel/kopyalama, iptal/yeniden açma ve oda bağlantısının gerçek sistem Paste içeriği doğrulandı. Kayıtlar, içerik, çizim/animasyon ve Arena kuralları değişmedi. Fiziksel telefona kurulmadı; iki gerçek kullanıcı ve kurulu uygulamayı açan Universal Links bu doğrulamanın kapsamında değil. Ayrıntı: `studio-agents/journal/entries/2026-11-05-invite-sharing.md`.
+
 ## 0.36.3 · 5 Kasım: Çay molası / Kamera arkası
 
 Çay molası: rahat6×6/dört hedef; Kamera arkası: dengeli8×8/yedi hedef. İki çapraz eğim, sabit UTCtarih/slot/ID/hash; mevcut kitaplık, dünya, arşiv ve iki tamamlamayla5Kasım damgası akışları.168ana bölüm/28rota, son kenar seçimi, sabit hedef rafı, uçuş/haptik ayarları, kayıtlar ve Arena korunur. Kabul/kanıt: `studio-agents/journal/entries/2026-11-05_maintenance.md`. Bu içerik turu fiziksel iPhone/FPS/VoiceOver/iki gerçek oyuncu veya App Store kabulü değildir.

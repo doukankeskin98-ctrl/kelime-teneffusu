@@ -18,6 +18,12 @@ Sabit HTTPS API adresi mevcut Sites sunucusudur. Native JSON taşıması kendi `
 
 Paketlenmiş 168 solo bölüm ilk açılışta çevrimdışı kullanılabilir. Arena/günlük/sunucu arşivi internet ister. WKWebView cihaz kaydı Safari depolamasından ayrıdır; yeni kurulumda Safari kaydının otomatik aktarılacağı iddia edilmez. Kalıcı hesabı veya güvenli misafir geçişini doğrulamadan genel dağıtım yapılamaz. iOS'ta ChatGPT web yönlendirmesi gösterilmez; bu girişin native hesap geçişi ve Apple 4.8 değerlendirmesi ayrıca tamamlanmalıdır.
 
+## Davet paylaşımı
+
+0.36.4: oda, arkadaş ve meydan okuma kodları herkese açık HTTPS oyun bağlantısı üretir. GameSharing native sistem panelini açar; kopyalama ve iptal sonucu gerçek UIKit tamamlanmasından gelir. Başlık ve adres tek metin öğesidir; Copy ardından plain-text Paste işleminde bağlantı kaybolmaz. Yeni SDK yoktur. Bu bağlantılar web alıcı akışını açar; Universal Links henüz uygulanmadı.
+
+Tekrarlanabilir kontrol: açık bir iPhone simülatöründe `node scripts/verify-ios-edge.mjs SIMULATOR_UDID sharing`. Ayrı `com.kelimeteneffusu.sharingqa` test paketi kullanılır ve sonunda kaldırılır. Üç davet paneli/kopyalama, iptal, yeniden açma ve oda davetinin sistem Paste içeriği sınanır. Kullanıcı hesabı veya fiziksel telefon kaydı kullanılmaz. Varsayılan `mobile:edge-test` çizim testi aynen kalır.
+
 ## Yayın kapısı
 
 Bu ilk test derlemesidir; App Store onayı veya WoW ile eşdeğer FPS/his iddiası değildir. `docs/app-store-readiness.md` gerçek açıkları ve politika taslaklarını içerir. Developer hesabı, işletmeci/destek bilgisi, hesap silme, moderasyon, kayıt aktarımı ve fiziksel cihaz kabulü kapatılmadan mağazaya gönderilmez.

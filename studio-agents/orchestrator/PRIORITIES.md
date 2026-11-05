@@ -1,5 +1,7 @@
 # Öncelikler
 
+5 Kasım 2026, 0.36.4: incelemede doğrulanan native davet adresi ve paylaşım/iptal/kopyalama akışı düzeltildi. İlerleme ve günlük içerik korunur. Native simülatör paneli ve gerçek Paste kontrolü geçti; telefon kurulumu kullanıcı isteğiyle ertelendi. Sonraki işler gerçek cihazda uzun çizim/yaşam döngüsü kabulü, hesap silme ve isim moderasyonu; mevcut isteğe bağlı ölçümden ilk oyuncu kaybı analizi. Reklam, yeni SDK ve yeniden tasarım eklenmedi. Kanıt `../journal/entries/2026-11-05-invite-sharing.md`.
+
 5Kasım bakım,0.36.3: Çay molası/Kamera arkası tek sabit çift.0.36.2 kenar düzeltmesi ve168bölüm korunur. Sonraki öncelikler aşağıdaki fiziksel uzun oyun/hesap silme/moderasyon kabulüdür; bu içerik turunda tamamlandı sayılmaz. Kanıt `../journal/entries/2026-11-05_maintenance.md`.
 
 5 Kasım 2026, 0.36.2. Hababam kenar çizimi, kısa çizim geri bildirimi ve native simülatör regresyonu. Sonraki teslim önceliği gerçek cihazda iki elle uzun oyun, hesap silme ve Arena isim moderasyonu. Mağaza yayıncı/destek bilgileri açık.

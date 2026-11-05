@@ -1,14 +1,16 @@
 // !$*UTF8*$!
 {archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
 AB0000000000000000000001 = {isa = PBXProject; mainGroup = AB0000000000000000000002; targets = (AB0000000000000000000003); buildConfigurationList = AB0000000000000000000004; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; knownRegions = (en,Base); };
-AB0000000000000000000002 = {isa = PBXGroup; children = (AB0000000000000000000005,AB0000000000000000000006); sourceTree = "<group>"; };
+AB0000000000000000000002 = {isa = PBXGroup; children = (AB0000000000000000000005,AB0000000000000000000006,AB000000000000000000000C); sourceTree = "<group>"; };
 AB0000000000000000000003 = {isa = PBXNativeTarget; name = EdgeQA; productName = EdgeQA; productType = "com.apple.product-type.bundle.ui-testing"; productReference = AB0000000000000000000006; buildConfigurationList = AB0000000000000000000007; buildPhases = (AB0000000000000000000008); buildRules = (); dependencies = (); };
 AB0000000000000000000004 = {isa = XCConfigurationList; buildConfigurations = (AB0000000000000000000009); defaultConfigurationName = Debug; };
 AB0000000000000000000005 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeSwipeTests.swift; sourceTree = "<group>"; };
 AB0000000000000000000006 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = EdgeQA.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 AB0000000000000000000007 = {isa = XCConfigurationList; buildConfigurations = (AB000000000000000000000A); defaultConfigurationName = Debug; };
-AB0000000000000000000008 = {isa = PBXSourcesBuildPhase; files = (AB000000000000000000000B); buildActionMask = 2147483647; runOnlyForDeploymentPostprocessing = 0; };
+AB0000000000000000000008 = {isa = PBXSourcesBuildPhase; files = (AB000000000000000000000B,AB000000000000000000000D); buildActionMask = 2147483647; runOnlyForDeploymentPostprocessing = 0; };
 AB0000000000000000000009 = {isa = XCBuildConfiguration; name = Debug; buildSettings = {SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 16.0; SWIFT_VERSION = 5.0; }; };
 AB000000000000000000000A = {isa = XCBuildConfiguration; name = Debug; buildSettings = {TARGETED_DEVICE_FAMILY = 1; PRODUCT_BUNDLE_IDENTIFIER = com.kelimeteneffusu.edgeqa.tests; PRODUCT_NAME = EdgeQA; GENERATE_INFOPLIST_FILE = YES; ENABLE_TESTING_SEARCH_PATHS = YES; }; };
 AB000000000000000000000B = {isa = PBXBuildFile; fileRef = AB0000000000000000000005; };
+AB000000000000000000000C = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingTests.swift; sourceTree = "<group>"; };
+AB000000000000000000000D = {isa = PBXBuildFile; fileRef = AB000000000000000000000C; };
 }; rootObject = AB0000000000000000000001; }

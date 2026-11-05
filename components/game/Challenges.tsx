@@ -1,4 +1,5 @@
 'use client';
+import {inviteLink,shareMessage,shareSucceeded} from '@/lib/platform/sharing';
 import {useEffect,useRef,useState,type Dispatch,type SetStateAction} from 'react';
 import {ArrowLeft,ArrowRight,Check,Clock,Copy,Flag,Link2,LoaderCircle,Play,Share2,Star,Trophy,Users,Volume2,VolumeX} from 'lucide-react';
 import {THEMES,findTheme} from '@/lib/game/catalog';
@@ -27,7 +28,7 @@ export function Challenges({authenticated,onLogin,progress,onProgress,inviteCode
   try{const next=await socialApi<ChallengeView>('claim',{code:view.code,a,b});accept(next);if(mounted.current&&currentView.current?.id===view.id&&currentView.current.finished===null&&next.id===view.id&&next.strokes.some(s=>s.id===target.id))chime(next.finished!==null);if(next.finished!==null){setReview(false);track('challenge_complete',next.duration);}}
   catch(e){setError((e as Error).message);}finally{if(mounted.current){setPending(null);setBusy(false);}}
  };
- const copy=async()=>{if(!view)return;const url=location.origin+'/?meydan='+view.code;const result=await shareLink('Aynı tahtada sürelerimizi kapıştıralım!',url);if(result){setShare(result==='kopyalandı'?'Davet bağlantısı kopyalandı.':'Davet paylaşıldı.');track('invite_share');}else setShare('Kodunu paylaşabilirsin: '+view.code);};
+ const copy=async()=>{if(!view)return;const id=view.id;setShare('');const result=await shareLink('Aynı tahtada sürelerimizi kapıştıralım!',inviteLink('meydan',view.code));if(!mounted.current||currentView.current?.id!==id||result==='busy')return;setShare(shareMessage(result));if(shareSucceeded(result))track('invite_share');};
  if(view){
   const seconds=view.finished!==null?view.duration/1000:Math.max(0,(now-view.starts)/1000),ghostCount=view.ghost?.timeline.filter(t=>t<=seconds*1000).length??0,done=view.finished!==null;
   const displayed=pending&&!view.strokes.some(s=>s.id===pending.id)?[...view.strokes,pending]:view.strokes;

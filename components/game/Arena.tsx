@@ -1,4 +1,5 @@
 'use client';
+import {inviteLink,shareMessage,shareSucceeded} from '@/lib/platform/sharing';
 import {WORD_RESULT_DELAY_MS} from '@/lib/game/word-feedback';
 import {gameIsActive} from '@/lib/platform/runtime';
 import {useEffect,useRef,useState} from 'react';
@@ -69,7 +70,7 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   try{await arenaRequest(signal=>api('leave',{id:room.id,round:room.round,expectedOwnerId:room.you.id},signal));if(!isCurrent(stamp))return false;epoch.current++;accept(null,true);setLeaving(false);setPreview('');setPending(null);const url=new URL(location.href);url.searchParams.delete('oda');history.replaceState(null,'',url.pathname+url.search);return true;}
   catch(e){if(isCurrent(stamp))setError((e as Error).message);return false;}finally{actionLock.current=false;if(mounted.current)setBusy(false);}
  };
- const copy=async()=>{if(!room)return;const result=await shareLink('Kelime Teneffüsü’nde birlikte yarışalım mı?',location.origin+'/?oda='+room.code);if(result){setShare(result==='kopyalandı'?'Davet bağlantısı kopyalandı.':'Davet paylaşıldı.');track('invite_share');}else setShare('Oda kodunu paylaşabilirsin: '+room.code);};
+ const copy=async()=>{if(!room)return;const stamp=context();setShare('');const result=await shareLink('Kelime Teneffüsü’nde birlikte yarışalım mı?',inviteLink('oda',room.code));if(!isCurrent(stamp)||result==='busy')return;setShare(shareMessage(result));if(shareSucceeded(result))track('invite_share');};
  const commit=async(a:Cell,b:Cell)=>{
   if(!room?.board||actionLock.current||room.phase!=='active'||room.starts===null||now<room.starts||room.ends===null||now>=room.ends)return;
   const target=match(room.board,a,b);if(!target){chime('miss');setPreview('Bir başka yönden bak.');track('selection_miss');return;}
