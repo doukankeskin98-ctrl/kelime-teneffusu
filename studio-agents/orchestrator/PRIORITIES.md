@@ -1,5 +1,7 @@
 # Öncelikler
 
+6 Kasım 2026, 0.36.5: Sorun bildir rapor hazırlama/kopyalama uygulandı. Ayrıntılı inceleme `docs/studio-audit-2026-11-06.md`; uygulama kanıtı `../journal/entries/2026-11-06-support-audit.md`. **Sonraki görünür teslim ilk giriş rehberi ve eski tasarıma dönen dört alt ekranın ortak kabuğudur.** Ardından Meydan/Gizli Tema son kelime→sonuç bütünlüğü, güvenli tüm kayıt bağlama/Game Center, hesap silme ve moderasyon. Bunlar tamamlandı sayılmaz. Gerçek cihaz uzun oyun kabulü ve mağaza dosyası açık; yeni reklam/SDK/zamanlayıcı yok.
+
 5 Kasım 2026, 0.36.4: incelemede doğrulanan native davet adresi ve paylaşım/iptal/kopyalama akışı düzeltildi. İlerleme ve günlük içerik korunur. Native simülatör paneli ve gerçek Paste kontrolü geçti; telefon kurulumu kullanıcı isteğiyle ertelendi. Sonraki işler gerçek cihazda uzun çizim/yaşam döngüsü kabulü, hesap silme ve isim moderasyonu; mevcut isteğe bağlı ölçümden ilk oyuncu kaybı analizi. Reklam, yeni SDK ve yeniden tasarım eklenmedi. Kanıt `../journal/entries/2026-11-05-invite-sharing.md`.
 
 5Kasım bakım,0.36.3: Çay molası/Kamera arkası tek sabit çift.0.36.2 kenar düzeltmesi ve168bölüm korunur. Sonraki öncelikler aşağıdaki fiziksel uzun oyun/hesap silme/moderasyon kabulüdür; bu içerik turunda tamamlandı sayılmaz. Kanıt `../journal/entries/2026-11-05_maintenance.md`.

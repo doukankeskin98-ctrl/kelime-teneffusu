@@ -40,6 +40,7 @@ import type {ReleasePair} from '@/lib/studio/release-stamps';
 import type {ChapterBrowseReturn} from '@/lib/studio/chapter-browse';
 import {api,getApi,Help,Modal} from './common';
 import {GameSettings,useComfort} from './GameSettings';
+import {SupportReport} from './SupportReport';
 import {Solo,type SoloConfig} from './Solo';
 import {Explore,DailyPage,ProfilePage,type Account} from './Pages';
 type Nav='kesfet'|'arsiv'|'arena'|'gunluk'|'profil';
@@ -47,7 +48,9 @@ type ArenaTab='live'|'challenge'|'friends';
 const TABS=[{id:'kesfet' as Nav,label:'Yolculuk',icon:House},{id:'arena' as Nav,label:'Arena',icon:Swords},{id:'profil' as Nav,label:'Koleksiyon',icon:BookOpen}];
 export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary[];releaseCounts?:Record<string,number>}){
  const membership=useMembership(),bootOwner=useRef('');
- const {comfort,change:changeComfort}=useComfort(),[settings,setSettings]=useState(false);
+ const {comfort,change:changeComfort}=useComfort(),[settings,setSettings]=useState(false),[support,setSupport]=useState(false);
+ const supportOpener=useRef<HTMLButtonElement>(null),supportReturnFocus=useRef(false);
+ useEffect(()=>{if(!support&&supportReturnFocus.current){supportReturnFocus.current=false;supportOpener.current?.focus({preventScroll:true});}},[support]);
  const [profileOpen,setProfileOpen]=useState(false);
  const [authMode,setAuthMode]=useState<AuthMode|null>(null),[authReturn,setAuthReturn]=useState('/');
  const [progress,setProgress]=useState(emptyProgress),[ready,setReady]=useState(false),[storageError,setStorageError]=useState(false),[nav,setNav]=useState<Nav>('kesfet');
@@ -136,7 +139,7 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
   </main></div>
   {!playing&&<nav className="mobile-nav" aria-label="Mobil gezinme">{TABS.map(t=><button className={(nav===t.id||t.id==='kesfet'&&(nav==='arsiv'||nav==='gunluk'))?'active':''} onClick={()=>selectNav(t.id)} key={t.id} aria-current={nav===t.id?'page':undefined}><t.icon size={21}/><span>{t.label}</span></button>)}</nav>}
   {mapWorld!==null&&<ChapterPicker progress={progress} worldId={mapWorld||undefined} onPlay={openSolo} onClose={()=>setMapWorld(null)}/>}
-  {settings&&<Modal title="Ayarlar" onClose={()=>setSettings(false)}><GameSettings progress={progress} onProgress={setProgress} comfort={comfort} onComfort={changeComfort}/><button className="button secondary full" onClick={()=>{setSettings(false);setHelp(true);}}>Nasıl oynanır?</button></Modal>}
+  {settings&&<Modal title={support?'Sorun bildir':'Ayarlar'} onClose={()=>{setSettings(false);setSupport(false);}}>{support?<SupportReport onBack={()=>{supportReturnFocus.current=true;setSupport(false);}}/>:<><GameSettings progress={progress} onProgress={setProgress} comfort={comfort} onComfort={changeComfort}/><div className="settings-help-actions"><button className="button secondary full" onClick={()=>{setSettings(false);setHelp(true);}}>Nasıl oynanır?</button><button ref={supportOpener} className="button secondary full" onClick={()=>setSupport(true)}>Sorun bildir</button></div></>}</Modal>}
   {theme&&<Modal title={theme.title} className="game-library-sheet" onClose={()=>setTheme(null)}><p className="muted">Serbest oyun · Zorluğunu seç</p><div className="free-level-list">{LEVEL_NAMES.map((name,l)=>{const saved=progress.saves[`${theme.id}.${l}`];return <button key={l} onClick={()=>openSolo({themeId:theme.id,level:l,practice:saved?.complete})}><span><b>{name}</b><small>{5+l} kelime · {l<2?'Rahat':l<4?'Dengeli':'Ustalık'}</small></span>{saved?.complete?<span aria-label={`${saved.stars} yıldız`}>{[0,1,2].map(i=><Star key={i} size={13} fill={saved.stars>i?'currentColor':'none'}/>)}</span>:<ArrowRight size={18}/>}</button>;})}</div></Modal>}
   {authMode&&<Modal title={authMode==='register'?'Oyuncu profilin':'Hoş geldin'} onClose={()=>setAuthMode(null)}><EntryPanel initial={authMode} returnTo={authReturn} user={membership.user} available={membership.available} onDone={()=>location.assign(safeReturnTo(authReturn))}/></Modal>}
   {help&&<Help onClose={()=>setHelp(false)}/>} {busy&&<span className="global-busy" role="status"><LoaderCircle size={18} className="spin"/>Günün keşfi hazırlanıyor…</span>}
