@@ -8,10 +8,12 @@ import {setNativeTransport,setGameActive,gameIsActive} from '@/lib/platform/runt
 import {nativeApiTransport} from '@/lib/platform/native-transport';
 import {nativeHaptics,type NativeHapticDriver} from '@/lib/platform/native-haptics';
 import {setHapticsAdapter,stopHapticSelection} from '@/lib/game/haptics';
+import {installNativeSharing} from './sharing';
 import '@/app/game-styles.css';
 import './native.css';
 if(Capacitor.isNativePlatform()){
  setNativeTransport(nativeApiTransport(options=>CapacitorHttp.request(options)));
+ installNativeSharing();
  const driver=Capacitor.getPlatform()==='ios'&&Capacitor.isPluginAvailable('GameHaptics')
   ?registerPlugin<NativeHapticDriver>('GameHaptics')
   :{menu:()=>Haptics.impact({style:ImpactStyle.Light}),selectionStart:()=>Haptics.selectionStart(),selectionChanged:()=>Haptics.selectionChanged(),selectionEnd:()=>Haptics.selectionEnd(),word:()=>Haptics.impact({style:ImpactStyle.Medium}),complete:()=>Haptics.notification({type:NotificationType.Success})};
