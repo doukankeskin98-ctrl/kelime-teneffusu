@@ -1,4 +1,6 @@
-# iOS yayın dosyası · 5 Kasım 2026
+# iOS yayın dosyası · 6 Kasım 2026
+
+0.36.5: Sorun bildir hazırlama/kopyalama ekranı var; gerçek gönderim kanalı, destek URL'si ve TestFlight feedback adresi açık. Game Center henüz yok; Oyun Modu bildirimi onun yerine geçmez. Bireysel ücretli üyelikle TestFlight başlayıp aynı üyeliği şirket üyeliğine dönüştürmek önerilir; yalnız TestFlight uygulaması standart hesaplar arası transferin en az bir App Store sürümü koşulunu karşılamaz. Güncel Apple kaynakları, kayıt bağlama/hesap silme/moderasyon ve UI açıkları: [6 Kasım incelemesi](studio-audit-2026-11-06.md).
 
 0.36.4 ek kanıtı: iOS native sistem paylaşımı ve herkese açık davet URL'leri düzeltildi. Simülatörde üç tür için Copy; ayrıca oda davetinin sistem Paste içeriği, iptal ve yeniden açma geçti. Bu sonuç fiziksel cihaz, iki oyuncu, Universal Links veya App Store yayın kabulü değildir. Telefon kurulumu ertelendi; aşağıdaki mağaza kapıları açık kalır.
 

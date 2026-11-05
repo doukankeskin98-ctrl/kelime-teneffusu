@@ -82,3 +82,23 @@ html[data-reduce-motion=true] *,html[data-reduce-motion=true] *:before,html[data
 .native-shell .profile-page .story-card-grid{display:flex;overflow-x:auto;gap:12px;padding-bottom:12px;scroll-snap-type:x proximity}.native-shell .profile-page .story-card{flex:0 0 190px;scroll-snap-align:start}.native-shell .profile-page .story-card-scene{height:150px}
 .native-shell[data-ready=false] .main-area,.native-shell[data-ready=false] .mobile-nav{visibility:hidden}.game-boot{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;background:#142f3c;color:#f5e2ad}.game-boot>span{font-size:48px;font-weight:750}.game-boot>b{font-size:16px;font-weight:500;letter-spacing:.03em}
 .native-shell .profile-page .story-collection{margin:16px 0 24px}.native-shell .profile-page .story-collection-heading h2{font-size:22px;margin:0}.native-shell .profile-page .story-collection-heading .journey-section-label{display:none}.native-shell .profile-page .story-card-art{height:140px}.native-shell .profile-page .story-card:last-child:nth-child(odd){display:block;grid-column:auto}.native-shell .profile-page .story-card-copy h3{font-size:14px}
+
+/* Support preparation shares the existing settings surface. */
+.settings-help-actions{display:grid;gap:10px;margin-top:20px}
+.support-report{display:grid;gap:12px;color:var(--ink)}
+.support-report p{font-size:15px;line-height:1.5}
+.support-report .support-back{justify-self:start;padding-left:0}
+.support-report .support-availability{color:var(--ink);font-size:14px}
+.support-report>label{color:var(--ink);font-size:15px;font-weight:700;margin-top:8px}
+.support-report select,.support-report textarea{width:100%;min-width:0;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px;line-height:1.5;caret-color:var(--green);scroll-margin-block:20px}
+.support-report select{min-height:48px}
+.support-report textarea{resize:vertical}
+.support-report textarea::placeholder{color:#53685f;opacity:1}
+.support-report select:focus-visible,.support-report textarea:focus-visible,.support-report summary:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+.support-report>small,.support-technical small{font-size:13px;color:#53685f;line-height:1.5}
+.support-report .support-technical{display:flex;gap:12px;align-items:center;min-height:48px;font-size:14px;font-weight:500}
+.support-technical input{width:22px;height:22px;accent-color:var(--green)}
+.support-technical small{display:block}
+.support-report .support-status{font-size:14px;min-height:21px}
+.support-report summary{display:flex;align-items:center;min-height:44px;cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:4px}
+.support-report textarea::selection{background:var(--gold);color:var(--ink)}

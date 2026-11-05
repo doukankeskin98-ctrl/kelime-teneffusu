@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.36.5 · Sorun bildir ve stüdyo incelemesi
+
+Ayarlara Sorun bildir eklendi: kategori/açıklama ve isteğe bağlı sürüm/platform bilgisiyle rapor hazırlanıp kopyalanır. Gerçek gönderim kanalı bağlanmadığı açıkça söylenir; e-posta uydurulmaz, kimlik veya ilerleme otomatik eklenmez. Kayıtlar, tahtalar ve oyun kuralları değişmedi.
+
+758 test, içerik/tip/şema, web/mobil derleme ve 639 Worker HTTP kontrolü geçti. Yerel tarayıcıda form ve gerçek kopyalama doğrulandı; fiziksel iPhone kurulumu ertelendi. Eski alt ekranlar, ilk giriş rehberi, modlar arası final akışı ve kimlik/mağaza açıkları `docs/studio-audit-2026-11-06.md` içinde; bunlar bu sürümde tamamlandı sayılmaz.
+
 ## 0.36.4 · iPhone davet paylaşımı
 
 Arena odası, arkadaş ve meydan okuma davetleri iOS paketinde herkese açık HTTPS oyun adresini kullanır. Davet sorgusu giriş dönüşünde korunur; yerel uygulama adresi ve ilgisiz sayfa parametreleri paylaşılmaz. Native sistem paneli kopyalama, paylaşma, iptal ve hatayı ayırır; aynı anda tek panel açılır ve kapanmış ekrana geç yanıt yazılmaz. iOS Copy işleminde başlıkla bağlantı tek metin olarak korunur.
