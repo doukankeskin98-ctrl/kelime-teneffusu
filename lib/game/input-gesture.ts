@@ -5,6 +5,18 @@ export type GestureStep={cell:Cell;axis:Cell|null};
 function isInsideCell(point:Cell,cell:Cell){
  return point[0]>=cell[0]&&point[0]<cell[0]+1&&point[1]>=cell[1]&&point[1]<cell[1]+1;
 }
+// A captured finger can drift just over the frame while following its outer
+// row or column. Only the perpendicular coordinate in this small outside band
+// is projected back onto the ray. Interior neighbours and diagonals stay exact.
+function edgeContact(start:Cell,direction:Cell,point:Cell,size:number):Cell{
+ const fixed=direction[0]===0?0:direction[1]===0?1:null;
+ if(fixed===null)return point;
+ const value=point[fixed],index=start[fixed];
+ const outsideFirst=index===0&&value>=-.45&&value<0;
+ const outsideLast=index===size-1&&value>=size&&value<=size+.45;
+ if(!outsideFirst&&!outsideLast)return point;
+ return fixed===0?[index+.5,point[1]]:[point[0],index+.5];
+}
 /** Search the sampled ray, including endpoints skipped by a fast swipe.
  * Ambiguous prefixes wait for release so the longer target stays selectable.
  * Only caller-supplied unlocked targets are eligible; no placements are needed.
@@ -41,12 +53,13 @@ export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell
  const cell:Cell=[start[0]+dr*length,start[1]+dc*length];
  const outside=point.some(value=>value<=0||value>=size);
  const excess=outside?projection-Math.max(low,Math.min(high,projection)):0;
- const distance=Math.hypot(point[0]-dr*excess-cell[0]-.5,point[1]-dc*excess-cell[1]-.5);
+ const contact=edgeContact(start,direction,point,size);
+ const distance=Math.hypot(contact[0]-dr*excess-cell[0]-.5,contact[1]-dc*excess-cell[1]-.5);
  // A finger inside this on-ray letter must select it, including its corners.
  // The old circular gate rejected diagonal corners while the ink already covered
  // the final glyph. Do not clamp here: outside capture keeps its bounded drift test.
  // Center tolerance still absorbs small gaps and a last-sample direction change.
- if(!isInsideCell(point,cell)&&distance>(release?.65:CELL_HIT_RADIUS))return unchanged;
+ if(!isInsideCell(contact,cell)&&distance>(release?.65:CELL_HIT_RADIUS))return unchanged;
  return {cell,axis:direction};
 }
 
@@ -62,7 +75,8 @@ export function gestureTip(start:Cell,current:Cell,axis:Cell|null,point:Cell,siz
  // Follow the finger freely within the selected letter. A sample in an adjacent
  // cell can project onto the next letter even though the word still ends here.
  const selectedLength=Math.max(Math.abs(current[0]-start[0]),Math.abs(current[1]-start[1]));
- let limit=isInsideCell(point,current)?Infinity:selectedLength;
+ const contact=edgeContact(start,direction,point,size);
+ let limit=isInsideCell(contact,current)?Infinity:selectedLength;
  for(let i=0;i<2;i++){
   const delta=direction[i]!;
   if(delta>0)limit=Math.min(limit,size-1-start[i]!);
