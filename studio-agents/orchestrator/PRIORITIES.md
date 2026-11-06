@@ -1,5 +1,7 @@
 # Öncelikler
 
+6 Kasım2026,0.39.0: WoW incelemesine dayalı ortak sonuç yaşam döngüsü, yakın seçim baloncuğu, kısa oyun ayarları ve sahneli sonuç uygulandı. 0.37 rehber/ortak alt ekranlar ve0.38 Arena/katalog işleri de önceki yayınlarda tamamlandı; aşağıdaki eski planları yeniden uygulamayın. Kalan kabul: fiziksel cihazda uzun kaydırma/haptik/FPS, gerçek mağaza hesabı ve yayıncı bilgileri. Telefon kurulumu kullanıcı isteğiyle atlandı. Rapor: `docs/release-0.39.0.md`.
+
 6 Kasım 2026, 0.36.5: Sorun bildir rapor hazırlama/kopyalama uygulandı. Ayrıntılı inceleme `docs/studio-audit-2026-11-06.md`; uygulama kanıtı `../journal/entries/2026-11-06-support-audit.md`. **Sonraki görünür teslim ilk giriş rehberi ve eski tasarıma dönen dört alt ekranın ortak kabuğudur.** Ardından Meydan/Gizli Tema son kelime→sonuç bütünlüğü, güvenli tüm kayıt bağlama/Game Center, hesap silme ve moderasyon. Bunlar tamamlandı sayılmaz. Gerçek cihaz uzun oyun kabulü ve mağaza dosyası açık; yeni reklam/SDK/zamanlayıcı yok.
 
 5 Kasım 2026, 0.36.4: incelemede doğrulanan native davet adresi ve paylaşım/iptal/kopyalama akışı düzeltildi. İlerleme ve günlük içerik korunur. Native simülatör paneli ve gerçek Paste kontrolü geçti; telefon kurulumu kullanıcı isteğiyle ertelendi. Sonraki işler gerçek cihazda uzun çizim/yaşam döngüsü kabulü, hesap silme ve isim moderasyonu; mevcut isteğe bağlı ölçümden ilk oyuncu kaybı analizi. Reklam, yeni SDK ve yeniden tasarım eklenmedi. Kanıt `../journal/entries/2026-11-05-invite-sharing.md`.
