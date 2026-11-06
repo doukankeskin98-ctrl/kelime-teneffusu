@@ -1,4 +1,4 @@
-import {THEMES,normalize} from '../game/catalog.ts';
+import {ALL_THEMES as THEMES,normalize} from '../game/catalog.ts';
 import {makeCustomPuzzle,exactLine,type Puzzle} from '../game/engine.ts';
 
 export class StudioError extends Error {status:number;constructor(message:string,status=400){super(message);this.status=status;}}

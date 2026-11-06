@@ -2,7 +2,7 @@
 import {hapticsAvailable} from '@/lib/game/haptics';
 import {useEffect,useMemo,useRef,useState,type CSSProperties} from 'react';
 import {ArrowRight,BookOpen,CalendarDays,Check,ChevronDown,Compass,Flame,Lightbulb,LoaderCircle,LockKeyhole,Palette,Search,Settings,ShieldCheck,Smartphone,Sparkles,Star,Swords,Trophy,User,Volume2,VolumeX,WandSparkles,WifiOff,ZoomIn} from 'lucide-react';
-import {THEMES,findTheme,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
+import {ACTIVE_THEMES as THEMES,findTheme,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
 import {JOURNEYS,MYSTERIES} from '@/lib/game/content';
 import {dailySpec,istanbulDay} from '@/lib/game/engine';
 import {collectionStats,streak,type Progress} from '@/lib/game/progress';
@@ -40,7 +40,6 @@ export function Explore({journeyView,onJourneyView,lastStoryId,libraryPanel=null
   <button onClick={()=>setPanel('riddles')}><BookOpen/><span><b>İpucu Avı</b><small>Tanımlardan kelimelere</small></span><ArrowRight/></button>
   <button onClick={()=>setPanel('themes')}><Compass/><span><b>Serbest oyun</b><small>Konunu ve zorluğunu seç</small></span><ArrowRight/></button>
   <button onClick={()=>setPanel('chapters')}><CalendarDays/><span><b>Ek bölümler</b><small>Tarih ve konuya göre bütün keşifler</small></span><ArrowRight/></button>
-  <button onClick={classic}><Star/><span><b>Klasik bulmaca</b><small>Hababam'ın 20 ismi</small></span><ArrowRight/></button>
  </div>
  <button className="text-button full" onClick={()=>openSolo({themeId:'uzay',level:0,tutorial:true})}>Çizerek alıştırma yap</button>
  {panel==='riddles'&&<Modal title="İpucu Avı" className="game-library-sheet" onClose={()=>setPanel(null)}><RiddleShelf progress={progress} onPlay={openSolo}/></Modal>}

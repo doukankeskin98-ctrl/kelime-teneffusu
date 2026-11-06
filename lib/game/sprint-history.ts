@@ -1,5 +1,5 @@
 import {hash,makeCustomPuzzle,type Puzzle} from './engine.ts';
-import {SPRINT_WORDS} from './sprint-vocabulary.ts';
+import {SPRINT_WORDS,ACTIVE_SPRINT_WORDS} from './sprint-vocabulary.ts';
 
 export interface SprintHistory {v:1;sequence:number;words:Record<string,{uses:number;last:number}>;sets:string[]}
 export const emptySprintHistory=():SprintHistory=>({v:1,sequence:0,words:{},sets:[]});
@@ -31,7 +31,7 @@ export function mergeSprintHistory(a:SprintHistory,b:SprintHistory):SprintHistor
 
 /** Select fresh vocabulary first; after exhaustion spread reuse across the whole library. */
 export function variedSprintBoard(seed:number,round:number,history:SprintHistory):Puzzle{
- const ranked=[...SPRINT_WORDS].sort((a,b)=>{
+ const ranked=[...ACTIVE_SPRINT_WORDS].sort((a,b)=>{
   const x=history.words[a],y=history.words[b];
   return (x?.uses??0)-(y?.uses??0)||(x?.last??0)-(y?.last??0)||hash(`${seed}:${round}:${a}`)-hash(`${seed}:${round}:${b}`)||a.localeCompare(b,'tr');
  });

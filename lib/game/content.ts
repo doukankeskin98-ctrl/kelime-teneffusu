@@ -1,3 +1,4 @@
+import {ORIGINAL_CHAPTERS,CHAPTER_REPLACEMENTS} from './original-content.ts';
 import {EVERYDAY_CHAPTERS} from './everyday-content.ts';
 import {NATURE_CHAPTERS} from './nature-content.ts';
 import {COAST_CHAPTERS} from './coast-content.ts';
@@ -49,7 +50,8 @@ JOURNEYS.push(...EVERYDAY_CHAPTERS.filter((_,i)=>i%6!==5));
 JOURNEY_BONUSES.push(...EVERYDAY_CHAPTERS.filter((_,i)=>i%6===5));
 export const ALL_JOURNEYS=[...JOURNEYS,...JOURNEY_BONUSES];
 /** Optional clue chapters never grow the fixed main path or its earned album gates. */
-export const PLAYABLE_JOURNEYS=[...ALL_JOURNEYS,...RIDDLE_CHAPTERS,...LIVING_STORIES];
+export const PLAYABLE_JOURNEYS=[...ALL_JOURNEYS,...RIDDLE_CHAPTERS,...LIVING_STORIES,...ORIGINAL_CHAPTERS];
+export const ACTIVE_JOURNEYS=PLAYABLE_JOURNEYS.filter(j=>!CHAPTER_REPLACEMENTS[j.id]);
 export const journeyById=(id:string)=>PLAYABLE_JOURNEYS.find(j=>j.id===id);
 export const journeyBoard=(j:Journey)=>makeCustomPuzzle(j.words,hash('journey-v1:'+j.id),j.size);
 

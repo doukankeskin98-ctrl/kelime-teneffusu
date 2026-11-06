@@ -1,3 +1,4 @@
+import {replacementChapterId} from '../lib/game/original-content.ts';
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {createHash} from 'node:crypto';
@@ -18,7 +19,7 @@ const signature=(words:string[])=>words.map(normalize).sort().join('|');
 describe('Günün Renkleri append-only authored pack',()=>{
  it('preserves all 144 old numbers and every 181 published journey board byte for byte',()=>{
   assert.equal(baseline.ids.length,144);assert.equal(Object.keys(baseline.boards).length,181);
-  assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,144),baseline.ids);
+  assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,144),baseline.ids.map(replacementChapterId));
   for(const [id,hash] of Object.entries(baseline.boards))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),hash,id);
   assert.deepEqual(MAIN_JOURNEY_IDS.slice(144),EVERYDAY_CHAPTERS.map(c=>c.id));assert.equal(MAIN_JOURNEY_IDS.length,168);
  });

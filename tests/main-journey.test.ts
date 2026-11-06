@@ -1,3 +1,4 @@
+import {replacementChapterId} from '../lib/game/original-content.ts';
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {MAIN_JOURNEY,MAIN_JOURNEY_IDS,FIRST_TEN_LESSONS,mainJourneyState,mainJourneyChapters,nextMainChapter,nextMainMilestone,nextChapterLabel} from '../lib/game/main-journey.ts';
@@ -10,7 +11,7 @@ const copy=(p:Progress)=>JSON.parse(JSON.stringify(p)) as Progress;
 describe('numbered main journey preserves the existing saved worlds',()=>{
  it('numbers every existing journey exactly once, without introducing duplicate content',()=>{
   assert.equal(MAIN_JOURNEY.length,168);assert.equal(new Set(MAIN_JOURNEY_IDS).size,168);
-  assert.deepEqual([...MAIN_JOURNEY_IDS].sort(),ALL_JOURNEYS.map(j=>j.id).sort());
+  assert.deepEqual([...MAIN_JOURNEY_IDS].sort(),ALL_JOURNEYS.map(j=>replacementChapterId(j.id)).sort());
   const words=MAIN_JOURNEY.map(x=>[...x.chapter.words].map(w=>w.toLocaleUpperCase('tr-TR').replace(/\s/g,'')).sort().join('|'));
   const grids=MAIN_JOURNEY.map(x=>JSON.stringify(journeyBoard(x.chapter).grid));
   assert.equal(new Set(words).size,words.length);assert.equal(new Set(grids).size,grids.length);
@@ -29,7 +30,7 @@ describe('numbered main journey preserves the existing saved worlds',()=>{
  });
  it('keeps published numbers while completing a world before continuing to the next',()=>{
   const p=emptyProgress(),expected=['uzay-1','uzay-2','uzay-3','uzay-4','uzay-5','uzay-gozlemevi','turkiye-1','turkiye-2','turkiye-3','turkiye-4'];
-  assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,10),['uzay-1','uzay-2','uzay-3','turkiye-1','uzay-4','turkiye-2','turkiye-3','hababam-1','uzay-5','uzay-gozlemevi']);
+  assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,10),['uzay-1','uzay-2','uzay-3','turkiye-1','uzay-4','turkiye-2','turkiye-3','ozgun-okul-1','uzay-5','uzay-gozlemevi']);
   assert.equal(nextMainMilestone(p)?.remaining,3);
   for(const [i,id] of expected.entries()){
    const current=mainJourneyState(p).current!;assert.equal(current.chapter.id,id);const before=copy(p);finish(p,id,3);p.last={themeId:current.chapter.themeId,level:0,journey:id};

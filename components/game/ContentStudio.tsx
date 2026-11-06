@@ -1,7 +1,7 @@
 'use client';
 import {useMemo,useState} from 'react';
 import {ArrowLeft,Check,Download,Eye,RefreshCw,ShieldCheck} from 'lucide-react';
-import {THEMES,normalize} from '@/lib/game/catalog';
+import {ACTIVE_THEMES as THEMES,normalize} from '@/lib/game/catalog';
 import {makeCustomPuzzle,match,hash,type Stroke} from '@/lib/game/engine';
 import {Board} from './Board';
 import {COAST_CHAPTERS} from '@/lib/game/coast-content';

@@ -1,3 +1,4 @@
+import {ACTIVE_THEMES,normalize} from './catalog.ts';
 import {ARENA_BANKS} from './arena-content.ts';
 import {RIDDLE_BANKS,riddleId} from './riddle-content.ts';
 
@@ -657,5 +658,7 @@ export const ARENA_ADDITIONS=Object.entries(additions).flatMap(([themeId,lines])
 // Reused words retain their original, already-published definition and identifier.
 for(const entry of ARENA_ADDITIONS)if(!byWord.has(entry.word))byWord.set(entry.word,{...entry,riddleId:'arena-clue-v2:'+entry.word});
 export const ARENA_CLUES=[...byWord.values()];
-for(const bank of ARENA_BANKS)for(const word of bank.words)if(!byWord.has(word))byWord.set(word,{word,themeId:bank.themeId});
+for(const bank of ACTIVE_THEMES)for(const word of bank.words.filter(w=>/^[A-ZÇĞİÖŞÜ]{3,8}$/.test(w)).map(normalize))if(!byWord.has(word))byWord.set(word,{word,themeId:bank.id});
+// Generic vocabulary kept from the retired themed banks has no branded association.
+for(const word of ['BABA','DİSKET','GAZOZ','JETON','KARNE','KLASİK','KOPYA','KÖŞK','MEKTUP','MÜDÜR','SİNEMA','SOBA','SÜTÇÜ','TEYP'])if(!byWord.has(word))byWord.set(word,{word,themeId:'okul'});
 export const ARENA_LIBRARY=[...byWord.values()];

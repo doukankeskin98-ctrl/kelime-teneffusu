@@ -54,7 +54,7 @@ export function MobileTargets({words,unavailable=false}:{words:WordListData;unav
  return <div className="mobile-targets clue-targets" aria-label={ordered?'Hikâye adımları':'Bilmece hedefleri'}>
   <div className="clue-slots" role="list" style={{'--clue-count':Math.min(groups.length,9)} as CSSProperties}>{groups.map((group,index)=>{
    const entries=words.board.targets.filter(t=>t.group===group),first=entries[0]!,complete=entries.every(t=>found.has(t.id)),golden=entries.some(t=>t.id===words.golden);
-   const locked=ordered&&group!==words.activeOnly,selected=group===active,length=first.label.replace(/\s/g,'').length;
+   const locked=ordered&&group!==words.activeOnly,selected=group===active,length=entries.reduce((n,t)=>n+t.text.length,0);
    return <div key={group} className={'word-tag clue-slot'+(complete?' found':'')+(selected?' is-focus-target':'')+(golden?' golden':'')} data-word-group={group} role="listitem" aria-label={complete?`${first.label} bulundu`:`${index+1}. hedef · ${length} harf`}>
     <button type="button" disabled={unavailable||locked||complete} aria-pressed={selected} aria-label={complete?`${first.label} bulundu`:`${index+1}. ${ordered?'adım':'bilmece'} · ${length} harf${golden?' · çift puan':''}`} onClick={()=>choose(group)}>
      <b>{index+1}</b><span>{complete?<Check size={14}/>:<>{length}<small>harf</small></>}</span>{golden&&<em>×2</em>}
