@@ -40,7 +40,7 @@ function harness(initial:RoomView|null,claim?:(action?:string)=>Promise<RoomView
  vm.runInNewContext(compiled,context);
  const render=()=>{pending=false;cursor=0;for(const slot of slots)for(const update of slot.updates?.splice(0)??[])slot.value=typeof update==='function'?update(slot.value):update;tree=exports['Arena']({authenticated:true,onLogin(){},progress:progress.emptyProgress(),onProgress(){},practice(){}});for(const effect of effects.splice(0))effect();};
  const find=(type:string)=>{const found=nodes(tree).find(n=>n.type===type);assert.ok(found,type+' should exist');return found;};
- return {shares,events,advance(ms:number){clock+=ms;for(const [id,timer] of [...timers])if(timer.at<=clock){timers.delete(id);timer.fn();}},apiCalls,sounds,scrolls,copy:()=>text(tree),modalCount:()=>nodes(tree).filter(n=>n.type==='Modal').length,push:(next:RoomView,sourceId?:string)=>live(next,sourceId),layout:()=>find('PlayLayout'),has:(type:string)=>nodes(tree).some(n=>n.type===type),click(label:RegExp){const button=nodes(tree).find(n=>n.type==='button'&&label.test(text(n)));assert.ok(button,label+' should exist');button.props['onClick']();},closeModal(){find('Modal').props['onClose']();},async settle(){for(let i=0;i<20;i++){await Promise.resolve();if(pending)render();}},close(){for(const slot of slots)slot.cleanup?.();timers.clear();}};
+ return {shares,events,modal:()=>find('Modal'),components:()=>nodes(tree),advance(ms:number){clock+=ms;for(const [id,timer] of [...timers])if(timer.at<=clock){timers.delete(id);timer.fn();}},apiCalls,sounds,scrolls,copy:()=>text(tree),modalCount:()=>nodes(tree).filter(n=>n.type==='Modal').length,push:(next:RoomView,sourceId?:string)=>live(next,sourceId),layout:()=>find('PlayLayout'),has:(type:string)=>nodes(tree).some(n=>n.type===type),click(label:RegExp){const button=nodes(tree).find(n=>n.type==='button'&&label.test(text(n)));assert.ok(button,label+' should exist');button.props['onClick']();},closeModal(){find('Modal').props['onClose']();},async settle(){for(let i=0;i<20;i++){await Promise.resolve();if(pending)render();}},close(){for(const slot of slots)slot.cleanup?.();timers.clear();}};
 }
 
 describe('Arena terminal board review',()=>{
@@ -156,4 +156,35 @@ describe('actual Arena invitation sharing',()=>{
   const h=harness(room('waiting',null,null),undefined,undefined,false,()=>gate);
   await h.settle();h.click(/Arkadaşlarını davet et/);h.close();resolve('shared');await h.settle();assert.equal(h.events.filter(e=>e==='invite_share').length,0);setNativeTransport(null);
  });
+});
+
+
+describe('Arena standings are part of the result',()=>{
+ it('reopens the same scenic result from the bottom control instead of the legacy ranking dialog',async()=>{
+  const h=harness(room('finished',NOW-121000,NOW-1000));
+  try{await h.settle();assert.match(h.modal().props['className'],/arena-scoreboard/);assert.equal(h.modal().props['scene'],'stadium');
+   h.closeModal();await h.settle();h.click(/Maç sonucu/);await h.settle();assert.equal(h.modalCount(),1);assert.match(h.modal().props['className'],/scene-result/);
+   h.closeModal();await h.settle();assert.equal(h.apiCalls.length,0,'viewing standings does not mutate progress or scores');
+  }finally{h.close();}
+ });
+ it('keeps room wins open below the match table and maintains one themed overlay when play ends',async()=>{
+  const initial={...room('active',NOW-1000,NOW+119000),series:{rounds:2,players:[{id:'alice',name:'Alice',rank:1,wins:1,draws:1,played:2,score:140,active:true}]}};
+  const h=harness(initial);try{await h.settle();h.click(/Sıralama/);await h.settle();assert.equal(h.modal().props['scene'],'stadium');assert.match(h.modal().props['className'],/arena-scoreboard/);
+   h.push({...initial,phase:'finished',revision:4,winner:'alice'});await h.settle();assert.equal(h.modalCount(),1);assert.equal(h.modal().props['title'],'Maç tamamlandı');h.closeModal();await h.settle();
+   assert.equal(h.modalCount(),1);const content=nodes(h.modal().props['children']);assert(content.some(n=>typeof n.type==='function'&&n.type.name==='ArenaMatchStandings'));assert(content.some(n=>typeof n.type==='function'&&n.type.name==='ArenaSeriesBoard'));assert(!content.some(n=>n.type==='details'),'standings require no disclosure click');
+  }finally{h.close();}
+ });
+ it('shows the authoritative personal rank even outside the first page, preserving equal ranks',()=>{
+  const exports:Record<string,any>={},jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
+  vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='react'?{useState:()=>[0,()=>{}]}:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='lucide-react'?new Proxy({},{get:(_t,k)=>String(k)}):{}});
+  const people=Array.from({length:16},(_,i)=>({id:'u'+i,name:'Oyuncu '+i,rank:i===15?15:i+1,score:100,count:1,ready:true,online:true,left:false}));
+  const tree=exports['ArenaMatchStandings']({people,you:'u15',historical:true});assert.match(text(tree),/Sen ·\s+15\s*\. sıra/);assert.match(text(tree),/100/);
+  const roster=nodes(tree).find(n=>typeof n.type==='function'&&n.type.name==='ArenaRoster')!;assert.equal(roster.props['people'],people);assert.equal(roster.props['historical'],true);
+ });
+});
+
+
+it('keeps a direct lobby return around a large room-series list',async()=>{
+ const initial={...room('ready',null,null),board:null,series:{rounds:2,players:Array.from({length:16},(_,i)=>({id:'u'+i,name:'Uzun oyuncu adı '+i,rank:i+1,wins:1,draws:0,played:2,score:100,active:true}))}};
+ const h=harness(initial);try{await h.settle();h.click(/Oda galibiyetleri/);await h.settle();assert.equal(h.modal().props['scene'],'stadium');assert(h.modal().props['footer']);h.click(/Lobiye dön/);await h.settle();assert.equal(h.modalCount(),0);assert.equal(h.apiCalls.length,0);}finally{h.close();}
 });
