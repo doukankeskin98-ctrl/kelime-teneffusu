@@ -4,12 +4,12 @@ import type {Puzzle,Stroke} from '@/lib/game/engine';
 import {wordFeedbackLedger,wordFlightPlan,wordFlightFrames,wordLetterDelay,WORD_FLIGHT_MS,WORD_LANDING_MS,WORD_RESULT_DELAY_MS,type FlightRect} from '@/lib/game/word-feedback';
 import {gameIsActive} from '@/lib/platform/runtime';
 
-/** Decoration observes confirmed state; input and save callbacks never enter here. */
-export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:RefObject<HTMLElement|null>;scope:string;board:Pick<Puzzle,'size'|'targets'|'grid'>;confirmed:Stroke[];turned:boolean;paused:boolean}){
+/** Decoration observes server words and an optional local match; never grants score. */
+export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:{root:RefObject<HTMLElement|null>;scope:string;board:Pick<Puzzle,'size'|'targets'|'grid'>;confirmed:Stroke[];preview?:Stroke|null;turned:boolean;paused:boolean}){
  const ledger=useRef(wordFeedbackLedger(scope,confirmed.map(s=>s.id)));
- const work=useRef(new Set<()=>void>()),previousTurn=useRef(turned);
+ const work=useRef(new Map<string,()=>void>()),previousTurn=useRef(turned);
  const arrivals=useRef(new Map<HTMLElement,number>());
- const clear=()=>{for(const stop of [...work.current])stop();};
+ const clear=()=>{for(const stop of [...work.current.values()])stop();};
  useEffect(()=>{
   const hide=()=>{if(document.hidden||!gameIsActive())clear();},blur=()=>clear();
   document.addEventListener('visibilitychange',hide);window.addEventListener('blur',blur);window.addEventListener('pagehide',blur);window.addEventListener('orientationchange',blur);window.addEventListener('resize',blur);
@@ -19,7 +19,9 @@ export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:Re
   const changedTurn=previousTurn.current!==turned;previousTurn.current=turned;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.dataset['reduceMotion']==='true';
   const visible=!paused&&!changedTurn&&!document.hidden&&gameIsActive();
-  const fresh=ledger.current.consume(scope,confirmed.map(s=>s.id),visible);
+  const ids=confirmed.map(s=>s.id),valid=new Set([...ids,...(preview?[preview.id]:[])]);
+  for(const [id,stop] of work.current)if(!valid.has(id))stop();
+  const fresh=ledger.current.consume(scope,ids,visible,preview?.id);
   if(!visible||reduced){clear();return;}
   if(!fresh.length)return;
   const screen=root.current,letterBoard=screen?.querySelector<HTMLElement>('.letter-board');
@@ -33,7 +35,7 @@ export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:Re
   const measure=(element:HTMLElement)=>{let rect=measured.get(element);if(!rect){rect=element.getBoundingClientRect();measured.set(element,rect);}return rect;};
   const flights=[];
   for(const id of fresh.slice(-4)){
-   const stroke=confirmed.find(s=>s.id===id),target=board.targets.find(t=>t.id===id);if(!stroke||!target)continue;
+   const stroke=confirmed.find(s=>s.id===id)??(preview?.id===id?preview:undefined),target=board.targets.find(t=>t.id===id);if(!stroke||!target)continue;
    const destination=candidates.find(el=>el.dataset['wordGroup']===String(target.group)&&measure(el).width>0)
     ??screen.querySelector<HTMLElement>('.solo-found,.game-status,.duel-scorebar,.play-hud');
    if(!destination)continue;
@@ -53,17 +55,17 @@ export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:Re
     const targetFontSize=label?parseFloat(getComputedStyle(label).fontSize):fontSize*.65;
     plan=wordFlightPlan(board,stroke,target,turned,rect,bounds,dest,{fontSize,targetFontSize:Number.isFinite(targetFontSize)?targetFontSize:fontSize*.65,sources:plan.letters.map(l=>cells[l.viewIndex]?measure(cells[l.viewIndex]!):rect),destinations:destinations.every(r=>r.width>0&&r.height>0)?destinations:[]})!;
    }
-   flights.push({...plan,destination,style:style?{fontFamily:style.fontFamily,fontWeight:style.fontWeight,color:style.color}:undefined});
+   flights.push({...plan,id,destination,style:style?{fontFamily:style.fontFamily,fontWeight:style.fontWeight,color:style.color}:undefined});
   }
-  for(const {fontSize,scale,letters,destination,style} of flights){
+  for(const {id,fontSize,scale,letters,destination,style} of flights){
    while(work.current.size>=4)work.current.values().next().value?.();
    arrivals.current.set(destination,(arrivals.current.get(destination)??0)+1);destination.dataset['wordArriving']='true';
    let arrived=false;
    const arrive=()=>{if(arrived)return;arrived=true;const left=(arrivals.current.get(destination)??1)-1;if(left>0)arrivals.current.set(destination,left);else{arrivals.current.delete(destination);delete destination.dataset['wordArriving'];}};
    const spark=document.createElement('span');spark.className='word-flight word-flight-letters';spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
    const animations:Animation[]=[];let timer:ReturnType<typeof setTimeout>|undefined,stopped=false;
-   const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);arrive();for(const animation of animations)animation.cancel();spark.remove();work.current.delete(stop);};
-   work.current.add(stop);
+   const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);arrive();for(const animation of animations)animation.cancel();spark.remove();work.current.delete(id);};
+   work.current.set(id,stop);
    try{
     for(const [i,letter] of letters.entries()){
      const glyph=document.createElement('span');glyph.className='word-flight-glyph';glyph.textContent=letter.text;Object.assign(glyph.style,style,{fontSize:fontSize+'px'});spark.appendChild(glyph);
@@ -75,6 +77,6 @@ export function WordFeedback({root,scope,board,confirmed,turned,paused}:{root:Re
     timer=setTimeout(stop,WORD_RESULT_DELAY_MS+60);
    }catch{stop();}
   }
- },[scope,confirmed,turned,paused,board]);
+ },[scope,confirmed,preview,turned,paused,board]);
  return null;
 }
