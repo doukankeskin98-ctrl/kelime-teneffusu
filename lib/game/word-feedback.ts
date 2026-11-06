@@ -35,13 +35,17 @@ export function wordFlightFrames(letter:{x:number;y:number;tx:number;ty:number},
 
 /** Presentation-only acknowledgement. Never grants a word, points or rewards. */
 export function wordFeedbackLedger(scope:string,ids:readonly string[]){
- let current=scope,seen=new Set(ids);
+ let current=scope,seen=new Set(ids),local=new Set<string>(),previewed:string|undefined;
  return {
-  consume(nextScope:string,confirmed:readonly string[],visible=true):string[]{
-   if(current!==nextScope){current=nextScope;seen=new Set(confirmed);return [];}
-   const fresh=confirmed.filter(id=>!seen.has(id));
+  consume(nextScope:string,confirmed:readonly string[],visible=true,preview?:string):string[]{
+   if(current!==nextScope){current=nextScope;seen=new Set(confirmed);local.clear();previewed=undefined;return [];}
+   const fresh=confirmed.filter(id=>!seen.has(id)&&!local.has(id));
    // Consume before animation; cancelled/reduced/hidden effects must not replay.
    for(const id of confirmed)seen.add(id);
+   // A local match can start the decoration before the server round trip.
+   // ACK consumes it silently; withdrawal permits a fresh retry of the same word.
+   if(preview&&!seen.has(preview)&&preview!==previewed){fresh.push(preview);local.add(preview);}
+   previewed=preview&&!seen.has(preview)?preview:undefined;
    return visible?[...new Set(fresh)]:[];
   },
  };
