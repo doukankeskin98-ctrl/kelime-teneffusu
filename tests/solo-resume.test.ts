@@ -1,3 +1,4 @@
+import * as journeyFlow from '../lib/game/journey-flow.ts';
 import * as navigation from '../lib/game/navigation.ts';
 import * as firstPlay from '../lib/game/first-play.ts';
 import * as wordFeedback from '../lib/game/word-feedback.ts';
@@ -74,7 +75,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
  vm.runInNewContext(ts.transpileModule(readFileSync('components/game/useResultPresentation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:resultHook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback,window:windowTarget,document:documentTarget,performance:{now:()=>now},setTimeout:timer(false),clearTimeout:(id:number)=>timers.delete(id)});
  modules['./useResultPresentation']=resultHook;
  const exports:Record<string,unknown>={};
- vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
+ vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
   window:windowTarget,document:documentTarget,performance:{now:()=>now},Event,
   setInterval:timer(true),setTimeout:timer(false),clearInterval:(id:number)=>timers.delete(id),clearTimeout:(id:number)=>timers.delete(id)
  });
