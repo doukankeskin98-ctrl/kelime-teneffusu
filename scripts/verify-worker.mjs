@@ -37,10 +37,10 @@ try{
  const home=(await (await request('/')).text()).replace(/<!--[\s\S]*?-->/g,'');check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
  check(/<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(home),'production HTML declares a real device viewport and safe areas');
  check(home.includes('id="journey-home-title"')&&home.includes('stage-play')&&home.includes('Bölüm 1')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
- check(['Yolculuk','Arena','Koleksiyon','Etkinlikler'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
+ check(['Yolculuk','Arena','Koleksiyon','Diğer oyunlar'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
  check(home.includes('Yıldız İskelesi')&&home.includes('stage-trail')&&EXPEDITIONS.length===28,'numbered journey exposes twenty-eight independently registered routes');
- check(home.includes('Gökyüzüne bak')&&home.includes('3 bölüm sonra')&&home.includes('Anadolu Patikası'),'home presents an actual album piece and upcoming world');
- const released=releaseCatalogue();check(home.includes('Etkinlikler'),'secondary exploration and archive entry remains visible');
+ check(home.includes('Gökyüzüne bak')&&home.includes('Bütün yolculuk bölümlerini aç')&&!home.includes('stage-milestone'),'home preserves the actual next chapter and chapter map without duplicate shortcuts');
+ const released=releaseCatalogue();check(home.includes('Diğer oyunlar'),'secondary exploration and archive entry remains visible');
  check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/168')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');

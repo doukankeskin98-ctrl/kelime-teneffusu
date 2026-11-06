@@ -1,5 +1,8 @@
 ## 0.40.0 · Bonuslar ve kesintisiz yolculuk
 
+## 7 Kasım 2026 · 0.41.0
+Ana oyun akışında bonus isteğe bağlı ve dünya girişinde ikinci onay kaldırıldı. Ana başlık okunaklı; yinelenen kısayol/metinler azaltıldı. Ayar, yardım, destek ve giriş ortak sahne tasarımında. iOS paket dosyası/sürüm eşitliği kapısı eklendi. 823 test/695 Worker HTTP ve tip/içerik/şema/web/native kontrolleri geçti. 414 ve321px gerçek tarayıcı önizlemesi, ODAK sürükleme ve tek dokunuşla sonraki dünya doğrulandı. Telefon/TestFlight dış kapıları açık. Ayrıntı release-0.41.0.md.
+
 28 ayrı süreli bonus, atlanabilir bonus→yeni dünya→gerçek bölüm akışı, kısa mekanik açıklamaları, Koleksiyon sekmeleri ve ana ilerlemeden türeyen sekiz kozmetik rozet. Yan kütüphane pencereleri ortak temada; eski 168 ana tahta/kayıt/kapı ve Arena kuralları korunur. Doğrulama ve sınırlar: [0.40.0 raporu](release-0.40.0.md).
 
 ## 0.39.1 · Arena sıralaması sonuç ekranında
