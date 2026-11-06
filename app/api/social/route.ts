@@ -1,3 +1,4 @@
+import {safetyFailure} from '@/lib/game/player-safety';
 import {env} from 'cloudflare:workers';
 import {authJson,boundedJson,gameMember,requireSameOrigin} from '@/lib/auth/server';
 import {IdentityError} from '@/lib/auth/verify';
@@ -29,4 +30,4 @@ export async function POST(request:Request){try{
   default:throw new GameError('Bu işlem bulunamadı.');
  }
  }catch(e){return failure(e);}}
-async function failure(e:unknown){const known=e instanceof GameError||e instanceof IdentityError,status=known?e.status:503;if(status>=500)await recordOperationalFault(env.DB,'social');return authJson({error:known?e.message:'Bağlantı kurulamadı. Tekrar dene.'},status);}
+async function failure(e:unknown){const message=safetyFailure(e);if(message)return authJson({error:message},409);const known=e instanceof GameError||e instanceof IdentityError,status=known?e.status:503;if(status>=500)await recordOperationalFault(env.DB,'social');return authJson({error:known?e.message:'Bağlantı kurulamadı. Tekrar dene.'},status);}

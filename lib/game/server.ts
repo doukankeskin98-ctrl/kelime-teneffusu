@@ -1,3 +1,4 @@
+import {acceptablePlayerName,blockedRoom,safetyFailure} from './player-safety.ts';
 import { dailySpec, goldenId, hash, istanbulDay, makePuzzle, match, pointsFor, type Cell, type Puzzle, type Stroke } from './engine.ts';
 import { THEMES } from './catalog.ts';
 import {FRESH_GROUP_POOL,FRESH_CLUE_POOL,FRESH_DUEL_POOL,FRESH_POOL_LIMIT,freshArenaPuzzle,hasFreshRiddles,type WordHistory} from './arena-fresh.ts';
@@ -34,7 +35,7 @@ export class GameService {
    const p=await this.q('SELECT id,nickname FROM players WHERE id=?',userId).first<{id:string;nickname:string}>();
    if(!p)throw new GameError('Profil hazırlanamadı',503);return p;
  }
- async rename(userId:string,name:unknown){const nickname=clampName(name);if(nickname.length<2)throw new GameError('Takma ad en az 2 karakter olsun.');await this.profile(userId);await this.q('UPDATE players SET nickname=? WHERE id=?',nickname,userId).run();return this.profile(userId);}
+ async rename(userId:string,name:unknown){const nickname=clampName(name);if(!acceptablePlayerName(nickname))throw new GameError('Başka bir oyuncu adı seç.');if(await this.q('SELECT 1 FROM player_restrictions WHERE user_id=? AND name_locked=1',userId).first())throw new GameError('Oyuncu adın inceleme nedeniyle değiştirilemiyor.',403);if(nickname.length<2)throw new GameError('Takma ad en az 2 karakter olsun.');await this.profile(userId);await this.q('UPDATE players SET nickname=? WHERE id=?',nickname,userId).run();return this.profile(userId);}
  private async row(id:string){const row=await this.q('SELECT id,data,revision,expires FROM rooms WHERE id=?',id).first<RoomRow>();if(!row)throw new GameError('Oda bulunamadı.',404);return row;}
  private parse(row:RoomRow){return JSON.parse(row.data) as Room;}
  private async active(userId:string){
@@ -62,12 +63,12 @@ export class GameService {
     const [a,b]=room.players as [DuelPlayer,DuelPlayer],ra=await this.rating(a.id),rb=await this.rating(b.id),result=room.winner===null?0.5:room.winner===a.id?1:0;
     const delta=eloChange(ra.value,rb.value,result),event=room.id+':'+room.round;
     for(const [p,value] of [[a,Math.max(100,ra.value+delta)],[b,Math.max(100,rb.value-delta)]] as [DuelPlayer,number][]){
-     statements.push(this.q('INSERT OR IGNORE INTO ratings(user_id,value,played,updated) VALUES(?,1000,0,?)',p.id,now));
+     statements.push(this.q('INSERT OR IGNORE INTO ratings(user_id,value,played,updated) SELECT ?,1000,0,? WHERE NOT EXISTS(SELECT 1 FROM rating_events WHERE room_id=?)',p.id,now,event));
      statements.push(this.q("UPDATE ratings SET value=?,played=played+1,updated=? WHERE user_id=? AND NOT EXISTS(SELECT 1 FROM rating_events WHERE room_id=?) AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='finished' AND json_extract(data,'$.writeToken')=?)",value,now,p.id,event,room.id,next,token));
     }
     statements.push(this.q("INSERT OR IGNORE INTO rating_events(room_id,created) SELECT ?,? WHERE EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='finished' AND json_extract(data,'$.writeToken')=?)",event,now,room.id,next,token));
    }
-   const result=await this.db.batch(statements);return result[updateIndex]?.meta.changes===1;
+   try{const result=await this.db.batch(statements);return result[updateIndex]?.meta.changes===1;}catch(e){const message=safetyFailure(e);if(message)throw new GameError(message,409);throw e;}
  }
  private settle(room:Room,now:number){if(room.phase==='active'&&room.ends!==null&&now>=room.ends){room.phase='finished';room.reason='Süre doldu';const eligible=room.players.filter(p=>!p.left).sort((a,b)=>b.score-a.score);room.winner=eligible.length&&(!eligible[1]||eligible[0]!.score>eligible[1].score)?eligible[0]!.id:null;}}
  private ranks(room:Room){
@@ -90,7 +91,8 @@ export class GameService {
  }
  private fence(room:Room,expectedRound?:unknown){if(expectedRound===undefined&&!room.mode&&!room.protocol)return;if(!Number.isSafeInteger(expectedRound)||expectedRound!==room.round)throw new GameError('Maç değişti. Güncel odayı yeniden kontrol et.',409,'ARENA_ROUND_CHANGED');}
  private async publicView(room:Room,userId:string,revision=0):Promise<RoomView>{
-   const view=this.view(room,userId,revision),completed=room.phase==='finished'?room.round:room.round-1,key=room.id+':'+completed;
+   const locked=(await this.q('SELECT user_id FROM player_restrictions WHERE name_locked=1 AND user_id IN (SELECT value FROM json_each(?))',JSON.stringify([...room.players.map(p=>p.id),...(room.lastResult?.players.map(p=>p.id)??[])])).all<{user_id:string}>()).results;const hiddenNames=new Set(locked.map(p=>p.user_id));if(hiddenNames.size){room=structuredClone(room);for(const p of room.players)if(hiddenNames.has(p.id))p.name='Oyuncu';for(const p of room.lastResult?.players??[])if(hiddenNames.has(p.id))p.name='Oyuncu';}
+   const view=this.view(room,userId,revision),completed=room.phase==='finished'?room.round:room.round-1,key=room.id+':'+completed+':'+revision;
    let receipt=this.seriesCache.get(key);
    if(!receipt){
     receipt=completed<1?Promise.resolve([]):this.q(`WITH recorded AS (
@@ -102,7 +104,7 @@ export class GameService {
     if(this.seriesCache.size>=8)this.seriesCache.delete(this.seriesCache.keys().next().value!);this.seriesCache.set(key,receipt);
     receipt.catch(()=>this.seriesCache.delete(key));
    }
-   const receipts=await receipt,byId=new Map(receipts.map(p=>[p.id,{...p,active:false}]));
+   const receipts=await receipt;for(const p of (await this.q('SELECT user_id FROM player_restrictions WHERE name_locked=1 AND user_id IN (SELECT value FROM json_each(?))',JSON.stringify(receipts.map(p=>p.id))).all<{user_id:string}>()).results)hiddenNames.add(p.user_id);const byId=new Map(receipts.map(p=>[p.id,{...p,name:hiddenNames.has(p.id)?'Oyuncu':p.name,active:false}]));
    for(const p of room.players){const old=byId.get(p.id);byId.set(p.id,{id:p.id,name:p.name,played:old?.played??0,wins:old?.wins??0,draws:old?.draws??0,score:old?.score??0,rounds:old?.rounds??0,active:!p.left});}
    const all=[...byId.values()],players=all.map(({rounds:_rounds,...p})=>({...p,rank:1+all.filter(other=>other.wins>p.wins).length})).sort((a,b)=>a.rank-b.rank||b.score-a.score||a.id.localeCompare(b.id));
    return {...view,series:{rounds:receipts[0]?.rounds??0,players}};
@@ -140,6 +142,7 @@ export class GameService {
    const rating=await this.rating(current.players[0]!.id);
    // Adjacent queue positions form disjoint pairs. A burst of clients must not all claim one oldest room.
    const candidates=(await this.q("SELECT r.id,r.data,r.revision,r.expires FROM rooms r LEFT JOIN ratings e ON e.user_id=json_extract(r.data,'$.players[0].id') WHERE r.kind='quick' AND json_extract(r.data,'$.mode') IS NULL AND r.phase='waiting' AND r.expires>? AND r.updated>? AND (ABS(COALESCE(e.value,1000)-?)<=200+MAX(0,?-MIN(COALESCE(json_extract(r.data,'$.queuedAt'),r.updated),?))/50 OR MIN(COALESCE(json_extract(r.data,'$.queuedAt'),r.updated),?)<?) ORDER BY r.id LIMIT 64",this.clock(),this.clock()-15000,rating.value,this.clock(),current.queuedAt??this.clock(),current.queuedAt??this.clock(),this.clock()-60000).all<RoomRow>()).results;
+   const allowed:RoomRow[]=[];for(const candidate of candidates){const ids=[...current.players,...this.parse(candidate).players].filter(p=>!p.left).map(p=>p.id);if(!await blockedRoom(this.db,ids))allowed.push(candidate);}candidates.splice(0,candidates.length,...allowed);
    const position=candidates.findIndex(candidate=>candidate.id===row.id);
    const other=position>=0?candidates[position%2===0?position+1:position-1]:candidates[hash(row.id)%Math.max(1,candidates.length)];
    if(!other||other.id===row.id)return row.id;
@@ -186,6 +189,7 @@ export class GameService {
     const row=tries?await this.row(initial.id):initial,room=this.parse(row);
     if(room.players.some(p=>p.id===userId&&!p.left))return this.publicView(room,userId,row.revision);
     if(!(room.phase==='waiting'||room.mode==='group'&&room.phase==='ready')||(!room.mode&&room.players.length!==1)||row.expires<this.clock())throw new GameError('Maç başladı veya oda kapandı. Sonraki maçın lobisinde katılabilirsin.',409);
+    if(await blockedRoom(this.db,[userId,...room.players.filter(p=>!p.left).map(p=>p.id)]))throw new GameError('Bu oyuncuyla aynı oyuna katılamazsın.',409);
     room.players=room.players.filter(p=>p.id!==userId&&!p.left);room.players.push(player(userId,name,this.clock()));room.phase=room.players.length>1?'ready':'waiting';
     // Reserve headroom for every player's nine strokes and the SSE envelope, not an arbitrary seat count.
     if(new TextEncoder().encode(JSON.stringify(room)).length+room.players.length*1200>60000)throw new GameError('Oda bu sunucunun güvenli veri kapasitesine ulaştı. Yeni bir özel oda açabilirsin.',409,'ARENA_ROOM_CAPACITY');
@@ -226,7 +230,7 @@ export class GameService {
    if(kind==='quick'){
      const rating=await this.rating(userId);
      for(let attempt=0;attempt<3;attempt++){
-       const row=await this.q("SELECT r.id,r.data,r.revision,r.expires FROM rooms r LEFT JOIN ratings e ON e.user_id=json_extract(r.data,'$.players[0].id') WHERE r.kind='quick' AND json_extract(r.data,'$.mode') IS NULL AND r.phase='waiting' AND r.expires>? AND r.updated>? AND (ABS(COALESCE(e.value,1000)-?)<=200+MAX(0,?-COALESCE(json_extract(r.data,'$.queuedAt'),r.updated))/50 OR COALESCE(json_extract(r.data,'$.queuedAt'),r.updated)<?) ORDER BY r.updated LIMIT 1",this.clock(),this.clock()-15000,rating.value,this.clock(),this.clock()-60000).first<RoomRow>();if(!row)break;
+       const row=await this.q("SELECT r.id,r.data,r.revision,r.expires FROM rooms r LEFT JOIN ratings e ON e.user_id=json_extract(r.data,'$.players[0].id') WHERE r.kind='quick' AND json_extract(r.data,'$.mode') IS NULL AND r.phase='waiting' AND r.expires>? AND r.updated>? AND (ABS(COALESCE(e.value,1000)-?)<=200+MAX(0,?-COALESCE(json_extract(r.data,'$.queuedAt'),r.updated))/50 OR COALESCE(json_extract(r.data,'$.queuedAt'),r.updated)<?) AND NOT EXISTS(SELECT 1 FROM player_blocks b WHERE (b.user_id=? AND b.blocked_id=json_extract(r.data,'$.players[0].id')) OR (b.blocked_id=? AND b.user_id=json_extract(r.data,'$.players[0].id'))) ORDER BY r.updated LIMIT 1",this.clock(),this.clock()-15000,rating.value,this.clock(),this.clock()-60000,userId,userId).first<RoomRow>();if(!row)break;
        try{return await this.joinRow(userId,row);}catch(e){if(!(e instanceof GameError)||e.status!==409)throw e;}
      }
    }

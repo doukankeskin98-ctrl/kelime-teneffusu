@@ -1,0 +1,2 @@
+ALTER TABLE `player_reports` ADD `review_operation` text;--> statement-breakpoint
+CREATE UNIQUE INDEX `one_open_player_report` ON `player_reports` (`reporter_id`,`target_id`,`reason`) WHERE "player_reports"."status"='open';

@@ -1,4 +1,8 @@
-# iOS yayın dosyası · 5 Kasım 2026
+# iOS yayın dosyası · 6 Kasım 2026
+
+0.37.0: Atlanabilir ilk tahta rehberi; Arkadaşlar/Meydan/Günlük/Arşiv ortak sahnesi; Meydan ve Gizli Tema final uçuş sırası; misafir kimliğini kalıcı hesaba bağlama; aktif misafir oturumunu yenileme; uygulamadan profil silme; oyuncu bildir/engelle ve yetkili inceleme kuyruğu uygulandı. Bunlar kaynak ve izole test kanıtıdır. Sağlayıcı gerçek hesap silme, iki fiziksel cihaz ve mağaza kabulü değildir. Güncel teslim/sınırlar: [0.37.0 uygulama raporu](release-0.37.0.md).
+
+0.36.5: Sorun bildir hazırlama/kopyalama ekranı var; gerçek gönderim kanalı, destek URL'si ve TestFlight feedback adresi açık. Game Center henüz yok; Oyun Modu bildirimi onun yerine geçmez. Bireysel ücretli üyelikle TestFlight başlayıp aynı üyeliği şirket üyeliğine dönüştürmek önerilir; yalnız TestFlight uygulaması standart hesaplar arası transferin en az bir App Store sürümü koşulunu karşılamaz. Güncel Apple kaynakları, kayıt bağlama/hesap silme/moderasyon ve UI açıkları: [6 Kasım incelemesi](studio-audit-2026-11-06.md).
 
 0.36.4 ek kanıtı: iOS native sistem paylaşımı ve herkese açık davet URL'leri düzeltildi. Simülatörde üç tür için Copy; ayrıca oda davetinin sistem Paste içeriği, iptal ve yeniden açma geçti. Bu sonuç fiziksel cihaz, iki oyuncu, Universal Links veya App Store yayın kabulü değildir. Telefon kurulumu ertelendi; aşağıdaki mağaza kapıları açık kalır.
 
@@ -25,16 +29,16 @@ iOS oyun paketi `LSSupportsGameMode` ile sistem Oyun Modu desteğini bildiriyor.
 
 Ana yolculukta 168 bölüm ve 28 rota; paketli sahneler; iOS 15+; yerel açılış; opsiyonel haptics; arka plan→ön plan sınırı; sabit HTTPS JSON API; native tek-uçuşlu Arena sorgusu, mevcut web SSE; mevcut sunucu yetki/puan/anti-repeat kuralları. Kişisel geliştirme imzası cihaz kurulumu için doğrulandı. Dağıtım imzası açık. Bundle ID geliştirme kimliği, Apple'da rezervasyon iddiası yok.
 
-App Privacy manifest kaynakta gerçekten işlenen kategorileri gösterir: kullanıcı kimliği, oyun içeriği, arkadaş grafiği, yapılandırılmış üyelikte e-posta; isteğe bağlı ürün etkileşimi/performans, toplu hata sayımları. Reklam/IDFA/tracking SDK yok; bu, sunucuda veri toplanmıyor demek değildir. Son arşiv privacy raporu ve ağ denetimi yapılmadan App Store Connect beyanı tamamlandı sayılmaz. Sistem HTTPS/Web Crypto kullanımı için export alanı exempt olarak hazırlanmıştır; yeni kripto/SDK eklenirse yayıncı yeniden değerlendirir.
+App Privacy manifest oyuncu bildirimleri için Customer Support kategorisiyle güncellendi; kaynakta gerçekten işlenen kategorileri gösterir: kullanıcı kimliği, oyun içeriği, arkadaş grafiği, yapılandırılmış üyelikte e-posta; isteğe bağlı ürün etkileşimi/performans, toplu hata sayımları. Reklam/IDFA/tracking SDK yok; bu, sunucuda veri toplanmıyor demek değildir. Son arşiv privacy raporu ve ağ denetimi yapılmadan App Store Connect beyanı tamamlandı sayılmaz. Sistem HTTPS/Web Crypto kullanımı için export alanı exempt olarak hazırlanmıştır; yeni kripto/SDK eklenirse yayıncı yeniden değerlendirir.
 
 ## Mağaza gönderimini engelleyen açıklar
 
 | Koşul | Somut tamamlanma ölçütü | Durum |
 |---|---|---|
 | Yayıncı/Apple hesabı | Bireysel veya şirket hesabı, Team ID, imzalı arşiv, uygun bundle ID | Kişisel cihaz imzası var; mağaza hesabı/arşivi açık |
-| Mevcut oyuncunun geçişi | Safari'deki aynı kimliğin, solo/ek bölümlerin ve Arena geçmişinin uygulamada güvenli devamı; ikinci cihaz ve eski yanıt testi | Açık; solo JSON kimlik aktarımı değildir |
-| Hesap silme | Uygulamadan başlatma, sahiplik/yeniden doğrulama, tüm oturumları iptal, D1 ve sağlayıcı kapsamı, ortak maçları bozmadan silme/anonimleştirme | Açık; çıkış yalnız oturum kapatır |
-| Paylaşılan adlar | Uygunsuz adı bildirme, engelleme, moderasyon kuyruğu ve cevap veren destek kanalı | Açık |
+| Mevcut oyuncunun geçişi | Safari'deki aynı kimliğin, solo/ek bölümlerin ve Arena geçmişinin uygulamada güvenli devamı; ikinci cihaz ve eski yanıt testi | Aynı misafir sahibini hesapla bağlama uygulandı; ikinci gerçek cihaz/Firebase ve eski Safari kimliği geçişi kabulü açık |
+| Hesap silme | Uygulamadan başlatma, sahiplik/yeniden doğrulama, tüm oturumları iptal, D1 ve sağlayıcı kapsamı, ortak maçları bozmadan silme/anonimleştirme | D1 silme/anonimleştirme, tüm oturum iptali, yeniden doğrulama ve sağlayıcı kuyruğu uygulandı; gerçek sağlayıcı/cihaz ve işletim kabulü açık |
+| Paylaşılan adlar | Uygunsuz adı bildirme, engelleme, moderasyon kuyruğu ve cevap veren destek kanalı | Ad filtresi, bildir/engelle, yetkili inceleme/isim kısıtlama kodu hazır; gerçek yanıt veren işletim ve destek açık |
 | Gizlilik/KVKK | Gerçek işletmeci, amaç/hukuki sebep, sağlayıcı/aktarım, saklama ve imha uygulaması, hak başvurusu, çalışan kamu URL'si | Bilgi + işletim kararı bekliyor |
 | Native giriş | ChatGPT/Sites hesabı için güvenli geçiş, gerekiyorsa 4.8 eşdeğer giriş; e-posta sağlayıcısının cihaz testi | Açık; işlevsiz ChatGPT yönlendirmesi native'de gösterilmez |
 | Yaş ve haklar | Gerçek özelliklerle yaş anketi; marka/karakter/isim/sahne/ses/font hak envanteri | Açık; 4+ veya Kids iddiası yok |

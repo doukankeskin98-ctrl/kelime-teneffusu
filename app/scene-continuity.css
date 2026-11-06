@@ -1,0 +1,66 @@
+/* Secondary screens use the same scene, navigation and readable control scale. */
+.scene-subpage{isolation:isolate}
+.subpage-scenery{position:fixed;inset:0;z-index:-1;pointer-events:none;background:#132d38}
+.subpage-scenery>.scene-art{width:100%;height:100%;object-fit:cover;object-position:center}
+.subpage-scenery>div{position:absolute;inset:0;background:linear-gradient(#102b38b8,#102b38df 42%,#102b38f5)}
+.scene-subpage .main-content{width:min(100%,720px);margin-inline:auto;padding:12px 20px calc(96px + env(safe-area-inset-bottom,0px))}
+.scene-subpage .arena-back{color:#f7e2a9;margin:0 0 10px;min-height:44px}
+.subpage-heading{margin:0 0 24px;text-align:left}
+.subpage-heading h1{margin:0 0 10px;color:#fff8e4;font-size:30px;font-weight:750;line-height:1.2;letter-spacing:-.025em}
+.subpage-heading p{color:#d7e5df;line-height:1.55;font-size:15px;margin:0 0 18px;max-width:42ch}
+.scene-subpage h2{font-size:21px;line-height:1.3;letter-spacing:-.02em}
+.scene-subpage h3{font-size:18px;line-height:1.35;letter-spacing:-.015em}
+.scene-subpage .social-mode-grid{gap:10px;margin:0 0 18px}
+.scene-subpage .social-mode-grid button{padding:16px 12px;min-width:0;background:#fff9e9;color:#213e35;box-shadow:none;border:0;border-radius:14px}
+.scene-subpage .social-mode-grid b{font-size:15px}.scene-subpage .social-mode-grid small{font-size:12px;color:#50665a}
+.scene-subpage .social-toolbar{margin:18px 0}.scene-subpage .friend-code-form{flex:1;min-width:0;background:#fff9e9;color:#213e35;border:0;border-radius:12px;overflow:hidden}
+.scene-subpage .friend-code-form input{min-width:0;font-size:16px;color:#213e35;background:transparent}
+.scene-subpage .social-toolbar>.icon-button{color:#ffefc5;background:#254957;border-color:#496874;flex-shrink:0}
+.scene-subpage .social-empty,.scene-subpage .team-panel,.scene-subpage .match-history,.scene-subpage .invitation-card,.scene-subpage .friend-card,.scene-subpage .challenge-create-card,.scene-subpage .daily-studio-card,.scene-subpage .daily-week{background:#fff9e9;color:#213e35;border:0;border-radius:16px;box-shadow:none}
+.scene-subpage .social-empty{padding:24px 18px}.scene-subpage .social-empty>svg{color:#397259;margin-bottom:12px}.scene-subpage .social-empty p{color:#50665a;font-size:14px;line-height:1.55}.scene-subpage .social-empty small{font-size:12px;color:#50665a}
+.scene-subpage .social-empty h2{margin:0 0 10px}.scene-subpage .team-panel .social-empty{padding:20px 4px}
+.scene-subpage .team-panel,.scene-subpage .match-history{padding:18px 14px}
+.scene-subpage .social-tabs{gap:4px;display:flex;margin:22px 0 12px;background:transparent;border-bottom:1px solid #c7dcd444;overflow-x:auto}
+.scene-subpage .social-tabs button{color:#d6e5de;font-size:13px;min-height:48px;white-space:nowrap;flex:1;padding:8px 5px}
+.scene-subpage .social-tabs button.active{color:#ffe5a6;border-bottom:2px solid #efd28c;background:transparent}
+.scene-subpage .social-tabs button svg{width:17px;flex-shrink:0}
+.scene-subpage .team-list li{gap:8px;flex-wrap:wrap}.scene-subpage .team-list li>div{min-width:80px;flex:1}.scene-subpage .team-list b,.scene-subpage .friends-ranking b{overflow-wrap:anywhere}
+.scene-subpage .team-list .button{padding:9px 12px;min-height:44px}.scene-subpage .team-list .icon-button{min-width:44px;min-height:44px}
+.scene-subpage .challenge-create-grid{gap:16px;align-items:start}.scene-subpage .challenge-create-card{overflow:hidden}
+.scene-subpage .challenge-create-card>.scene-art,.scene-subpage .daily-studio-card>.scene-art{display:block;width:100%;height:160px;object-fit:cover;object-position:50% 43%}
+.scene-subpage .challenge-create-copy,.scene-subpage .daily-studio-copy{padding:20px}
+.scene-subpage .challenge-create-copy h2,.scene-subpage .friend-card h2{margin:0 0 14px}
+.scene-subpage .friend-card{padding:20px}.scene-subpage .friend-card>svg{width:24px;height:24px;margin-bottom:14px;color:#397259}
+.scene-subpage .friend-card p,.scene-subpage .daily-studio-copy p{font-size:14px;line-height:1.55;color:#50665a}
+.scene-subpage label{font-size:14px;line-height:1.4;color:#365447}.scene-subpage input,.scene-subpage select{font-size:16px;min-height:48px}
+.scene-subpage .recent-challenges{margin-top:28px}.scene-subpage .recent-challenges>.section-title h2{color:#fff7df}
+.scene-subpage .recent-challenge{background:#fff9e9;color:#213e35;border:0;box-shadow:none;gap:10px}.scene-subpage .recent-challenge>span:nth-child(2){min-width:0;flex:1}.scene-subpage .recent-challenge small{font-size:12px}.scene-subpage .recent-challenge strong{font-size:14px;white-space:nowrap}
+.scene-subpage .daily-studio-card{display:block;overflow:hidden}.scene-subpage .daily-studio-copy h2{margin:12px 0}.scene-subpage .daily-studio-copy .button{width:100%;min-height:50px}.scene-subpage .block-note{font-size:13px;line-height:1.5;color:#50665a}
+.scene-subpage .daily-week{margin:18px 0 26px;padding:18px;gap:15px;flex-wrap:wrap}.scene-subpage .daily-week small{font-size:12px;color:#50665a}.scene-subpage .week-dots{gap:7px}
+.scene-subpage .extra-games{width:100%;max-width:none;margin:0;padding:0}
+.scene-subpage .event-menu{border-top:1px solid #d4e2d740}.scene-subpage .event-menu button{color:#f4f3df;background:transparent;border:0;border-bottom:1px solid #d4e2d740;border-radius:0;box-shadow:none;padding:17px 4px;min-height:78px}
+.scene-subpage .event-menu button>svg{color:#f1d38e;width:24px;flex-shrink:0}.scene-subpage .event-menu b{font-size:17px}.scene-subpage .event-menu small{color:#c9ddd4;font-size:13px;line-height:1.4}.scene-subpage .extra-games>.text-button{color:#f5dda4;margin-top:18px;min-height:48px}
+.scene-subpage .error-box{color:#702d25;background:#ffede6}.scene-subpage .success-box{color:#204c38;background:#e3f0df}
+.scene-subpage .game-note{color:#3b594b;background:#edf1e4;font-size:13px}.scene-subpage .game-note p{font-size:13px;line-height:1.5}
+.scene-subpage .modal{color:var(--ink)}
+.first-play-guide{display:flex;align-items:center;gap:8px;min-height:58px;padding:6px 10px;border-radius:12px;background:#163c47f2;color:#fff5d5}
+.first-play-guide>div{flex:1;min-width:0}.first-play-guide b{font-size:14px;display:block;line-height:1.3}.first-play-guide span{display:block;font-size:12px;line-height:1.45;color:#e0ebe1}
+.first-play-guide>.text-button{color:#ffe3a0;min-height:44px;flex-shrink:0;font-size:13px;padding:8px}
+.first-play-guide~.game-message{display:none}
+.auth-panel .auth-remember,.auth-panel .auth-forgot,.auth-panel .auth-legal,.auth-panel .auth-footer,.auth-panel .auth-note{font-size:13px!important;line-height:1.5}
+.native-shell .comfort-setting small,.native-shell .stage-play small{font-size:12px}
+@media(max-width:380px){.scene-subpage .main-content{padding-inline:14px}.scene-subpage .social-mode-grid{grid-template-columns:1fr}.scene-subpage .social-tabs button{font-size:12px}.scene-subpage .challenge-create-copy,.scene-subpage .friend-card,.scene-subpage .daily-studio-copy{padding:16px}.subpage-heading h1{font-size:27px}.first-play-guide{min-height:64px}}
+@media(min-width:760px){.scene-subpage .main-content{padding-top:24px}.scene-subpage .challenge-create-grid{grid-template-columns:1fr 1fr}.scene-subpage .extra-games-menu{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}}
+
+.auth-panel .auth-options label,.auth-panel .auth-options .text-button,.auth-panel .auth-verify .text-button{font-size:14px;min-height:44px}
+.auth-panel .auth-field label{font-size:14px;color:#415b4d}.auth-panel .auth-field>small,.auth-panel .auth-privacy{font-size:12px!important;color:#586c5d}
+.auth-panel .auth-error,.auth-panel .auth-notice{font-size:14px;line-height:1.5}.auth-panel .auth-tabs button{min-height:44px;font-size:15px}.auth-panel .auth-field input{font-size:16px}
+
+.safety-trigger{width:44px;min-width:44px;height:44px}.team-list li{flex-wrap:wrap}.arena-roster li{position:relative;padding-right:50px}.arena-roster li>.safety-trigger{position:absolute;right:2px;top:50%;transform:translateY(-50%)}.blocked-players li{display:flex;align-items:center;justify-content:space-between;gap:12px}.blocked-players li span{overflow-wrap:anywhere}.blocked-players .text-button{min-height:44px;flex-shrink:0}.account-danger{margin-top:24px;border-top:1px solid #becabb;padding-top:20px}.account-danger .danger{color:#913928;border-color:#b76d5b}.account-danger p{font-size:14px;line-height:1.6}.account-danger label{display:flex;align-items:flex-start;gap:10px;line-height:1.5}.account-danger input[type=checkbox]{width:22px;min-height:22px;flex-shrink:0}
+
+.privacy-copy h3{font-size:18px;margin:22px 0 8px}.privacy-copy p{font-size:15px;line-height:1.65;color:#415b4d}.privacy-copy h3:first-child{margin-top:0}
+
+.scene-result .tutorial-reward-status{background:transparent;border:0;color:#e4eadc;padding:0;margin:16px auto 22px;max-width:30ch;font-size:15px;line-height:1.6}
+
+.scene-subpage .social-tabs button>span{color:#244b3e;background:#e6eddb;font-size:12px}
+.scene-subpage .social-toolbar .friend-code-form input{font-size:16px!important}
