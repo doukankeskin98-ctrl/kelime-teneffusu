@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.39.0 · Kelimeden kutlamaya tek akış
+
+Son harf inişi, araçların çekilmesi ve aynı sahnede kutlama ortak sunuma bağlandı. Arena/Meydan geç onayda uçuş süresini yeniden beklemez; seçilen kelime başlık yerine tahta yanında görünür. Kısa oyun ayarları ortaklaştırıldı, rekabet üst alanındaki tekrarlar ve sonuçtaki büyük opak kart kaldırıldı. Kayıtlar ve içerik değişmedi. Kontroller ve fiziksel cihaz sınırı: [0.39.0 raporu](docs/release-0.39.0.md).
+
 ## 0.38.0 · Arena ve özgün bölüm kataloğu
 
 Arena lobisi ve rekabet tahtası ortak ölçeğe taşındı; okunaklı sayaç/puan, erişilebilir hazır/başlat, birlikte görünen hedefler ve doğru bilmece harf sayısı. Meydan 242 bölüm seçeneği ve sunucuda aynı tahtayı koruyan içerik görüntüsü kullanır; kesintide onaylı kelime salt okumayla kurtarılır. İpucu hareketi iki vurgu sonra sakinleşir.
