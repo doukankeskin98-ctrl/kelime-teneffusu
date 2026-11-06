@@ -112,6 +112,16 @@ try{
  check(!('placements' in challenge.board),'solutions are omitted from player views');
  for(const target of challenge.board.targets)await json('/api/social',{cookie:aCookie,method:'POST',body:{action:'claim',code:challenge.code,...solution(challenge.board,target)}});
  const ghost=await json('/api/social',{cookie:bCookie,method:'POST',body:{action:'start',code:challenge.code}});check(ghost.ghost.nickname==='Alice'&&ghost.ghost.timeline.length===challenge.board.targets.length,'actual recorded opponent timeline');
+ const competitiveCatalogue=await json('/api/social?action=catalogue');
+ check(competitiveCatalogue.chapters.length>=242&&competitiveCatalogue.chapters.some(c=>c.id==='ozgun-okul-6')&&competitiveCatalogue.chapters.some(c=>c.id.startsWith('mystery:')),'challenge catalogue exposes original chapters, modern chapters, all source pages and mystery boards');
+ check(competitiveCatalogue.chapters.every(c=>!['hababam','yesilcam','diziler','sinema','doksanlar'].includes(c.themeId)&&!('board' in c)),'retired themes and solution data are absent from new challenge choices');
+ await request('/api/social',{cookie:aCookie,method:'POST',body:{action:'create',chapterId:'hababam-1'},expected:404});
+ const authoredChallenge=await json('/api/social',{cookie:aCookie,method:'POST',body:{action:'create',chapterId:'ozgun-okul-1'}});
+ const sameChallenge=await json('/api/social',{cookie:bCookie,method:'POST',body:{action:'start',code:authoredChallenge.code}});
+ check(authoredChallenge.title==='İlk zil'&&JSON.stringify(authoredChallenge.board)===JSON.stringify(sameChallenge.board),'selected authored topic and shared board survive a second player joining');
+ const confirmedAuthored=await json('/api/social',{cookie:aCookie,method:'POST',body:{action:'claim',code:authoredChallenge.code,...solution(authoredChallenge.board,authoredChallenge.board.targets[0])}});
+ const recoveredAuthored=await json('/api/social?action=challenge&code='+authoredChallenge.code,{cookie:aCookie});
+ check(confirmedAuthored.strokes.length===1&&recoveredAuthored.strokes.length===1,'canonical snapshot accepts a word and a read recovers its confirmed progress');
  const room=await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'enter',kind:'friend',userId:b.profile.id}});check(room.you.id===a.profile.id,'request bodies cannot spoof the actor');
  await json('/api/game',{cookie:bCookie,method:'POST',body:{action:'enter',kind:'friend',code:room.code}});
  await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'ready',id:room.id,round:1}});

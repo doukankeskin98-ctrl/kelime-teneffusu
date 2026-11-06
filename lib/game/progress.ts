@@ -1,6 +1,7 @@
+import {CHAPTER_REPLACEMENTS,originalThemeId} from './original-content.ts';
 import {boardColor,type BoardColor} from './board-color.ts';
 import {hash,makePuzzle,match,type Puzzle,type Stroke} from './engine.ts';
-import {THEMES} from './catalog.ts';
+import {ALL_THEMES as THEMES} from './catalog.ts';
 import {PLAYABLE_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from './content.ts';
 export interface SavedLevel {strokes:Stroke[];elapsed:number;hints:number;complete:boolean;stars:number}
 export interface Progress {
@@ -61,4 +62,14 @@ export function mergeProgress(server:Progress,local:Progress):Progress {
  return {...(server.guideDone||local.guideDone?{guideDone:true as const}:{}),...(server.boardColor?{boardColor:server.boardColor}:{}),...local,last:local.last??server.last,saves,days:[...new Set([...server.days,...local.days])].sort().slice(-3660),tutorialDone:server.tutorialDone||local.tutorialDone,mysteries:[...new Set([...server.mysteries,...local.mysteries])]};
 }
 export function streak(days:string[],today:string):number {const unique=new Set(days);const date=new Date(today+'T12:00:00Z');if(!unique.has(today))date.setUTCDate(date.getUTCDate()-1);let count=0;while(unique.has(date.toISOString().slice(0,10))){count++;date.setUTCDate(date.getUTCDate()-1);}return count;}
-export function collectionStats(p:Progress){const completed=Object.values(p.saves).filter(s=>s.complete).length;return {completed,stars:Object.values(p.saves).reduce((n,s)=>n+(s.complete?s.stars:0),0),worlds:THEMES.filter(t=>Object.entries(p.saves).some(([key,s])=>s.complete&&(key.startsWith(t.id+'.')||key.startsWith('route:'+t.id+'-')))).length};}
+export function collectionStats(p:Progress){
+ const credits=new Map<string,SavedLevel>(),worlds=new Set<string>();
+ for(const [key,save] of Object.entries(p.saves)){
+  if(!save.complete)continue;
+  const id=key.startsWith('route:')?key.slice(6):'',alias=CHAPTER_REPLACEMENTS[id],canonical=alias?'route:'+alias:key,prior=credits.get(canonical);
+  if(!prior||save.stars>prior.stars)credits.set(canonical,save);
+  const chapter=PLAYABLE_JOURNEYS.find(j=>j.id===id),theme=chapter?.themeId??key.split('.')[0];
+  if(theme&&THEMES.some(t=>t.id===theme))worlds.add(originalThemeId(theme));
+ }
+ return {completed:credits.size,stars:[...credits.values()].reduce((n,s)=>n+s.stars,0),worlds:worlds.size};
+}

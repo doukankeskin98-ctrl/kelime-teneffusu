@@ -1,5 +1,11 @@
 # Kelime Teneffüsü
 
+## 0.38.0 · Arena ve özgün bölüm kataloğu
+
+Arena lobisi ve rekabet tahtası ortak ölçeğe taşındı; okunaklı sayaç/puan, erişilebilir hazır/başlat, birlikte görünen hedefler ve doğru bilmece harf sayısı. Meydan 242 bölüm seçeneği ve sunucuda aynı tahtayı koruyan içerik görüntüsü kullanır; kesintide onaylı kelime salt okumayla kurtarılır. İpucu hareketi iki vurgu sonra sakinleşir.
+
+Beş eski yapım/marka rotası yerine 30 özgün bölüm; 168 ana sıra/28 rota, eski ilerleme/ödül ve açık maçlar korunur. Yeni Arena/Sprint/günlük seçimlerinden emekli içerik çıkarılır. Doğrulama ve gerçek cihaz sınırları: [0.38.0 raporu](docs/release-0.38.0.md).
+
 ## 0.37.0 · Rehber, ortak oyun akışı ve oyuncu güvenliği
 
 Yeni oyuncuya ilk tahtada atlanabilir çizim rehberi; yardımda oynanabilir alıştırma; Arkadaşlar/Meydan/Günlük/Arşiv için ortak sahne ve okunaklı ölçek. Meydan ve Gizli Tema son kelimenin uçuşunu bekler; kesinti ve azaltılmış hareket sonucu geciktirmez. Albüm bölüm adları güncel konu kaynağını kullanır.

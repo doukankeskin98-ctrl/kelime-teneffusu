@@ -1,3 +1,4 @@
+import {replacementChapterId} from '../lib/game/original-content.ts';
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {createHash} from 'node:crypto';
@@ -15,7 +16,7 @@ const finish=(p:Progress,id:string)=>{const board=journeyBoard(journeyById(id)!)
 const veteran=()=>{const p=emptyProgress();for(const id of baseline.ids)finish(p,id);return p;};
 describe('Kıyı Günlüğü append-only release',()=>{
  it('preserves all 96 published numbers and complete puzzle hashes',()=>{
-  assert.equal(baseline.ids.length,96);assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,96),baseline.ids);
+  assert.equal(baseline.ids.length,96);assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,96),baseline.ids.map(replacementChapterId));
   for(const [id,hash] of Object.entries(baseline.boards))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),hash,id);
   assert.deepEqual(MAIN_JOURNEY_IDS.slice(96,120),COAST_CHAPTERS.map(c=>c.id));
  });

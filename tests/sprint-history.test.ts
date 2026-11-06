@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {emptySprintHistory,parseSprintHistory,rememberSprintBoard,sprintHistoryKey,variedSprintBoard} from '../lib/game/sprint-history.ts';
-import {SPRINT_WORDS} from '../lib/game/sprint-vocabulary.ts';
+import {ACTIVE_SPRINT_WORDS as SPRINT_WORDS} from '../lib/game/sprint-vocabulary.ts';
 import {freshSprint,sprintReducer} from '../lib/game/sprint.ts';
 import {match} from '../lib/game/engine.ts';
 
@@ -50,7 +50,7 @@ describe('fresh fast play survives leaving and reloading',()=>{
  it('isolates owners, rejects malformed receipts and bounds history without touching old record keys',()=>{
   assert.notEqual(sprintHistoryKey('one'),sprintHistoryKey('two'));assert.notEqual(sprintHistoryKey(),sprintHistoryKey('one'));
   for(const raw of [null,'bad','{}','{"v":2,"sequence":1}','{"v":1,"sequence":-1}'])assert.deepEqual(parseSprintHistory(raw),emptySprintHistory());
-  const word=SPRINT_WORDS[0],raw=JSON.stringify({v:1,sequence:1,words:{[word]:{uses:1,last:2},unknown:{uses:2,last:0}},sets:['bad']});
+  const word=SPRINT_WORDS[0]!,raw=JSON.stringify({v:1,sequence:1,words:{[word]:{uses:1,last:2},unknown:{uses:2,last:0}},sets:['bad']});
   assert.deepEqual(parseSprintHistory(raw),{v:1,sequence:1,words:{},sets:[]});
  });
 });

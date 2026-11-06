@@ -1,3 +1,4 @@
+import * as originalContent from '../lib/game/original-content.ts';
 import * as navigation from '../lib/game/navigation.ts';
 import * as firstPlay from '../lib/game/first-play.ts';
 import * as stories from '../lib/game/story-content.ts';
@@ -97,7 +98,7 @@ describe('catalogue return and interrupted pagination',()=>{
  });
 });
 
-const catalogueModules={'@/lib/studio/chapter-browse':browse,'@/lib/studio/release-stamps':stamps,'@/lib/game/catalog':catalog,'@/lib/studio/card-progress':cardProgress,
+const catalogueModules={'@/lib/game/original-content':originalContent,'@/lib/studio/chapter-browse':browse,'@/lib/studio/release-stamps':stamps,'@/lib/game/catalog':catalog,'@/lib/studio/card-progress':cardProgress,
  './useChapterCards':{useChapterCards:()=>({values:{},status:'ready',available:{},retry(){}})},'./WorldArt':{WorldArt:'WorldArt'},'./ReleaseAlbum':{ReleaseAlbum:'ReleaseAlbum'},'./common':{Modal:'Modal'}};
 describe('actual return UI wiring',()=>{
  it('captures public range, owner, selected date and card before Album closes',()=>{

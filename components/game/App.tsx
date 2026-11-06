@@ -20,7 +20,7 @@ import type {AuthMode} from '@/components/auth/AuthPanel';
 import {useMembership} from '@/components/auth/useMembership';
 import {safeReturnTo} from '@/lib/auth/shared';
 import {signOutMember} from '@/lib/auth/firebase-client';
-import {THEMES,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
+import {ACTIVE_THEMES as THEMES,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
 import {JOURNEYS} from '@/lib/game/content';
 import {dailySpec,istanbulDay} from '@/lib/game/engine';
 import {DAILY_REQUEST_TIMEOUT} from '@/lib/game/daily-action';

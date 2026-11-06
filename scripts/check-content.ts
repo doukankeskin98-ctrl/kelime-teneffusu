@@ -1,4 +1,4 @@
-import {SPRINT_WORDS} from '../lib/game/sprint-vocabulary.ts';
+import {ACTIVE_SPRINT_WORDS as SPRINT_WORDS} from '../lib/game/sprint-vocabulary.ts';
 import {freshArenaPuzzle} from '../lib/game/arena-fresh.ts';
 import {ARENA_CLUES,ARENA_LIBRARY} from '../lib/game/arena-library.ts';
 import {groupPuzzle,groupRiddlePuzzle} from '../lib/game/group-content.ts';

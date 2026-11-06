@@ -1,7 +1,8 @@
+import {replacementChapterId} from '../lib/game/original-content.ts';
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {existsSync} from 'node:fs';
-import {ALL_JOURNEYS,journeyBoard} from '../lib/game/content.ts';
+import {ALL_JOURNEYS,journeyById,journeyBoard} from '../lib/game/content.ts';
 import {EXPEDITIONS,expeditionTheme,expeditionForChapter} from '../lib/game/discovery.ts';
 import {worldChapter,chapterVeils,veilInstruction} from '../lib/game/world-presentation.ts';
 import {WORLD_SCENES,sceneImage,sceneForTheme} from '../lib/game/scene.ts';
@@ -10,10 +11,10 @@ import {wordCardCopy} from '../lib/game/word-card.ts';
 describe('complete world presentation without changing authored puzzles',()=>{
  it('covers 28 routes over 16 shipped worlds and all 168 chapters with meaningful topics',()=>{
   assert.equal(EXPEDITIONS.length,28);assert.equal(new Set(Object.values(WORLD_SCENES)).size,16);
-  for(const w of EXPEDITIONS){assert(existsSync('public'+sceneImage(sceneForTheme(expeditionTheme(w)))),w.id);const chapters=ALL_JOURNEYS.filter(j=>expeditionForChapter(j.id)?.id===w.id);assert.equal(chapters.length,6);assert.deepEqual(chapters.map(j=>worldChapter(j.id)!.position).sort(),[0,1,2,3,4,5]);assert.equal(new Set(chapters.map(j=>worldChapter(j.id)!.topic)).size,6);}
+  for(const w of EXPEDITIONS){assert(existsSync('public'+sceneImage(sceneForTheme(expeditionTheme(w)))),w.id);const chapters=ALL_JOURNEYS.map(j=>journeyById(replacementChapterId(j.id))!).filter(j=>expeditionForChapter(j.id)?.id===w.id);assert.equal(chapters.length,6);assert.deepEqual(chapters.map(j=>worldChapter(j.id)!.position).sort(),[0,1,2,3,4,5]);assert.equal(new Set(chapters.map(j=>worldChapter(j.id)!.topic)).size,6);}
  });
  it('keeps most words open with at most one hidden target, retains clues and reveals confirmed answers',()=>{
-  for(const j of ALL_JOURNEYS){const board=journeyBoard(j),before=JSON.stringify(board),profile=chapterVeils(j.id,board.targets),info=worldChapter(j.id)!;
+  for(const j of ALL_JOURNEYS.map(j=>journeyById(replacementChapterId(j.id))!)){const board=journeyBoard(j),before=JSON.stringify(board),profile=chapterVeils(j.id,board.targets),info=worldChapter(j.id)!;
    if(j.clues)assert.deepEqual(profile,{});else{
     const modes=Object.values(profile),open=modes.filter(v=>v==='open').length,initial=modes.filter(v=>v==='initial').length,hidden=modes.filter(v=>v==='hidden').length;
     assert(open>initial+hidden,j.id+' should keep most target groups fully readable');

@@ -10,7 +10,7 @@ import {fixture} from './fixtures.ts';
 
 describe('expanded reviewed Arena vocabulary',()=>{
  it('adds630 distinct answers and definitions without replacing144 published clues',()=>{
-  assert.equal(ARENA_ADDITIONS.length,630);assert.equal(ARENA_CLUES.length,774);assert.equal(ARENA_LIBRARY.length,919);
+  assert.equal(ARENA_ADDITIONS.length,630);assert.equal(ARENA_CLUES.length,774);assert.equal(ARENA_LIBRARY.length,963);
   assert.equal(new Set(ARENA_LIBRARY.map(e=>e.word)).size,ARENA_LIBRARY.length);
   assert.equal(new Set(ARENA_CLUES.map(e=>e.clue)).size,ARENA_CLUES.length);
   for(const e of ARENA_LIBRARY){assert(/^[A-ZÇĞİÖŞÜ]{2,8}$/u.test(e.word),e.word);if(e.clue){assert(e.clue.length>=12&&e.clue.length<=110,e.word);assert(!e.clue.toLocaleUpperCase('tr-TR').split(/[^A-ZÇĞİÖŞÜ]+/u).includes(e.word),e.word+' reveals answer');assert(e.riddleId);}}
@@ -23,7 +23,7 @@ describe('expanded reviewed Arena vocabulary',()=>{
    assert.equal(candidate.board.size,9);assert.equal(candidate.board.targets.length,7);
    for(const p of candidate.board.placements){assert.equal(match(candidate.board,p.a,p.b)?.id,p.id);placed.add(p.text);const h=history.find(h=>h.word===p.text);if(h){h.uses++;h.lastSeen=ordinal;}else history.push({word:p.text,uses:1,lastSeen:ordinal,recent:0});}
   }
-  assert.equal(placed.size,919);
+  assert.equal(placed.size,ARENA_LIBRARY.length);
  });
  it('prefers unseen, then cool least-used/oldest words and supports mixed-history library exhaustion',()=>{
   const history=ARENA_LIBRARY.map((e,i)=>({word:e.word,uses:2,lastSeen:i+1,recent:0}));

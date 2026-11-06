@@ -3,7 +3,7 @@ import {arenaWordKey,arenaGridKey} from './arena-content.ts';
 import {hash,makeCustomPuzzle,match} from './engine.ts';
 
 // Independent monotonic cursors: no old pool, board seed or snapshot is reinterpreted.
-export const FRESH_GROUP_POOL='arena-variety-group-v3',FRESH_CLUE_POOL='arena-variety-clue-v3',FRESH_DUEL_POOL='arena-variety-duel-v2';
+export const FRESH_GROUP_POOL='arena-original-group-v4',FRESH_CLUE_POOL='arena-original-clue-v4',FRESH_DUEL_POOL='arena-original-duel-v3';
 export const FRESH_POOL_LIMIT=2**31;
 export interface WordHistory {word:string;uses:number;lastSeen:number;recent:number}
 export interface FreshOptions {group:boolean;clue?:boolean;history?:readonly WordHistory[];usedRiddleIds?:readonly string[];variation?:number}

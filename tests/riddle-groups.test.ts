@@ -1,4 +1,4 @@
-import {THEMES} from '../lib/game/catalog.ts';
+import {ALL_THEMES as THEMES} from '../lib/game/catalog.ts';
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {RIDDLE_BANKS,RIDDLE_CHAPTERS,riddleId} from '../lib/game/riddle-content.ts';
@@ -19,7 +19,7 @@ describe('reviewed optional riddle chapters preserve the numbered journey',()=>{
   const items=RIDDLE_BANKS.flatMap(b=>b.items.map(([word,clue])=>({id:riddleId(b.themeId,word),word,clue})));
   assert.equal(items.length,144);assert.equal(new Set(items.map(i=>i.id)).size,144);assert.equal(new Set(items.map(i=>i.clue)).size,144);
   assert.equal(RIDDLE_CHAPTERS.length,32);assert.equal(new Set(RIDDLE_CHAPTERS.map(c=>c.id)).size,32);
-  assert.equal(ALL_JOURNEYS.length,168);assert.equal(PLAYABLE_JOURNEYS.length,205);assert.deepEqual(MAIN_JOURNEY_IDS,MAIN_JOURNEY.map(c=>c.chapter.id));
+  assert.equal(ALL_JOURNEYS.length,168);assert.equal(PLAYABLE_JOURNEYS.length,235);assert.deepEqual(MAIN_JOURNEY_IDS,MAIN_JOURNEY.map(c=>c.chapter.id));
   for(const item of items){assert(/^[A-ZÇĞİÖŞÜ]{2,8}$/u.test(item.word));assert(item.clue.length>=12&&item.clue.length<=95);assert.notEqual(item.clue.toLocaleUpperCase('tr-TR'),item.word);}
   const oldSets=new Set(ALL_JOURNEYS.map(c=>JSON.stringify([...c.words].sort())));
   for(const c of RIDDLE_CHAPTERS){assert.equal(c.words.length,4);assert.equal(Object.keys(c.clues!).length,4);assert(!oldSets.has(JSON.stringify([...c.words].sort())),c.id);const board=journeyBoard(c);assert.equal(board.size,c.size);for(const p of board.placements){assert(c.clues![p.text]);assert.equal(match(board,p.a,p.b)?.id,p.id);}}
@@ -70,14 +70,14 @@ describe('persistent alternating group rounds',()=>{
   f.advance(2000);const next=await f.game.nextGame(f.users[0]!,f.id,1);assert.equal(next.roundKind,'clue');assert.equal(next.board,null);f.sqlite.close();
  });
  it('makes per-room and global clue exhaustion explicit without resetting history or opening an old board',async()=>{
-  for(const exhausted of ['room','pool']){const f=await lobby();if(exhausted==='room'){const room=f.room(f.id);room.usedRiddleIds=ARENA_CLUES.map(e=>e.riddleId!);f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);}else f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-variety-clue-v3',?,'')").run(ARENA_RIDDLE_POOL_SIZE);
+  for(const exhausted of ['room','pool']){const f=await lobby();if(exhausted==='room'){const room=f.room(f.id);room.usedRiddleIds=ARENA_CLUES.map(e=>e.riddleId!);f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);}else f.sqlite.prepare("INSERT INTO arena_pool VALUES('arena-original-clue-v4',?,'')").run(ARENA_RIDDLE_POOL_SIZE);
    await Promise.all(f.users.map(u=>f.game.ready(u,f.id,1)));await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1),(e:unknown)=>e instanceof GameError&&e.code===(exhausted==='room'?'ARENA_RIDDLES_EXHAUSTED':'ARENA_CONTENT_UNAVAILABLE'));
    assert.equal(f.room(f.id).phase,'ready');assert.equal(f.room(f.id).puzzle,undefined);assert.equal(f.room(f.id).starts,null);assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM arena_seen').get()!['n'],0);
    const reloaded=(await new GameService(f.db,f.clock).state(f.users[0]!))!;if(exhausted==='room'){assert.equal(reloaded.canStart,false);assert(reloaded.roundUnavailable);}f.sqlite.close();}
  });
  it('rolls back clue history, room and cursor together when receipt persistence fails',async()=>{
   const f=await lobby();f.sqlite.exec("CREATE TRIGGER fail_riddle BEFORE INSERT ON arena_seen BEGIN SELECT RAISE(ABORT,'receipt unavailable'); END");await Promise.all(f.users.map(u=>f.game.ready(u,f.id,1)));
-  await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1));assert.equal(f.room(f.id).usedRiddleIds,undefined);assert.equal(f.room(f.id).clues,undefined);assert.equal(f.room(f.id).phase,'ready');assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-variety-clue-v3'").get()!['next'],0);f.sqlite.close();
+  await assert.rejects(()=>f.game.start(f.users[0]!,f.id,1));assert.equal(f.room(f.id).usedRiddleIds,undefined);assert.equal(f.room(f.id).clues,undefined);assert.equal(f.room(f.id).phase,'ready');assert.equal(f.sqlite.prepare("SELECT next FROM arena_pool WHERE id='arena-original-clue-v4'").get()!['next'],0);f.sqlite.close();
  });
 });
 
@@ -87,5 +87,5 @@ it('preserves every old and new solo save plus3660 daily dates within the unchan
  for(const key of keys){const b=progressBoard(key)!;assert(b,key);p.saves[key]=cleanSave({strokes:b.placements,elapsed:123,hints:0,complete:false,stars:0},b);}
  p.days=Array.from({length:3660},(_,i)=>new Date(Date.UTC(2016,0,i+1)).toISOString().slice(0,10));
  const raw=JSON.stringify(p);assert(raw.length<150000);assert(new TextEncoder().encode(JSON.stringify({action:'progress',progress:p})).length<150000);
- const restored=loadProgress(raw);assert.equal(Object.keys(restored.saves).length,307);assert.equal(restored.days.length,3660);for(const key of keys)assert.equal(restored.saves[key]!.complete,true,key);
+ const restored=loadProgress(raw);assert.equal(Object.keys(restored.saves).length,367);assert.equal(restored.days.length,3660);for(const key of keys)assert.equal(restored.saves[key]!.complete,true,key);
 });

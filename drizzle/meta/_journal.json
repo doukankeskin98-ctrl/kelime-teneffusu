@@ -50,6 +50,13 @@
       "when": 1793925721516,
       "tag": "0006_third_roulette",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1793928711974,
+      "tag": "0007_minor_captain_universe",
+      "breakpoints": true
     }
   ]
 }

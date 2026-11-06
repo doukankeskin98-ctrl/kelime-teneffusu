@@ -1,6 +1,6 @@
 import {acceptablePlayerName,blockedRoom,safetyFailure} from './player-safety.ts';
 import { dailySpec, goldenId, hash, istanbulDay, makePuzzle, match, pointsFor, type Cell, type Puzzle, type Stroke } from './engine.ts';
-import { THEMES } from './catalog.ts';
+import { ACTIVE_THEMES as THEMES } from './catalog.ts';
 import {FRESH_GROUP_POOL,FRESH_CLUE_POOL,FRESH_DUEL_POOL,FRESH_POOL_LIMIT,freshArenaPuzzle,hasFreshRiddles,type WordHistory} from './arena-fresh.ts';
 import {nextArenaKind,arenaWordKey,arenaGridKey,type ArenaRoundKind} from './arena-content.ts';
 
