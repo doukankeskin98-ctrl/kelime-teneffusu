@@ -17,12 +17,13 @@ export async function gameMember(request:Request){
  const principal=await currentPrincipal(request);
  if(!principal){
   const nativeId=request.headers.get('oai-authenticated-user-id');
-  if(nativeId)return {userId:nativeId,email:request.headers.get('oai-authenticated-user-email')??'',username:'',kind:'native' as const};
+  if(nativeId){await assertPlayerPresent(nativeId);return {userId:nativeId,email:request.headers.get('oai-authenticated-user-email')??'',username:'',kind:'native' as const};}
   return env.DB?guestMember(env.DB,request):null;
  }
  if(!principal.verified)throw new IdentityError('Önce e-posta adresini doğrula.',403);
  const account=await accountStore().find(principal);
  if(!account)throw new IdentityError('Önce kullanıcı adını seç.',409);
+ await assertPlayerPresent(account.game_user_id);
  return {userId:account.game_user_id,email:principal.email,username:account.username,kind:'email' as const};
 }
 export const authJson=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -36,3 +37,5 @@ export async function boundedJson(request:Request,limit=2048):Promise<Record<str
  const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}
  try{const data:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));if(!data||typeof data!=='object'||Array.isArray(data))throw new Error();return data as Record<string,unknown>;}catch{throw new IdentityError('İstek okunamadı.',400);}
 }
+
+async function assertPlayerPresent(id:string){if(env.DB&&await env.DB.prepare('SELECT 1 FROM deleted_players WHERE user_id=?').bind(id).first())throw new IdentityError('Bu oyun profili silindi. Yeni bir profille devam et.',410);}

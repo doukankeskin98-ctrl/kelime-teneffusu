@@ -1,4 +1,5 @@
 'use client';
+import {PlayerSafety} from './PlayerSafety';
 import {inviteLink,shareMessage,shareSucceeded} from '@/lib/platform/sharing';
 import {WORD_RESULT_DELAY_MS} from '@/lib/game/word-feedback';
 import {gameIsActive} from '@/lib/platform/runtime';
@@ -46,6 +47,7 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   if(next)offset.current=next.serverNow-Date.now();currentRoom.current=next;setRoom(next);
  };
  const recover=async()=>{const stamp=context();try{const next=await arenaRequest(signal=>getApi<RoomView|null>('?action=room',signal));if(isCurrent(stamp)){accept(next,true);setError('');}}catch(e){if(isCurrent(stamp))setError((e as Error).message);}};
+ useEffect(()=>{const blocked=()=>{epoch.current++;accept(null,true);setRanking(false);setPreviousResult(false);setPending(null);const url=new URL(location.href);url.searchParams.delete('oda');history.replaceState(null,'',url.pathname+url.search);};window.addEventListener('kt-player-blocked',blocked);return()=>window.removeEventListener('kt-player-blocked',blocked);},[]);
  const connection=useLiveRoom(room?.id,(next,sourceId)=>{const old=currentRoom.current;if(!old||sourceId!==old.id)return;const paired=old.kind==='quick'&&old.phase==='waiting'&&next.kind==='quick'&&next.you.id===old.you.id;accept(next,paired);},time=>{offset.current=time-Date.now();});
  useEffect(()=>{
   mounted.current=true;const params=new URLSearchParams(location.search);setCode((params.get('oda')??'').toUpperCase().slice(0,8));if(params.has('oda'))setHubPanel('friend');
@@ -126,7 +128,7 @@ export function ArenaSeriesBoard({series,you}:{series:ArenaSeries;you:string;exp
 }
 export function ArenaRoster({people,you,lobby=false,historical=false}:{people:ArenaParticipant[];you:string;lobby?:boolean;historical?:boolean}){
  const [page,setPage]=useState(0);const pages=Math.max(1,Math.ceil(people.length/12)),current=Math.min(page,pages-1);
- return <div className="arena-roster"><ol aria-label={lobby?'Odadaki oyuncular':'Maç sıralaması'}>{people.slice(current*12,current*12+12).map(p=><li key={p.id} className={p.id===you?'is-you':''}><span className="roster-rank">{lobby?<Users size={16}/>:p.rank}</span><strong>{p.name}{p.id===you&&<small> · Sen</small>}</strong><span>{lobby?(p.ready?'Hazır':'Hazırlanıyor'):`${p.score} puan`}</span><small>{p.left?'Ayrıldı':!historical&&!p.online?'Bağlantı bekliyor':lobby?'':`${p.count} kelime`}</small></li>)}</ol>{pages>1&&<nav aria-label="Oyuncu sayfaları"><button className="text-button" disabled={current===0} onClick={()=>setPage(current-1)}>Önceki</button><span>{current+1}/{pages}</span><button className="text-button" disabled={current===pages-1} onClick={()=>setPage(current+1)}>Sonraki</button></nav>}</div>;
+ return <div className="arena-roster"><ol aria-label={lobby?'Odadaki oyuncular':'Maç sıralaması'}>{people.slice(current*12,current*12+12).map(p=><li key={p.id} className={p.id===you?'is-you':''}><span className="roster-rank">{lobby?<Users size={16}/>:p.rank}</span><strong>{p.name}{p.id===you&&<small> · Sen</small>}</strong><span>{lobby?(p.ready?'Hazır':'Hazırlanıyor'):`${p.score} puan`}</span><small>{p.left?'Ayrıldı':!historical&&!p.online?'Bağlantı bekliyor':lobby?'':`${p.count} kelime`}</small>{p.id!==you&&<PlayerSafety id={p.id} name={p.name}/>}</li>)}</ol>{pages>1&&<nav aria-label="Oyuncu sayfaları"><button className="text-button" disabled={current===0} onClick={()=>setPage(current-1)}>Önceki</button><span>{current+1}/{pages}</span><button className="text-button" disabled={current===pages-1} onClick={()=>setPage(current+1)}>Sonraki</button></nav>}</div>;
 }
 type RankingsData={day:string;daily:{nickname:string;duration:number}[];arena:{nickname:string;played:number;wins:number;score:number;rating:number}[]};
 export function Rankings({daily=false}:{daily?:boolean}){

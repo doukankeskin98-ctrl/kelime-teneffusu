@@ -1,3 +1,4 @@
+import * as playerSafety from '../lib/game/player-safety.ts';
 // Actual route/transport bodies, real service/SQLite, controlled authentication boundary.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -14,7 +15,7 @@ const key='00000000-0000-4000-8000-000000000001';
 async function route(){
  const f=fixture(Date.parse('2026-10-28T08:00Z')),exports:Record<string,any>={};
  class Service extends GameService{constructor(db:any){super(db,f.clock);}}
- const modules:Record<string,unknown>={'cloudflare:workers':{env:{DB:f.db}},'@/lib/auth/server':{gameMember:async(r:Request)=>r.headers.has('x-owner')?{userId:r.headers.get('x-owner'),kind:'guest'}:null,currentPrincipal:async()=>null,accountStore:()=>({}),boundedJson:(r:Request)=>r.json()},'@/lib/game/security':{rateLimit:async()=>{}},'@/lib/auth/verify':{IdentityError},'@/lib/game/server':{GameService:Service,GameError},'@/lib/studio/health':{recordOperationalFault:async()=>{}}};
+ const modules:Record<string,unknown>={'@/lib/auth/guest':{renewGuest:async()=>null},'@/lib/game/player-safety':playerSafety,'cloudflare:workers':{env:{DB:f.db}},'@/lib/auth/server':{gameMember:async(r:Request)=>r.headers.has('x-owner')?{userId:r.headers.get('x-owner'),kind:'guest'}:null,currentPrincipal:async()=>null,accountStore:()=>({}),boundedJson:(r:Request)=>r.json()},'@/lib/game/security':{rateLimit:async()=>{}},'@/lib/auth/verify':{IdentityError},'@/lib/game/server':{GameService:Service,GameError},'@/lib/studio/health':{recordOperationalFault:async()=>{}}};
  vm.runInNewContext(compile('app/api/game/route.ts'),{exports,URL,Response,Object,require:(n:string)=>{assert.ok(n in modules,n);return modules[n];}});
  const initial=await f.game.daily('alice');
  return{...f,initial,request:(method:string,path:string,owner?:string,body?:unknown,origin='https://test')=>exports[method](new Request('https://test/api/game'+path,{method,headers:{Origin:origin,...(owner?{'x-owner':owner}:{})},...(body?{body:JSON.stringify(body)}:{})})) as Promise<Response>};

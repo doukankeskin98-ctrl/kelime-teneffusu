@@ -1,5 +1,13 @@
 # Kelime Teneffüsü
 
+## 0.37.0 · Rehber, ortak oyun akışı ve oyuncu güvenliği
+
+Yeni oyuncuya ilk tahtada atlanabilir çizim rehberi; yardımda oynanabilir alıştırma; Arkadaşlar/Meydan/Günlük/Arşiv için ortak sahne ve okunaklı ölçek. Meydan ve Gizli Tema son kelimenin uçuşunu bekler; kesinti ve azaltılmış hareket sonucu geciktirmez. Albüm bölüm adları güncel konu kaynağını kullanır.
+
+Misafirden e-posta hesabına bağlama aynı oyun sahibini korur. Aktif misafir oturumu güvenli yenilenir. Ayarlardan profil silme; D1 kayıtlarını silme/ortak maçları anonimleştirme, eski isteklerin kayıtları yeniden yaratmasını engelleme ve sağlayıcı silmesini tekrar deneme içerir. Oyuncu bildir/engelle, yetkili inceleme ve isim kısıtlama kuyruğu eklendi. Gizlilik bilgi ekranı, mevcut destek taslağı ve native manifest güncellendi.
+
+Eski bölüm kimlikleri, kelimeler, tahtalar, yıldızlar, çizim motoru, haptics ve Arena tekrar kuralları korundu. Yeni SDK veya ücretli hizmet eklenmedi. Kabul kanıtı ve dış bağımlılıklar: [uygulama raporu](docs/release-0.37.0.md). Bu sürüm fiziksel iPhone/Firebase/Game Center/TestFlight/App Store kabulü değildir. Yayın sonucu ayrı sürüm makbuzunda tutulur.
+
 ## 0.36.5 · Sorun bildir ve stüdyo incelemesi
 
 Ayarlara Sorun bildir eklendi: kategori/açıklama ve isteğe bağlı sürüm/platform bilgisiyle rapor hazırlanıp kopyalanır. Gerçek gönderim kanalı bağlanmadığı açıkça söylenir; e-posta uydurulmaz, kimlik veya ilerleme otomatik eklenmez. Kayıtlar, tahtalar ve oyun kuralları değişmedi.

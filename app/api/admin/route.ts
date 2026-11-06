@@ -1,3 +1,5 @@
+import {pendingErasures,confirmProviderErasure} from '@/lib/auth/erasure';
+import {SafetyService} from '@/lib/game/safety-service';
 import {env} from 'cloudflare:workers';
 import {authJson,boundedJson,requireSameOrigin} from '@/lib/auth/server';
 import {IdentityError} from '@/lib/auth/verify';
@@ -18,6 +20,8 @@ export async function GET(request:Request){try{
  if(action==='chapter')return authJson(await service.chapter(userId,url.searchParams.get('id')));
  if(action==='metrics')return authJson(await service.metrics(userId,Number(url.searchParams.get('days')??7)));
  if(action==='faults')return authJson(await service.faults(userId));
+ if(action==='erasures')return authJson(await pendingErasures(env.DB!));
+ if(action==='reports')return authJson(await new SafetyService(env.DB!).queue());
  if(action==='audit')return authJson(await service.audit(userId));
  throw new StudioError('Bu yönetim işlemi bulunamadı.',404);
  }catch(e){return failure(e);}}
@@ -29,6 +33,9 @@ export async function POST(request:Request){try{
   return authJson(await service.claim(userId,data['token']));
  }
  await service.authorize(userId);await rateLimit(env.DB!,'admin-write:'+userId,35);
+ if(data['action']==='confirmErasure')return authJson(await confirmProviderErasure(env.DB!,userId!,data['receiptHash'],data['confirmation']));
+ if(data['action']==='releasePlayerName')return authJson(await new SafetyService(env.DB!).releaseName(userId!,data['id']));
+ if(data['action']==='reviewPlayer')return authJson(await new SafetyService(env.DB!).review(userId!,data['id'],data['decision']));
  if(data['action']==='preview')return authJson(await service.preview(userId,data['spec']));
  if(data['action']==='save')return authJson(await service.saveDraft(userId,data['spec'],data['id'],data['revision'],data['creationId']));
  if(data['action']==='publish'||data['action']==='archive'||data['action']==='restore')return authJson(await service.transition(userId,data['id'],data['action'],data['revision'],data['confirmation']));

@@ -56,4 +56,5 @@ export async function resetEmail(email:string,returnTo:string){
  try{await sdk.sendPasswordResetEmail(auth,email.trim(),continueSettings(returnTo));}
  catch(error){if(!(error&&typeof error==='object'&&'code' in error&&error.code==='auth/user-not-found'))throw error;}
 }
-export async function signOutMember(){if(active)await active.sdk.signOut(active.auth);const r=await appFetch('/api/session',{method:'DELETE'});if(!r.ok)throw new Error('Çıkış yapılamadı.');window.dispatchEvent(new Event('kt-auth-updated'));}
+export async function signOutProvider(){if(active)await active.sdk.signOut(active.auth);window.dispatchEvent(new Event('kt-auth-updated'));}
+export async function signOutMember(){await signOutProvider();const r=await appFetch('/api/session',{method:'DELETE'});if(!r.ok)throw new Error('Çıkış yapılamadı.');window.dispatchEvent(new Event('kt-auth-updated'));}
