@@ -47,3 +47,6 @@ html[data-reduce-motion=true] .letter-board .hint-ring,html[data-reduce-motion=t
 }
 
 .arena-result-series{border:1px solid #fff2cf42;border-radius:14px;margin-top:12px;color:#fff3cf}.arena-result-series>summary{cursor:pointer;min-height:48px;padding:12px 14px;font-size:14px;line-height:22px;font-weight:650}.arena-result-series>summary span{display:block;margin-left:16px;font-size:12px;font-weight:500;color:#d9e7dc}.arena-result-series>summary:focus-visible{outline:2px solid #f4d588;outline-offset:2px;border-radius:12px}.arena-result-series>.arena-series{margin:0 8px 8px}
+
+/* The invite control sits on a light surface inside a dark lobby. */
+.arena-room-lobby .arena-room-invite>.button.secondary{background:#fff9e9;color:#213e35;border:1px solid #e0d9bc;min-height:44px;box-shadow:none;font-size:14px;line-height:1.3;white-space:normal}
