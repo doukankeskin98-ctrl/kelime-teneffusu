@@ -1,3 +1,5 @@
+import {renewGuest} from '@/lib/auth/guest';
+import {safetyFailure} from '@/lib/game/player-safety';
 import { env } from 'cloudflare:workers';
 import {accountStore,boundedJson,currentPrincipal,gameMember} from '@/lib/auth/server';
 import {rateLimit} from '@/lib/game/security';
@@ -21,7 +23,7 @@ export async function GET(request:Request){try{
  if(principal&&!await accountStore().find(principal))return json({authenticated:false,needsUsername:true});
  const member=await gameMember(request);if(!member)return json({authenticated:false});
  if(action==='room')return json(await game.state(member.userId,url.searchParams.get('id')??undefined));
- return json({authenticated:true,nativeSession:!!request.headers.get('oai-authenticated-user-id'),kind:member.kind,username:member.username,email:member.email,profile:await game.profile(member.userId),stats:await game.stats(member.userId),rating:await game.rating(member.userId)});
+ const response=json({authenticated:true,nativeSession:!!request.headers.get('oai-authenticated-user-id'),kind:member.kind,username:member.username,email:member.email,profile:await game.profile(member.userId),stats:await game.stats(member.userId),rating:await game.rating(member.userId)});if(member.kind==='guest'){const cookie=await renewGuest(env.DB!,request,member.userId);if(cookie)response.headers.set('Set-Cookie',cookie);}return response;
 }catch(e){return failure(e);}}
 export async function POST(request:Request){try{
  const origin=request.headers.get('origin');if(origin!==new URL(request.url).origin)throw new GameError('İstek kaynağı doğrulanamadı.',403);
@@ -45,4 +47,4 @@ export async function POST(request:Request){try{
   default:throw new GameError('Bilinmeyen işlem.');
  }
 }catch(e){return failure(e);}}
-async function failure(e:unknown){if(e instanceof GameError||e instanceof IdentityError){if(e.status>=500)await recordOperationalFault(env.DB,'game');return json({error:e.message,...(e instanceof GameError&&e.code?{code:e.code}:{})},e.status);}if(e instanceof SyntaxError)return json({error:'İstek okunamadı.'},400);await recordOperationalFault(env.DB,'game');return json({error:'Bağlantı kurulamadı. Tekrar dene.'},503);}
+async function failure(e:unknown){const message=safetyFailure(e);if(message)return json({error:message},409);if(e instanceof GameError||e instanceof IdentityError){if(e.status>=500)await recordOperationalFault(env.DB,'game');return json({error:e.message,...(e instanceof GameError&&e.code?{code:e.code}:{})},e.status);}if(e instanceof SyntaxError)return json({error:'İstek okunamadı.'},400);await recordOperationalFault(env.DB,'game');return json({error:'Bağlantı kurulamadı. Tekrar dene.'},503);}

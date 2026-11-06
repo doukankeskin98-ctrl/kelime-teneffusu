@@ -1,3 +1,4 @@
+import {blockedPair} from './player-safety.ts';
 import {THEMES} from './catalog.ts';
 import {hash,makePuzzle,match,type Cell,type Puzzle,type Stroke} from './engine.ts';
 import {GameError,GameService,publicBoard,type Database} from './server.ts';
@@ -34,14 +35,14 @@ export class SocialService {
   return this.start(userId,code);
  }
  async start(userId:string,code:string){
-  const c=await this.challenge(code);if(c.expires<this.clock())throw new GameError('Bu davetin süresi doldu.',410);
+  const c=await this.challenge(code);if(await blockedPair(this.db,userId,c.creator_id))throw new GameError('Bu oyuncuyla meydan okumaya katılamazsın.',409);if(c.expires<this.clock())throw new GameError('Bu davetin süresi doldu.',410);
   await new GameService(this.db,this.clock).profile(userId);
   const id=crypto.randomUUID(),run:Run={starts:this.clock(),strokes:[],timeline:[],finished:null,duration:0};
   await this.q('INSERT OR IGNORE INTO challenge_runs(id,challenge_id,user_id,data,created) VALUES(?,?,?,?,?)',id,c.id,userId,JSON.stringify(run),this.clock()).run();
   return this.state(userId,code);
  }
  async state(userId:string,code:string):Promise<ChallengeView>{
-  const c=await this.challenge(code),row=await this.q('SELECT id,data,revision FROM challenge_runs WHERE challenge_id=? AND user_id=?',c.id,userId).first<RunRow>();
+  const c=await this.challenge(code);if(await blockedPair(this.db,userId,c.creator_id))throw new GameError('Bu meydan okuma kullanılamıyor.',409);const row=await this.q('SELECT id,data,revision FROM challenge_runs WHERE challenge_id=? AND user_id=?',c.id,userId).first<RunRow>();
   if(!row)throw new GameError('Meydan okumayı önce başlat.',409);
   const run=JSON.parse(row.data) as Run;
   const ghostRow=await this.q('SELECT r.data,p.nickname FROM challenge_runs r JOIN players p ON p.id=r.user_id WHERE r.challenge_id=? AND r.finished=1 AND r.user_id<>? ORDER BY CASE WHEN r.user_id=? THEN 0 ELSE 1 END,r.duration LIMIT 1',c.id,userId,c.creator_id).first<{data:string;nickname:string}>();
@@ -50,7 +51,7 @@ export class SocialService {
   return {id:row.id,code:c.code,themeId:c.theme_id,creator:c.creator_id===userId,serverNow:this.clock(),starts:run.starts,finished:run.finished,duration:run.duration,strokes:run.strokes,board:publicBoard(makePuzzle(c.theme_id,c.level,c.seed)),expires:c.expires,ghost:ghost&&ghostRow?{nickname:ghostRow.nickname,timeline:ghost.timeline,duration:ghost.duration}:null,results};
  }
  async claim(userId:string,code:string,a:unknown,b:unknown){
-  const c=await this.challenge(code);if(c.expires<this.clock())throw new GameError('Bu meydan okumanın süresi doldu.',410);
+  const c=await this.challenge(code);if(await blockedPair(this.db,userId,c.creator_id))throw new GameError('Bu oyuncuyla meydan okumaya katılamazsın.',409);if(c.expires<this.clock())throw new GameError('Bu meydan okumanın süresi doldu.',410);
   const board=makePuzzle(c.theme_id,c.level,c.seed),target=match(board,a,b);if(!target)throw new GameError('Bu seçim listedeki bir kelimeyi oluşturmuyor.');
   for(let attempt=0;attempt<8;attempt++){
    const row=await this.q('SELECT id,data,revision FROM challenge_runs WHERE challenge_id=? AND user_id=?',c.id,userId).first<RunRow>();if(!row)throw new GameError('Önce meydan okumayı başlat.',409);
@@ -71,6 +72,7 @@ export class SocialService {
  async invitation(code:string){if(!/^[A-HJ-NP-Z2-9]{10}$/.test(code))throw new GameError('Arkadaş kodu geçerli değil.');const row=await this.q('SELECT i.user_id,p.nickname FROM friend_invites i JOIN players p ON p.id=i.user_id WHERE i.code=? AND i.expires>?',code,this.clock()).first<{user_id:string;nickname:string}>();if(!row)throw new GameError('Bu arkadaş daveti bulunamadı veya süresi doldu.',404);return row;}
  async accept(userId:string,code:string){
   const invite=await this.invitation(code);if(invite.user_id===userId)throw new GameError('Bu senin arkadaş davetin. Bağlantıyı arkadaşına gönder.');
+  if(await blockedPair(this.db,userId,invite.user_id))throw new GameError('Bu arkadaş daveti kullanılamıyor.',409);
   await new GameService(this.db,this.clock).profile(userId);
   for(const id of [userId,invite.user_id]){const count=await this.q('SELECT COUNT(*) AS n FROM friendships WHERE user_id=?',id).first<{n:number}>();if((count?.n??0)>=200)throw new GameError('Arkadaş listesinde yer kalmadı.');}
   await this.db.batch([

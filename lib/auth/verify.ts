@@ -27,3 +27,19 @@ export async function verifyMemberToken(token:string,config:FirebaseConfig,optio
  if(options.cache!==false){if(cache.size>=512)cache.delete(cache.keys().next().value!);cache.set(digest,{until:Math.min(now+30000,(payload.exp??seconds)*1000),user:result});}
  return result;
 }
+
+/** Destructive requests require a recent real login, not merely a refreshed token. */
+export async function verifyRecentMemberToken(token:string,config:FirebaseConfig){
+ const principal=await verifyMemberToken(token,config,{cache:false});
+ const {payload}=await jwtVerify(token,googleKeys,{issuer:'https://securetoken.google.com/'+config.projectId,audience:config.projectId,algorithms:['RS256'],requiredClaims:['auth_time']});
+ if(typeof payload['auth_time']!=='number'||Date.now()/1000-payload['auth_time']>300)throw new IdentityError('Hesabını silmek için şifrenle yeniden doğrula.',401);
+ return principal;
+}
+export async function deleteProviderAccount(token:string,config:FirebaseConfig,providerId:string){
+ let subject:string|undefined;
+ try{const {payload}=await jwtVerify(token,googleKeys,{issuer:'https://securetoken.google.com/'+config.projectId,audience:config.projectId,algorithms:['RS256'],requiredClaims:['sub','exp']});subject=payload.sub;}catch{throw new IdentityError('Hesap kapanışını tamamlamak için yeniden giriş yap.',401);}
+ if(config.projectId+':'+subject!==providerId)throw new IdentityError('Silme işlemi farklı bir hesaba ait.',403);
+ let response:Response;try{response=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:delete?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:token}),cache:'no-store',signal:AbortSignal.timeout(5000)});}catch{throw new IdentityError('Oyun verilerin silindi. Üyelik servisi yanıt vermedi; hesap kapanışını tekrar dene.',503);}
+ const data=await response.json() as {error?:{message?:string}};
+ if(!response.ok&&data.error?.message!=='USER_NOT_FOUND')throw new IdentityError('Oyun verilerin silindi. Hesap kapanışı tamamlanamadı; yeniden doğrulayıp tekrar dene.',response.status>=500?503:401);
+}

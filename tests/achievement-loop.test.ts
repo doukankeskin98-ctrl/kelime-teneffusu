@@ -118,7 +118,7 @@ describe('numbered journey home and real result',()=>{
   html=render(numberedResult['JourneyResult'],{...props,before:props.after,rewards:[]});assert.match(html,/Albümündeki parça/);assert.match(html,/Albüm: 3\/6 → 3\/6 parça/);assert.match(html,/3\/6 parça/);assert.doesNotMatch(html,/Yeni dünya/);
  });
  it('explains tutorial reward status and displays no permanent stars',()=>{
-  const html=render(loop['VictorySummary'],{goal:null,rewards:[],stars:3,hints:0,seconds:15,total:3,tutorial:true});assert.match(html,/ilk bölümüne geç/);assert.doesNotMatch(html,/victory-stars|Bu tur 3|Yıldızlar nasıl/);
+  const html=render(loop['VictorySummary'],{goal:null,rewards:[],stars:3,hints:0,seconds:15,total:3,tutorial:true});assert.match(html,/Yolculuğuna devam etmeye hazırsın/);assert.doesNotMatch(html,/victory-stars|Bu tur 3|Yıldızlar nasıl/);
  });
 });
 
