@@ -1,0 +1,43 @@
+# WoW açık işlerini tamamlama · sınırlı deneyim incelemesi
+
+Kaynak başlangıcı: 0.39.1. Uygulama dosyaları salt okunur incelendi; yalnız bu günlük yazıldı. İnceleme gözlem kaynağı `world-review/wow-2026-11-06/observations.json` (WoW 4.13.2, kullanıcının fiziksel oynadığı 23/24 ve menü gözlemleri). Eski haptik/drag şikayetlerini güncel kanıt olmadan tekrar etmedim. Mevcut Koleksiyon sahnesi zaten koyu temaya geçirilmiş (`app/clarity.css:32–73`); yeniden yapılmış sayılmamalı.
+
+## 1. Bonus ve dünya akışı: gerçek yeni mekanik ekle, mevcut kapıları yeniden tanımlama
+
+Kaynak: `JourneyHome.tsx:37–46`, `Solo.tsx:173–179`, `JourneyResult.tsx:19–23`, `lib/game/discovery.ts:39–45,54–61,70–74`, `main-journey.ts:9–18,36–45`. Mevcut birincil devam yolu doğrudan normal bölüme gider. Altıncı parça standart bulmacadır. Yeni dünya üç ana bölümle zaten erişime açılır; altıncı parça bitince açıldığı iddiası veya yeni kilit eklemek kayıt/oyuncu beklentisine aykırı olur.
+
+Önerilen tek akış: normal bölümün aynı sahnedeki sonucu → rota finalinden sonra isteğe bağlı, ayrı kimlikli kısa bonus turu → bonusun aynı sahnedeki sayım sonucu → sıradaki dünyaya ilk girişte onun tam sahneli kısa açılışı → o dünyanın mevcut küçük/açık hedefli başlangıcı. Her aşamada tek baskın devam düğmesi; bonusu atla ve çıkış ikincil, erişilebilir. Dünya açılışı erişim kapısı değildir: önceden açılmış/başlanmış dünyalar yeni zorunlu perdeye veya kilide takılmaz. İlk oynanışta “Aynı kelimeyi farklı yerlerde bul · süre bitince bulunanlar sende” iki cümle; süre ancak Başla ile çalışır. Bitince doğru sayı ve bulunan yerleşimler, uydurma para/çarpan yok. Yeniden açılış açık turu veya bitmiş sonucu güvenli sürdürmeli; yarım seçim devam etmemeli.
+
+Kabul: rota tamamla → bonus/atla → yeni dünya; menüden bonus; kapanma/geri dönüş; süre sonu ile son kelimenin aynı anı; bir yerleşime tekrar çizmenin sayı artırmaması; tüm hedefler aynı kelime olsa da yerleşimlerin tekil sayılması; azaltılmış harekette ve 321×570/414×736'da tüm tahta satırları ve bitiş CTA görünür. Sonuç akışı, kelime uçuşunun onaylanmış süresini değiştirmemeli.
+
+## 2. Yan menüde kalan hiyerarşi ve öğretim boşlukları somut
+
+Kaynak: `App.tsx:137,145` profil avatarı Koleksiyon'a gider ve `Pages.tsx:58–66` uzun sayfanın ortasındaki details'i açıp kaydırır. Başarımlar aynı sayfanın en sonunda dört durağan karttır (`Pages.tsx:69`); dünya listesi ayrı `ChapterPicker.tsx:19–28`; günlük kurallarının özeti var (`Pages.tsx:54`) fakat ilk kullanım adımı yok. İpucu Avı/Hikâye açıklaması yalnız Kurallar açılınca (`Solo.tsx:171`); Gizli Tema yardımı genel `Help`tir (`Mystery.tsx:45`) ve üç kelime sonrası tahmin işleyişini öğretmez. Hızlı Tur zaten başlangıç öğretimine sahiptir (`Sprint.tsx:28`), tekrar yeni öğretim katmanı gerektirmez. Ana ilk çizim rehberi de mevcut; çoğaltılmamalı.
+
+Öneri: Koleksiyon kabuğunda erişilebilir “Albümler / Profil / Başarımlar” seçimi; avatar doğrudan Profil'i, alt gezinme Albümler'i açsın. Profil hesabı/isim/istatistik, başarımlar açık gereksinim+mevcut sayı+tamamlanma, albümler dünya/hikâye/damga olarak ayrılır. Mevcut map düğmesi tek aynı Bölümler seçicisine gider; yeni paralel harita sistemi ekleme. Sahneler/başlık/close/alt dönüş işlemleri mevcut modal kalıbında aynı. Yeni kısa öğretimler sadece ilgili ilk kullanımda: bonus, bilmece, Gizli Tema, günlük; sonradan Kurallar'dan tekrar okunabilir. Arkada oyun süresi başlamadan açıklama, kapatma da güvenli ve anlaşılır olmalı. Kalıcı bilgilendirme onayı hesap değişimine sızmamalı.
+
+Kabul: avatar→Profil, alt Koleksiyon→Albümler, Başarımlar→koşul/ilerleme; geriye dönüş ve açan denetime odak; günlük başlatmadan kural; bilmece ilk tanım/harf sayısı; Gizli Tema üç kelime→tahmin→son hedef; tekrar girişte rahatsız eden zorunlu açıklama yok. Uzun Türkçe ad/200% metin ve küçük yüksekliklerde eski açık temaya dönüş veya kesilmiş düğme olmamalı.
+
+## 3. Ritmi görünür kıl ve tek yan ödül yolunu normal oyuna bağla
+
+Kaynak: `world-presentation.ts:41–56` saklama dengesi zaten seyrek, başlangıç adımlarında hedefler açık; `main-journey.ts:73–84` ilk on metni var, tüm rotalarda tempo işareti/bonus geçişi yok. `JourneyHome.tsx:42–44` Etkinlikler yalnız Günlük/Hikâyeler/Arşiv bağlantısı; `Pages.tsx:69` başarımlar normal oyunla türeyen basit koşullar ama izlenen tek etkinlik yolu yok.
+
+Öneri: rota konumu ve gerçek tahta/kelime yükünden “Rahat / Dengeli / Ustalık” sunum meta verisi; 5. adımı yalnız gerçekten daha zor ise Ustalık diye etiketle, finali yeni süreli bonusla karıştırma. Dünya başlangıcında hedefler açık; saklı hedef çoğunluğu yok. Kayıtlar/tahtalar değişmeden bonus ayrı ara etkinlik olarak mola verir. Normal ana bölümlerde tekil kazanılmış kelimelerden ilerleyen, süresiz ve cezalandırmayan “Kelime yolu” gibi tek ödül dizisi; sonraki hedefe kalan sayı ve geçmiş kazanımlar görünür. Yeni para ekonomisi yerine koleksiyonda kalıcı özgün rozet/hatıra uygundur. Tekrar oynama, yinelenen sync veya bonus aynı kelimenin tekrarları normal yol puanını şişirmemeli. İleri oyuncu geçmiş emeğinin türetilen ilerlemesini görmeli; açılışta onlarca zorunlu claim çıkmamalı.
+
+Kabul: ana oyunda hedef bul→yol ilerle; yalnız bir kez kazanım; uygulama yeniden açılınca aynı seviye; farklı hesap ayrımı; kayıt birleşmesinde çift sayım yok; sonraki kilometre taşı doğru; bütün yol tamamlanınca anlamlı tamamlandı durumu. Ana ekranda bir küçük etkinlik girişi, sonuca tek kısa kazanım satırı; ödül toplama oyuncunun bölüm devamını kesmez.
+
+## Doğrulama sınırı
+
+Bu tur kaynak ve önceki gözlem günlüğü incelemesidir; yeni UI çalıştırılmadı, fiziksel cihaz/FPS/haptik/VoiceOver kabulü verilmedi. Reklam, IAP, Game Center ve mağaza hesabı/kimlik koşulları gerçek entegrasyon/hesap gerektirir; bu öneriler çalışmayan pazarlama düğmeleri eklemeyi içermez. Yeni kütüphane, model veya harici servis önerilmiyor.
+
+## Uygulama sonrası dar kaynak kontrolü
+
+Yeni `BonusRound`, `WorldWelcome`, `WordTrail`, `MechanicGuide`, `BonusLibrary`, JourneyHome/Solo/Pages/App bağlantıları, `journey-flow.ts` ve `journey-interludes.css` incelendi. Salt okunur uygulama kontrolü; tarayıcı/cihaz kabulü bu uzman turunda yapılmadı. Kaynakta beş takip için gerçek bağlantılar var: bonus ayrı tur/kimlik ile rota sonunda ve kütüphanede, dünya ilk giriş sahnesi, oynanan bölüm temposunun sunumu, profil/başarımlar alt gezinmesi ve bağlamsal açıklamalar, ana ilerlemeden türetilen Sözcük Yolu. Mevcut dünya erişim kapıları korunmuş. Yeni reklam/para/Game Center çalışıyor iddiası yok. Bölüm temposu mevcut tahta/kelimeleri yeniden yazmıyor; yeni ara tur ve geçişlerle ritim sunuyor, bunu bütün katalog yeniden dengelendi diye raporlamamak gerekir.
+
+Koordinatöre bildirilen üç somut düzeltme:
+
+1. **Sözcük Yolu/Bonus kütüphanesi metni açık zeminde kaybolabilir.** `JourneyHome.tsx:48–49` yalnız `game-library-sheet journey-side-sheet` kullanıyor. Yeni CSS bu sınıflara koyu arka plan vermiyor; `game.css:6` temel `.modal` zemini `#faf8ef`. İçerik ise `journey-interludes.css` ile beyaza yakın `#fff6df/#dfebde`. Başlık/kapat/footer dahil ortak koyu modal kabuğu açıkça verilmeli. Kabul: iki pencereyi 321×570 ve414×736'da aç; başlık, bütün rozet/bonus satırları ve sabit dönüş eylemi okunur.
+2. **Tekrar aynı girişe tıklamak Profil/Albümler niyetini yerine getirmiyor.** `Pages.tsx:63–65` alt sekmeyi yalnız `openProfile` boolean değişince sıfırlar. Avatar ile gir (`true`), Başarımlar'a geç, tekrar avatar: App `selectNav(false)` ve `setProfileOpen(true)` aynı batch sonunda yine true kalır, effect çalışmaz. Aynı şekilde false iken iç Profil seçilip alt Koleksiyon'a yeniden basıldığında Albümler'e dönmez. Her giriş için yeni navigation nonce veya üstten kontrollü sekme kullanılmalı. Kabul: avatar her seferinde Profil; alt Koleksiyon her seferinde Albümler; iç seçim normal çalışır, bir kullanıcı seçimini kendiliğinden resetlemez. Tab semantiği korunacaksa ok/Home/End klavye gezinmesi de tamamlanmalı; aksi halde aria-pressed grup kalıbı seçilmeli.
+3. **Açık hedefli finalde saklı kelime arama talimatı yanlış.** `journey-flow.ts:26`, konum>=4 için koşulsuz “Konuya bak, saklı kelimeyi keşfet” diyor. Çok sayıda kıyı/doğa/renk altıncı bölümünde veils tamamen açık. `chapterPace` ayrıntısı gerçek `veils` ve bilmece durumuna göre initial/hidden/open ayrılmalı. Kabul: tüm ana bölümlerde açık hedeflere gizli talimatı yok; bilmece tanımları doğru; ilk dünya bölümlerinin rahat/açık bilgisi doğru. Sunum etiketleri yeni authored zorluk dengesi olarak sayılmaz.
+
+Bu üç kaynak bulgusu bildirim anındaki çalışma ağacına aittir. Koordinatörün sonraki düzeltmeleri/görselleri ayrıca doğrulama kaydına girmelidir; bu uzman günlüğü otomatik olarak çözülmüş kabul etmez.

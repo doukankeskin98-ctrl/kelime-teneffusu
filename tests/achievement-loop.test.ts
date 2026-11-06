@@ -1,3 +1,4 @@
+import * as journeyFlow from '../lib/game/journey-flow.ts';
 import * as everydayContent from '../lib/game/everyday-content.ts';
 import * as nature from '../lib/game/nature-content.ts';
 import * as coast from '../lib/game/coast-content.ts';
@@ -33,7 +34,7 @@ function component(file:string,imports:Record<string,unknown>){
  const exports:Record<string,any>={};
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
  const modules:Record<string,unknown>={react:React,'@/lib/game/nature-content':nature,'@/lib/game/coast-content':coast,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/world-presentation':worldPresentation,'@/lib/game/scene':scenic,'@/lib/game/discovery':expeditionData,'./SceneArt':{SceneArt:({theme,scene}:{theme?:string;scene?:any})=>React.createElement('img',{src:scenic.sceneImage(scene??scenic.sceneForTheme(theme)),alt:''})},'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,'@/lib/game/riddle-content':riddleContent,'@/lib/game/story-content':stories,'@/lib/game/content':{journeyBoard},...imports};
- vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/game/everyday-content'?everydayContent:modules[name]??{}});return exports;
+ vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/everyday-content'?everydayContent:modules[name]??{}});return exports;
 }
 const collection=component('components/game/Discovery.tsx',{'./WorldArt':art});
 const loop=component('components/game/AchievementLoop.tsx',{'./Discovery':collection});
