@@ -1,3 +1,4 @@
+import {RETIRED_SPRINT_WORDS} from './original-content.ts';
 // Short answers from the existing reviewed Turkish library. Independent of saved boards.
 export const SPRINT_WORDS = [
  "AÇI",
@@ -713,5 +714,8 @@ export const SPRINT_WORDS = [
  "ZİL",
  "ZİRVE",
  "ZURNA",
- "ZÜRAFA"
+ "ZÜRAFA",
+ "DİSKET",
 ] as const;
+
+export const ACTIVE_SPRINT_WORDS=SPRINT_WORDS.filter(w=>!RETIRED_SPRINT_WORDS.has(w));

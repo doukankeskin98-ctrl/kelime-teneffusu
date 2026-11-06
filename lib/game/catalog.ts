@@ -1,3 +1,4 @@
+import {ORIGINAL_ROUTES,RETIRED_THEMES} from './original-content.ts';
 export interface Theme { id: string; title: string; subtitle: string; category: string; color: string; icon: string; words: string[] }
 const theme = (id: string, title: string, subtitle: string, category: string, color: string, icon: string, words: string): Theme => ({id,title,subtitle,category,color,icon,words:words.split('|')});
 export const THEMES: Theme[] = [
@@ -18,9 +19,12 @@ export const THEMES: Theme[] = [
   theme('teknoloji','Teknoloji','Geleceğin kelimeleri burada.','Merak','#a1b7c5','chip','YAZILIM|DONANIM|İŞLEMCİ|BELLEK|EKRAN|KLAVYE|FARE|KOD|ALGORİTMA|VERİ|AĞ|İNTERNET|TARAYICI|SUNUCU|BULUT|SENSÖR|ROBOT|YAPAY ZEKA|MAKİNE ÖĞRENME|VERİ TABANI|ŞİFRELEME|GÜVENLİK|PİKSEL|ÇÖZÜNÜRLÜK|UYGULAMA|DİJİTAL|DEVRE|YONGA'),
   theme('mitoloji','Mitoloji','Efsanelerin izinde.','Kültür','#c1a588','temple','ZEUS|HERA|ATHENA|APOLLON|ARTEMİS|HERMES|POSEİDON|HADES|AFRODİT|DİONYSOS|ARES|DEMETER|HEPHAİSTOS|HESTİA|PROMETHEUS|HERAKLES|PERSEUS|MEDUSA|PEGASUS|MİNOTAUR|OLİMPOS|TROYA|ODYSSEUS|AKHİLLEUS|ANKA|ŞAHMERAN|ERLİK|UMAY'),
 ];
+export const ORIGINAL_THEMES:Theme[]=ORIGINAL_ROUTES.map(r=>({id:r.themeId,title:r.title,subtitle:'Her bölümde yeni bir konu.',category:'Keşif',color:r.color,icon:r.icon,words:[...new Set(r.chapters.flatMap(c=>c.words))]}));
+export const ALL_THEMES=[...THEMES,...ORIGINAL_THEMES];
+export const ACTIVE_THEMES=[...THEMES.filter(t=>!RETIRED_THEMES.has(t.id)),...ORIGINAL_THEMES];
 export const normalize = (s: string) => s.normalize('NFC').toLocaleUpperCase('tr-TR').replace(/[^A-ZÇĞİÖŞÜ]/g, '');
 export const LEVEL_NAMES = ['Isınma Turu','İlk Kıvılcım','İz Peşinde','Çapraz Bakış','Usta İşi','Büyük Final'];
-export const findTheme = (id: string) => THEMES.find(t => t.id === id) ?? THEMES[0]!;
+export const findTheme = (id: string) => ALL_THEMES.find(t => t.id === id) ?? THEMES.find(t=>t.id==='uzay')!;
 export function splitWord(label: string): string[] {
   if (normalize(label).length <= 13) return [normalize(label)];
   return label.split(/\s+/).map(normalize).filter(Boolean);

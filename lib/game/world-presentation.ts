@@ -35,7 +35,7 @@ export function worldChapter(id?:string){
  const index=world.chapterIds.indexOf(chapter.id),bonus=chapter.id===expeditionBonusId(world);
  if(index<0&&!bonus)return null;
  const position=bonus?5:index;
- return {world,position,topic:TOPICS[world.id]?.[position]??chapter.title,chapter};
+ return {world,position,topic:chapter.id.startsWith('ozgun-')?chapter.title:TOPICS[world.id]?.[position]??chapter.title,chapter};
 }
 
 /** Fixed per chapter/group across resumes, devices and replays. Clues retain their own rules. */

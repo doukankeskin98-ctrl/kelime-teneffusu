@@ -1,5 +1,5 @@
 import type {StorySceneKind} from './story-content.ts';
-export const WORLD_SCENES={uzay:'observatory',turkiye:'bosphorus',hababam:'school',hayvanlar:'garden',lezzetler:'bakery',muzik:'courtyard',dunya:'harbor',bilim:'valley',teknoloji:'workshop',doksanlar:'cassette',futbol:'stadium',basketbol:'court',sinema:'cinema',yesilcam:'neighborhood',diziler:'square',mitoloji:'temple'} as const;
+export const WORLD_SCENES={okul:'school',tiyatro:'neighborhood',oyku:'square','film-atolyesi':'cinema','sokak-oyunlari':'cassette',uzay:'observatory',turkiye:'bosphorus',hababam:'school',hayvanlar:'garden',lezzetler:'bakery',muzik:'courtyard',dunya:'harbor',bilim:'valley',teknoloji:'workshop',doksanlar:'cassette',futbol:'stadium',basketbol:'court',sinema:'cinema',yesilcam:'neighborhood',diziler:'square',mitoloji:'temple'} as const;
 export type SceneKind=StorySceneKind|typeof WORLD_SCENES[keyof typeof WORLD_SCENES];
 
 /** Presentation only. Scene choices never participate in seeds, IDs or save keys. */

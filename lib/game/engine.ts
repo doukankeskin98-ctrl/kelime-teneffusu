@@ -92,7 +92,7 @@ export function istanbulDay(now=Date.now()):string {
   const get=(type:string)=>parts.find(p=>p.type===type)?.value??'';
   return `${get('year')}-${get('month')}-${get('day')}`;
 }
-export function dailySpec(day:string){const n=hash(day);return {themeId:['turkiye','uzay','yesilcam','lezzetler','bilim','hayvanlar','muzik'][n%7]!,level:3,seed:n};}
+export function dailySpec(day:string){const n=hash(day);return {themeId:['turkiye','uzay',day>='2026-11-07'?'film-atolyesi':'yesilcam','lezzetler','bilim','hayvanlar','muzik'][n%7]!,level:3,seed:n};}
 export function goldenId(targets:Target[],starts:number,now:number):string|null {
   const elapsed=now-starts;if(elapsed<0||elapsed>=120000||Math.floor(elapsed/20000)%2!==0)return null;
   return targets[(Math.floor(elapsed/40000)*3)%targets.length]?.id??null;
