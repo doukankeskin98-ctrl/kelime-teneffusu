@@ -3,8 +3,11 @@ import {boardColor,type BoardColor} from './board-color.ts';
 import {hash,makePuzzle,match,type Puzzle,type Stroke} from './engine.ts';
 import {ALL_THEMES as THEMES} from './catalog.ts';
 import {PLAYABLE_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from './content.ts';
+import {BONUS_WORDS,cleanBonusSave,mergeBonusSave,type BonusSave} from './journey-bonus.ts';
+import {MECHANIC_GUIDES,WORD_TRAIL,type MechanicGuideId} from './journey-flow.ts';
 export interface SavedLevel {strokes:Stroke[];elapsed:number;hints:number;complete:boolean;stars:number}
 export interface Progress {
+ bonuses?:Record<string,BonusSave>;welcomedWorlds?:string[];mechanicGuides?:MechanicGuideId[];trailBadge?:string;
  guideDone?:true;boardColor?:BoardColor;v:2;saves:Record<string,SavedLevel>;sound:boolean;zoom:boolean;days:string[];
  last:{themeId:string;level:number;journey?:string}|null;
  haptics:boolean;contrast:boolean;palette:'classic'|'ocean'|'orchid';tutorialDone:boolean;analytics:boolean;mysteries:string[];
@@ -39,7 +42,11 @@ export function loadProgress(raw:string|null):Progress {
    last={themeId:r.last.themeId,level:r.last.level,...(j?{journey:j.id}:{})};
   }
   const days=Array.isArray(r.days)?[...new Set(r.days.filter(x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&!Number.isNaN(Date.parse(x+'T12:00:00Z'))))].sort().slice(-3660):[];
-  return {...(r.guideDone===true?{guideDone:true as const}:{}),...(boardColor(r.boardColor)?{boardColor:boardColor(r.boardColor)}:{}),v:2,saves,sound:r.sound===true,zoom:r.zoom===true,days,last,haptics:r.haptics===true,contrast:r.contrast===true,palette:r.palette==='ocean'||r.palette==='orchid'?r.palette:'classic',tutorialDone:r.tutorialDone===true,analytics:r.analytics===true,mysteries:Array.isArray(r.mysteries)?[...new Set(r.mysteries.filter(x=>MYSTERIES.some(m=>m.id===x)))]:[]};
+  const bonuses:Record<string,BonusSave>={};
+  if(r.bonuses&&typeof r.bonuses==='object')for(const id of Object.keys(BONUS_WORDS)){const value=cleanBonusSave(id,r.bonuses[id]);if(value)bonuses[id]=value;}
+  const welcomedWorlds=Array.isArray(r.welcomedWorlds)?[...new Set(r.welcomedWorlds.filter(x=>typeof x==='string'&&Object.prototype.hasOwnProperty.call(BONUS_WORDS,x)))].sort():[];
+  const mechanicGuides=Array.isArray(r.mechanicGuides)?MECHANIC_GUIDES.filter(x=>r.mechanicGuides!.includes(x)):[];
+  return {...(Object.keys(bonuses).length?{bonuses}:{}),...(welcomedWorlds.length?{welcomedWorlds}:{}),...(mechanicGuides.length?{mechanicGuides}:{}),...(WORD_TRAIL.some(t=>t.id===r.trailBadge)?{trailBadge:r.trailBadge}:{}),...(r.guideDone===true?{guideDone:true as const}:{}),...(boardColor(r.boardColor)?{boardColor:boardColor(r.boardColor)}:{}),v:2,saves,sound:r.sound===true,zoom:r.zoom===true,days,last,haptics:r.haptics===true,contrast:r.contrast===true,palette:r.palette==='ocean'||r.palette==='orchid'?r.palette:'classic',tutorialDone:r.tutorialDone===true,analytics:r.analytics===true,mysteries:Array.isArray(r.mysteries)?[...new Set(r.mysteries.filter(x=>MYSTERIES.some(m=>m.id===x)))]:[]};
  }catch{return emptyProgress();}
 }
 export function cleanSave(raw:SavedLevel|undefined,board:Pick<Puzzle,'size'|'grid'|'targets'>):SavedLevel {
@@ -59,7 +66,9 @@ export function mergeProgress(server:Progress,local:Progress):Progress {
   const strokes=[...current.strokes,...incoming.strokes.filter(s=>!current.strokes.some(c=>c.id===s.id))];
   saves[key]=cleanSave({strokes,elapsed:Math.max(current.elapsed,incoming.elapsed),hints:Math.max(current.hints,incoming.hints),complete:false,stars:0},board);
  }
- return {...(server.guideDone||local.guideDone?{guideDone:true as const}:{}),...(server.boardColor?{boardColor:server.boardColor}:{}),...local,last:local.last??server.last,saves,days:[...new Set([...server.days,...local.days])].sort().slice(-3660),tutorialDone:server.tutorialDone||local.tutorialDone,mysteries:[...new Set([...server.mysteries,...local.mysteries])]};
+ const bonuses={...server.bonuses};for(const [id,save] of Object.entries(local.bonuses??{}))bonuses[id]=bonuses[id]?mergeBonusSave(bonuses[id]!,save):save;
+ const welcomedWorlds=[...new Set([...(server.welcomedWorlds??[]),...(local.welcomedWorlds??[])])].sort(),mechanicGuides=MECHANIC_GUIDES.filter(x=>server.mechanicGuides?.includes(x)||local.mechanicGuides?.includes(x));
+ return {...(server.guideDone||local.guideDone?{guideDone:true as const}:{}),...(server.boardColor?{boardColor:server.boardColor}:{}),...local,...(Object.keys(bonuses).length?{bonuses}:{}),...(welcomedWorlds.length?{welcomedWorlds}:{}),...(mechanicGuides.length?{mechanicGuides}:{}),last:local.last??server.last,saves,days:[...new Set([...server.days,...local.days])].sort().slice(-3660),tutorialDone:server.tutorialDone||local.tutorialDone,mysteries:[...new Set([...server.mysteries,...local.mysteries])]};
 }
 export function streak(days:string[],today:string):number {const unique=new Set(days);const date=new Date(today+'T12:00:00Z');if(!unique.has(today))date.setUTCDate(date.getUTCDate()-1);let count=0;while(unique.has(date.toISOString().slice(0,10))){count++;date.setUTCDate(date.getUTCDate()-1);}return count;}
 export function collectionStats(p:Progress){

@@ -1,0 +1,17 @@
+# 0.40.0 · Bonuslar ve kesintisiz yolculuk
+
+Önceki WoW takip listesinin oyun içinde yapılabilen beş başlığı tamamlandı. 168 ana bölümün kimlikleri, kelimeleri, tohumları, tahtaları ve 3/5/6 erişim kapıları değişmedi. Arena/Meydan kuralları, kayıtlar, mevcut harf seçimi ve onaylanmış titreşim/uçuş süreleri korunur. Yeni SDK, para birimi, reklam veya satın alma eklenmedi.
+
+- **28 ayrı bonus:** Her rotanın altı bölümü bitince isteğe bağlı 60 saniyelik tur açılır. Tek kelimenin 8×8 tahtadaki farklı yerleşimleri aranır. Yerleşim uç noktasıyla sayılır; ters çizim geçerli, tekrar çizim ikinci kez sayılmaz. Dolgu içinde oluşan bütün doğru yerleşimler de sayılır. Aktif süre, ara verme/arka plan, kaldığı yerden devam, sonuç, inceleme ve tekrar vardır. Ana yıldız/Arena puanı verilmez.
+- **Bölüm ritmi ve dünya girişi:** Mevcut kısa açık başlangıç → artan hedef/bilmece yükü → final → ayrı bonus → yeni dünya akışı bağlandı. Bonus atlanabilir. İlk kez girilen dünya kendi sahnesiyle karşılar ve gerçek ilk bölüme götürür; eski ilerlemede tekrar çıkmaz. Bu, eski katalog tahtalarının yeniden dengelendiği anlamına gelmez.
+- **Koleksiyon ve yan menüler:** Albümler/Profil/Başarımlar ayrı erişilebilir sekmeler; avatar her basışta Profil’i açar. Etkinlikler, bölüm haritası ve oyun kütüphanesi ortak koyu pencere kabuğuna geçti. Küçük ekranlarda içerik kayabilir; bonus/ödül yolu pencerelerinin dönüş eylemi sabittir.
+- **Bağlamsal açıklama:** Bilmece, saklı kelime, Gizli Tema, günlük ve bonus ilk kullanımlarında kısa açıklama. Rehber açıkken normal oyunun süresi/seçimi durur; günlük yarış başlatılmadan süre kuralı açıklanır. Mevcut ilk çizim ve Hızlı Tur öğretimleri korunur.
+- **Sözcük Yolu:** Ana bölümlerde bulunan tekil kelimeler sekiz kozmetik oyuncu rozeti açar. Önceki ilerleme sayılır; tekrar ve eski bölüm eşlemeleri ödülü çoğaltmaz. Koleksiyon → Başarımlar’dan rozet seçilir; ana avatar ve Profil’de görünür. Bu rozet sunucu Arena profilinin veya Game Center'ın yerine geçmez.
+
+## Doğrulama
+
+821 otomatik test; tip/içerik kontrolü; değişmeyen veritabanı şeması; web üretim derlemesi; 695 Worker HTTP kontrolü; mobil paket/senkron denetimi. Yeni kontroller gerçek BonusRound/Solo/App bileşenleri, 28 bonus tahtası, kesin süre sınırı, aynı anda çift seçim, tamamlanma/tekrar, arka plan ve soğuk devam, iki cihazın kayıt birleştirmesi, hesap değişimi, eski kimlik ve maksimum kayıt boyutunu kapsar. Şu iki regresyon incelemede bulunup giderildi: bitmiş bonusun daha uzun eksik kayıtla yeniden açılması ve eski hesabın dünya tanıtımının yeni hesapta oynanabilmesi.
+
+Gerçek bileşenlerle ayrı yerel önizleme: bonus giriş/çizim/tekrar çizim/ikinci yerleşim/duraklatma/süre sonu/sonuç/yeni dünya; Koleksiyon sekmeleri ve uzun ad; Etkinlikler/Sözcük Yolu/Bonus/harita. Ölçülen CSS telefon alanları 414×736 ve 321×570; bonus tahtası sırasıyla yaklaşık 398 ve 305 piksel, bütün satırlar görünür. Sonuç ve uzun liste alt eylemleri erişilebilir. Görseller çalışma alanı world-review/0.40.0 altında örnek kayıtlarla üretilmiştir; gerçek oyuncu veya fiziksel iPhone kanıtı değildir.
+
+0.40.0 / iOS build25 paketi hazır; kullanıcının isteğiyle telefona kurulmadı. Fiziksel parmak/titreşim, uzun oturum FPS, VoiceOver ve gerçek çok oyunculu cihaz kabulü açık kalır. Reklam/IAP/Game Center için gerçek yayıncı/hesap ve servis doğrulaması ayrı iş olarak açık; sahte aktif düğmeler veya ödüller yok. Yayın/CI makbuzu kaynak dışında tutulur.

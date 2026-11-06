@@ -1,0 +1,13 @@
+'use client';
+import {Check,Compass,Crown,Flower2,Leaf,Lock,Moon,Sparkles,Sprout,Sun} from 'lucide-react';
+import type {Progress} from '@/lib/game/progress';
+import {WORD_TRAIL,wordTrail} from '@/lib/game/journey-flow';
+const icons={sprout:Sprout,leaf:Leaf,flower:Flower2,sun:Sun,compass:Compass,moon:Moon,sparkles:Sparkles,crown:Crown};
+export function TrailBadge({id,size=24}:{id?:string;size?:number}){const reward=WORD_TRAIL.find(t=>t.id===id);if(!reward)return null;const Icon=icons[reward.icon];return <Icon size={size} aria-hidden="true"/>;}
+export function WordTrail({progress,onSelect}:{progress:Progress;onSelect?:(id:string)=>void}){
+ const trail=wordTrail(progress);return <section className="word-trail" aria-labelledby="word-trail-title"><header><h2 id="word-trail-title">Sözcük Yolu</h2><p>Ana bölümlerde kelimeler bul, oyuncu rozetlerini aç.</p></header><div className="word-trail-summary"><b>{trail.words} kelime</b><span>{trail.next?`${trail.next.title} için ${trail.remaining} kelime daha`:'Bütün rozetler senin!'}</span></div><div className="word-trail-meter" role="progressbar" aria-label="Sıradaki rozet" aria-valuenow={Math.min(trail.words,trail.next?.at??600)} aria-valuemax={trail.next?.at??600} aria-valuemin={0}><i style={{width:Math.min(100,trail.words/(trail.next?.at??600)*100)+'%'}}/></div><ol>{WORD_TRAIL.map(reward=>{const earned=trail.words>=reward.at,selected=earned&&progress.trailBadge===reward.id;return <li key={reward.id} className={earned?'earned':''}><span className="trail-emblem"><TrailBadge id={reward.id} size={28}/></span><div><h3>{reward.title}</h3><p>{reward.at} kelime · {earned?'Kazanıldı':'Oyuncu rozeti'}</p></div>{earned&&onSelect?<button className="text-button" aria-pressed={selected} aria-label={`${reward.title} rozetini ${selected?'kullanıyorsun':'kullan'}`} onClick={()=>onSelect(reward.id)}>{selected?<><Check size={17}/>Seçili</>:'Kullan'}</button>:earned?<Check aria-label="Kazanıldı" size={19}/>:<Lock aria-label="Kilitli" size={18}/>}</li>;})}</ol><p className="trail-note">Her kelime bulunduğu bölümde bir kez sayılır. Eski ilerlemen de dahildir. Süre sınırı ve ayrıca ödül toplama adımı yok.</p></section>;
+}
+export function TrailResult({before,after}:{before:Progress;after:Progress}){
+ const a=wordTrail(before),b=wordTrail(after);if(b.words<=a.words)return null;const unlocked=b.earned.filter(r=>!a.earned.some(old=>old.id===r.id));
+ return <div className="trail-result"><Sprout size={20}/><span>{unlocked.length?<><b>{unlocked.at(-1)!.title} rozeti açıldı</b><small>Koleksiyon · Başarımlar’da kullanabilirsin.</small></>:<><b>Sözcük Yolu · +{b.words-a.words} kelime</b><small>{b.next?`${b.next.title} için ${b.remaining} kaldı`:'Bütün rozetler tamamlandı.'}</small></>}</span></div>;
+}

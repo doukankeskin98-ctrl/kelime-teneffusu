@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.40.0 · Bonuslar ve kesintisiz yolculuk
+
+28 ayrı süreli bonus, atlanabilir bonus→yeni dünya→gerçek bölüm akışı, kısa mekanik açıklamaları, Koleksiyon sekmeleri ve ana ilerlemeden türeyen sekiz kozmetik rozet. Yan kütüphane pencereleri ortak temada; eski 168 ana tahta/kayıt/kapı ve Arena kuralları korunur. Doğrulama ve sınırlar: [0.40.0 raporu](docs/release-0.40.0.md).
+
 ## 0.39.1 · Arena sıralaması sonuç ekranında
 
 Maç ve oda galibiyetleri açık, aynı stadyum teması içinde. Bitmiş tahtanın sıralama düğmesi aynı sonuca döner; canlı/genel sıralama eski krem temaya geçmez. Büyük gruplarda kişisel sıra özeti ve kısa ekranda sabit alt eylemler. Kayıt ve kurallar korunur. Doğrulama/sınırlar: [0.39.1 raporu](docs/release-0.39.1.md).
