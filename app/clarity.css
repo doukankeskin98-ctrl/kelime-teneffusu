@@ -1,7 +1,8 @@
 /* Safe-area space is additional to the controls, never taken from their row. */
 :root{--shell-safe-top:env(safe-area-inset-top,0px);--shell-safe-bottom:env(safe-area-inset-bottom,0px);--shell-bar-height:58px}
 .native-shell .native-topbar{height:calc(var(--shell-bar-height) + var(--shell-safe-top));min-height:calc(var(--shell-bar-height) + var(--shell-safe-top));padding:calc(7px + var(--shell-safe-top)) max(14px,env(safe-area-inset-right,0px)) 7px max(14px,env(safe-area-inset-left,0px));gap:8px}
-.native-topbar .native-brand{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:center;font-size:14px;font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.native-topbar .native-brand{flex:1;min-width:0;text-align:center;font-size:17px;font-weight:800;line-height:1.15;letter-spacing:-.02em;white-space:normal;color:#fff7df;text-shadow:0 2px 5px #102c38}
+.native-topbar .native-brand>span{display:block}
 .native-scene .main-content{padding-bottom:calc(72px + var(--shell-safe-bottom))}
 .native-topbar .native-top-actions{flex-shrink:0;gap:8px}.native-topbar .native-icon,.native-topbar .native-avatar{width:44px;height:44px;min-width:44px}
 .native-scene .native-topbar{background:linear-gradient(#0b293bd9,#0b293b00);color:#fff9e9}
@@ -10,7 +11,7 @@
 .native-shell .mobile-nav{height:calc(72px + var(--shell-safe-bottom));padding-bottom:calc(4px + var(--shell-safe-bottom))}
 .native-shell .mobile-nav button svg,.native-shell .mobile-nav button.active svg{fill:none;background:none;box-shadow:none;border-radius:0;stroke-width:2.2}
 .native-scene .mobile-nav button.active{background:#e9d5a11a;color:#ffe0a0}
-@media(max-width:360px){.native-topbar .native-brand{font-size:12px}.native-topbar .native-stars{font-size:12px;padding:6px 8px}.native-topbar .native-top-actions{gap:5px}}
+@media(max-width:360px){.native-topbar .native-brand{font-size:16px}.native-topbar .native-stars{font-size:12px;padding:6px 8px}.native-topbar .native-top-actions{gap:5px}}
 
 /* Actual glyphs own the weight: legacy child rules must not make them lighter. */
 .scenic-play .letter-grid>span,.game-app .scenic-play .letter-grid>span{font-family:var(--sans);font-weight:800;color:var(--board-ink,#142f2c);text-shadow:none}

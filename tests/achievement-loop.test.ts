@@ -103,9 +103,9 @@ const scene=component('components/game/JourneyScene.tsx',{});
 const numberedHome=component('components/game/JourneyHome.tsx',{'./JourneyScene':scene,'./WorldArt':art,'./AchievementLoop':loop,'./RiddleShelf':riddleShelf,'./StoryExperience':{StoryShelf:()=>null}});
 const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery':collection,'./AchievementLoop':loop});
 describe('numbered journey home and real result',()=>{
- it('shows one primary action, the correct chapter and nearby reward without mode cards',()=>{
+ it('shows one primary action and chapter access without duplicate menu shortcuts',()=>{
   const html=render(numberedHome['JourneyHome'],{progress:emptyProgress(),onPlay(){},onExplore(){}});
-  assert.match(html,/Oyna/);assert.match(html,/Bölüm 1/);assert.match(html,/3 bölüm sonra/);assert.match(html,/Anadolu Patikası/);assert.equal((html.match(/class="stage-play/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
+  assert.match(html,/Oyna/);assert.match(html,/Bölüm 1/);assert.match(html,/Bütün yolculuk bölümlerini aç/);assert.match(html,/Diğer oyunlar/);assert.doesNotMatch(html,/stage-milestone|stage-wordmark/);assert.equal((html.match(/class="stage-play/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
  });
  it('continues an existing route and shows a truthful complete-catalogue state',()=>{
   const p=emptyProgress(),b=journeyBoard(journeyById('uzay-2')!);p.saves['route:uzay-2']=cleanSave({strokes:[b.placements[0]!],hints:0,elapsed:10,complete:false,stars:0},b);p.last={themeId:'uzay',level:0,journey:'uzay-2'};

@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.41.0 · Daha sade oyun akışı
+
+Tek dokunuşla sonraki bölüm; isteğe bağlı bonus; okunaklı ana başlık ve ortak ayar/yardım/giriş tasarımı. iOS paket/sürüm eşitliği kontrolü. Mevcut ilerleme ve Arena kuralları korunur. [Doğrulama ve sınırlar](docs/release-0.41.0.md).
+
 ## 0.40.0 · Bonuslar ve kesintisiz yolculuk
 
 28 ayrı süreli bonus, atlanabilir bonus→yeni dünya→gerçek bölüm akışı, kısa mekanik açıklamaları, Koleksiyon sekmeleri ve ana ilerlemeden türeyen sekiz kozmetik rozet. Yan kütüphane pencereleri ortak temada; eski 168 ana tahta/kayıt/kapı ve Arena kuralları korunur. Doğrulama ve sınırlar: [0.40.0 raporu](docs/release-0.40.0.md).

@@ -1,5 +1,6 @@
 import {readFile,stat} from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import {verifyNativeCopy,verifyNativeVersion} from './mobile-package-integrity.mjs';
 const read=path=>readFile(path,'utf8');
 const config=JSON.parse(await read('ios/App/App/capacitor.config.json'));
 assert.equal(config.appId,'com.kelimeteneffusu.game');assert.equal(config.webDir,'dist-mobile');
@@ -19,4 +20,7 @@ const manifest=await read('ios/App/App/PrivacyInfo.xcprivacy');assert.match(mani
 assert.match(await read('ios/App/App.xcodeproj/project.pbxproj'),/PrivacyInfo.xcprivacy in Resources/);
 const plist=await read('ios/App/App/Info.plist');assert(!plist.includes('NSAllowsArbitraryLoads'));assert(!plist.includes('NSCameraUsageDescription'));assert(!plist.includes('NSMicrophoneUsageDescription'));
 assert.match(plist,/<key>LSSupportsGameMode<\/key>\s*<true\s*\/>/);
-console.log(`Mobile package verified: local entry, ${paths.length} world scenes, HTTPS API, privacy resource, no blanket network exceptions.`);
+const count=await verifyNativeCopy('dist-mobile','ios/App/App/public');
+const version=JSON.parse(await read('package.json')).version;
+const build=verifyNativeVersion(version,await read('ios/App/App.xcodeproj/project.pbxproj'));
+console.log(`Mobile package ${version} (${build}) verified: ${count} matching native files, ${paths.length} world scenes, HTTPS API, privacy resource, no blanket network exceptions.`);
