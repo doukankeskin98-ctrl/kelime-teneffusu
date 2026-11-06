@@ -61,7 +61,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
  };
  const timer=(repeat:boolean)=>(fn:()=>void,ms:number)=>{const id=++timerId;timers.set(id,{fn,repeat,at:now+ms});return id;};
  const windowTarget=Object.assign(new EventTarget(),{matchMedia:()=>({matches:reduced})});
- const documentTarget=Object.assign(new EventTarget(),{hidden:false});
+ const documentTarget=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}}});
  const modules:Record<string,unknown>={
   react:hooks,'react/jsx-runtime':{jsx:(type:unknown,props:Record<string,unknown>)=>({type,props}),jsxs:(type:unknown,props:Record<string,unknown>)=>({type,props}),Fragment:'Fragment'},
   '@/lib/game/story-content':stories,'./StoryExperience':{StoryHud:'StoryHud',StoryResult:'StoryResult'},'@/lib/game/riddle-content':riddleContent,'@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
@@ -70,6 +70,9 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
   './common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}},
   './AchievementLoop':{JourneyObjective:'JourneyObjective',VictorySummary:'VictorySummary',NextJourneyPreview:'NextJourneyPreview'}
  };
+ const resultHook:Record<string,unknown>={};
+ vm.runInNewContext(ts.transpileModule(readFileSync('components/game/useResultPresentation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:resultHook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback,window:windowTarget,document:documentTarget,performance:{now:()=>now},setTimeout:timer(false),clearTimeout:(id:number)=>timers.delete(id)});
+ modules['./useResultPresentation']=resultHook;
  const exports:Record<string,unknown>={};
  vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
   window:windowTarget,document:documentTarget,performance:{now:()=>now},Event,
@@ -204,5 +207,5 @@ describe('Solo completed board review',()=>{
 });
 
 it('saves the last word immediately while the result waits for its visible landing',async()=>{
- const page=harness({initial:saved([0,1,2]),reduced:false});try{await page.settle();page.commit(3);await page.settle();assert.equal(page.save.complete,true);assert.equal(page.layout().props['readOnly'],true);assert.equal(page.hasModal(),false);page.advance(wordFeedback.WORD_RESULT_DELAY_MS-1);await page.settle();assert.equal(page.hasModal(),false);page.advance(1);await page.settle();assert.equal(page.hasModal(),true);}finally{page.close();}
+ const page=harness({initial:saved([0,1,2]),reduced:false});try{await page.settle();page.commit(3);await page.settle();assert.equal(page.save.complete,true);assert.equal(page.layout().props['readOnly'],true);assert.equal(page.hasModal(),false);page.advance(wordFeedback.WORD_RESULT_DELAY_MS-1);await page.settle();assert.equal(page.hasModal(),false);page.advance(1);await page.settle();assert.equal(page.layout().props['departing'],true);assert.equal(page.hasModal(),false);page.advance(wordFeedback.RESULT_EXIT_MS);await page.settle();assert.equal(page.hasModal(),true);}finally{page.close();}
 });

@@ -34,7 +34,7 @@ type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
 const walk=(v:any):Node[]=>Array.isArray(v)?v.flatMap(walk):v&&typeof v==='object'?[v,...['children','aside','footer'].flatMap(k=>walk(v.props?.[k]))]:[];
 const text=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';
 const visible=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(visible).join(''):v&&typeof v==='object'&&v.props?.['aria-hidden']!==true&&v.props?.['style']?.visibility!=='hidden'?visible(v.props?.['children']):'';
-const jsx=(type:any,props:Record<string,unknown>,key?:unknown)=>({type,props,key}),icons=new Proxy({},{get:(_t,k)=>String(k)});
+const jsx=(type:any,props:Record<string,unknown>,key?:unknown):any=>typeof type==='function'&&type.name==='GameToolsSheet'?type(props):({type,props,key}),icons=new Proxy({},{get:(_t,k)=>String(k)});
 function deferred<T>(){let resolve!:(r:T)=>void;const promise=new Promise<T>(yes=>{resolve=yes;});return{promise,resolve};}
 function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown,storageValues?:Map<string,string>){
  const exports:Record<string,any>={},slots:Slot[]=[],effects:(()=>void)[]=[],intervals=new Map<number,()=>void>(),timeouts=new Map<number,()=>void>(),frames=new Map<number,()=>void>(),document=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},body:{style:{overflow:''}}});
@@ -444,7 +444,7 @@ describe('world word veils survive every target surface and resume',()=>{
    try{h.start('PlayControls',props());walk(h.tree).find(n=>n.props?.['aria-label']==='Oyun araçları')!.props['onClick']();h.update('PlayControls',props());assert.equal(paused,canPause?true:initial);
     walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Ses kapalı')!.props['onClick']();assert.equal(sound,1);
     walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Büyük harf modu')!.props['onClick']();h.update('PlayControls',props());assert.equal(zoom,1);assert.equal(paused,initial);assert.equal(toggles,canPause&&!initial?2:0);
-    walk(h.tree).find(n=>n.props?.['aria-label']==='Oyun araçları')!.props['onClick']();h.update('PlayControls',props());walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Nasıl oynanır')!.props['onClick']();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
+    walk(h.tree).find(n=>n.props?.['aria-label']==='Oyun araçları')!.props['onClick']();h.update('PlayControls',props());walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Kurallar')!.props['onClick']();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
    }finally{h.close();}
   }
  });
@@ -510,7 +510,7 @@ describe('result and play preference surfaces',()=>{
  });
  it('timed tools expose comfort controls without pausing and disappear when the match ends',()=>{
   const h=view('components/game/common.tsx');let sound=0;const props={sound:true,onSound:()=>sound++};
-  try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);walk(h.tree).find(n=>n.type==='button'&&text(n)==='Ses açık')!.props['onClick']();assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahtayı inceleyebilirsin/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
+  try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);walk(h.tree).find(n=>n.type==='button'&&text(n)==='Ses açık')!.props['onClick']();assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahta/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
  });
 });
 

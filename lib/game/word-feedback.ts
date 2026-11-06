@@ -3,6 +3,8 @@ import {viewCell} from './board-view.ts';
 
 export type FlightRect={left:number;top:number;width:number;height:number};
 export const WORD_FLIGHT_MS=720,WORD_LANDING_MS=180,WORD_RESULT_DELAY_MS=1040;
+/** Start scene withdrawal only after the final glyph and rack landing settle. */
+export const RESULT_EXIT_MS=220;
 export const wordLetterDelay=(index:number)=>Math.min(index*12,84);
 type FlightMetrics={fontSize:number;targetFontSize:number;sources:FlightRect[];destinations:FlightRect[]};
 /** Pure presentation geometry: all source letters stay tied to their real cells. */
