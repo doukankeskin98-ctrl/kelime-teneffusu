@@ -8,6 +8,25 @@ import ts from 'typescript';
 import {viewCell} from '../lib/game/board-view.ts';
 
 describe('confirmed word feedback ledger',()=>{
+ it('starts a local match immediately, silently reconciles ACK and allows retry after withdrawal',()=>{
+  const l=wordFeedbackLedger('A',[]);
+  assert.deepEqual(l.consume('A',[],true,'0'),['0']);
+  assert.deepEqual(l.consume('A',[],true,'0'),[]);
+  assert.deepEqual(l.consume('A',[]),[]);
+  assert.deepEqual(l.consume('A',[],true,'0'),['0']);
+  assert.deepEqual(l.consume('A',['0'],true,'0'),[]);
+  assert.deepEqual(l.consume('A',['0']),[]);
+ });
+ it('does not replay late recovery, hidden previews or a stale round',()=>{
+  const l=wordFeedbackLedger('A',[]);
+  assert.deepEqual(l.consume('A',[],true,'0'),['0']);
+  l.consume('A',[]);
+  assert.deepEqual(l.consume('A',['0']),[]);
+  assert.deepEqual(l.consume('A',['0'],false,'1'),[]);
+  assert.deepEqual(l.consume('A',['0','1']),[]);
+  assert.deepEqual(l.consume('B',[]),[]);
+  assert.deepEqual(l.consume('B',[],true,'0'),['0']);
+ });
  it('silently restores old words, consumes each new ID once and survives cancellation',()=>{const l=wordFeedbackLedger('A',['old']);assert.deepEqual(l.consume('A',['old']),[]);assert.deepEqual(l.consume('A',['old','new','new']),['new']);assert.deepEqual(l.consume('A',['old','new']),[]);assert.deepEqual(l.consume('A',['old','new','hidden'],false),[]);assert.deepEqual(l.consume('A',['old','new','hidden']),[]);});
  it('never invents success from a pending/rejected input and scopes explicit replays',()=>{const l=wordFeedbackLedger('A',[]);assert.deepEqual(l.consume('A',[]),[]);assert.deepEqual(l.consume('A',['0']),['0']);assert.deepEqual(l.consume('B',['0']),[]);assert.deepEqual(l.consume('replay',[]),[]);assert.deepEqual(l.consume('replay',['0']),['0']);});
 });
@@ -33,6 +52,14 @@ function harness(initial:string[]=[],measured=false,labelText='KALE'){
  return {render,destination,get glyphs(){return [...sparks].flatMap(s=>s.children);},get reads(){return reads;},get readsAfterWrite(){return readsAfterWrite;},confirm:(ids:string[])=>render({confirmed:ids.map(stroke)}),get sparks(){return sparks.size;},get labels(){return [...sparks].map(s=>s.textContent);},get timers(){return timers.size;},animations,props,reduced(value:boolean){reduced=value;},hide(){doc.hidden=true;doc.dispatchEvent(new Event('visibilitychange'));},show(){doc.hidden=false;},blur(){win.dispatchEvent(new Event('blur'));},pause(){active=false;render({paused:true});},expire(){for(const fn of [...timers.values()])fn();},close(){for(const slot of slots)slot.cleanup?.();}};
 }
 describe('actual decorative effect lifecycle',()=>{
+ it('flies a local match while authoritative state is empty and keeps the same flight on ACK',()=>{
+  const h=harness(),preview={id:'0',a:[0,0],b:[0,3]};
+  try{h.render({preview});assert.equal(h.sparks,1);assert.equal(h.props.confirmed.length,0);const count=h.animations.length;h.render({confirmed:[preview],preview:null});assert.equal(h.sparks,1);assert.equal(h.animations.length,count);assert(h.animations.every(a=>!a.cancelled));}finally{h.close();}
+ });
+ it('withdraws rejected feedback and its landing marker, and animates the same valid retry',()=>{
+  const h=harness(),preview={id:'0',a:[0,0],b:[0,3]};
+  try{h.render({preview});assert.equal(h.sparks,1);h.render({preview:null});assert.equal(h.sparks,0);assert.equal(h.timers,0);assert.equal(h.destination.dataset['wordArriving'],undefined);assert(h.animations.every(a=>a.cancelled));h.render({preview});assert.equal(h.sparks,1);assert.equal(h.props.confirmed.length,0);}finally{h.close();}
+ });
  it('keeps resumed ink silent; final confirmed words animate without waiting for input or awarding state',()=>{const h=harness(['0']);try{assert.equal(h.sparks,0);h.confirm(['0','1']);assert.equal(h.sparks,1);h.render();assert.equal(h.sparks,1);h.expire();assert.equal(h.sparks,0);assert.equal(h.timers,0);h.confirm(['0','1']);assert.equal(h.sparks,0);}finally{h.close();}});
  it('bounds rapid confirmations to four sparks and cleans all timers/animations on unmount',()=>{const h=harness();for(let i=1;i<=8;i++)h.confirm(Array.from({length:i},(_,j)=>String(j)));assert.equal(h.sparks,4);assert.equal(h.timers,4);h.close();assert.equal(h.sparks,0);assert.equal(h.timers,0);assert(h.animations.every(a=>a.cancelled));});
  it('cancels on rotation, background and pause without replaying consumed words',()=>{for(const action of ['turn','hide','pause'] as const){const h=harness();try{h.confirm(['0']);assert.equal(h.sparks,1);if(action==='turn')h.render({turned:true});else if(action==='hide')h.hide();else h.pause();assert.equal(h.sparks,0);assert.equal(h.timers,0);h.show();h.render({paused:false});assert.equal(h.sparks,0);}finally{h.close();}}});
