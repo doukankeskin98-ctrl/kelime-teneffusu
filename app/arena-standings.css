@@ -1,0 +1,53 @@
+/* Match, room series and global ladder share the stadium palette, not their ranks. */
+.modal.game-dialog.arena-scoreboard{width:min(560px,calc(100% - 24px));background:#143c46;color:#fff8e5;border:1px solid #d7e5d638;border-radius:16px;padding:0;box-shadow:none}
+.modal.game-dialog.arena-scoreboard[open]{display:flex;flex-direction:column;overflow:hidden}
+.modal.game-dialog.arena-scoreboard::backdrop{background:#082d3bbf;backdrop-filter:none}
+.modal.game-dialog.arena-scoreboard>.modal-head{padding:18px 52px 14px 20px;margin:0;flex-shrink:0}
+.modal.game-dialog.arena-scoreboard>.modal-head h2{color:#ffe3a1;font-size:26px;line-height:1.2}
+.modal.game-dialog.arena-scoreboard>.modal-head .icon-button{color:#fff2cf;background:transparent;border:0}
+.modal.game-dialog.arena-scoreboard>.modal-content{flex:1 1 auto;min-height:0;padding:0 20px 12px;overflow-y:auto;overscroll-behavior:contain;scrollbar-color:#759b8b #143c46;scrollbar-width:thin}
+.modal.game-dialog.arena-scoreboard>.modal-actions{background:transparent;border:0;padding:16px 20px;flex-shrink:0}
+.modal.game-dialog.arena-scoreboard.scene-result{min-height:0}
+.modal.game-dialog.arena-scoreboard .arena-result-context{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#e0eadb;font-size:13px;line-height:1.5}
+.arena-result-context>svg{flex-shrink:0;color:#f1d28b}
+.modal.game-dialog.arena-scoreboard .match-standings h2{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:18px;line-height:1.4;margin:0 0 12px;color:#fff8e5;letter-spacing:-.01em}
+.match-standings h2>span{font-size:12px;font-weight:500;color:#d5e5da;white-space:nowrap}
+.standings-personal{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0 0 8px;padding:8px 12px;background:#386455;border-radius:12px;color:#fff3c4;font-size:14px;font-variant-numeric:tabular-nums}
+.standings-personal strong{font-size:18px}.standings-personal strong small{font-size:12px;font-weight:500}
+.modal.game-dialog.arena-scoreboard .arena-roster ol{max-height:none;overflow:visible;scrollbar-gutter:auto;margin:0}
+.modal.game-dialog.arena-scoreboard .arena-roster li{min-height:54px;background:transparent;color:#fff8e5;border:0;border-bottom:1px solid #dce8d52b;border-radius:0;grid-template-columns:26px minmax(0,1fr) auto;padding:8px 46px 8px 6px;gap:3px 8px;font-size:14px;font-variant-numeric:tabular-nums}
+.modal.game-dialog.arena-scoreboard .arena-roster li.is-you{background:#2a5049;border:0;border-bottom:1px solid #dce8d52b;border-radius:10px;padding-right:12px}
+.modal.game-dialog.arena-scoreboard .arena-roster li>strong{line-height:1.4;min-width:0}
+.modal.game-dialog.arena-scoreboard .arena-roster li>span:not(.roster-rank){white-space:nowrap;font-weight:750}
+.modal.game-dialog.arena-scoreboard .arena-roster small{color:#d5e5da;font-size:12px;line-height:1.4}
+.modal.game-dialog.arena-scoreboard .roster-rank{color:#f3d78e;font-weight:800;text-align:center;font-size:17px}
+.modal.game-dialog.arena-scoreboard .safety-trigger{color:#d5e5da;background:transparent;border:0;box-shadow:none}
+.modal.game-dialog.arena-scoreboard .arena-series{background:transparent;color:#fff8e5;border:0;border-top:1px solid #e6d79e66;border-radius:0;margin:14px 0 0;padding-top:12px}
+.modal.game-dialog.arena-scoreboard .arena-series>h2{padding:0;margin:0 0 8px;min-height:0;color:#fff8e5;font-size:18px;line-height:1.4}
+.modal.game-dialog.arena-scoreboard .arena-series>h2>svg{color:#f3d78e;flex-shrink:0}
+.modal.game-dialog.arena-scoreboard .arena-series small,.modal.game-dialog.arena-scoreboard .arena-series>p{color:#d5e5da;font-size:12px;line-height:1.5}
+.modal.game-dialog.arena-scoreboard .arena-series>p{padding:0;margin:8px 0}
+.modal.game-dialog.arena-scoreboard .arena-series>ol{padding:0}
+.modal.game-dialog.arena-scoreboard .arena-series li{border-color:#dce8d52b;padding:8px 6px;font-variant-numeric:tabular-nums}
+.modal.game-dialog.arena-scoreboard .arena-series li.is-you{background:#2a5049;border-radius:10px}
+.modal.game-dialog.arena-scoreboard .arena-series li>b{font-size:20px;color:#fff0bc}
+.modal.game-dialog.arena-scoreboard .arena-result-next{font-size:13px;line-height:1.5;color:#d5e5da;margin:12px 0 0}
+.modal.game-dialog.arena-scoreboard .text-button{color:#fff0bc;min-height:44px}
+.modal.game-dialog.arena-scoreboard .rankings .section-title{display:none}
+.modal.game-dialog.arena-scoreboard .rankings{background:transparent;border:0;border-radius:0;padding:0;margin:14px 0 0}
+.modal.game-dialog.arena-scoreboard .rankings ol{padding:0}
+.modal.game-dialog.arena-scoreboard .rankings li{display:grid;grid-template-columns:24px 28px minmax(0,1fr) auto;gap:4px 8px;background:transparent;color:#fff8e5;border-color:#dce8d52b;font-size:14px;font-variant-numeric:tabular-nums}
+.modal.game-dialog.arena-scoreboard .rankings li>small{grid-column:3/-1}
+.modal.game-dialog.arena-scoreboard .rankings li>b{font-size:13px;color:#fff1c6}
+.modal.game-dialog.arena-scoreboard .rank-position{color:#f3d78e;font-size:16px;font-weight:700;font-family:inherit}
+.modal.game-dialog.arena-scoreboard .avatar.small{width:28px;height:28px;background:#315c57;border:0;box-shadow:none;color:#fff8e5;font-family:inherit;font-size:14px}
+.modal.game-dialog.arena-scoreboard .rankings small,.modal.game-dialog.arena-scoreboard .ranking-empty,.modal.game-dialog.arena-scoreboard .rankings .muted{color:#d5e5da}
+.modal.game-dialog.arena-scoreboard .ranking-empty p{color:#d5e5da}
+.modal.game-dialog.arena-scoreboard :focus-visible{outline:2px solid #fff0b8;outline-offset:3px}
+.modal.game-dialog.arena-scoreboard ::selection{background:#f3d78e;color:#143c46}
+@media(max-width:360px){
+ .modal.game-dialog.arena-scoreboard>.modal-content{padding-inline:12px}
+ .modal.game-dialog.arena-scoreboard>.modal-actions{padding-inline:12px}
+ .modal.game-dialog.arena-scoreboard .arena-roster li{grid-template-columns:22px minmax(0,1fr) auto;gap:3px 6px;font-size:13px}
+ .modal.game-dialog.arena-scoreboard .match-standings h2,.modal.game-dialog.arena-scoreboard .arena-series>h2{font-size:17px}
+}
