@@ -1,3 +1,7 @@
+## 0.39.1 · Arena sıralaması sonuç ekranında
+
+Maç ve oda galibiyetleri açık, aynı stadyum teması içinde. Bitmiş tahtanın sıralama düğmesi aynı sonuca döner; canlı/genel sıralama eski krem temaya geçmez. Büyük gruplarda kişisel sıra özeti ve kısa ekranda sabit alt eylemler. Kayıt ve kurallar korunur. Doğrulama/sınırlar: [0.39.1 raporu](release-0.39.1.md).
+
 ## 0.39.0 · Kelimeden kutlamaya tek akış
 
 Son harf inişi, araçların çekilmesi ve aynı sahnede kutlama ortak sunuma bağlandı. Arena/Meydan geç onayda uçuş süresini yeniden beklemez; seçilen kelime başlık yerine tahta yanında görünür. Kısa oyun ayarları ortaklaştırıldı, rekabet üst alanındaki tekrarlar ve sonuçtaki büyük opak kart kaldırıldı. Kayıtlar ve içerik değişmedi. Kontroller ve fiziksel cihaz sınırı: [0.39.0 raporu](release-0.39.0.md).
