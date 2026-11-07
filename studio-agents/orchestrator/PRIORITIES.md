@@ -1,3 +1,5 @@
+7 Kasım 2026 · 0.41.0: tek dokunuşla ardışık oyun ve ortak ayar/yardım kabuğu; yinelenen ana menü yolları azaltıldı. 823 test, 695 Worker HTTP, tip/içerik/şema/web/native paket kontrolleri geçti. Sıradaki kabul fiziksel küçük iPhone/uzun oturum, gerçek iki Arena oyuncusu ve TestFlight dış kapılarıdır; yeni özellik araştırması değil. Kabul/kanıt ../journal/entries/2026-11-07-release-focus.md ve docs/release-0.41.0.md.
+
 # Öncelikler
 
 6 Kasım 2026,0.40.0: WoW takip listesinin ilk beş oyun içi başlığı tamamlandı: ayrı28bonus, mevcut tahta ve kapılarla tempo/yeni dünya, Koleksiyon/yan kütüphane hiyerarşisi, bağlamsal açıklama, sekiz kozmetik rozetli Sözcük Yolu. 0.39.1 Arena sonuç işi tamamlandı. Fiziksel iPhone/uzun oturum kabulü ve reklam/IAP/Game Center gerçek hesap/servis işleri açık; eski aşağıdaki kayıtlar tarihsel durumdur. Rapor: `docs/release-0.40.0.md`.

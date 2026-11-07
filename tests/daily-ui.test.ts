@@ -180,11 +180,11 @@ it('skips the daily final flight without resubmitting the day or duplicating its
  }finally{h.close();}
 });
 
-it('world welcome preserves old gates and retires its play callback on account change',async()=>{
+it('direct chapter entry retires a stale launch callback on account change',async()=>{
  const p=progress.emptyProgress();for(const id of ['uzay-1','uzay-2','uzay-3']){const b=progress.progressBoard('route:'+id)!;p.saves['route:'+id]=progress.cleanSave({strokes:b.placements,elapsed:15,hints:0,complete:false,stars:0},b);}
- const h=await app(undefined,{query:'',initial:p});try{h.find('Explore').props['openSolo']({themeId:'turkiye',level:0,journey:'turkiye-1',campaign:true});h.paint();const play=h.find('WorldWelcome').props['onPlay'];h.switchOwner('bob');play();await h.settle();assert.equal(nodes(h.tree).some(n=>n.type==='Solo'||n.type==='WorldWelcome'),false);}finally{h.close();}
+ const h=await app(undefined,{query:'',initial:p});try{const play=h.find('Explore').props['openSolo'];h.switchOwner('bob');play({themeId:'turkiye',level:0,journey:'turkiye-1',campaign:true});await h.settle();assert.equal(nodes(h.tree).some(n=>n.type==='Solo'||n.type==='WorldWelcome'),false);}finally{h.close();}
 });
-it('world welcome starts the requested real chapter and records only that first visit',async()=>{
+it('one tap starts the requested real chapter in a new world without a second Play gate',async()=>{
  const p=progress.emptyProgress();for(const id of ['uzay-1','uzay-2','uzay-3']){const b=progress.progressBoard('route:'+id)!;p.saves['route:'+id]=progress.cleanSave({strokes:b.placements,elapsed:15,hints:0,complete:false,stars:0},b);}
- const h=await app(undefined,{query:'',initial:p});try{h.find('Explore').props['openSolo']({themeId:'turkiye',level:0,journey:'turkiye-1',campaign:true});h.paint();h.find('WorldWelcome').props['onPlay']();h.paint();assert.equal(h.find('Solo').props['config'].journey,'turkiye-1');assert.deepEqual(Array.from(h.find('Solo').props['progress'].welcomedWorlds),['turkiye']);assert.equal(h.find('Solo').props['progress'].saves['route:turkiye-1'],undefined);}finally{h.close();}
+ const h=await app(undefined,{query:'',initial:p});try{h.find('Explore').props['openSolo']({themeId:'turkiye',level:0,journey:'turkiye-1',campaign:true});h.paint();assert.equal(nodes(h.tree).some(n=>n.type==='WorldWelcome'),false);assert.equal(h.find('Solo').props['config'].journey,'turkiye-1');assert.deepEqual(Array.from(h.find('Solo').props['progress'].welcomedWorlds),['turkiye']);assert.equal(h.find('Solo').props['progress'].saves['route:turkiye-1'],undefined);}finally{h.close();}
 });

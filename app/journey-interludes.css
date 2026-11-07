@@ -54,3 +54,32 @@ html[data-reduce-motion=true] .world-welcome-art>.scene-art,html[data-reduce-mot
 .game-library-sheet.game-tools-modal.dialog-scrolls>.modal-head{margin:0 -20px 18px;background:#153c46}
 @media(max-width:400px){.game-library-sheet .story-card-grid{grid-template-columns:1fr}}
 .game-library-sheet.game-tools-modal .chapter-picker-world{background:transparent;box-shadow:none}
+/* Shared settings: everyday controls first; secondary choices keep their own disclosure. */
+.settings-sheet.game-tools-modal[open]{display:flex;flex-direction:column;overflow:hidden;width:min(480px,calc(100% - 24px))}
+.settings-sheet.game-tools-modal>.modal-content{min-height:0;overflow:auto;overscroll-behavior:contain;padding:8px 20px 18px}
+.settings-sheet.game-tools-modal.dialog-scrolls{display:block;overflow:auto;padding:0 20px 20px}
+.settings-sheet.game-tools-modal.dialog-scrolls>.modal-head{margin:0 -20px 16px}
+.settings-sheet .game-settings{display:block}.settings-sheet :is(.setting-row,.comfort-setting){width:100%;color:#fff6df;border-color:#b6d2ca40;min-height:60px;padding:12px 0;gap:12px}
+.settings-sheet :is(.setting-row,.comfort-setting)>span{min-width:0;flex:1}.settings-sheet :is(.setting-row,.comfort-setting) b{font-size:16px;line-height:1.35}
+.settings-sheet :is(.setting-row,.comfort-setting) small{color:#d3e4db;font-size:13px;line-height:1.45}
+.settings-sheet .comfort-setting i{flex-shrink:0;background:#31525b;color:#e1ece2;font-size:12px}.settings-sheet .comfort-setting[aria-checked=true] i{background:#f2d999;color:#183f36}
+.settings-sheet .switch{background:#59717a}.settings-sheet .switch.on{background:#d6c786}.settings-sheet .switch:after{background:#fffbed}
+.settings-sheet :is(.settings-group,.settings-appearance){border:0;border-bottom:1px solid #b6d2ca40;margin:0}
+.settings-group>summary,.settings-sheet .settings-appearance>summary,.settings-sheet .sound-options>summary{min-height:48px;padding:15px 0;cursor:pointer;color:#fff4d4;font-size:15px;line-height:1.4;font-weight:700}
+.settings-sheet .sound-options{padding:0 0 0 32px;border-color:#b6d2ca40}.settings-sheet .sound-options[open]{padding-bottom:10px}
+.settings-sheet .sound-options>small,.settings-sheet .sound-slider-row{color:#d3e4db}.settings-sheet .sound-slider{accent-color:#f2d999}.settings-sheet .sound-slider:focus-visible{outline-color:#fff0bc}
+.settings-sheet .settings-help-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}
+.settings-sheet .settings-help-actions .button{font-size:14px;min-height:48px;padding:10px 8px}
+.settings-sheet :is(p,small,label,.muted,.privacy-copy h3,.support-back,.support-technical,.support-availability){color:#e1ece2}
+.settings-sheet .privacy-copy h3{font-size:18px;color:#ffe2a2;margin-top:22px}
+.settings-sheet :is(input:not([type=range]):not([type=checkbox]),select,textarea){background:#f8f7ee;color:#193c35;border-color:#b3c6bc;font-size:16px}
+.settings-sheet :is(input,textarea)::placeholder{color:#556b62}
+.settings-sheet .palette-options button{background:#254b52;border-color:#afc8bd60;color:#fff5df}.settings-sheet .palette-options button.selected{border-color:#f2d999;background:#355b59}.settings-sheet .palette-options button:disabled{opacity:.7}
+.settings-sheet .text-button,.help-sheet .text-button{color:#ffe2a2}.settings-sheet button:focus-visible,.settings-sheet summary:focus-visible,.help-sheet summary:focus-visible{outline:2px solid #fff0bc;outline-offset:3px}
+.help-sheet :is(p,li){font-size:15px;line-height:1.6;color:#e1ece2}.help-sheet .settings-group{border-block:1px solid #b6d2ca40;padding-bottom:8px}
+.scene-result .modal-actions>.result-bonus{display:flex;justify-content:center;width:100%;font-size:14px;opacity:1;color:#ffe2a2;min-height:44px;margin-top:6px}
+.native-shell .journey-stage-top{justify-content:flex-end}.native-shell .stage-chapter-copy h2{font-size:clamp(23px,6vw,29px);line-height:1.2;text-wrap:balance}.native-shell .stage-chapter-copy p{font-size:14px;color:#f0edda}.native-shell .stage-shortcuts{margin-top:16px}.native-shell .stage-shortcuts button{font-size:14px;color:#fff3ce;min-height:44px}
+
+.native-shell .settings-sheet .setting-row small{color:#d3e4db;font-size:13px;line-height:1.45}
+.settings-sheet .settings-help-actions .button.secondary{color:#193c35;background:#f8f7ee;border:0}
+.settings-sheet .board-color-field small{color:#d3e4db}
