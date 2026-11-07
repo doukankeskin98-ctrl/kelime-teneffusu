@@ -1,3 +1,6 @@
+## 8 Kasım 2026 · 0.42.1
+Fiziksel iPhone kurulumunda ayar/yardım ikincil düğmesinin açık zemin-açık metin çakışması giderildi. Yeni özellik yok; el rehberi kullanıcı kabulü alındı. Ayrıntı release-0.42.1.md ve ortak günlükte.
+
 ## 0.40.0 · Bonuslar ve kesintisiz yolculuk
 
 ## 7 Kasım 2026 · 0.41.0

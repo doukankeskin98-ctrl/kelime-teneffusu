@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.42.1 · Ayar ve yardım düğmelerinde kontrast
+
+Gerçek iPhone kontrolünde açık zeminde silik kalan geri/kapat düğmeleri düzeltildi. 0.42.0 el rehberi kullanıcı tarafından akıcı bulundu. Oyun ve kayıtlar korunur. [Doğrulama ve sınırlar](docs/release-0.42.1.md).
+
 ## 0.42.0 · Sade ayarlar ve çizim rehberi
 
 Sahne üzerinde büyük ses/titreşim kontrolleri ve kısa ayar menüsü; ilk oyunda gerçek kelimeyi izleyen el rehberi. Ayrıntı/gizlilik/hesap silme erişimi, kayıtlar ve Arena kuralları korunur. 827 test ve 695 Worker kontrolü geçti. [Doğrulama ve sınırlar](docs/release-0.42.0.md).
