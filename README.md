@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.42.0 · Sade ayarlar ve çizim rehberi
+
+Sahne üzerinde büyük ses/titreşim kontrolleri ve kısa ayar menüsü; ilk oyunda gerçek kelimeyi izleyen el rehberi. Ayrıntı/gizlilik/hesap silme erişimi, kayıtlar ve Arena kuralları korunur. 827 test ve 695 Worker kontrolü geçti. [Doğrulama ve sınırlar](docs/release-0.42.0.md).
+
 ## 0.41.0 · Daha sade oyun akışı
 
 Tek dokunuşla sonraki bölüm; isteğe bağlı bonus; okunaklı ana başlık ve ortak ayar/yardım/giriş tasarımı. iOS paket/sürüm eşitliği kontrolü. Mevcut ilerleme ve Arena kuralları korunur. [Doğrulama ve sınırlar](docs/release-0.41.0.md).

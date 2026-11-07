@@ -1,0 +1,43 @@
+/* Scene-level controls: a short game menu, with details in a separate sheet. */
+.modal.game-dialog.settings-home{width:min(370px,calc(100% - 32px));padding:52px 20px 12px;background:transparent;border:0;border-radius:0;box-shadow:none;color:#fff8e7;overflow:auto;animation:settings-arrive 180ms ease-out}
+.settings-home::backdrop{background:rgba(3,24,31,.68);backdrop-filter:none}
+.settings-home>.modal-head{position:static;justify-content:center;border:0;padding:0;margin:0 0 24px;background:transparent}
+.settings-home>.modal-head h2{color:#fff9e8;font-size:32px;font-weight:800;line-height:1.2;text-align:center}
+.settings-home>.modal-head .icon-button{position:absolute;right:4px;top:2px;width:44px;height:44px;min-width:44px;background:#284b52;border:1px solid #e9d697b3;color:#fff2c4;box-shadow:none}
+.settings-home .game-settings{display:block;margin-bottom:24px}
+.settings-home :is(.setting-row,.comfort-setting){display:flex;align-items:center;gap:14px;width:100%;min-height:62px;padding:8px 0;border:0;background:transparent;color:#fff8e7;text-align:left;box-shadow:none}
+.settings-home :is(.setting-row,.comfort-setting)>svg{width:27px;height:27px;flex-shrink:0;color:#fff1c9}
+.settings-home :is(.setting-row,.comfort-setting)>span{flex:1;min-width:0}
+.settings-home :is(.setting-row,.comfort-setting) b{font-size:24px;font-weight:750;line-height:1.3}
+.settings-home :is(.setting-row,.comfort-setting) .switch{display:block;position:relative;flex:0 0 70px;width:70px;height:38px;min-width:70px;margin:0;padding:0;border:1px solid #92aba5;background:#385761;border-radius:24px;box-shadow:inset 0 2px 3px #0002;transition:background 150ms ease}
+.settings-home :is(.setting-row,.comfort-setting) .switch::after{content:'';position:absolute;top:4px;left:4px;width:28px;height:28px;margin:0;border-radius:50%;background:#fffbed;transform:none;box-shadow:0 1px 3px #0004;transition:transform 150ms ease}
+.settings-home :is(.setting-row,.comfort-setting)[aria-checked=true] .switch{background:#6ca380;border-color:#b3d0a5}
+.settings-home :is(.setting-row,.comfort-setting)[aria-checked=true] .switch::after{transform:translateX(32px)}
+.settings-main-actions{display:grid;gap:12px}.settings-home .settings-main-actions>.button{display:flex;justify-content:center;position:relative;gap:12px;min-height:56px;width:100%;border-radius:28px;font-size:20px;font-weight:750;line-height:1.2;padding:12px 20px;box-shadow:0 3px 0 #052c3599}
+.settings-home .settings-main-actions>.primary{background:linear-gradient(#83b38d,#4d906f);border:1px solid #c4d6a0;color:#fffbed}.settings-home .settings-main-actions>.secondary{background:#345d65;border:1px solid #9ab6ad;color:#fffbed}
+.settings-main-actions svg{width:23px;height:23px;flex-shrink:0}
+.settings-links{margin-top:18px;display:grid}.settings-home .settings-links button{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:44px;padding:8px 4px;gap:12px;background:transparent;border:0;color:#f2efdb;font-size:15px;line-height:1.4;text-align:left}
+.settings-home .settings-version{display:block;text-align:center;font-size:11px;line-height:1.5;color:#b7cbc8;margin-top:16px}
+.settings-home button:focus-visible{outline:3px solid #ffe3a0;outline-offset:3px}.settings-home button:active{filter:brightness(1.12)}
+@keyframes settings-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-height:600px){.modal.game-dialog.settings-home{padding-top:46px}.settings-home>.modal-head{margin-bottom:12px}.settings-home>.modal-head h2{font-size:28px}.settings-home .game-settings{margin-bottom:14px}.settings-home :is(.setting-row,.comfort-setting){min-height:54px}.settings-links{margin-top:10px}.settings-home .settings-version{margin-top:8px}}
+/* The demonstration uses board coordinates and never enters the selection engine. */
+.draw-guide{position:absolute;inset:0;z-index:5;pointer-events:none!important;--guide-loop:2600ms}
+.draw-guide[hidden],.letter-board[data-selecting=true] .draw-guide{display:none}
+.draw-guide-path,.draw-guide-traveller{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.draw-guide-path line{stroke:#e9b83d;stroke-opacity:.58;stroke-dasharray:1;animation:guide-line var(--guide-loop) infinite cubic-bezier(.4,0,.25,1)}
+.draw-guide-path circle{fill:none;stroke:#825c17;stroke-width:.05;opacity:.8}
+.draw-guide-traveller{animation:guide-travel var(--guide-loop) infinite cubic-bezier(.4,0,.25,1)}
+.draw-guide-hand{position:absolute;left:var(--guide-x);top:var(--guide-y);width:42px;height:48px;overflow:visible;transform-origin:9px 8px;transform:translate(-9px,-8px) rotate(var(--guide-turn-start,0deg));filter:drop-shadow(0 2px 2px #092c4640);animation:guide-touch var(--guide-loop) infinite ease-in-out,guide-turn var(--guide-loop) infinite cubic-bezier(.4,0,.25,1)}
+.draw-guide-hand path{fill:#fff9e7;stroke:#224c4b;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.draw-guide-touch{fill:#fff2bb;stroke:#ac7c21;stroke-width:1;opacity:.5}
+@keyframes guide-turn{0%,20%{transform:translate(-9px,-8px) rotate(var(--guide-turn-start))}70%,100%{transform:translate(-9px,-8px) rotate(var(--guide-turn-end))}}
+@keyframes guide-travel{0%,20%{transform:translate(0,0)}70%,100%{transform:translate(var(--guide-dx),var(--guide-dy))}}
+@keyframes guide-line{0%,20%{stroke-dashoffset:1;opacity:0}25%{opacity:1}70%,78%{stroke-dashoffset:0;opacity:1}90%,100%{stroke-dashoffset:0;opacity:0}}
+@keyframes guide-touch{0%,8%{opacity:0}18%,74%{opacity:1}88%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.settings-home,.settings-home .switch,.settings-home .switch:after,.draw-guide *{animation:none!important;transition:none!important}.draw-guide-path line{stroke-dashoffset:0;stroke-dasharray:.12 .12;opacity:1}}
+html[data-reduce-motion=true] .settings-home,html[data-reduce-motion=true] .settings-home .switch,html[data-reduce-motion=true] .settings-home .switch:after,html[data-reduce-motion=true] .draw-guide *{animation:none!important;transition:none!important}
+html[data-reduce-motion=true] .draw-guide-path line{stroke-dashoffset:0;stroke-dasharray:.12 .12;opacity:1}
+
+.settings-open>.main-area,.settings-open>.mobile-nav{visibility:hidden}
+.settings-scenery{position:fixed;inset:0;z-index:80;pointer-events:none}.settings-scenery>.scene-art{width:100%;height:100%;object-fit:cover}

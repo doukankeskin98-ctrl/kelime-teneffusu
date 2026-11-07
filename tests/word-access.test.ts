@@ -56,11 +56,12 @@ function shared(props:any){const h=view('components/game/common.tsx');h.start('P
 describe('rotated live layout keeps the original puzzle authoritative',()=>{
  it('maps displayed ink, hint and selection back to the original board without changing targets',()=>{
   const puzzle=content.TUTORIAL,stroke=puzzle.placements[0]!,commits:engine.Cell[][]=[],words={board:puzzle,strokes:[stroke]};
-  const props={...base,turned:true,wordList:words,strokes:[stroke],hint:stroke.a,hintEnd:stroke.b,onCommit:(a:engine.Cell,b:engine.Cell)=>commits.push([a,b])},h=shared(props);
+  const props={...base,turned:true,wordList:words,strokes:[stroke],hint:stroke.a,hintEnd:stroke.b,demonstration:{a:stroke.a,b:stroke.b},onCommit:(a:engine.Cell,b:engine.Cell)=>commits.push([a,b])},h=shared(props);
   try{
    const display=h.find('Board'),map=(c:engine.Cell)=>boardPresentation.viewCell(c,puzzle.size,true);
    assert.deepEqual(display.props['board'].grid,boardPresentation.boardView(puzzle,true).grid);
    assert.deepEqual(display.props['hint'],map(stroke.a));assert.deepEqual(display.props['hintEnd'],map(stroke.b));assert.deepEqual(display.props['strokes'][0].a,map(stroke.a));
+   assert.deepEqual(display.props['demonstration'].a,map(stroke.a));assert.deepEqual(display.props['demonstration'].b,map(stroke.b));
    assert.equal(h.find('WordList').props['board'],puzzle);
    display.props['onCommit'](map(stroke.a),map(stroke.b));assert.deepEqual(commits,[[stroke.a,stroke.b]]);
    const rotatedKey=display.key;h.update('PlayLayout',{...props,turned:false});assert.notEqual(h.find('Board').key,rotatedKey);assert.equal(h.find('Board').props['board'],puzzle);
@@ -164,7 +165,7 @@ describe('achievement loop uses real Solo results and compact target access',()=
  it('keeps result actions outside the scrolling content and preserves native close callbacks',()=>{
   let continued=0,closed=0;const h=view('components/game/common.tsx');try{
    h.start('Modal',{title:'Keşif tamamlandı',className:'achievement-modal',children:jsx('p',{children:'Gerçek kazanım'}),footer:jsx('button',{children:'Sıradaki keşif',onClick:()=>continued++}),onClose:()=>closed++});
-   const body=walk(h.tree).find(n=>n.props['className']==='modal-content')!,footer=walk(h.tree).find(n=>n.type==='footer')!;assert.match(text(body),/Gerçek kazanım/);assert.doesNotMatch(text(body),/Sıradaki keşif/);assert.equal(footer.props['aria-label'],'Sonuç eylemleri');walk(footer).find(n=>n.type==='button')!.props['onClick']();assert.equal(continued,1);assert.equal(closed,0);h.find('dialog').props['onCancel']({preventDefault(){}});assert.equal(closed,1);
+   const body=walk(h.tree).find(n=>n.props['className']==='modal-content')!,footer=walk(h.tree).find(n=>n.type==='footer')!;assert.match(text(body),/Gerçek kazanım/);assert.doesNotMatch(text(body),/Sıradaki keşif/);assert.equal(footer.props['aria-label'],'İşlemler');walk(footer).find(n=>n.type==='button')!.props['onClick']();assert.equal(continued,1);assert.equal(closed,0);h.find('dialog').props['onCancel']({preventDefault(){}});assert.equal(closed,1);
   }finally{h.close();}
  });
  it('shows one confirmed inline list outside the board, with no duplicate popup',()=>{

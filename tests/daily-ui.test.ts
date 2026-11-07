@@ -188,3 +188,15 @@ it('one tap starts the requested real chapter in a new world without a second Pl
  const p=progress.emptyProgress();for(const id of ['uzay-1','uzay-2','uzay-3']){const b=progress.progressBoard('route:'+id)!;p.saves['route:'+id]=progress.cleanSave({strokes:b.placements,elapsed:15,hints:0,complete:false,stars:0},b);}
  const h=await app(undefined,{query:'',initial:p});try{h.find('Explore').props['openSolo']({themeId:'turkiye',level:0,journey:'turkiye-1',campaign:true});h.paint();assert.equal(nodes(h.tree).some(n=>n.type==='WorldWelcome'),false);assert.equal(h.find('Solo').props['config'].journey,'turkiye-1');assert.deepEqual(Array.from(h.find('Solo').props['progress'].welcomedWorlds),['turkiye']);assert.equal(h.find('Solo').props['progress'].saves['route:turkiye-1'],undefined);}finally{h.close();}
 });
+
+it('simple settings keep detail, support and guest account deletion reachable without altering progress',async()=>{
+ const p=progress.emptyProgress();p.guideDone=true;const h=await app(undefined,{query:'',initial:p});
+ const click=(label:string)=>{const n=nodes(h.tree).find(n=>n.type==='button'&&n.props['aria-label']===label);assert(n,label);n.props['onClick']();h.paint();};
+ try{
+  const original=JSON.stringify(h.find('Explore').props['progress']);click('Ayarları aç');assert.equal(h.find('Modal').props['className'],'settings-home');
+  h.find('SettingsHome').props['onMore']();h.paint();assert.equal(h.find('Modal').props['title'],'Diğer ayarlar');assert(h.find('GameSettings'));h.find('Modal').props['footer'].props['onClick']();h.paint();
+  h.find('SettingsHome').props['onSupport']();h.paint();assert(h.find('SupportReport'));h.find('Modal').props['footer'].props['onClick']();h.paint();
+  h.find('SettingsHome').props['onPrivacy']();h.paint();assert.equal(h.find('DeleteAccount').props['owner'],'alice');assert.equal(h.find('DeleteAccount').props['kind'],'guest');assert(h.find('PrivacyInfo'));h.find('Modal').props['onClose']();h.paint();
+  assert.equal(JSON.stringify(h.find('Explore').props['progress']),original);click('Ayarları aç');assert(h.find('SettingsHome'));h.find('SettingsHome').props['onHelp']();h.paint();assert(h.find('Help'));
+ }finally{h.close();}
+});

@@ -5,7 +5,7 @@ import {version} from '@/package.json';
 import {isNativeGame} from '@/lib/platform/runtime';
 import {ISSUE_KINDS,supportDraft,type IssueKind} from '@/lib/platform/support';
 
-export function SupportReport({onBack}:{onBack:()=>void}){
+export function SupportReport({onBack}:{onBack?:()=>void}){
  const [kind,setKind]=useState<IssueKind>('Kelime seçimi'),[detail,setDetail]=useState(''),[technical,setTechnical]=useState(true),[status,setStatus]=useState(''),[busy,setBusy]=useState(false);
  const preview=useRef<HTMLTextAreaElement>(null),disclosure=useRef<HTMLDetailsElement>(null),category=useRef<HTMLSelectElement>(null),active=useRef(true),lock=useRef(false);
  useEffect(()=>{active.current=true;category.current?.focus({preventScroll:true});return ()=>{active.current=false;};},[]);
@@ -18,7 +18,7 @@ export function SupportReport({onBack}:{onBack:()=>void}){
   catch{if(active.current){setStatus('Otomatik kopyalanamadı. Aşağıdaki rapor metnini seçip kopyalayabilirsin.');if(disclosure.current)disclosure.current.open=true;preview.current?.focus();preview.current?.select();}}
   finally{lock.current=false;if(active.current)setBusy(false);}
  };
- return <div className="support-report"><button className="text-button support-back" onClick={onBack}><ArrowLeft size={18}/>Ayarlara dön</button>
+ return <div className="support-report">{onBack&&<button className="text-button support-back" onClick={onBack}><ArrowLeft size={18}/>Ayarlara dön</button>}
   <p>Hangi bölümde, ne yaparken sorun yaşadığını yazabilirsin.</p>
   <p className="support-availability">Doğrudan gönderim henüz açık değil. Raporunu hazırlayıp kopyalayabilirsin.</p>
   <label htmlFor="support-kind">Sorun türü</label><select ref={category} id="support-kind" value={kind} onChange={e=>{setKind(e.target.value as IssueKind);setStatus('');}}>{ISSUE_KINDS.map(item=><option key={item}>{item}</option>)}</select>

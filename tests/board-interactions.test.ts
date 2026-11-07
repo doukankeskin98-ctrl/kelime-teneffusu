@@ -17,7 +17,7 @@ type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void;setup
 function nodes(value:unknown):Node[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object')return [];const n=value as Node;return [n,...nodes(n.props?.['children'])];}
 function text(value:unknown):string{if(typeof value==='string')return value;if(Array.isArray(value))return value.map(text).join('');return value&&typeof value==='object'?text((value as Node).props?.['children']):'';}
 const compiled=ts.transpileModule(readFileSync('components/game/Board.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
-function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[]}={}){
+function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;strokes?:Stroke[];demonstration?:{a:Cell;b:Cell}}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
  let selections=0,selectionEnds=0,renders=0,pathBuilds=0;
@@ -25,7 +25,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  const mount=(node:Node)=>{const r=node.props?.['ref'];if(!r)return;if(node.props['role']==='application'){r.current=element;return;}const key=node.props['data-cell']??node.props['className']??'selection-line';let el=dom.get(key);if(!el){const names=new Set<string>();el={attributes:new Map(),classList:{add:(v:string)=>names.add(v),remove:(v:string)=>names.delete(v),contains:(v:string)=>names.has(v)},setAttribute(k:string,v:string){this.attributes.set(k,v);}};dom.set(key,el);}if(typeof r==='function')r(el);else r.current=el;};
  const letters:number[]=[],commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
  let cursor=0,dirty=true,mounted=true,afterUnmount=0,frameId=0,tree:unknown,resize=()=>{},width=600,height=600,left=10,top=20;
- const element=Object.assign(new EventTarget(),{style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left,top,width,height}),setPointerCapture(_id:number){}});
+ const element=Object.assign(new EventTarget(),{attributes:new Map<string,string>(),setAttribute(k:string,v:string){this.attributes.set(k,v);},style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left,top,width,height}),setPointerCapture(_id:number){}});
  const hooks={
   useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return [slot.value,(next:any)=>{if(!mounted)afterUnmount++;const value=typeof next==='function'?next(slot.value):next;if(!Object.is(value,slot.value)){slot.value=value;dirty=true;}}];},
   useRef(initial:any){return (slots[cursor++]??={}).ref??={current:initial};},
@@ -33,10 +33,11 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   useMemo:(fn:()=>any)=>fn()
  };
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- const props={onResume:undefined as (()=>void)|undefined,earlyTargets:undefined as Target[]|undefined,board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;},onSelectEnd:()=>{selectionEnds++;}};
+ const props={demonstration:options.demonstration,onResume:undefined as (()=>void)|undefined,earlyTargets:undefined as Target[]|undefined,board:TUTORIAL,strokes:accepted,paused:options.paused??false,readOnly:options.readOnly??false,blocked:options.blocked??false,busy:options.busy??false,statusText:'Kelimen doğrulanıyor. Süre devam ediyor.',zoom:options.zoom??false,pan:options.pan??false,onCommit:(a:Cell,b:Cell)=>commits.push({a:[...a],b:[...b]}),onPreview:(word:string)=>previews.push(word),onSelectLetter:(depth:number)=>letters.push(depth),onSelectStart:()=>{selections++;},onSelectEnd:()=>{selectionEnds++;}};
  if(options.legacy)delete (element as any).setPointerCapture;
  Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
+  if(name==='./DrawGuide')return {DrawGuide:'DrawGuide'};
   if(name==='@/lib/platform/runtime')return {gameIsActive:()=>true};
   if(name==='@/lib/game/input-gesture')return gestures;if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
   if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
@@ -47,7 +48,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);renders++;for(const node of nodes(tree))mount(node);}if(commit)while(effects.length)effects.shift()!();}return tree;};
  const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/props.board.size,clientY:top+(cell[0]+.5)*height/props.board.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
- return {letters,commits,previews,accepted,props,paint,boardNode,send,get pathBuilds(){return pathBuilds;},
+ return {letters,commits,previews,accepted,props,paint,boardNode,send,attributes:element.attributes,get pathBuilds(){return pathBuilds;},
   native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/props.board.size,clientY:top+(cell[0]+.5)*height/props.board.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
   reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
   toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
@@ -488,6 +489,20 @@ describe('Hababam chapter 12 edge-to-edge name through native input',()=>{
    h.native('touchend',[],[end]);h.send('onPointerUp',end);
    assert.deepEqual(h.commits,[{a:[0,8],b:[0,0]}]);
    assert.equal(match(board,h.commits[0]!.a,h.commits[0]!.b)?.label,'BADİ EKREM');
+  }finally{h.unmount();}
+ });
+});
+
+
+describe('decorative guide never owns a gesture',()=>{
+ it('does not commit or buzz while idle and yields synchronously to touch and keyboard',()=>{
+  const h=harness({demonstration:{a:[0,0],b:[0,4]}});try{
+   assert(nodes(h.tree).some(n=>n.type==='DrawGuide'));assert.equal(h.commits.length,0);assert.equal(h.letters.length,0);
+   const before=h.renders;h.send('onPointerDown',[0,0]);assert.equal(h.attributes.get('data-selecting'),'true');assert.equal(h.renders,before);h.flush();assert.equal(h.commits.length,0);
+   h.send('onPointerCancel',[0,0]);assert.equal(h.attributes.get('data-selecting'),'false');
+   h.focus();h.key('Enter');assert.equal(h.attributes.get('data-selecting'),'true');h.key('Escape');assert.equal(h.attributes.get('data-selecting'),'false');
+   for(const flag of ['paused','blocked','readOnly','pan','busy'] as const){h.setProps({[flag]:true});assert(!nodes(h.tree).some(n=>n.type==='DrawGuide'));h.setProps({[flag]:false});}
+   assert.equal(h.commits.length,0);
   }finally{h.unmount();}
  });
 });
