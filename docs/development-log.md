@@ -916,3 +916,8 @@ Gerçek iPhone/Android üzerinde ana sayfanın ilk ekranı, arşivden dönüş, 
 4. Yeni tarih için yeni snapshot dosyası ekle ve `lib/studio/releases.ts` listesine bir kez kaydet. Yayımlanmış dosyaların kelimelerini, tohumlarını, kimliklerini veya tahtalarını değiştirme.
 5. `pnpm content:check`, `pnpm typecheck`, `pnpm test`, üretim derlemesi ve Worker HTTP kontrolünü geçir. Sites kaynak/paketleme yardımcısını kullan; GitHub ağacını aynı kaynak ağacıyla eşleştir ve CI sonrası birleştir.
 6. Sites'in başarılı yayın sonucu ve gerçek adresi son doğrulamadır. Kaynak kaydının varlığı tek başına yayın başarısı değildir. Bir sonraki çalışmada kaydedilmiş sürümü ve canlı yayını birlikte kontrol et.
+
+
+## 7 Kasım 2026 · 0.42.0
+
+Kullanıcının WoW/oyun ayarları karşılaştırması: ana ayarlar kısa sahne menüsüne taşındı; ayrıntılar ayrı katmanda ve hesap silme başta. İlk öğretici el döngüsü gerçek seçimden bağımsız; hareket azaltma ve tüm görünürlük kapanışları korundu. Bekleyip çıkınca rehberin kaybolması ve hedef uyuşmazlığı giderildi. 827 test, 695 Worker, tip/içerik/şema/üretim/native paket kontrolü geçti. Mobil önizleme 414×736 ve321×570; fiziksel cihaz kurulmadı. Ayrıntı: release-0.42.0.md.

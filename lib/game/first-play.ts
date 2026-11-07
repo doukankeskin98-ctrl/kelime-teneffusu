@@ -3,7 +3,7 @@ import type {Progress} from './progress.ts';
 
 /** Presentation only. Never changes a target, save, hint charge or selection rule. */
 export function needsFirstPlayGuide(progress:Progress){
- return !progress.tutorialDone&&!progress.guideDone&&!Object.values(progress.saves).some(save=>save.complete||save.strokes.length>0||save.hints>0||save.elapsed>10)&&progress.days.length===0&&progress.mysteries.length===0;
+ return !progress.tutorialDone&&!progress.guideDone&&!Object.entries(progress.saves).some(([key,save])=>save.complete||save.strokes.length>0||save.hints>0||(key!=='route:uzay-1'&&save.elapsed>10))&&progress.days.length===0&&progress.mysteries.length===0;
 }
 export function firstPlayStep(board:Puzzle,strokes:Stroke[]){
  const found=new Set(strokes.map(s=>s.id));
