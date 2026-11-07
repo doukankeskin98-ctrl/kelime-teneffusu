@@ -1,3 +1,5 @@
+8 Kasım 2026 · 0.42.1: fiziksel kurulum ve el rehberi kullanıcı kabulü; ayar/yardım ikincil düğmesinde hedefli kontrast düzeltmesi. Kayıtlar yedeklendi; uzun oturum/VoiceOver/mağaza kapıları açık. docs/release-0.42.1.md.
+
 7 Kasım 2026 · 0.42.0: kullanıcının ayarlar/öğretici ekranı geri bildirimi uygulandı. Sade sahne ayarları, el rehberi ve zaman aşımı düzeltmesi; 827 test /695 Worker. Sonraki kapı gerçek iPhone/VoiceOver/uzun oturum kabulü; bu sürümde yeniden geniş özellik araştırması yapılmadı. docs/release-0.42.0.md.
 
 7 Kasım 2026 · 0.41.0: tek dokunuşla ardışık oyun ve ortak ayar/yardım kabuğu; yinelenen ana menü yolları azaltıldı. 823 test, 695 Worker HTTP, tip/içerik/şema/web/native paket kontrolleri geçti. Sıradaki kabul fiziksel küçük iPhone/uzun oturum, gerçek iki Arena oyuncusu ve TestFlight dış kapılarıdır; yeni özellik araştırması değil. Kabul/kanıt ../journal/entries/2026-11-07-release-focus.md ve docs/release-0.41.0.md.
