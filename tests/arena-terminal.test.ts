@@ -16,7 +16,7 @@ import type {RoomView} from '../lib/game/server.ts';
 type Node={type:unknown;props:Record<string,any>};
 type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void;updates?:any[]};
 const compiled=ts.transpileModule(readFileSync('components/game/Arena.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
-function nodes(value:unknown):Node[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object')return [];const n=value as Node;return [n,...['children','aside','footer'].flatMap(key=>nodes(n.props?.[key]))];}
+function nodes(value:unknown):Node[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object')return [];const n=value as Node;return [n,...['children','aside','footer','headerAction'].flatMap(key=>nodes(n.props?.[key]))];}
 function text(value:unknown):string{if(typeof value==='string'||typeof value==='number')return String(value);if(Array.isArray(value))return value.map(text).join(' ');return value&&typeof value==='object'?text((value as Node).props?.['children']):'';}
 const NOW=2_000_000;
 const publicBoard=(({placements:_placements,...board})=>board)(TUTORIAL);
@@ -81,7 +81,7 @@ describe('Arena next and overlay lifecycle',()=>{
   try{await h.settle();h.click(/Tekrar oyna/);h.click(/Tekrar oyna/);assert.equal(h.apiCalls.length,1);assert.equal((h.apiCalls[0]!.data as any).round,1);gate.resolve({...initial,phase:'ready',round:2,revision:4,board:null,you:{...initial.you,ready:false,strokes:[],score:0}});await h.settle();assert.equal(h.has('PlayLayout'),false);assert.equal(h.modalCount(),0);h.click(/Hazırım/);await h.settle();assert.equal(h.apiCalls[1]!.action,'ready');assert.equal((h.apiCalls[1]!.data as any).round,2);}finally{h.close();}
  });
  for(const label of [/Sıralama/,/Kurallar/])it(`keeps one modal if a match finishes with ${label} open`,async()=>{
-  const h=harness(room('active',NOW-1,NOW+119_999));try{await h.settle();if(label.test('Kurallar'))nodes(h.layout().props['footer']).find(n=>n.type==='MatchTools')!.props['onHelp']();else h.click(label);await h.settle();assert.equal(h.modalCount(),1);h.push({...room('finished',NOW-121_000,NOW-1),revision:4});await h.settle();assert.equal(h.modalCount(),1);assert.equal(h.layout().props['readOnly'],true);h.closeModal();await h.settle();assert.equal(h.modalCount(),1);h.closeModal();await h.settle();assert.equal(h.modalCount(),0);}finally{h.close();}
+  const h=harness(room('active',NOW-1,NOW+119_999));try{await h.settle();if(label.test('Kurallar'))nodes(h.layout().props['headerAction']).find(n=>n.type==='MatchTools')!.props['onHelp']();else h.click(label);await h.settle();assert.equal(h.modalCount(),1);h.push({...room('finished',NOW-121_000,NOW-1),revision:4});await h.settle();assert.equal(h.modalCount(),1);assert.equal(h.layout().props['readOnly'],true);h.closeModal();await h.settle();assert.equal(h.modalCount(),1);h.closeModal();await h.settle();assert.equal(h.modalCount(),0);}finally{h.close();}
  });
  it('ignores an older recovery after successful leave, even when a new room is already open',async()=>{
   const initial={...room('ready',null,null),board:null},gate=deferredRoom();let gets=0,failed=false;
