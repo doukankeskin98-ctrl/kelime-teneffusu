@@ -66,10 +66,15 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   try{const next=await arenaRequest(signal=>api<RoomView>(action,{...data,...(room?{round:room.round,expectedOwnerId:room.you.id}:ownerId?{expectedOwnerId:ownerId}:{})},signal));if(isCurrent(stamp)){accept(next,action==='enter');if(action==='enter')setJoinedAt(Date.now());if(action==='ready'&&next.you.ready&&!room?.you.ready&&next.id===room?.id&&next.round===room?.round&&currentRoom.current?.revision===next.revision)chime('ready');}}
   catch(e){if(isCurrent(stamp))setError((e as Error).message);}finally{actionLock.current=false;if(mounted.current)setBusy(false);}
  };
- const leave=async()=>{
+ const leave=async(waitingOnly=false)=>{
   if(!room)return true;if(actionLock.current)return false;actionLock.current=true;epoch.current++;const stamp=context();setBusy(true);setError('');
-  try{await arenaRequest(signal=>api('leave',{id:room.id,round:room.round,expectedOwnerId:room.you.id},signal));if(!isCurrent(stamp))return false;epoch.current++;accept(null,true);setLeaving(false);setPreview('');setPending(null);const url=new URL(location.href);url.searchParams.delete('oda');history.replaceState(null,'',url.pathname+url.search);return true;}
+  try{await arenaRequest(signal=>api('leave',{id:room.id,round:room.round,expectedOwnerId:room.you.id,...(waitingOnly?{waitingOnly:true}:{})},signal));if(!isCurrent(stamp))return false;epoch.current++;accept(null,true);setLeaving(false);setPreview('');setPending(null);const url=new URL(location.href);url.searchParams.delete('oda');history.replaceState(null,'',url.pathname+url.search);return true;}
   catch(e){if(isCurrent(stamp))setError((e as Error).message);return false;}finally{actionLock.current=false;if(mounted.current)setBusy(false);}
+ };
+ const waitingChallenge=async()=>{
+  const current=currentRoom.current;
+  if(!onChallenge||!current||current.id!==room?.id||current.round!==room?.round||current.kind!=='quick'||current.phase!=='waiting'||current.players?.some(p=>p.id!==current.you.id&&!p.left))return;
+  if(await leave(true))onChallenge();
  };
  const copy=async()=>{if(!room)return;const stamp=context();setShare('');const result=await shareLink('Kelime Teneffüsü’nde birlikte yarışalım mı?',inviteLink('oda',room.code));if(!isCurrent(stamp)||result==='busy')return;setShare(shareMessage(result));if(shareSucceeded(result))track('invite_share');};
  const commit=async(a:Cell,b:Cell)=>{
@@ -106,6 +111,7 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   </div>
   <footer className="arena-room-actions">
   {room.roundUnavailable&&<p className="error-box" role="status">{room.roundUnavailable}</p>}
+  {onChallenge&&room.kind==='quick'&&room.phase==='waiting'&&members.length===1&&now-offset.current-joinedAt>=15000&&<div className="arena-wait-alternative"><p>Beklemek istemezsen aynı bulmacada farklı saatlerde yarışabilirsin.</p><button className="button secondary full" disabled={busy} onClick={()=>void waitingChallenge()}>Meydan okumaya geç <ArrowRight size={18}/></button></div>}
   {room.phase==='cancelled'?<p>{room.reason}</p>:room.phase==='waiting'?<p role="status"><LoaderCircle className="spin" size={16}/>{room.kind==='friend'?'Davet ettiğin oyuncular bekleniyor.':'Bir oyuncu daha katılınca hazırlanabilirsiniz.'}</p>:<><p>{room.you.ready?(group&&!host?'Oda sahibinin başlatması bekleniyor.':group?'Herkes hazır olduğunda maçı başlat.':'Rakibin hazır olduğunda düello başlar.'):'Hazır olduğunda aşağıya dokun.'}</p><div className="arena-ready-buttons"><button className="button primary" disabled={room.you.ready||busy} onClick={()=>void run('ready',{id:room.id})}>{busy?<LoaderCircle className="spin" size={18}/>:<Check size={18}/>} {room.you.ready?'Hazırsın':'Hazırım'}</button>{group&&host&&<button className="button gold" disabled={!(room.canStart??allReady)||busy} onClick={()=>void run('start',{id:room.id})}>Maçı başlat <ArrowRight size={18}/></button>}</div></>}
   {connection==='reconnecting'&&<p role="status">Bağlantı yenileniyor…</p>}{error&&<div className="error-box" role="alert">{error}<button className="text-button" disabled={busy} onClick={()=>void recover()}>Odayı kontrol et</button></div>}
   <button className="text-button full" disabled={busy} onClick={()=>void leave()}>{room.phase==='cancelled'?'Arena’ya dön':'Odadan ayrıl'}</button>

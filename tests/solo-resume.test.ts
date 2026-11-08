@@ -43,7 +43,7 @@ function nodes(value:unknown):Node[]{
 function textOf(value:unknown):string{
  if(typeof value==='string')return value;
  if(Array.isArray(value))return value.map(textOf).join(' ');
- return value&&typeof value==='object'?textOf((value as Node).props?.['children']):'';
+ return value&&typeof value==='object'?['children','footer'].map(key=>textOf((value as Node).props?.[key])).join(' '):'';
 }
 function harness({initial=saved([]),practice=false,known=false,reduced=true}:{initial?:SavedLevel;practice?:boolean;known?:boolean;reduced?:boolean}={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],writes:SavedLevel[]=[];

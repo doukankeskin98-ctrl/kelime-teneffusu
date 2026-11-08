@@ -71,18 +71,18 @@ export function nextMainMilestone(progress:Pick<Progress,'saves'>,fromId?:string
  return null;
 }
 
-/** The first ten alternate a small breather with a new skill; existing puzzles are immutable. */
+/** Short, optional coaching for the actual first ten. Never promise an unearned unlock. */
 export const FIRST_TEN_LESSONS:Record<string,string>={
- 'uzay-1':'İlk kelime: bir ucundan diğerine kaydır. İki ucuna dokunmak da olur.',
- 'uzay-2':'Şimdi çaprazlara bak. Bir harf birden fazla kelimede kullanılabilir.',
- 'uzay-3':'Uzun kelimelerde ilk ve son harfi ara. Bu bölüm yeni dünyayı açar.',
- 'turkiye-1':'Yeni dünyada kısa bir mola: dört kısa kelime, küçük bir tahta.',
- 'uzay-4':'Bakış açını değiştir: kelimeler tersten de seçilebilir.',
- 'turkiye-2':'Tanıdık şehirlerle ritmini bul. Yanlış seçim ceza getirmez.',
- 'turkiye-3':'Birden fazla parçalı adlar tek hedef. Bu bölüm yeni dünyayı açar.',
- 'ozgun-okul-1':'Yeni bir dünya, yeniden küçük bir tahta. Dört kelimeyle başla.',
- 'uzay-5':'İlk ustalık bölümü: uzun adları parça parça bul. Büyük harf moduyla yakından bakabilirsin.',
- 'uzay-gozlemevi':'Altıncı parça: bu bölüm ilk albümünü tamamlar.',
+ 'uzay-1':'Kaydırmak yerine kelimenin iki ucuna da dokunabilirsin.',
+ 'uzay-2':'Çaprazlara da bak. Bir harf birkaç kelimede kullanılabilir.',
+ 'uzay-3':'Uzun kelimelerde önce ilk ve son harfi ara.',
+ 'uzay-4':'Kelimeleri tersten de seçebilirsin.',
+ 'uzay-5':'Aynı addaki parçaları ayrı ayrı bul.',
+ 'uzay-gozlemevi':'Takılırsan listedeki bir kelimeyi seç, sonra ipucu al.',
+ 'turkiye-1':'Yeni bir manzara, tanıdık kelimeler. Acele yok.',
+ 'turkiye-2':'Yanlış seçim ceza getirmez. Farklı bir yön dene.',
+ 'turkiye-3':'İpucu, seçtiğin kelimenin ilk harfini gösterir.',
+ 'turkiye-4':'Bulamazsan tahtayı döndürerek yeniden bak.',
 };
 
 export function nextChapterLabel(number:number){

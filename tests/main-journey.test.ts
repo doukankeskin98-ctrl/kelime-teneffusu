@@ -74,3 +74,8 @@ describe('chapter picker and legacy continuation share access rules',()=>{
   const untouched=emptyProgress();untouched.saves['route:turkiye-kartpostal']=cleanSave(undefined,journeyBoard(journeyById('turkiye-kartpostal')!));assert.equal(mainJourneyChapters(untouched).find(x=>x.chapter.id==='turkiye-kartpostal')!.unlocked,false);
  });
 });
+
+it('keeps optional first-ten coaching aligned with the visible journey without unlock promises',()=>{
+ assert.deepEqual(Object.keys(FIRST_TEN_LESSONS).sort(),MAIN_JOURNEY.slice(0,10).map(x=>x.chapter.id).sort());
+ for(const copy of Object.values(FIRST_TEN_LESSONS)){assert(copy.length<=70);assert(!/dünyayı açar|albümünü tamamlar/.test(copy));}
+});
