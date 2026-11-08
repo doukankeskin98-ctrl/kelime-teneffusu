@@ -2,6 +2,7 @@ import type {HapticsAdapter,HapticCue} from '../game/haptics.ts';
 
 export interface NativeHapticDriver {
  menu?:()=>Promise<void>;
+ landing?:()=>Promise<void>;
  selectionStart:()=>Promise<void>;
  selectionChanged:()=>Promise<void>;
  selectionEnd:()=>Promise<void>;
@@ -12,7 +13,7 @@ type Selection={busy:boolean;closed:boolean;ending:boolean;last:number};
 
 /** One live native selection, no pulse queue. Late preparation cannot replay input. */
 export function nativeHaptics(driver:NativeHapticDriver,active:()=>boolean,now:()=>number=()=>performance.now()):HapticsAdapter {
- let selection:Selection|null=null,menuBusy=false,lastMenu=-Infinity;
+ let selection:Selection|null=null,menuBusy=false,lastMenu=-Infinity,landingBusy=false,lastLanding=-Infinity;
  const end=async(s:Selection)=>{
   if(s.ending)return;s.ending=true;
   try{await driver.selectionEnd();}catch{/* Haptics may be unavailable. */}
@@ -31,6 +32,11 @@ export function nativeHaptics(driver:NativeHapticDriver,active:()=>boolean,now:(
  };
  const play=(cue:HapticCue)=>{
   if(!active()){stop();return;}
+  // A previous word can land while the next drag is active. Never end that drag.
+  if(cue==='landing'){
+   const at=now();if(landingBusy||at-lastLanding<80||!driver.landing)return;lastLanding=at;landingBusy=true;
+   try{void driver.landing().catch(()=>{}).finally(()=>{landingBusy=false;});}catch{landingBusy=false;}return;
+  }
   if(cue==='menu'){
    const at=now();if(menuBusy||at-lastMenu<65||!driver.menu)return;lastMenu=at;menuBusy=true;
    try{void driver.menu().catch(()=>{}).finally(()=>{menuBusy=false;});}catch{menuBusy=false;}return;

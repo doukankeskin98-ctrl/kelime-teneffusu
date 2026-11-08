@@ -49,8 +49,8 @@ describe('the visible goal follows real permanent progression',()=>{
  });
  it('moves the visible milestone from the third stop to the fifth and then the sixth real piece',()=>{
   const p=first(2);let g=achievement.journeyGoal(p,'uzay-3')!;assert.equal(g.milestone.total,3);assert.equal(g.milestone.value,2);assert.match(g.milestone.label,/1 durak daha/);
-  finish(p,'uzay-3',3);g=achievement.journeyGoal(p,'uzay-4')!;assert.equal(g.milestone.total,5);assert.equal(g.milestone.value,3);assert.match(g.milestone.label,/2 durak kaldı/);
-  finish(p,'uzay-4');finish(p,'uzay-5');const bonus=JOURNEY_BONUSES.find(j=>j.themeId==='uzay')!;g=achievement.journeyGoal(p,bonus.id)!;assert.equal(g.milestone.total,6);assert.equal(g.milestone.value,5);assert.equal(g.position,5);assert.match(g.milestone.label,/Bonus açık/);
+  finish(p,'uzay-3',3);g=achievement.journeyGoal(p,'uzay-4')!;assert.equal(g.milestone.total,5);assert.equal(g.milestone.value,3);assert.match(g.milestone.label,/2 bölüm kaldı/);
+  finish(p,'uzay-4');finish(p,'uzay-5');const bonus=JOURNEY_BONUSES.find(j=>j.themeId==='uzay')!;g=achievement.journeyGoal(p,bonus.id)!;assert.equal(g.milestone.total,6);assert.equal(g.milestone.value,5);assert.equal(g.position,5);assert.match(g.milestone.label,/Son bölüm açık/);
   finish(p,bonus.id);g=achievement.journeyGoal(p,bonus.id)!;assert.equal(g.milestone.value,6);assert.equal(g.earned,true);assert.match(g.milestone.label,/Altı parça da albümünde/);
  });
  it('respects previously started worlds and a completed catalogue instead of promising a locked reward',()=>{
@@ -105,7 +105,7 @@ const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery
 describe('numbered journey home and real result',()=>{
  it('shows one primary action and chapter access without duplicate menu shortcuts',()=>{
   const html=render(numberedHome['JourneyHome'],{progress:emptyProgress(),onPlay(){},onExplore(){}});
-  assert.match(html,/Oyna/);assert.match(html,/Bölüm 1/);assert.match(html,/Bütün yolculuk bölümlerini aç/);assert.match(html,/Diğer oyunlar/);assert.doesNotMatch(html,/stage-milestone|stage-wordmark/);assert.equal((html.match(/class="stage-play/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
+  assert.match(html,/Oyna/);assert.match(html,/Bölüm 1/);assert.match(html,/Bu bölümün ödülü/);assert.match(html,/İlk yıldız/);assert.match(html,/0 \/ 6 albüm parçası/);assert.match(html,/Bütün yolculuk bölümlerini aç/);assert.match(html,/Diğer oyunlar/);assert.doesNotMatch(html,/stage-milestone|stage-wordmark/);assert.equal((html.match(/class="stage-play/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
  });
  it('continues an existing route and shows a truthful complete-catalogue state',()=>{
   const p=emptyProgress(),b=journeyBoard(journeyById('uzay-2')!);p.saves['route:uzay-2']=cleanSave({strokes:[b.placements[0]!],hints:0,elapsed:10,complete:false,stars:0},b);p.last={themeId:'uzay',level:0,journey:'uzay-2'};
@@ -115,7 +115,7 @@ describe('numbered journey home and real result',()=>{
  });
  it('renders actual album before/after and the new world, then keeps replay unchanged',()=>{
   const before=first(2),p=finish(copy(before),'uzay-3'),props={before:achievement.journeyGoal(before,'uzay-3'),after:achievement.journeyGoal(p,'uzay-3'),rewards:discoveryRewards(before,p),save:p.saves['route:uzay-3']};
-  let html=render(numberedResult['JourneyResult'],props);assert.match(html,/Albüm: 2\/6 → 3\/6 parça/);assert.match(html,/3\/6 parça/);assert.match(html,/Yeni dünya/);assert.match(html,/Anadolu Patikası/);
+  let html=render(numberedResult['JourneyResult'],props);assert.match(html,/Bölüm 3 tamamlandı/);assert.match(html,/Albüm: 2\/6 → 3\/6 parça/);assert.match(html,/3\/6 parça/);assert.match(html,/Yeni dünya/);assert.match(html,/Anadolu Patikası/);
   html=render(numberedResult['JourneyResult'],{...props,before:props.after,rewards:[]});assert.match(html,/Albümündeki parça/);assert.match(html,/Albüm: 3\/6 → 3\/6 parça/);assert.match(html,/3\/6 parça/);assert.doesNotMatch(html,/Yeni dünya/);
  });
  it('explains tutorial reward status and displays no permanent stars',()=>{

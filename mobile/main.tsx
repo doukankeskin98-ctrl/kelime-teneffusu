@@ -16,7 +16,7 @@ if(Capacitor.isNativePlatform()){
  installNativeSharing();
  const driver=Capacitor.getPlatform()==='ios'&&Capacitor.isPluginAvailable('GameHaptics')
   ?registerPlugin<NativeHapticDriver>('GameHaptics')
-  :{menu:()=>Haptics.impact({style:ImpactStyle.Light}),selectionStart:()=>Haptics.selectionStart(),selectionChanged:()=>Haptics.selectionChanged(),selectionEnd:()=>Haptics.selectionEnd(),word:()=>Haptics.impact({style:ImpactStyle.Medium}),complete:()=>Haptics.notification({type:NotificationType.Success})};
+  :{landing:()=>Haptics.impact({style:ImpactStyle.Light}),menu:()=>Haptics.impact({style:ImpactStyle.Light}),selectionStart:()=>Haptics.selectionStart(),selectionChanged:()=>Haptics.selectionChanged(),selectionEnd:()=>Haptics.selectionEnd(),word:()=>Haptics.impact({style:ImpactStyle.Medium}),complete:()=>Haptics.notification({type:NotificationType.Success})};
  setHapticsAdapter(nativeHaptics(driver,()=>gameIsActive()&&!document.hidden));
  void App.addListener('appStateChange',({isActive})=>{
   setGameActive(isActive);

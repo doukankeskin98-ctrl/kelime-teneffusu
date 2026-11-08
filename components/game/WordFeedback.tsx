@@ -3,9 +3,12 @@ import {useEffect,useLayoutEffect,useRef,type RefObject} from 'react';
 import type {Puzzle,Stroke} from '@/lib/game/engine';
 import {wordFeedbackLedger,wordFlightPlan,wordFlightFrames,wordLetterDelay,WORD_FLIGHT_MS,WORD_LANDING_MS,WORD_RESULT_DELAY_MS,type FlightRect} from '@/lib/game/word-feedback';
 import {gameIsActive} from '@/lib/platform/runtime';
+import {playHaptic} from '@/lib/game/haptics';
+import {usePlayHapticsEnabled} from './PlayPreferences';
 
 /** Decoration observes server words and an optional local match; never grants score. */
 export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:{root:RefObject<HTMLElement|null>;scope:string;board:Pick<Puzzle,'size'|'targets'|'grid'>;confirmed:Stroke[];preview?:Stroke|null;turned:boolean;paused:boolean}){
+ const enabled=usePlayHapticsEnabled(),live=useRef({enabled,paused});live.current={enabled,paused};
  const ledger=useRef(wordFeedbackLedger(scope,confirmed.map(s=>s.id)));
  const work=useRef(new Map<string,()=>void>()),previousTurn=useRef(turned);
  const arrivals=useRef(new Map<HTMLElement,number>());
@@ -61,7 +64,8 @@ export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:
    while(work.current.size>=4)work.current.values().next().value?.();
    arrivals.current.set(destination,(arrivals.current.get(destination)??0)+1);destination.dataset['wordArriving']='true';
    let arrived=false;
-   const arrive=()=>{if(arrived)return;arrived=true;const left=(arrivals.current.get(destination)??1)-1;if(left>0)arrivals.current.set(destination,left);else{arrivals.current.delete(destination);delete destination.dataset['wordArriving'];}};
+   const arrive=(landed=false)=>{if(arrived)return;arrived=true;
+    if(landed&&!stopped&&!live.current.paused&&!document.hidden&&gameIsActive()&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches&&document.documentElement.dataset['reduceMotion']!=='true')playHaptic('landing',live.current.enabled);const left=(arrivals.current.get(destination)??1)-1;if(left>0)arrivals.current.set(destination,left);else{arrivals.current.delete(destination);delete destination.dataset['wordArriving'];}};
    const spark=document.createElement('span');spark.className='word-flight word-flight-letters';spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
    const animations:Animation[]=[];let timer:ReturnType<typeof setTimeout>|undefined,stopped=false;
    const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);arrive();for(const animation of animations)animation.cancel();spark.remove();work.current.delete(id);};
@@ -70,7 +74,7 @@ export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:
     for(const [i,letter] of letters.entries()){
      const glyph=document.createElement('span');glyph.className='word-flight-glyph';glyph.textContent=letter.text;Object.assign(glyph.style,style,{fontSize:fontSize+'px'});spark.appendChild(glyph);
      const animation=glyph.animate(wordFlightFrames(letter,scale),{duration:WORD_FLIGHT_MS,delay:wordLetterDelay(i),easing:'linear',fill:'both'});
-     if(i===letters.length-1)animation.onfinish=arrive;
+     if(i===letters.length-1)animation.onfinish=()=>arrive(true);
      animations.push(animation);
     }
     if(destination.hasAttribute('data-word-group'))animations.push(destination.animate([{transform:'scale(1)'},{transform:'scale(1.07)',offset:.35},{transform:'scale(1)'}],{delay:WORD_FLIGHT_MS+wordLetterDelay(letters.length-1),duration:WORD_LANDING_MS,easing:'ease-out'}));

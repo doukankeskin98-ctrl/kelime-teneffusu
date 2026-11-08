@@ -7,6 +7,7 @@ import {hapticsAvailable} from '@/lib/game/haptics';
 type Preferences={haptics:boolean;onHaptics:()=>void;comfort:Comfort;onComfort:(next:Comfort)=>void};
 const Context=createContext<Preferences|null>(null);
 export const PlayPreferencesProvider=Context.Provider;
+export const usePlayHapticsEnabled=()=>useContext(Context)?.haptics??false;
 /** Shares the app's existing preferences; never owns a save or a game clock. */
 export function PlayComfortSettings(){
  const value=useContext(Context),[vibration,setVibration]=useState(false);

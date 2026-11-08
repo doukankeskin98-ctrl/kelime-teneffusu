@@ -1,0 +1,19 @@
+/* Stable chapter identity; the board and word rack retain their space. */
+.scenic-play.chapter-play .play-title{display:flex;flex-direction:column;gap:1px}
+.scenic-play.chapter-play .play-context{display:flex;align-items:center;gap:9px;line-height:18px}
+.scenic-play.chapter-play .play-context>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#dce8dd;font-size:11px}
+.scenic-play.chapter-play .play-chapter-number{flex:none;color:#ffe29b;font-size:13px;font-weight:800;letter-spacing:.01em}
+.scenic-play.chapter-play .play-title h1{font-size:21px;line-height:25px}
+.stage-chapter-copy .stage-chapter-number{display:block;color:#ffdf96;font-size:15px;font-weight:800;letter-spacing:.02em;margin-bottom:7px}
+.stage-reward{display:flex;align-items:center;gap:12px;max-width:440px;margin:14px auto 0;padding:10px 14px;background:#103b46e6;color:#fff8e5;border:1px solid #dce7cd40;border-radius:14px;text-align:left}
+.stage-reward>svg{flex:none;color:#f4d68e}.stage-reward>div{flex:1;min-width:0}.stage-reward small{display:block;color:#dce8db;font-size:11px;line-height:16px;font-weight:500}.stage-reward strong{display:block;font-size:15px;line-height:20px;overflow-wrap:anywhere}.stage-reward>span{flex:none;font-size:21px;font-weight:800;color:#ffe29b;font-variant-numeric:tabular-nums}.stage-reward>span>small{display:inline;font-size:13px;margin-left:1px}
+.stage-trail button{font-variant-numeric:tabular-nums}.result-chapter-number{text-align:center;color:#ffe29b;font-size:13px;line-height:18px;font-weight:800;margin:0 0 3px}
+.result-next-goal{display:grid;grid-template-columns:1fr;gap:2px;text-align:center;margin:14px 0 0;padding:10px 0 0;border-top:1px solid #dce8d529;color:#fff6dd}
+.result-next-goal>span{font-size:11px;color:#d6e3d8}.result-next-goal>strong{font-size:16px;line-height:21px}.result-next-goal>small{font-size:12px;line-height:18px;color:#eadba9}
+@media(max-height:700px){.stage-reward{margin-top:10px;padding:7px 12px}.stage-chapter-copy .stage-chapter-number{margin-bottom:3px}.result-next-goal{margin-top:8px;padding-top:7px}.scenic-play.chapter-play .play-title h1{font-size:19px}}
+/* Keep the next chapter reachable even with Safari chrome on short phones. */
+@media(min-height:420px){
+ .modal.game-dialog.scene-result:not(.dialog-scrolls)[open]{display:flex;flex-direction:column;overflow:hidden}
+ .modal.game-dialog.scene-result:not(.dialog-scrolls)>.modal-content{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+ .modal.game-dialog.scene-result:not(.dialog-scrolls)>.modal-actions{flex:none}
+}

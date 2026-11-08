@@ -1,6 +1,7 @@
 'use client';
 import {MechanicGuide} from './MechanicGuide';
 import {gameIsActive} from '@/lib/platform/runtime';
+import {observeGameActivity} from '@/lib/platform/activity';
 import {useResultPresentation} from './useResultPresentation';
 import {useEffect,useMemo,useRef,useState,type Dispatch,type SetStateAction} from 'react';
 import {ArrowRight,Check,Clock,Lightbulb,LockKeyhole,Sparkles,Star,Trophy} from 'lucide-react';
@@ -17,14 +18,18 @@ export function Mystery({id,progress,onProgress,onBack,onNext}:{id:string;progre
  const [intro,setIntro]=useState(()=>!progress.mechanicGuides?.includes('mystery')&&!MYSTERIES.some(m=>((s)=>!!s&&(s.strokes.length>0||s.elapsed>0||s.complete))(progress.saves['mystery:'+m.id])));
  const closeIntro=()=>{setIntro(false);onProgress(p=>({...p,mechanicGuides:[...new Set([...(p.mechanicGuides??[]),'mystery' as const])]}));};
  const [feedbackRun,setFeedbackRun]=useState(0);
- const [save,setSave]=useState(()=>cleanSave(progress.saves[key],board)),[solved,setSolved]=useState(progress.mysteries.includes(spec.id)),[preview,setPreview]=useState(''),[paused,setPaused]=useState(false),[hint,setHint]=useState<Cell|null>(null),[choose,setChoose]=useState(false),[message,setMessage]=useState(''),[help,setHelp]=useState(false),[review,setReview]=useState(false);
+ const [save,setSave]=useState(()=>cleanSave(progress.saves[key],board)),[solved,setSolved]=useState(progress.mysteries.includes(spec.id)),[preview,setPreview]=useState(''),[toolsPaused,setPaused]=useState(false),[foreground,setForeground]=useState(true),[hint,setHint]=useState<Cell|null>(null),[choose,setChoose]=useState(false),[message,setMessage]=useState(''),[help,setHelp]=useState(false),[review,setReview]=useState(false);
+ const paused=toolsPaused||!foreground;
+ const clock=useRef({at:0,tick:0,active:true});
+ useEffect(()=>observeGameActivity(document,window,gameIsActive,active=>{clock.current={at:performance.now(),tick:0,active};setForeground(active);}),[]);
  const result=useResultPresentation(save.complete,spec.id+':'+feedbackRun);
  const [preferredGroup,setPreferredGroup]=useState<number|null>(null),hintCount=useRef(save.hints);hintCount.current=save.hints;
  const chime=useChime(progress.sound,progress.haptics),foundRef=useRef(save.strokes);foundRef.current=save.strokes;
  const baseFound=save.strokes.filter(s=>Number(s.id.split('.')[0])<spec.words.length).length,canGuess=baseFound>=3;
  useEffect(()=>{track('level_start');},[]);
  useEffect(()=>{
-  if(paused||save.complete||choose||help||intro)return;const at=performance.now(),base=save.elapsed,t=setInterval(()=>setSave(s=>({...s,elapsed:base+Math.floor((performance.now()-at)/1000)})),1000),hide=()=>{if(document.hidden||!gameIsActive())setPaused(true);};document.addEventListener('visibilitychange',hide);return ()=>{clearInterval(t);document.removeEventListener('visibilitychange',hide);};
+  if(paused||save.complete||choose||help||intro)return;clock.current={at:performance.now(),tick:0,active:foreground};
+  const t=setInterval(()=>{const c=clock.current;if(!c.active||document.hidden||!gameIsActive())return;const tick=Math.floor((performance.now()-c.at)/1000),delta=tick-c.tick;c.tick=tick;if(delta>0)setSave(s=>s.complete?s:{...s,elapsed:s.elapsed+delta});},1000);return ()=>clearInterval(t);
  },[paused,save.complete,choose,help,intro]);
  useEffect(()=>{onProgress(p=>({...p,saves:{...p.saves,[key]:keepBestSave(p.saves[key],save)},mysteries:solved?[...new Set([...p.mysteries,spec.id])]:p.mysteries}));},[save,solved]);
  useEffect(()=>{if(!hint)return;const timer=setTimeout(()=>setHint(null),3500);return ()=>clearTimeout(timer);},[hint]);

@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.43.0 · Kesintisiz bölüm akışı ve yerleşme titreşimi
+
+Ayrı duraklatma kaldırıldı; bölüm kimliği, albüm parçası ve sıradaki hedef netleşti. Harf inişinde ikinci kısa haptik, sonraki çizimi kesmeden çalışır. Kayıtlar/kurallar korunur. [Doğrulama ve sınırlar](docs/release-0.43.0.md).
+
 ## 0.42.1 · Ayar ve yardım düğmelerinde kontrast
 
 Gerçek iPhone kontrolünde açık zeminde silik kalan geri/kapat düğmeleri düzeltildi. 0.42.0 el rehberi kullanıcı tarafından akıcı bulundu. Oyun ve kayıtlar korunur. [Doğrulama ve sınırlar](docs/release-0.42.1.md).

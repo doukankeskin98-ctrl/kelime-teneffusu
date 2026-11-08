@@ -11,7 +11,7 @@ const flush=async()=>{for(let i=0;i<16;i++)await Promise.resolve();};
 function boot(native=true,available=true){
  let active=true,adapter:HapticsAdapter|null=null,listener:((state:{isActive:boolean})=>void)|undefined;
  const calls:string[]=[],registrations:string[]=[];
- const plugin=Object.fromEntries(['menu','selectionStart','selectionChanged','selectionEnd','word','complete'].map(name=>[name,async()=>{calls.push('game:'+name);}]));
+ const plugin=Object.fromEntries(['landing','menu','selectionStart','selectionChanged','selectionEnd','word','complete'].map(name=>[name,async()=>{calls.push('game:'+name);}]));
  const fallback={impact:async({style}:{style:string})=>{calls.push('fallback:'+style);},notification:async()=>{calls.push('fallback:complete');},...Object.fromEntries(['selectionStart','selectionChanged','selectionEnd'].map(name=>[name,async()=>{calls.push('fallback:'+name);}]))};
  const modules:Record<string,unknown>={
   'react-dom/client':{createRoot:()=>({render(){}})},'react/jsx-runtime':{jsx:()=>null},
@@ -42,4 +42,7 @@ it('native background lifecycle stops selection and suppresses subsequent feedba
  const h=boot();h.adapter!('selection');await flush();h.state(false);await flush();const count=h.calls.length;
  h.adapter!('selection');h.adapter!('word');h.adapter!('complete');await flush();assert.equal(h.calls.length,count);
  assert.equal(h.calls.at(-1),'game:selectionEnd');h.state(true);h.adapter!('selection');await flush();assert.deepEqual(h.calls.slice(-2),['game:selectionStart','game:selectionChanged']);h.adapter!.stopSelection!();await flush();
+});
+it('mobile landing uses its dedicated driver and the light fallback without ending selection',async()=>{
+ for(const available of [true,false]){const h=boot(true,available);h.adapter!('selection');await flush();const before=h.calls.length;h.adapter!('landing');await flush();assert.deepEqual(h.calls.slice(before),[available?'game:landing':'fallback:light']);h.adapter!.stopSelection!();await flush();}
 });

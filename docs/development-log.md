@@ -1,3 +1,6 @@
+## 8 Kasım 2026 · 0.43.0
+Durdurma/bölüm/ödül notları ve son harf iniş titreşimi uygulandı. 835 test, 695 Worker; küçük ekran sonucu eylemleri sabit. Telefon erişilemedi; fiziksel kurulum/his kabulü yok. Ayrıntı release-0.43.0.md.
+
 ## 8 Kasım 2026 · 0.42.1
 Fiziksel iPhone kurulumunda ayar/yardım ikincil düğmesinin açık zemin-açık metin çakışması giderildi. Yeni özellik yok; el rehberi kullanıcı kabulü alındı. Ayrıntı release-0.42.1.md ve ortak günlükte.
 

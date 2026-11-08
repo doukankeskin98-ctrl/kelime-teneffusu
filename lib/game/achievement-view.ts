@@ -9,8 +9,8 @@ export function journeyGoal(progress:Pick<Progress,'saves'>,journeyId?:string){
  const state=states[index]!,chapters=[...state.chapters,state.bonus],position=chapters.findIndex(j=>j.id===journeyId),chapter=chapters[position]!,nextWorld=states[index+1];
  const milestone=!state.unlocked?{label:`${state.previousTitle}: ${state.remaining} bölüm daha`,value:DISCOVERY_GATE-state.remaining,total:DISCOVERY_GATE}
   :nextWorld&&!nextWorld.unlocked?{label:`${nextWorld.expedition.title} için ${Math.max(0,DISCOVERY_GATE-state.done)} durak daha`,value:Math.min(DISCOVERY_GATE,state.done),total:DISCOVERY_GATE}
-  :!state.bonusUnlocked?{label:`Bonus keşfe ${state.chapters.length-state.done} durak kaldı`,value:state.done,total:state.chapters.length}
-  :!state.complete?{label:'Bonus açık · Son parçayı keşfet',value:state.pieces,total:6}
+  :!state.bonusUnlocked?{label:`Albümün son bölümüne ${state.chapters.length-state.done} bölüm kaldı`,value:state.done,total:state.chapters.length}
+  :!state.complete?{label:'Son bölüm açık · Albümünü tamamla',value:state.pieces,total:6}
   :{label:'Altı parça da albümünde',value:6,total:6};
  return {state,chapter,piece:state.expedition.pieces[position]!,position,earned:state.earned[position]!,milestone};
 }

@@ -32,6 +32,7 @@ describe('confirmed word feedback ledger',()=>{
 });
 function harness(initial:string[]=[],measured=false,labelText='KALE'){
  const slots:any[]=[],effects:(()=>void)[]=[],timers=new Map<number,()=>void>(),sparks=new Set<any>(),animations:any[]=[];
+ const haptics:string[]=[];let hapticsEnabled=true;
  let cursor=0,time=0,reduced=false,active=true,reads=0,wrote=false,readsAfterWrite=0;
  const measure=(value:unknown)=>{reads++;if(wrote)readsAfterWrite++;return value;};
  const rect={left:0,top:150,width:300,height:300},dest={left:10,top:70,width:80,height:40};
@@ -45,11 +46,11 @@ function harness(initial:string[]=[],measured=false,labelText='KALE'){
  const win=Object.assign(new EventTarget(),{matchMedia:()=>({matches:reduced})});
  const hooks={useLayoutEffect:(fn:()=>any,deps:any[])=>hooks.useEffect(fn,deps),useRef(value:any){return slots[cursor++]??={current:value};},useEffect(fn:()=>any,deps:any[]){const i=cursor++,slot=slots[i];if(!slot||deps.some((d,j)=>!Object.is(d,slot.deps[j]))){slots[i]={deps,cleanup:slot?.cleanup};effects.push(()=>{slots[i].cleanup?.();slots[i].cleanup=fn();});}}};
  const exports:any={};
- vm.runInNewContext(ts.transpileModule(readFileSync('components/game/WordFeedback.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText,{exports,require:(name:string)=>name==='react'?hooks:name==='@/lib/game/word-feedback'?feedback:name==='@/lib/game/board-view'?{viewCell}:name==='@/lib/platform/runtime'?{gameIsActive:()=>active}:{},window:win,document:doc,getComputedStyle:(el:any)=>({fontSize:el===label?'14px':'38px',fontFamily:'Nunito Sans',fontWeight:'800',color:'#173e36'}),setTimeout:(fn:()=>void)=>{timers.set(++time,fn);return time;},clearTimeout:(id:number)=>timers.delete(id)});
+ vm.runInNewContext(ts.transpileModule(readFileSync('components/game/WordFeedback.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText,{exports,require:(name:string)=>name==='react'?hooks:name==='@/lib/game/word-feedback'?feedback:name==='@/lib/game/board-view'?{viewCell}:name==='@/lib/platform/runtime'?{gameIsActive:()=>active}:name==='@/lib/game/haptics'?{playHaptic:(cue:string,enabled:boolean)=>{if(enabled)haptics.push(cue);}}:name==='./PlayPreferences'?{usePlayHapticsEnabled:()=>hapticsEnabled}:{},window:win,document:doc,getComputedStyle:(el:any)=>({fontSize:el===label?'14px':'38px',fontFamily:'Nunito Sans',fontWeight:'800',color:'#173e36'}),setTimeout:(fn:()=>void)=>{timers.set(++time,fn);return time;},clearTimeout:(id:number)=>timers.delete(id)});
  const stroke=(id:string)=>({id,a:[0,0],b:[0,3]});
  const props:any={root:{current:screen},scope:'A',board:{size:6,grid:Array.from({length:6},()=>[...'KALEXX']),targets:Array.from({length:8},(_,i)=>({id:String(i),group:0,text:'KALE',label:'KALE'}))},confirmed:initial.map(stroke),turned:false,paused:false};
  const render=(changes:any={})=>{Object.assign(props,changes);cursor=0;wrote=false;exports.WordFeedback(props);while(effects.length)effects.shift()!();};render();
- return {render,destination,get glyphs(){return [...sparks].flatMap(s=>s.children);},get reads(){return reads;},get readsAfterWrite(){return readsAfterWrite;},confirm:(ids:string[])=>render({confirmed:ids.map(stroke)}),get sparks(){return sparks.size;},get labels(){return [...sparks].map(s=>s.textContent);},get timers(){return timers.size;},animations,props,reduced(value:boolean){reduced=value;},hide(){doc.hidden=true;doc.dispatchEvent(new Event('visibilitychange'));},show(){doc.hidden=false;},blur(){win.dispatchEvent(new Event('blur'));},pause(){active=false;render({paused:true});},expire(){for(const fn of [...timers.values()])fn();},close(){for(const slot of slots)slot.cleanup?.();}};
+ return {render,destination,haptics,setHaptics(enabled:boolean){hapticsEnabled=enabled;render();},get glyphs(){return [...sparks].flatMap(s=>s.children);},get reads(){return reads;},get readsAfterWrite(){return readsAfterWrite;},confirm:(ids:string[])=>render({confirmed:ids.map(stroke)}),get sparks(){return sparks.size;},get labels(){return [...sparks].map(s=>s.textContent);},get timers(){return timers.size;},animations,props,reduced(value:boolean){reduced=value;},hide(){doc.hidden=true;doc.dispatchEvent(new Event('visibilitychange'));},show(){doc.hidden=false;},blur(){win.dispatchEvent(new Event('blur'));},pause(){active=false;render({paused:true});},expire(){for(const fn of [...timers.values()])fn();},close(){for(const slot of slots)slot.cleanup?.();}};
 }
 describe('actual decorative effect lifecycle',()=>{
  it('flies a local match while authoritative state is empty and keeps the same flight on ACK',()=>{
@@ -115,4 +116,11 @@ it('uses actual source font and measured unequal target glyph widths rather than
 
 it('lands each glyph on a spaced display label while ignoring the non-grid space',()=>{
  const h=harness([],true,'KA LE');try{h.confirm(['0']);assert.equal(h.glyphs.length,4);assert.match(h.animations[2].frames.at(-1).transform,/translate\(54px,87px\)/);assert.match(h.animations[3].frames.at(-1).transform,/translate\(66.5px,87px\)/);assert.equal(h.readsAfterWrite,0);}finally{h.close();}
+});
+
+it('emits one landing haptic only when the final glyph arrives, not on cleanup or ACK',()=>{
+ const h=harness();try{const p={id:'0',a:[0,0],b:[0,3]};h.render({preview:p});assert.deepEqual(h.haptics,[]);h.animations[3].onfinish();h.animations[3].onfinish();assert.deepEqual(h.haptics,['landing']);h.render({confirmed:[p],preview:null});h.expire();assert.deepEqual(h.haptics,['landing']);}finally{h.close();}
+});
+it('late or cancelled landings stay silent after settings, background, rotation, reduced motion or unmount',()=>{
+ for(const cancel of ['disabled','hide','turn','reduced','expire','close'] as const){const h=harness();try{h.confirm(['0']);const finish=h.animations[3].onfinish;if(cancel==='disabled')h.setHaptics(false);if(cancel==='hide')h.hide();if(cancel==='turn')h.render({turned:true});if(cancel==='reduced')h.reduced(true);if(cancel==='expire')h.expire();if(cancel==='close')h.close();finish();assert.deepEqual(h.haptics,[],cancel);}finally{h.close();}}
 });

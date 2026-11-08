@@ -70,3 +70,9 @@ it('menu feedback has a quiet fallback and contains failure without blocking gam
  const absent=setup();absent.play('menu');await flush();assert.deepEqual(absent.calls,[]);
  const broken=setup({menu:()=>{throw Error('unavailable');}});assert.doesNotThrow(()=>broken.play('menu'));broken.play('selection');await flush();assert.deepEqual(broken.calls,['start','tick']);broken.stop();await flush();
 });
+
+it('landing is a bounded independent pulse and never interrupts the next selection',async()=>{
+ const pending=gate();let landed=0;const h=setup({landing:()=>{landed++;return pending.promise;}});
+ h.play('selection');await flush();h.play('landing');h.time(100);h.play('landing');assert.equal(landed,1);assert.deepEqual(h.calls,['start','tick']);
+ h.play('selection');await flush();assert.deepEqual(h.calls,['start','tick','tick']);pending.resolve();await flush();h.time(200);h.play('landing');assert.equal(landed,2);h.active(false);h.play('landing');assert.equal(landed,2);h.stop();await flush();
+});

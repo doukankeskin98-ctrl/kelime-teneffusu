@@ -1,3 +1,4 @@
+import * as activity from '../lib/platform/activity.ts';
 import * as journeyFlow from '../lib/game/journey-flow.ts';
 import * as challengeState from '../lib/game/challenge-state.ts';
 import * as firstPlay from '../lib/game/first-play.ts';
@@ -74,7 +75,7 @@ describe('rotated live layout keeps the original puzzle authoritative',()=>{
 });
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
 const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',MatchTools:'MatchTools',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
-const modules={'@/lib/game/challenge-state':challengeState,'@/lib/platform/runtime':{gameIsActive:()=>true},'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
+const modules={'@/lib/game/challenge-state':challengeState,'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
  it('defaults an enlarged board to drawing and offers explicit reversible panning outside the board',()=>{
