@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.44.1 · Kelime onayı ve anlaşılır kontroller
+
+Tamamlanma çizgisi/soluklaşma geri geldi; belirgin ortak dişli, tahta simgeli Çevir düğmesi, dengeli ana ekran. Kayıtlar korunur. [Doğrulama ve sınırlar](docs/release-0.44.1.md).
+
 ## 0.44.0 · Sade yolculuk ve Arena tercihi
 
 Tek bölüm eylemi, Yolculuk/Arena ana gezinmesi, yolculuk ayrıntısında albümler, profilde rozetler. Gerçek sırayla görünen bölüm numaraları, sabit harf/yıldız hücreleri ve okunaklı bilmece paneli. Arena varsayılan normal; isteğe bağlı, normal başlayan karışık turlar. Kayıtlar ve eski odalar korunur. [Doğrulama ve sınırlar](docs/release-0.44.0.md).

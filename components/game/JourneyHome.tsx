@@ -2,7 +2,7 @@
 import {LIVING_STORIES} from '@/lib/game/story-content';
 import {everydayRouteForChapter} from '@/lib/game/everyday-content';
 import {natureRouteForChapter} from '@/lib/game/nature-content';
-import {ArrowRight,CalendarDays,Map,Play,Star} from 'lucide-react';
+import {ArrowRight,Gamepad2,Map,Play,Star} from 'lucide-react';
 import type {Progress} from '@/lib/game/progress';
 import {mainJourneyChapters,mainJourneyState} from '@/lib/game/main-journey';
 import {worldChapter} from '@/lib/game/world-presentation';
@@ -24,7 +24,7 @@ export function JourneyHome({progress,onPlay,onExplore,onDetails,onDaily,initial
  const play=(item:typeof chapters[number])=>{if(!item.unlocked)return;onPlay({themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(item.complete?{practice:true}:{})});};
  return <section className="journey-stage" aria-labelledby="journey-home-title" data-light={(coastRouteForChapter(current?.chapter.id)??natureRouteForChapter(current?.chapter.id)??everydayRouteForChapter(current?.chapter.id))?.light??'default'}>
   <div className="journey-stage-art" aria-hidden="true"><SceneArt theme={expeditionTheme(world)} scene={story?.scene} eager/><div className="journey-stage-shade"/></div>
-  <div className="journey-stage-top"><button className="stage-map-button" onClick={onDetails} aria-label="Yolculuğum: bölümler ve albümler"><Map size={19}/><span>Yolculuğum</span></button></div>
+  <div className="journey-stage-top"><button className="stage-map-button" onClick={onDetails} aria-label="Bölümler ve albümler"><Map size={19}/><span>Bölümler</span></button></div>
   <div className="journey-stage-title"><span>{story?'HİKÂYELER':world.subtitle==='Doğa Günlüğü'?'DOĞA GÜNLÜĞÜ':world.subtitle.startsWith('Kıyı Günlüğü')?'KIYI GÜNLÜĞÜ':`DÜNYA ${world.place}`}</span><h1 id="journey-home-title">{story?.title??world.title}</h1></div>
   <div className="journey-stage-space" aria-hidden="true"><i/><i/><i/></div>
   <div className="journey-stage-dock">
@@ -32,7 +32,7 @@ export function JourneyHome({progress,onPlay,onExplore,onDetails,onDaily,initial
     <button className="stage-play" onClick={()=>play(chapters.find(c=>c.chapter.id===current.chapter.id)!)}><Play size={22} fill="currentColor"/><span>Bölüm {current.number}<small>{state.continuing?'Devam et':'Oyna'}</small></span><ArrowRight size={22}/></button>
 
    </>:<div className="stage-finale"><Star size={35}/><h2>Yolculuk tamam!</h2><p>{state.total} bölüm tamamlandı.</p><button className="stage-play" onClick={onDetails}>Bölümleri aç<ArrowRight/></button></div>}
-   <div className="stage-shortcuts"><button onClick={onExplore}><CalendarDays size={19}/><span>Diğer oyunlar</span><ArrowRight size={16}/></button></div>
+   <div className="stage-shortcuts"><button onClick={onExplore}><Gamepad2 size={19}/><span>Diğer oyunlar</span><ArrowRight size={16}/></button></div>
   </div>
  </section>;
 }

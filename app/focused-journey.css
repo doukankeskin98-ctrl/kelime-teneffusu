@@ -8,6 +8,9 @@
 .journey-stage .stage-chapter-copy p{display:none}
 .journey-stage .journey-stage-dock{padding-bottom:16px}
 .journey-stage .stage-shortcuts{margin-top:20px}
+.journey-stage .journey-stage-space{flex:0 1 clamp(16px,3svh,28px);min-height:16px}
+.journey-stage .journey-stage-dock{margin-block:auto}
+.journey-stage .stage-map-button{background:#173e49;color:#fff6df;backdrop-filter:none}
 .journey-albums-link{margin:12px 0}
 .journey-albums .section-title{margin-top:10px}
 .journey-albums .discovery-albums{max-width:100%}
@@ -36,6 +39,15 @@
 .target-letters>[data-target-letter]{display:inline-flex;align-items:center;justify-content:center;width:.64em;min-height:1.25em;line-height:1.25em;text-decoration:inherit;flex:none}
 .target-letters>.target-space{width:.35em}
 .target-letters>.masked-letter{font-size:1em;font-weight:800}
+/* Each adjacent letter cell owns its segment: flex layout cannot swallow the
+   completion line. Arrival suppresses it until the existing flight settles. */
+.target-letters>[data-target-letter]{position:relative}
+.target-letters>[data-target-letter]::after{content:'';position:absolute;left:0;right:0;top:55%;height:2px;background:currentColor;opacity:0;pointer-events:none}
+.word-tag.found:has(.target-letters),.word-tag.found:has(.target-letters)>div,.word-tag .part-found:has(.target-letters),.clue-slot.found>button{text-decoration:none!important}
+.word-tag.found [data-word-label],.word-tag .part-found{color:#617568!important}
+.word-tag.found [data-target-letter]::after,.part-found [data-target-letter]::after{opacity:1}
+.word-tag[data-word-arriving=true] [data-target-letter]::after{opacity:0}
+.word-tag[data-word-arriving=true] [data-word-label]{color:#183a31!important}
 .scenic-play .target-rack [data-word-label]{line-height:24px}
 .scenic-play .clue-targets{padding:4px 8px 0}
 .scenic-play .clue-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 5px}
@@ -47,6 +59,11 @@
 .scenic-play .letter-grid span,.game-app .scenic-play .letter-grid span{font-weight:800;color:#102f29}
 .scenic-play .game-home-action{margin-top:16px;min-height:50px}
 .game-tools-modal .game-home-action{margin-top:16px;min-height:50px}
+.game-app .scenic-play .play-heading>.game-settings-trigger,.main-content .scenic-play .play-heading>.game-settings-trigger{display:inline-flex;align-items:center;justify-content:center;flex:0 0 46px;min-width:46px;width:46px;height:46px;padding:9px;color:#fff6dc;background:#356259;border:1px solid #b8cfaf;border-radius:50%;box-shadow:none}
+.scenic-play .game-settings-trigger>svg{width:26px;height:26px;stroke-width:2.25}
+.scenic-play .play-controls .turn-board{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:auto;min-width:96px;height:44px;padding:8px 14px;background:#fff6dc;color:#244e43;border:1px solid #dfd6b7;border-radius:24px;font-size:14px;font-weight:750;box-shadow:none}
+.scenic-play .play-controls .turn-board>.turn-board-icon{width:27px;height:27px;flex:none}
+.scenic-play .game-settings-trigger:focus-visible,.scenic-play .turn-board:focus-visible{outline:3px solid #ffe4a3;outline-offset:3px}
 .modal.game-dialog.ordinary-outcome.scene-result{min-height:min(560px,calc(100svh - 80px - env(safe-area-inset-top,0px)))}
 .ordinary-outcome .compact-keepsake .result-keepsake-art{display:none}
 .ordinary-outcome .compact-keepsake p{display:none}
@@ -57,7 +74,7 @@
 html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:none}
 
 .quiet-play .play-hud>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.quiet-play .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)){min-height:0;height:0;margin:0;padding:0}
+.quiet-play .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){min-height:0;height:0;margin:0;padding:0}
 .game-tools-modal .journey-albums .section-title p{color:#dce8d9}
 .game-tools-modal .journey-albums .discovery-album-card{background:#214b52;color:#fff6df;border-color:#cfe1cc45}
 .game-tools-modal .journey-albums .discovery-album-card h3{color:#fff6df}

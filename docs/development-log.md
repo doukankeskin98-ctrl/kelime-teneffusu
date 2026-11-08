@@ -932,3 +932,8 @@ Kullanıcının WoW/oyun ayarları karşılaştırması: ana ayarlar kısa sahne
 ## 8 Kasım 2026 · 0.44.0
 
 Son görüşülen sadeleştirme uygulandı: iki ana alan, ayrıntıya taşınan albümler, gerçek sıra numaraları, sabit hedef harfleri, görünür tek Arena tercihi ve politikaya ayrılmış kuyruk. 839 test, 697 Worker HTTP, tip/içerik/şema/web/mobil ve Xcode Release geçti. Yerel 414×628/375×667 önizleme; fiziksel telefon kurulmadı. Ayrıntı: release-0.44.0.md.
+
+
+## 8 Kasım 2026 · 0.44.1
+
+Kullanıcının tamamlanma çizgisi ve ayar/döndürme işaretleri geri bildirimi uygulandı. Harf hücreleri, başlık/HUD ayrımı, bonus menü yaşam döngüsü ve ana ekran boşluğu hedefli düzeltildi. 844 test,697 Worker; küçük/uzun yerel mobil önizleme. Fiziksel telefon kurulmadı. Ayrıntı release-0.44.1.md.
