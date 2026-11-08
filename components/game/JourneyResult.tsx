@@ -11,6 +11,7 @@ import {SceneArt} from './SceneArt';
 
 export function JourneyResult({before,after,rewards,save,best}:{before:ReturnType<typeof journeyGoal>;after:ReturnType<typeof journeyGoal>;rewards:DiscoveryReward[];save:SavedLevel;best?:SavedLevel}){
  if(!after)return null;
+ const major=rewards.some(r=>r.kind==='world'||r.kind==='album');
  const newPiece=rewards.some(r=>r.id===`piece:${after.state.expedition.id}:${after.position}`),unlocks=rewards.filter(r=>r.kind!=='piece'),mastery=masteryCopy(save.hints);
  return <div className={'journey-result polished-result'+(newPiece?' has-new-piece':'')}>
   <p className="result-chapter-number">Bölüm {mainChapter(after.chapter.id)?.number} tamamlandı</p>
@@ -18,7 +19,7 @@ export function JourneyResult({before,after,rewards,save,best}:{before:ReturnTyp
   <div className="result-star-stage" aria-label={`Bu tur ${save.stars} / 3 yıldız`}>
    {[0,1,2].map(i=><div className={'result-star'+(i<save.stars?' earned':'')} key={i} style={{'--star-index':i} as CSSProperties}><Star fill={i<save.stars?'currentColor':'none'} aria-hidden="true"/></div>)}
   </div>
-  <div className="result-keepsake"><div className="result-keepsake-art"><SceneArt theme={after.chapter.themeId}/><Check size={16}/></div><div><small>{newPiece?'Albümüne eklendi':'Albümündeki parça'}</small><h3>{after.piece}</h3><p>{after.state.expedition.title}</p></div></div>
+  <div className={"result-keepsake"+(major?'':' compact-keepsake')}><div className="result-keepsake-art"><SceneArt theme={after.chapter.themeId}/><Check size={16}/></div><div><small>{newPiece?'Albümüne eklendi':'Albümündeki parça'}</small><h3>{after.piece}</h3><p>{after.state.expedition.title}</p></div></div>
   <div className="result-album-progress" aria-label={`${after.state.pieces} / 6 albüm parçası`}><span>{after.state.album.title}</span><b>{after.state.pieces}/6</b><div>{after.state.earned.map((earned,i)=><i key={i} className={(earned?'earned':'')+(newPiece&&i===after.position?' just-earned':'')}/>)}</div></div>
   {!newPiece&&<p className="journey-replay-note">Bu parça daha önce kazanıldı.</p>}
   {unlocks.map(reward=><div className="journey-unlock" key={reward.id}><div className="unlock-scene"><SceneArt theme={reward.themeId}/></div><span><small>{reward.kind==='world'?'Yeni dünya':reward.kind==='bonus'?'Final bölümü açıldı':'Albüm tamamlandı'}</small><b>{reward.title}</b></span><Check size={18}/></div>)}

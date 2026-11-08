@@ -53,5 +53,5 @@ export function chapterVeils(id:string|undefined,targets:Target[]):Record<number
 }
 export function veilInstruction(veils:Record<number,WordVeil>){
  const modes=Object.values(veils);
- return modes.includes('hidden')?'Noktalar saklı harfler. Bölümün konusundan yola çık.':modes.includes('initial')?'Bazı kelimelerde yalnız ilk harf açık. Noktalar kalan harfler.':null;
+ return modes.includes('hidden')?'Her yıldız saklı bir harf. Bölümün konusundan yola çık.':modes.includes('initial')?'Bazı kelimelerde yalnız ilk harf açık. Yıldızlar kalan harfler.':null;
 }

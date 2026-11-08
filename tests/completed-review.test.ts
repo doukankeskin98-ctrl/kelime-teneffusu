@@ -36,7 +36,7 @@ describe('shared completed controls and review instructions',()=>{
  it('replaces hint/pause with review and exposes the tools menu without resuming',()=>{
   const actions={onPause(){throw new Error('No resume in review');},onHint(){throw new Error('No hint in review');},onZoom(){},onSound(){},onHelp(){}};
   for(const paused of [false,true]){const tree=common['PlayControls']({...actions,paused,completed:true,zoom:false,sound:false,hints:2});
-   const buttons=nodes(tree).filter(n=>n.type==='button');assert.equal(buttons.length,1);assert.equal(buttons[0]!.props['aria-label'],'Oyun araçları');assert.match(text(tree),/İnceleme/);assert.doesNotMatch(text(tree),/İpucu/);buttons[0]!.props['onClick']();}
+   const buttons=nodes(tree).filter(n=>n.type==='button');assert.equal(buttons.length,1);assert.equal(buttons[0]!.props['aria-label'],'Ayarlar');assert.match(text(tree),/İnceleme/);assert.doesNotMatch(text(tree),/İpucu/);buttons[0]!.props['onClick']();}
   const regular=common['PlayControls']({...actions,paused:true,zoom:false,sound:false,hints:2});assert.equal(nodes(regular).filter(n=>n.type==='button').length,2);assert.equal(nodes(regular).find(n=>/hint-button/.test(n.props['className']??''))!.props['disabled'],true);assert.ok(!nodes(regular).some(n=>/Devam et|Duraklat/.test(String(n.props['aria-label']))));
  });
  it('passes read-only state and original ink to Board and never invites a new selection in review',()=>{

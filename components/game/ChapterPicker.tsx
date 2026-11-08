@@ -10,7 +10,7 @@ import type {SoloConfig} from './Solo';
 import {SceneArt} from './SceneArt';
 import {Modal} from './common';
 
-export function ChapterPicker({progress,onPlay,onClose,worldId}:{progress:Progress;onPlay:(config:SoloConfig)=>void;onClose:()=>void;worldId?:string}){
+export function ChapterPicker({progress,onPlay,onClose,worldId,onAlbums}:{progress:Progress;onPlay:(config:SoloConfig)=>void;onClose:()=>void;worldId?:string;onAlbums?:()=>void}){
  const chapters=mainJourneyChapters(progress),state=mainJourneyState(progress);
  const initial=worldId??chapters.find(c=>c.chapter.id===state.current?.chapter.id)?.world.expedition.id;
  const [selected,setSelected]=useState(initial??EXPEDITIONS[0]!.id);
@@ -18,6 +18,7 @@ export function ChapterPicker({progress,onPlay,onClose,worldId}:{progress:Progre
  const items=chapters.filter(c=>c.world.expedition.id===world.id),status=items[0]!.world;
  const play=(item:typeof chapters[number])=>{if(!item.unlocked)return;onClose();onPlay({themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(item.complete?{practice:true}:{})});};
  return <Modal title="Bölümler" className="chapter-picker game-library-sheet game-tools-modal" onClose={onClose}>
+  {onAlbums&&<button className="button secondary full journey-albums-link" onClick={onAlbums}>Albümlerim</button>}
   <div className="chapter-world-nav"><button className="icon-button" aria-label="Önceki dünya" disabled={index===0} onClick={()=>setSelected(EXPEDITIONS[index-1]!.id)}><ChevronLeft/></button><label><span>Dünya</span><select aria-label="Dünya seç" value={world.id} onChange={e=>setSelected(e.target.value)}>{EXPEDITIONS.map(w=><option key={w.id} value={w.id}>{w.place} · {w.title}</option>)}</select></label><button className="icon-button" aria-label="Sonraki dünya" disabled={index===EXPEDITIONS.length-1} onClick={()=>setSelected(EXPEDITIONS[index+1]!.id)}><ChevronRight/></button></div>
   <section className={'chapter-picker-world'+(!status.unlocked?' is-locked':'')}>
    <div className="chapter-world-cover"><SceneArt theme={expeditionTheme(world)}/><div><span>{status.pieces}/6 tamamlandı</span><h3>{world.title}</h3></div></div>

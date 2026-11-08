@@ -1,0 +1,80 @@
+/* 0.44: one play action; journey details and earned items stay on demand. */
+.native-shell .mobile-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+.journey-stage .stage-play{max-width:440px;margin-inline:auto;min-height:78px}
+.journey-stage .stage-play>span{font-size:27px;line-height:1.15}
+.journey-stage .stage-play small{display:block;font-size:14px;line-height:20px;margin-top:5px}
+.journey-stage .stage-chapter-copy{margin-bottom:16px}
+.journey-stage .stage-chapter-copy h2{font-size:23px;line-height:1.3}
+.journey-stage .stage-chapter-copy p{display:none}
+.journey-stage .journey-stage-dock{padding-bottom:16px}
+.journey-stage .stage-shortcuts{margin-top:20px}
+.journey-albums-link{margin:12px 0}
+.journey-albums .section-title{margin-top:10px}
+.journey-albums .discovery-albums{max-width:100%}
+.arena-round-preference{display:flex;align-items:center;gap:14px;width:100%;min-height:64px;padding:8px 4px;margin:0 0 10px;text-align:left;color:#fff7df;background:transparent;border:0;border-radius:12px}
+.arena-round-preference>span{flex:1}.arena-round-preference b{display:block;font-size:17px;line-height:23px}.arena-round-preference small{display:block;color:#e3ebdc;font-size:13px;line-height:19px;margin-top:3px}
+.arena-round-preference>.switch{flex:0 0 46px;position:relative;width:46px;height:28px;background:#43626a;border-radius:18px}
+.arena-round-preference>.switch::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff8e9;transition:transform .18s ease-out}
+.arena-round-preference>.switch.on{background:#d3bd78}.arena-round-preference>.switch.on::after{transform:translateX(18px)}
+.arena-round-preference:focus-visible{outline:2px solid #ffe3a4;outline-offset:3px}
+.room-round-policy{color:#e5eddc;font-size:14px;text-align:center}
+/* Header and target title each have one job. Letter hit cells are unchanged. */
+.scenic-play.quiet-play .play-heading{justify-content:space-between;min-height:46px;gap:12px;margin-bottom:6px}
+.scenic-play.quiet-play .play-title{flex:1;text-align:center;padding-left:44px}
+.scenic-play.quiet-play .play-chapter-number{font-size:21px;line-height:28px;font-weight:800;color:#fff6dc;letter-spacing:0}
+.scenic-play.quiet-play .play-heading>.icon-button{flex:none}
+.scenic-play.quiet-play .play-hud:has(>.sr-only:only-child){height:0;min-height:0;margin:0;padding:0}
+.scenic-play.quiet-play .game-note{display:none}
+.scenic-play .target-topic{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;background:#245957;border-radius:13px 13px 0 0;color:#fff6db}
+.scenic-play .target-topic h1{margin:0;flex:1;font-size:19px;line-height:24px;font-weight:800;text-align:center;overflow-wrap:anywhere}
+.scenic-play .target-topic>span{font-size:12px;line-height:20px;font-weight:700;font-variant-numeric:tabular-nums;color:#e3eadb}
+.scenic-play .viewport-targets:has(.target-topic){border-radius:14px;background:#fffdf4;overflow:hidden}
+.scenic-play .target-rack,.game-app .scenic-play .target-rack{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 12px!important;padding:4px 8px!important;border-radius:0 0 13px 13px}
+.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:calc(var(--word-chars)*.64em + 4px);max-width:100%;min-height:44px!important;height:auto;font-size:18px!important;line-height:24px}
+.scenic-play .target-rack .word-tag>div{width:auto;max-width:100%}
+.target-letters{display:inline-flex;flex-wrap:wrap;justify-content:center;max-width:100%;vertical-align:middle}
+.target-letters>[data-target-letter]{display:inline-flex;align-items:center;justify-content:center;width:.64em;min-height:1.25em;line-height:1.25em;text-decoration:inherit;flex:none}
+.target-letters>.target-space{width:.35em}
+.target-letters>.masked-letter{font-size:1em;font-weight:800}
+.scenic-play .target-rack [data-word-label]{line-height:24px}
+.scenic-play .clue-targets{padding:4px 8px 0}
+.scenic-play .clue-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 5px}
+.scenic-play .clue-slot>button{min-height:44px;padding:3px 1px}
+.scenic-play .clue-slot>button>.clue-word{display:block;height:auto;font-size:17px;line-height:22px;font-weight:800;max-width:100%}
+.scenic-play .clue-slot.found>button{color:#4c6659;text-decoration:line-through;text-decoration-thickness:2px}
+.scenic-play .active-clue{height:56px;padding:6px 3px}
+.scenic-play .active-clue>strong{font-size:15px;line-height:21px;font-weight:600}
+.scenic-play .letter-grid span,.game-app .scenic-play .letter-grid span{font-weight:800;color:#102f29}
+.scenic-play .game-home-action{margin-top:16px;min-height:50px}
+.game-tools-modal .game-home-action{margin-top:16px;min-height:50px}
+.modal.game-dialog.ordinary-outcome.scene-result{min-height:min(560px,calc(100svh - 80px - env(safe-area-inset-top,0px)))}
+.ordinary-outcome .compact-keepsake .result-keepsake-art{display:none}
+.ordinary-outcome .compact-keepsake p{display:none}
+.ordinary-outcome .result-album-progress{padding-top:8px!important}
+.ordinary-outcome .result-star{animation-duration:.42s}
+@media(max-width:380px){.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{font-size:16px!important}.scenic-play .clue-slot>button>.clue-word{font-size:15px}.scenic-play .target-topic h1{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.arena-round-preference>.switch::after{transition:none}}
+html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:none}
+
+.quiet-play .play-hud>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.quiet-play .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)){min-height:0;height:0;margin:0;padding:0}
+.game-tools-modal .journey-albums .section-title p{color:#dce8d9}
+.game-tools-modal .journey-albums .discovery-album-card{background:#214b52;color:#fff6df;border-color:#cfe1cc45}
+.game-tools-modal .journey-albums .discovery-album-card h3{color:#fff6df}
+.game-tools-modal .journey-albums .discovery-album-card p,.game-tools-modal .journey-albums .discovery-album-card small,.game-tools-modal .journey-albums .discovery-album-card .eyebrow{color:#dce8d9}
+.game-tools-modal .journey-albums .album-piece-dots i{color:#dce8d9;border-color:#cfe1cc66;background:transparent}
+.game-tools-modal .journey-albums .album-piece-dots i.earned{background:#d8e8c7;color:#244e3c}
+/* Legacy 12×12 saves still show every normal target; no clipped hidden row. */
+.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex-basis:calc(var(--word-chars)*.64em + 4px)!important}
+.scenic-play .viewport-targets:not([data-many]) .target-rack{max-height:none!important;overflow:visible!important}
+.scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{font-size:16px!important}
+
+.masked-letter{position:relative}.masked-letter>.mask-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.masked-letter>svg{width:.56em;height:1em;flex:none;display:block}
+
+.scenic-play .sr-only{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
+.scenic-play .clue-slots{grid-template-columns:repeat(var(--clue-count),minmax(0,1fr))}
+
+.arena-entry-sheet .room-entry-sheet p,.arena-entry-sheet .room-entry-sheet label,.arena-entry-sheet .room-entry-sheet small,.arena-entry-sheet .room-entry-sheet .join-divider{color:#dce8d9}
+
+.arena-entry-sheet .or-line{color:#dce8d9}
+.album-detail-sheet .collection-dialog-intro,.album-detail-sheet .collection-piece-list small{color:#dce8d9}.album-detail-sheet .collection-piece-list b{color:#fff6df}.album-detail-sheet .collection-piece-list>li{border-color:#dce8d533}.album-detail-sheet .collection-piece-list>li>span{color:#dce8d9;border-color:#dce8d566}.album-detail-sheet .collection-piece-list>li.earned>span{color:#244e3c;background:#d8e8c7}

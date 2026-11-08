@@ -65,3 +65,36 @@ describe('room series comes only from durable terminal receipts',()=>{
   const old=s.room(s.id);old.round=20;s.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(old),s.id);const restored=(await new GameService(s.db,s.clock).state(s.users[0]!,s.id))!;assert.equal(restored.series?.rounds,2);assert.notEqual(restored.series?.rounds,19);
  });
 });
+
+describe('visible round preference is an authoritative room policy',()=>{
+ it('partitions simultaneous first arrivals by policy, including deterministic queue slots',async()=>{
+  const f=fixture();try{
+   const requests=Array.from({length:16},(_,i)=>({user:'policy-'+i,policy:i%2?'mixed' as const:'words' as const}));
+   const views=await Promise.all(requests.map(({user,policy})=>f.game.enter(user,'quick',undefined,true,policy)));
+   const normal=views.filter((_,i)=>requests[i]!.policy==='words'),mixed=views.filter((_,i)=>requests[i]!.policy==='mixed');
+   assert.equal(new Set(normal.map(v=>v!.id)).size,1);assert.equal(new Set(mixed.map(v=>v!.id)).size,1);assert.notEqual(normal[0]!.id,mixed[0]!.id);
+   assert(views.every((v,i)=>v!.roundPolicy===requests[i]!.policy&&v!.roundKind==='words'));
+   assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM members WHERE active=1').get()!['n'],16);
+   // Invitation uses the host policy, even when the joining device prefers words.
+   const guest=await f.game.enter('invite-guest','friend',mixed[0]!.code,true,'words');assert.equal(guest!.roundPolicy,'mixed');
+  }finally{f.sqlite.close();}
+ });
+ for(const policy of ['words','mixed'] as const)it(policy+' starts with words and persists four common rounds through restarts',async()=>{
+  const f=fixture();try{
+   const first=(await f.game.enter('host','friend',undefined,true,policy))!;await f.game.enter('guest','friend',first.code);
+   const seenWords=new Set<string>(),seenGrids=new Set<string>();
+   for(let round=1;round<=4;round++){
+    const game=new GameService(f.db,f.clock);await game.ready('host',first.id,round);await game.ready('guest',first.id,round);const active=await game.start('host',first.id,round),guest=(await game.state('guest'))!;
+    assert.equal(active.roundKind,policy==='mixed'&&round%2===0?'clue':'words');assert.deepEqual(active.board,guest.board);assert.deepEqual(active.clues,guest.clues);assert.equal(active.ends,guest.ends);
+    const wk=JSON.stringify(active.board!.targets.map(t=>t.text).sort()),gk=JSON.stringify(active.board!.grid);assert(!seenWords.has(wk));assert(!seenGrids.has(gk));seenWords.add(wk);seenGrids.add(gk);
+    f.advance(124001);await game.state('host');await Promise.all([game.nextGame('host',first.id,round),game.nextGame('guest',first.id,round)]);assert.equal(f.room(first.id).round,round+1);
+   }
+   assert.equal(f.sqlite.prepare('SELECT COUNT(*) n FROM arena_seen').get()!['n'],8);
+  }finally{f.sqlite.close();}
+ });
+ it('defaults new rooms to words and excludes legacy waiting rooms from a new quick queue',async()=>{
+  const f=fixture();try{const old=(await f.game.enter('old','quick',undefined,true))!,r=f.room(old.id);delete r.roundPolicy;r.roundKind='clue';f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(r),old.id);
+   const fresh=(await f.game.enter('new','quick',undefined,true))!;assert.notEqual(fresh.id,old.id);assert.equal(fresh.roundPolicy,'words');assert.equal(fresh.roundKind,'words');assert.equal((await f.game.state('old'))!.roundKind,'clue');assert.equal((await f.game.enter('invited','friend',old.code))!.roundKind,'clue');
+  }finally{f.sqlite.close();}
+ });
+});

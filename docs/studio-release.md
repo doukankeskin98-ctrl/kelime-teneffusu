@@ -1,5 +1,9 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.44.0 · Sade yolculuk ve Arena tercihi
+
+Tek bölüm eylemi, Yolculuk/Arena ana gezinmesi, yolculuk ayrıntısında albümler, profilde rozetler. Gerçek sırayla görünen bölüm numaraları, sabit harf/yıldız hücreleri ve okunaklı bilmece paneli. Arena varsayılan normal; isteğe bağlı, normal başlayan karışık turlar. Kayıtlar ve eski odalar korunur. [Doğrulama ve sınırlar](release-0.44.0.md).
+
 ## 0.43.0 · Kesintisiz bölüm akışı ve yerleşme titreşimi
 
 Ayrı duraklatma kaldırıldı; bölüm kimliği, albüm parçası ve sıradaki hedef netleşti. Harf inişinde ikinci kısa haptik, sonraki çizimi kesmeden çalışır. Kayıtlar/kurallar korunur. [Doğrulama ve sınırlar](release-0.43.0.md).

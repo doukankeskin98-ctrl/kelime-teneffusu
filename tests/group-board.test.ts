@@ -47,7 +47,7 @@ describe('versioned group nine by nine with seven words',()=>{
  it('treats fewer than seven unused definitions as exhausted rather than starting a short riddle board',async()=>{
   for(const left of [4,5,6]){const f=await lobby();try{
    const keep=new Set(ARENA_CLUES.slice(0,left).map(e=>e.riddleId!)),used=ARENA_CLUES.map(e=>e.riddleId!).filter(id=>!keep.has(id));
-   assert.equal(hasFreshRiddles(used),false);assert.equal(freshArenaPuzzle(0,{group:true,clue:true,usedRiddleIds:used}),null);const room=f.room(f.id);room.usedRiddleIds=used;f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);
+   assert.equal(hasFreshRiddles(used),false);assert.equal(freshArenaPuzzle(0,{group:true,clue:true,usedRiddleIds:used}),null);const room=f.room(f.id);room.roundKind='clue';delete room.roundPolicy;room.usedRiddleIds=used;f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(room),f.id);
    const view=(await f.game.state('a'))!;assert(view.roundUnavailable);assert.equal(view.canStart,false);await assert.rejects(()=>start(f,1),e=>e instanceof GameError&&e.code==='ARENA_RIDDLES_EXHAUSTED');assert.equal(f.room(f.id).puzzle,undefined);
   }finally{f.sqlite.close();}}
  });
