@@ -2,7 +2,7 @@ import {exactLine,match,type Puzzle,type Target,type Stroke,type Cell} from './e
 export type WordVeil='open'|'initial'|'hidden';
 export function veiledText(text:string,veil:WordVeil='open'){
  if(veil==='open')return text;
- let first=true;return [...text].map(char=>{if(/\s/.test(char))return char;const visible=first&&veil==='initial';first=false;return visible?char:'·';}).join('');
+ let first=true;return [...text].map(char=>{if(/\s/.test(char))return char;const visible=first&&veil==='initial';first=false;return visible?char:'✱';}).join('');
 }
 /** Word length/parts never change normal play into a single-target carousel. */
 export function compactWordRack(board:{targets:Target[]},clues?:Record<string,string>){

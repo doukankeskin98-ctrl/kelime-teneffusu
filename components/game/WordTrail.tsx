@@ -9,5 +9,5 @@ export function WordTrail({progress,onSelect}:{progress:Progress;onSelect?:(id:s
 }
 export function TrailResult({before,after}:{before:Progress;after:Progress}){
  const a=wordTrail(before),b=wordTrail(after);if(b.words<=a.words)return null;const unlocked=b.earned.filter(r=>!a.earned.some(old=>old.id===r.id));
- return <div className="trail-result"><Sprout size={20}/><span>{unlocked.length?<><b>{unlocked.at(-1)!.title} rozeti açıldı</b><small>Koleksiyon · Başarımlar’da kullanabilirsin.</small></>:<><b>Sözcük Yolu · +{b.words-a.words} kelime</b><small>{b.next?`${b.next.title} için ${b.remaining} kaldı`:'Bütün rozetler tamamlandı.'}</small></>}</span></div>;
+ return <div className="trail-result"><Sprout size={20}/><span>{unlocked.length?<><b>{unlocked.at(-1)!.title} rozeti açıldı</b><small>Profil · Başarımlar’da kullanabilirsin.</small></>:<><b>Sözcük Yolu · +{b.words-a.words} kelime</b><small>{b.next?`${b.next.title} için ${b.remaining} kaldı`:'Bütün rozetler tamamlandı.'}</small></>}</span></div>;
 }

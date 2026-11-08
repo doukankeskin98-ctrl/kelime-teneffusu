@@ -83,7 +83,7 @@ it('escapes an oldest least-used set already seen instead of retrying the same s
   f.sqlite.prepare('INSERT INTO arena_seen VALUES(?,?,?,?,?,?)').run('veteran',key,'old-set-grid','old-seven',1,1);
   for(const [i,e] of ARENA_CLUES.slice(7).entries())f.sqlite.prepare('INSERT INTO arena_seen VALUES(?,?,?,?,?,?)').run('veteran',JSON.stringify([e.word]),'single-'+i,'old-single-'+i,1,i+2);
   const room=(await f.game.enter('new','friend',undefined,true))!;await f.game.enter('veteran','friend',room.code);for(const u of ['new','veteran'])await f.game.ready(u,room.id,1);
-  const active=await f.game.start('new',room.id,1);assert.equal(active.phase,'active');assert(active.contentOrdinal!>0);assert.notEqual(JSON.stringify(active.board!.targets.map(t=>t.text).sort()),key);
+  const old=f.room(room.id);delete old.roundPolicy;old.roundKind='clue';f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(old),room.id);const active=await f.game.start('new',room.id,1);assert.equal(active.phase,'active');assert(active.contentOrdinal!>0);assert.notEqual(JSON.stringify(active.board!.targets.map(t=>t.text).sort()),key);
   assert.equal(f.sqlite.prepare('SELECT count(*) n FROM arena_seen WHERE user_id=?').get('veteran')!['n'],ARENA_CLUES.length-7+2);
  }finally{f.sqlite.close();}
 });

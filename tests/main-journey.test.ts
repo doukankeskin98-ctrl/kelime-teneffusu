@@ -20,7 +20,7 @@ describe('numbered main journey preserves the existing saved worlds',()=>{
   let p=emptyProgress();assert.equal(mainJourneyState(p).current?.number,1);assert.equal(mainJourneyState(p).continuing,false);
   p.last={themeId:'hababam',level:2};assert.equal(mainJourneyState(p).current?.number,1);
   const b=journeyBoard(journeyById('turkiye-4')!);p.saves['route:turkiye-4']=cleanSave({strokes:[b.placements[0]!],elapsed:12,hints:1,complete:false,stars:0},b);p.last={themeId:'turkiye',level:0,journey:'turkiye-4'};
-  const loaded=loadProgress(JSON.stringify(p)),state=mainJourneyState(loaded);assert.equal(state.current?.number,13);assert.equal(state.continuing,true);assert.equal(state.completed,0);assert.equal(state.total,168);
+  const loaded=loadProgress(JSON.stringify(p)),state=mainJourneyState(loaded);assert.equal(state.current?.number,10);assert.equal(state.continuing,true);assert.equal(state.completed,0);assert.equal(state.total,168);
   assert.equal(nextMainChapter(loaded)?.number,1);assert.equal(loaded.saves['route:uzay-1'],undefined);
  });
  it('retains elapsed or hinted continuations with no found word, but does not call untouched content resumed',()=>{
@@ -28,12 +28,12 @@ describe('numbered main journey preserves the existing saved worlds',()=>{
   p.saves['route:uzay-2']=cleanSave({strokes:[],elapsed:20,hints:1,complete:false,stars:0},b);assert.equal(mainJourneyState(p).current?.number,2);assert.equal(mainJourneyState(p).continuing,true);
   p.saves['route:uzay-2']=cleanSave(undefined,b);assert.equal(mainJourneyState(p).current?.number,1);assert.equal(mainJourneyState(p).continuing,false);
  });
- it('keeps published numbers while completing a world before continuing to the next',()=>{
+ it('numbers the actual path consecutively while completing a world before continuing to the next',()=>{
   const p=emptyProgress(),expected=['uzay-1','uzay-2','uzay-3','uzay-4','uzay-5','uzay-gozlemevi','turkiye-1','turkiye-2','turkiye-3','turkiye-4'];
   assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,10),['uzay-1','uzay-2','uzay-3','turkiye-1','uzay-4','turkiye-2','turkiye-3','ozgun-okul-1','uzay-5','uzay-gozlemevi']);
   assert.equal(nextMainMilestone(p)?.remaining,3);
   for(const [i,id] of expected.entries()){
-   const current=mainJourneyState(p).current!;assert.equal(current.chapter.id,id);const before=copy(p);finish(p,id,3);p.last={themeId:current.chapter.themeId,level:0,journey:id};
+   const current=mainJourneyState(p).current!;assert.equal(current.chapter.id,id);assert.equal(current.number,i+1);const before=copy(p);finish(p,id,3);p.last={themeId:current.chapter.themeId,level:0,journey:id};
    const rewards=discoveryRewards(before,p);assert.equal(rewards.filter(r=>r.kind==='piece').length,1);
    if(i===2){assert.equal(nextMainMilestone(p,'uzay-4')?.remaining,3);assert.equal(mainJourneyChapters(p).find(c=>c.chapter.id==='turkiye-1')!.unlocked,true);}
    if(i===5)assert.ok(rewards.some(r=>r.kind==='album'&&r.themeId==='uzay'));

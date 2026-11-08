@@ -53,6 +53,7 @@ export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:
     const range=document.createRange();let offset=0;
     for(const char of label.textContent??''){const start=offset;offset+=char.length;if(/\s/.test(char))continue;range.setStart(label.firstChild,start);range.setEnd(label.firstChild,offset);destinations.push(range.getBoundingClientRect());}
    }
+   if(!destinations.length&&label?.textContent?.replace(/\s/g,'')===target.text)for(const letter of label.querySelectorAll<HTMLElement>('[data-target-letter]'))if(letter.textContent?.trim())destinations.push(letter.getBoundingClientRect());
    const fontSize=parseFloat(style?.fontSize??'');
    if(Number.isFinite(fontSize)&&fontSize>0){
     const targetFontSize=label?parseFloat(getComputedStyle(label).fontSize):fontSize*.65;
