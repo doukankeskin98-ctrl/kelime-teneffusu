@@ -437,8 +437,8 @@ describe('world word veils survive every target surface and resume',()=>{
   const j=content.journeyById('uzay-5')!,board=content.journeyBoard(j),p=familiarProgress(),h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
   try{h.start('Solo',{config:{themeId:j.themeId,level:0,journey:j.id,campaign:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});await h.settle();
    const parts=board.placements.filter(t=>t.label==='KUYRUKLU YILDIZ');assert.equal(parts.length,2);
-   h.find('PlayLayout').props['onCommit'](parts[0]!.a,parts[0]!.b);await h.settle();assert(!visible(h.find('PlayLayout')).includes('YILDIZ'));assert(!visible(h.find('PlayLayout').props['effect']).includes('YILDIZ'));
-   h.find('PlayLayout').props['onCommit'](parts[1]!.a,parts[1]!.b);await h.settle();assert(visible(h.find('PlayLayout')).includes('KUYRUKLU YILDIZ'));
+   h.find('PlayLayout').props['onCommit'](parts[0]!.a,parts[0]!.b);await h.settle();assert(!text(h.find('PlayLayout').props['footer']).includes('YILDIZ'));assert(!visible(h.find('PlayLayout').props['effect']).includes('YILDIZ'));
+   h.find('PlayLayout').props['onCommit'](parts[1]!.a,parts[1]!.b);await h.settle();assert(text(h.find('PlayLayout').props['footer']).includes('KUYRUKLU YILDIZ'));
   }finally{h.close();}
  });
  it('tool menu pauses solo once, preserves an existing pause and never pauses a daily race',()=>{
@@ -446,7 +446,7 @@ describe('world word veils survive every target surface and resume',()=>{
    let paused=initial,toggles=0,zoom=0,sound=0,help=0;
    const h=view('components/game/common.tsx'),props=()=>({paused,canPause,zoom:false,sound:false,hints:3,onPause(){paused=!paused;toggles++;},onZoom(){zoom++;},onSound(){sound++;},onHelp(){help++;},onHint(){}});
    try{h.start('PlayControls',props());walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());assert.equal(paused,canPause?true:initial);
-    walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Ses kapalı')!.props['onClick']();assert.equal(sound,1);
+    walk(h.find('Modal')).find(n=>n.type==='button'&&n.props['role']==='switch'&&n.props['aria-checked']===false)!.props['onClick']();assert.equal(sound,1);
     walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Büyük harf modu')!.props['onClick']();h.update('PlayControls',props());assert.equal(zoom,1);assert.equal(paused,initial);assert.equal(toggles,canPause&&!initial?2:0);
     walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Kurallar')!.props['onClick']();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
    }finally{h.close();}
@@ -501,7 +501,7 @@ describe('result and play preference surfaces',()=>{
    const board=h.find('PlayLayout').props['board'];assert.equal(h.find('PlayControls').props['onSkipResult'],undefined);
    for(const target of board.targets){const stroke=board.placements.find((s:any)=>s.id===target.id)!;h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);h.paint();}
    assert.equal(h.find('PlayLayout').props['readOnly'],true);assert(!walk(h.tree).some(n=>n.type==='Modal'));
-   const layout=h.find('PlayLayout'),controls=h.find('PlayControls');assert.equal(layout.props['footer'],controls);
+   const layout=h.find('PlayLayout'),controls=h.find('PlayControls');assert(walk(layout.props['footer']).includes(controls));
    assert(!text(layout.props['children']).includes('Sonuca geç'));const skip=controls.props['onSkipResult'];assert.equal(typeof skip,'function');
    const before=JSON.stringify(p),count=writes,legacySave=storage.get(legacy.SAVE_KEY);
    skip();skip();h.paint();assert(h.find('Modal'));assert.equal(h.find('PlayControls').props['onSkipResult'],undefined);assert.equal(h.find('PlayLayout').props['board'],board);
@@ -514,7 +514,7 @@ describe('result and play preference surfaces',()=>{
  });
  it('timed tools expose comfort controls without pausing and disappear when the match ends',()=>{
   const h=view('components/game/common.tsx');let sound=0;const props={sound:true,onSound:()=>sound++};
-  try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);walk(h.tree).find(n=>n.type==='button'&&text(n)==='Ses açık')!.props['onClick']();assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahta/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
+  try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);walk(h.tree).find(n=>n.type==='button'&&n.props['role']==='switch'&&n.props['aria-checked']===true)!.props['onClick']();assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahta/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
  });
 });
 
@@ -591,5 +591,38 @@ it('finishing the sixth real chapter offers bonus or direct continuation without
 it('first riddle guide blocks time and selection until understood',async()=>{
  const chapter=riddles.RIDDLE_CHAPTERS[0]!,h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});let p=progress.emptyProgress();try{
  const props={config:{themeId:chapter.themeId,level:0,journey:chapter.id},progress:p,onProgress:(fn:any)=>{p=fn(p);},onBack(){},onMap(){},onNext(){}};h.start('Solo',props);assert.equal(h.find('MechanicGuide').props['kind'],'riddle');const target=h.find('PlayLayout').props['board'].placements[0]!;h.find('PlayLayout').props['onCommit'](target.a,target.b);h.time(30000);assert.equal(h.find('PlayLayout').props['strokes'].length,0);h.find('MechanicGuide').props['onClose']();h.paint();h.find('PlayLayout').props['onCommit'](target.a,target.b);await h.settle();assert.equal(h.find('PlayLayout').props['strokes'].length,1);assert(p.mechanicGuides?.includes('riddle'));
+ }finally{h.close();}
+});
+
+it('preserves all side-game destinations beneath three primary choices and returns from bonus to short games',()=>{
+ const h=view('components/game/Pages.tsx',modules),calls:any[]=[];
+ const props={library:true,progress:familiarProgress(),releases:[],onDetails(){},onSprint:()=>calls.push('sprint'),setTheme:(x:any)=>calls.push(x),openSolo:(x:any)=>calls.push(x),setNav:(x:any)=>calls.push(x),classic(){},onMystery:(x:any)=>calls.push(x),onChallenge(){},onExtra(){}};
+ const click=(label:string)=>{const n=walk(h.tree).find(n=>n.type==='button'&&text(n).startsWith(label));assert(n,label);n.props['onClick']();h.paint();};
+ try{
+  h.start('Explore',props);const primary=walk(h.tree).find(n=>n.props['className']==='event-menu extra-games-menu')!;assert.equal(walk(primary).filter(n=>n.type==='button').length,3);
+  click('Günlük bulmaca');assert.equal(calls.pop(),'gunluk');click('Kısa oyunlar');assert.equal(h.find('Modal').props['title'],'Kısa oyunlar');click('Hızlı Tur');assert.equal(calls.pop(),'sprint');click('Bonus turları');assert.equal(h.find('Modal').props['title'],'Bonus turları');h.find('Modal').props['onClose']();h.paint();assert.equal(h.find('Modal').props['title'],'Kısa oyunlar');h.find('Modal').props['onClose']();h.paint();
+  for(const label of ['Hikâyeler','İpucu Avı','Serbest oyun','Ek bölümler']){click(label);assert.equal(h.find('Modal').props['title'],label);h.find('Modal').props['onClose']();h.paint();}
+  click('Gizli Tema');assert.equal(calls.pop(),content.MYSTERIES[0]!.id);click('Çizerek alıştırma yap');assert.equal(calls.pop().tutorial,true);
+ }finally{h.close();}
+});
+it('keeps solo notices in the footer before, during and after a hint without changing the puzzle',()=>{
+ const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});let p=familiarProgress();
+ try{h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-2',campaign:true},progress:p,onProgress:(fn:any)=>p=fn(p),onBack(){},onMap(){},onNext(){}});
+  const layout=h.find('PlayLayout'),board=layout.props['board'];const notice=()=>walk(h.find('PlayLayout').props['footer']).find(n=>n.props['className']==='play-notice')!;
+  assert(notice());assert.equal(notice().props['role'],'status');assert.match(text(notice()),/Çapraz/);
+  assert(!walk(layout.props['children']).some(n=>n.props['className']?.includes('game-message')));
+  walk(layout.props['footer']).find(n=>n.type==='PlayControls')!.props['onHint']();h.paint();assert.match(text(notice()),/ilk harfi/);assert.equal(h.find('PlayLayout').props['board'],board);
+  h.expire();assert(notice());assert.equal(h.find('PlayLayout').props['board'],board);assert.equal(p.saves['route:uzay-2']!.hints,1);
+ }finally{h.close();}
+});
+for(const outcome of ['success','failure','became-active','stale-room'] as const)it(`wait-to-challenge keeps ownership for ${outcome}`,async()=>{
+ const initial:any={revision:1,id:'waiting-a',code:'ABCDEFGH',kind:'quick',mode:'group',phase:'waiting',themeId:'uzay',starts:null,ends:null,winner:null,reason:'',round:1,roundKind:'words',nextRoundKind:'words',serverNow:10000,board:null,golden:null,you:{id:'alice',name:'Alice',ready:false,strokes:[],score:0,rematch:false},opponent:null,players:[{id:'alice',name:'Alice',ready:false,strokes:[],count:0,score:0,rematch:false,online:true,left:false,rank:1}]};
+ let next=0,accept:(r:any,id:string)=>void=()=>{};const calls:any[]=[],gate=deferred<any>();const h=view('components/game/Arena.tsx',{...modules,'./common':{...commonStubs,getApi:async()=>initial,api:async(action:string,data:any)=>{calls.push({action,data});if(outcome==='failure')throw new Error('Bağlantı kesildi');return gate.promise;}},'./useLiveRoom':{useLiveRoom:(_id:any,callback:any)=>{accept=callback;return 'connected';}}});
+ try{h.start('Arena',{authenticated:true,ownerId:'alice',onLogin(){},progress:progress.emptyProgress(),onProgress(){},practice(){},onChallenge:()=>next++});await h.settle();assert(!walk(h.tree).some(n=>n.type==='button'&&text(n).startsWith('Meydan okumaya geç')));h.time(26000);const choose=walk(h.tree).find(n=>n.type==='button'&&text(n).startsWith('Meydan okumaya geç'))!;assert(choose);
+  if(outcome==='became-active'){accept({...initial,revision:2,phase:'active',starts:25000,ends:145000,board:content.TUTORIAL},initial.id);await h.settle();choose.props['onClick']();await h.settle();assert.equal(calls.length,0);assert.equal(next,0);return;}
+  choose.props['onClick']();choose.props['onClick']();await h.settle();assert.equal(calls.length,1);assert.equal(calls[0].data.waitingOnly,true);assert.equal(next,0);
+  if(outcome==='stale-room'){accept({...initial,id:'waiting-b',revision:2,phase:'ready'},initial.id);await h.settle();}
+  gate.resolve({ok:true});await h.settle();assert.equal(next,outcome==='success'?1:0);
+  if(outcome==='failure')assert.match(text(h.tree),/Bağlantı kesildi/);
  }finally{h.close();}
 });

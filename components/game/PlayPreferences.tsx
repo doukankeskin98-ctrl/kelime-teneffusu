@@ -9,12 +9,12 @@ const Context=createContext<Preferences|null>(null);
 export const PlayPreferencesProvider=Context.Provider;
 export const usePlayHapticsEnabled=()=>useContext(Context)?.haptics??false;
 /** Shares the app's existing preferences; never owns a save or a game clock. */
-export function PlayComfortSettings(){
+export function PlayComfortSettings({section='all'}:{section?:'all'|'haptics'|'motion'}){
  const value=useContext(Context),[vibration,setVibration]=useState(false);
  useEffect(()=>setVibration(hapticsAvailable()),[]);
- if(!value)return null;
+ if(!value||(section==='haptics'&&!vibration))return null;
  return <div className="play-comfort-settings game-settings" aria-label="Oyun hissi">
-  {vibration&&<button className="comfort-setting" role="switch" aria-checked={value.haptics} onClick={value.onHaptics}><Smartphone/><span><b>Dokunma titreşimi</b><small>Menüler, harfler ve başarılar</small></span><i>{value.haptics?'Açık':'Kapalı'}</i></button>}
-  <button className="comfort-setting" role="switch" aria-checked={value.comfort.reduceMotion} onClick={()=>value.onComfort({...value.comfort,reduceMotion:!value.comfort.reduceMotion})}><Move/><span><b>Hareketi azalt</b><small>Kısa ve sakin geçişler</small></span><i>{value.comfort.reduceMotion?'Açık':'Kapalı'}</i></button>
+  {section!=='motion'&&vibration&&<button className="comfort-setting" role="switch" aria-checked={value.haptics} onClick={value.onHaptics}><Smartphone/><span><b>Titreşim</b></span><i className="switch" aria-hidden="true"/></button>}
+  {section!=='haptics'&&<button className="comfort-setting" role="switch" aria-checked={value.comfort.reduceMotion} onClick={()=>value.onComfort({...value.comfort,reduceMotion:!value.comfort.reduceMotion})}><Move/><span><b>Hareketi azalt</b><small>Kısa ve sakin geçişler</small></span><i>{value.comfort.reduceMotion?'Açık':'Kapalı'}</i></button>}
  </div>;
 }

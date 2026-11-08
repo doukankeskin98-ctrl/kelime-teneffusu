@@ -1,3 +1,6 @@
+## 8 Kasım 2026 · 0.45.0
+Bilgi çakışması ve yan menü önceliği uygulandı; yoğun rafta ek satır kaybı giderildi. Yıldız açıklaması, güncel ilk10 notları, sunucuda koşullu kuyruk çıkışı.853 test/703 Worker; tip/içerik/şema/web/mobil kontrolü geçti. Fiziksel uzun oyun/iki telefon/yeni oyuncu kabulü ayrı açık. Ayrıntı release-0.45.0.md.
+
 ## 8 Kasım 2026 · 0.43.0
 Durdurma/bölüm/ödül notları ve son harf iniş titreşimi uygulandı. 835 test, 695 Worker; küçük ekran sonucu eylemleri sabit. Telefon erişilemedi; fiziksel kurulum/his kabulü yok. Ayrıntı release-0.43.0.md.
 

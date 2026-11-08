@@ -5,7 +5,7 @@ import {wordTrail} from '@/lib/game/journey-flow';
 import {MechanicGuide} from './MechanicGuide';
 import {hapticsAvailable} from '@/lib/game/haptics';
 import {useEffect,useMemo,useRef,useState,type CSSProperties} from 'react';
-import {ArrowRight,BookOpen,CalendarDays,Check,ChevronDown,Compass,Flame,Lightbulb,LoaderCircle,LockKeyhole,Palette,Search,Settings,ShieldCheck,Smartphone,Sparkles,Star,Swords,Trophy,User,Volume2,VolumeX,WandSparkles,WifiOff,ZoomIn} from 'lucide-react';
+import {ArrowRight,BookOpen,CalendarDays,Check,ChevronDown,Clock,Compass,Flame,Lightbulb,LoaderCircle,LockKeyhole,Palette,Search,Settings,ShieldCheck,Smartphone,Sparkles,Star,Swords,Trophy,User,Volume2,VolumeX,WandSparkles,WifiOff,ZoomIn} from 'lucide-react';
 import {ACTIVE_THEMES as THEMES,findTheme,LEVEL_NAMES,type Theme} from '@/lib/game/catalog';
 import {JOURNEYS,MYSTERIES} from '@/lib/game/content';
 import {dailySpec,istanbulDay} from '@/lib/game/engine';
@@ -28,7 +28,7 @@ import {DailyDiscoveries} from './DailyDiscoveries';
 import type {ProgressSaveStatus} from '@/lib/game/progress-sync';
 import type {ChapterBrowseReturn,ChapterSelection} from '@/lib/studio/chapter-browse';
 export type Account={authenticated:boolean;kind?:'guest'|'native'|'email';nativeSession?:boolean;needsUsername?:boolean;needsVerification?:boolean;username?:string;email?:string;profile?:{id:string;nickname:string};stats?:{played:number;wins:number;score:number};rating?:{value:number;played:number}};
-export type LibraryPanel='riddles'|'themes'|'chapters'|'bonus'|'stories'|null;
+export type LibraryPanel='riddles'|'themes'|'chapters'|'bonus'|'stories'|'short'|'other'|null;
 export function Explore({onDetails,journeyView,onJourneyView,lastStoryId,libraryPanel=null,onLibraryPanel,library=false,releases,releaseCounts={},onSprint,userId,progress,setTheme,openSolo,setNav,classic,onMystery,onChallenge,onExtra,browseReturn}:{onDetails:()=>void;lastStoryId?:string;libraryPanel?:LibraryPanel;onLibraryPanel?:(panel:LibraryPanel)=>void;journeyView?:'stories'|'journey';onJourneyView?:(view:'stories'|'journey')=>void;library?:boolean;releases:ReleaseSummary[];releaseCounts?:Record<string,number>;onSprint:()=>void;userId?:string;progress:Progress;setTheme:(t:Theme)=>void;openSolo:(c:SoloConfig)=>void;setNav:(n:'kesfet'|'arsiv'|'arena'|'gunluk'|'profil')=>void;classic:()=>void;onMystery:(id:string)=>void;onChallenge:()=>void;onExtra:ChapterSelection;browseReturn?:ChapterBrowseReturn}){
  const [chapterCollection,setChapterCollection]=useState<'studio'|'releases'>(browseReturn?.collection??'releases');
  const [localPanel,setLocalPanel]=useState<LibraryPanel>(null),panel=onLibraryPanel?libraryPanel:localPanel,setPanel=onLibraryPanel??setLocalPanel;
@@ -40,20 +40,22 @@ export function Explore({onDetails,journeyView,onJourneyView,lastStoryId,library
  <header className="subpage-heading"><h1>Diğer oyunlar</h1></header>
  <div className="event-menu extra-games-menu">
   <button onClick={()=>setNav('gunluk')}><CalendarDays/><span><b>Günlük bulmaca</b><small>Bugünün ortak tahtası</small></span><ArrowRight/></button>
-  <button onClick={()=>setPanel('bonus')}><Flame/><span><b>Bonus turları</b><small>Bir kelimeyi farklı yerlerde bul</small></span><ArrowRight/></button>
+  <button onClick={()=>setPanel('short')}><Flame/><span><b>Kısa oyunlar</b><small>Bonus turları ve 60 saniyelik yarış</small></span><ArrowRight/></button>
   <button onClick={()=>setPanel('stories')}><BookOpen/><span><b>Hikâyeler</b><small>Kelimelerle ilerleyen beş hikâye</small></span><ArrowRight/></button>
-  <button onClick={onSprint}><Flame/><span><b>Hızlı Tur</b><small>60 saniyelik kelime yarışı</small></span><ArrowRight/></button>
+ </div>
+ <details className="extra-games-details" open={panel==='other'||panel==='riddles'||panel==='themes'||panel==='chapters'} onToggle={event=>{if(event.currentTarget.open&&panel===null)setPanel('other');else if(!event.currentTarget.open&&panel==='other')setPanel(null);}}><summary>Diğer bulmacalar <ChevronDown aria-hidden="true"/></summary><div className="event-menu extra-games-secondary">
   <button onClick={()=>onMystery(nextMystery.id)}><Lightbulb/><span><b>Gizli Tema</b><small>Kelimelerin ortak konusunu bul</small></span><ArrowRight/></button>
   <button onClick={()=>setPanel('riddles')}><BookOpen/><span><b>İpucu Avı</b><small>Tanımlardan kelimelere</small></span><ArrowRight/></button>
   <button onClick={()=>setPanel('themes')}><Compass/><span><b>Serbest oyun</b><small>Konunu ve zorluğunu seç</small></span><ArrowRight/></button>
   <button onClick={()=>setPanel('chapters')}><CalendarDays/><span><b>Ek bölümler</b><small>Tarih ve konuya göre bütün keşifler</small></span><ArrowRight/></button>
- </div>
+ </div></details>
  <button className="text-button full" onClick={()=>openSolo({themeId:'uzay',level:0,tutorial:true})}>Çizerek alıştırma yap</button>
- {panel==='bonus'&&<Modal title="Bonus turları" className="game-library-sheet game-tools-modal" onClose={()=>setPanel(null)}><BonusLibrary progress={progress} onPlay={openSolo}/></Modal>}
+ {panel==='short'&&<Modal title="Kısa oyunlar" className="game-library-sheet game-tools-modal" onClose={()=>setPanel(null)}><div className="event-menu short-games-menu"><button onClick={()=>setPanel('bonus')}><Flame/><span><b>Bonus turları</b><small>Bir kelimeyi farklı yerlerde bul</small></span><ArrowRight/></button><button onClick={onSprint}><Clock/><span><b>Hızlı Tur</b><small>60 saniyede olabildiğince çok kelime bul</small></span><ArrowRight/></button></div></Modal>}
+ {panel==='bonus'&&<Modal title="Bonus turları" className="game-library-sheet game-tools-modal" onClose={()=>setPanel('short')}><BonusLibrary progress={progress} onPlay={openSolo}/></Modal>}
  {panel==='stories'&&<Modal title="Hikâyeler" className="game-library-sheet game-tools-modal" onClose={()=>setPanel(null)}><StoryCollection progress={progress} onPlay={openSolo}/></Modal>}
- {panel==='riddles' &&<Modal title="İpucu Avı" className="game-library-sheet game-tools-modal" onClose={()=>setPanel(null)}><RiddleShelf progress={progress} onPlay={openSolo}/></Modal>}
- {panel==='themes'&&<Modal title="Serbest oyun" className="game-library-sheet game-tools-modal" onClose={()=>setPanel(null)}><label className="search-box"><Search size={18}/><input aria-label="Tema ara" placeholder="Konu ara" value={search} onChange={e=>setSearch(e.target.value)}/></label><div className="free-theme-list">{visible.map(t=><button key={t.id} onClick={()=>setTheme(t)}><span className="free-theme-art"><WorldArt themeId={t.id}/></span><b>{t.title}</b><ArrowRight size={18}/></button>)}</div>{visible.length===0&&<p className="muted">Bu isimde bir konu bulunamadı.</p>}</Modal>}
- {panel==='chapters'&&<Modal title="Ek bölümler" className="game-library-sheet game-tools-modal" onClose={()=>setPanel(null)}><div className="chapter-source-switch" role="group" aria-label="Bölüm arşivi"><button aria-pressed={chapterCollection==='releases'} onClick={()=>setChapterCollection('releases')}>Tarihli keşifler</button><button aria-pressed={chapterCollection==='studio'} onClick={()=>setChapterCollection('studio')}>Ek keşifler</button></div><PublishedChapters key={chapterCollection} userId={userId} collection={chapterCollection} initial={chapterCollection==='releases'?releases:[]} onPlay={onExtra} browseReturn={browseReturn}/></Modal>}
+ {panel==='riddles' &&<Modal title="İpucu Avı" className="game-library-sheet game-tools-modal" onClose={()=>setPanel('other')}><RiddleShelf progress={progress} onPlay={openSolo}/></Modal>}
+ {panel==='themes'&&<Modal title="Serbest oyun" className="game-library-sheet game-tools-modal" onClose={()=>setPanel('other')}><label className="search-box"><Search size={18}/><input aria-label="Tema ara" placeholder="Konu ara" value={search} onChange={e=>setSearch(e.target.value)}/></label><div className="free-theme-list">{visible.map(t=><button key={t.id} onClick={()=>setTheme(t)}><span className="free-theme-art"><WorldArt themeId={t.id}/></span><b>{t.title}</b><ArrowRight size={18}/></button>)}</div>{visible.length===0&&<p className="muted">Bu isimde bir konu bulunamadı.</p>}</Modal>}
+ {panel==='chapters'&&<Modal title="Ek bölümler" className="game-library-sheet game-tools-modal" onClose={()=>setPanel('other')}><div className="chapter-source-switch" role="group" aria-label="Bölüm arşivi"><button aria-pressed={chapterCollection==='releases'} onClick={()=>setChapterCollection('releases')}>Tarihli keşifler</button><button aria-pressed={chapterCollection==='studio'} onClick={()=>setChapterCollection('studio')}>Ek keşifler</button></div><PublishedChapters key={chapterCollection} userId={userId} collection={chapterCollection} initial={chapterCollection==='releases'?releases:[]} onPlay={onExtra} browseReturn={browseReturn}/></Modal>}
  </section>;
 }
 
