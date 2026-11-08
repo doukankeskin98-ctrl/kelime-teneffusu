@@ -1,5 +1,5 @@
 /** Web stays silent; the native shell registers optional, non-blocking feedback. */
-export type HapticCue='selection'|'menu'|'word'|'complete';
+export type HapticCue='selection'|'menu'|'word'|'landing'|'complete';
 export type HapticsAdapter=((cue:HapticCue)=>void|Promise<void>)&{stopSelection?:()=>void};
 let adapter:HapticsAdapter|null=null;
 export function stopHapticSelection(){try{adapter?.stopSelection?.();}catch{/* Optional cleanup never blocks play. */}}

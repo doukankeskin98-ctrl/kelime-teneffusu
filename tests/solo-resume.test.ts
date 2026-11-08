@@ -1,3 +1,5 @@
+import * as mainJourney from '../lib/game/main-journey.ts';
+import * as activity from '../lib/platform/activity.ts';
 import * as journeyFlow from '../lib/game/journey-flow.ts';
 import * as navigation from '../lib/game/navigation.ts';
 import * as firstPlay from '../lib/game/first-play.ts';
@@ -68,6 +70,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
   '@/lib/game/story-content':stories,'./StoryExperience':{StoryHud:'StoryHud',StoryResult:'StoryResult'},'@/lib/game/riddle-content':riddleContent,'@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
   '@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,
   '@/lib/studio/chapter-progress':chapterProgress,'@/lib/game/telemetry':{track(){}},
+  '@/lib/game/main-journey':mainJourney,'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},
   './common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}},
   './AchievementLoop':{JourneyObjective:'JourneyObjective',VictorySummary:'VictorySummary',NextJourneyPreview:'NextJourneyPreview'}
  };
@@ -91,6 +94,8 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
  };
  const find=(type:string)=>{const node=nodes(tree).find(n=>n.type===type);assert.ok(node,type+' should be present');return node;};
  return {
+  hide(){documentTarget.hidden=true;documentTarget.dispatchEvent(new Event('visibilitychange'));},
+  show(){documentTarget.hidden=false;documentTarget.dispatchEvent(new Event('visibilitychange'));},
   writes,hasModal:()=>nodes(tree).some(n=>n.type==='Modal'),advance(ms:number){now+=ms;for(const [id,t] of [...timers])if(!t.repeat&&t.at<=now){timers.delete(id);t.fn();}},
   layout:()=>find('PlayLayout'),controls:()=>find('PlayControls'),result:()=>find('VictorySummary'),
   closeResult(){(find('Modal').props['onClose'] as ()=>void)();},
@@ -113,6 +118,9 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
 }
 
 describe('Solo live account resumption',()=>{
+ it('excludes background time even when hide and show are batched before React paints',async()=>{
+  const page=harness({initial:saved([],7)});try{await page.settle();page.hide();page.tick(20);page.show();await page.settle();assert.equal(page.save.elapsed,7);page.tick(2);await page.settle();assert.equal(page.save.elapsed,9);}finally{page.close();}
+ });
  it('keeps a newly found local word and adds a different cloud word without a new run',async()=>{
   const page=harness({initial:saved([0],5)});
   try{
@@ -209,4 +217,7 @@ describe('Solo completed board review',()=>{
 
 it('saves the last word immediately while the result waits for its visible landing',async()=>{
  const page=harness({initial:saved([0,1,2]),reduced:false});try{await page.settle();page.commit(3);await page.settle();assert.equal(page.save.complete,true);assert.equal(page.layout().props['readOnly'],true);assert.equal(page.hasModal(),false);page.advance(wordFeedback.WORD_RESULT_DELAY_MS-1);await page.settle();assert.equal(page.hasModal(),false);page.advance(1);await page.settle();assert.equal(page.layout().props['departing'],true);assert.equal(page.hasModal(),false);page.advance(wordFeedback.RESULT_EXIT_MS);await page.settle();assert.equal(page.hasModal(),true);}finally{page.close();}
+});
+it('resumes local play automatically after background without counting hidden time or closing help',async()=>{
+ const page=harness({initial:saved([],5)});try{await page.settle();page.tick(2);await page.settle();assert.equal(page.save.elapsed,7);page.hide();await page.settle();assert.equal(page.layout().props['paused'],true);page.tick(30);await page.settle();assert.equal(page.save.elapsed,7);page.show();await page.settle();assert.equal(page.layout().props['paused'],false);page.tick(2);await page.settle();assert.equal(page.save.elapsed,9);page.help();await page.settle();page.hide();await page.settle();page.show();await page.settle();assert.equal(page.has('Help'),true);assert.equal(page.layout().props['paused'],true);page.closeHelp();await page.settle();assert.equal(page.layout().props['paused'],false);}finally{page.close();}
 });

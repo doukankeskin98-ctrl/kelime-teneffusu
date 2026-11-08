@@ -1,3 +1,5 @@
+8 Kasım 2026 · 0.43.0: kabul edilmiş bölüm akışı ve yerleşme haptiki tamamlandı. Sonraki kapı bağlı iPhone üzerinde yedekli kurulum, son harf iniş hissi ve foreground devam kabulü; yeni geniş özellik araştırması değil. docs/release-0.43.0.md.
+
 8 Kasım 2026 · 0.42.1: fiziksel kurulum ve el rehberi kullanıcı kabulü; ayar/yardım ikincil düğmesinde hedefli kontrast düzeltmesi. Kayıtlar yedeklendi; uzun oturum/VoiceOver/mağaza kapıları açık. docs/release-0.42.1.md.
 
 7 Kasım 2026 · 0.42.0: kullanıcının ayarlar/öğretici ekranı geri bildirimi uygulandı. Sade sahne ayarları, el rehberi ve zaman aşımı düzeltmesi; 827 test /695 Worker. Sonraki kapı gerçek iPhone/VoiceOver/uzun oturum kabulü; bu sürümde yeniden geniş özellik araştırması yapılmadı. docs/release-0.42.0.md.
