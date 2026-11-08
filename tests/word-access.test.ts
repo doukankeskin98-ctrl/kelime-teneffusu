@@ -33,7 +33,7 @@ import * as sprint from '../lib/game/sprint.ts';
 import {fittedBoardSize,fitGameFrame} from '../lib/game/viewport.ts';
 type Node={type:any;props:Record<string,any>;key?:unknown};
 type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
-const walk=(v:any):Node[]=>Array.isArray(v)?v.flatMap(walk):v&&typeof v==='object'?[v,...['children','aside','footer'].flatMap(k=>walk(v.props?.[k]))]:[];
+const walk=(v:any):Node[]=>Array.isArray(v)?v.flatMap(walk):v&&typeof v==='object'?[v,...['children','aside','footer','headerAction'].flatMap(k=>walk(v.props?.[k]))]:[];
 const text=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';
 const visible=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(visible).join(''):v&&typeof v==='object'&&v.props?.['aria-hidden']!==true&&v.props?.['style']?.visibility!=='hidden'?visible(v.props?.['children']):'';
 const jsx=(type:any,props:Record<string,unknown>,key?:unknown):any=>typeof type==='function'&&type.name==='GameToolsSheet'?type(props):({type,props,key}),icons=new Proxy({},{get:(_t,k)=>String(k)});
@@ -139,7 +139,7 @@ describe('caller wiring keeps timers, hidden targets and pending claims separate
   const board=content.TUTORIAL,claim=deferred<any>(),room={id:'room-1',round:1,revision:1,phase:'active',themeId:'uzay',serverNow:10000,starts:9000,ends:129000,you:{id:'alice',name:'Alice',score:0,strokes:[],rematch:false},opponent:{name:'Bob',score:0,count:0,online:true},board};
   const h=view('components/game/Arena.tsx',{...modules,'./common':{...commonStubs,getApi:async()=>room,api:async()=>claim.promise},'./useLiveRoom':{useLiveRoom:()=> 'connected'}});try{
    h.start('Arena',{authenticated:true,progress:familiarProgress(),onProgress(){},onLogin(){},practice(){}});await h.settle();const layout=h.find('PlayLayout');assert.equal(layout.props['wordList'].strokes,room.you.strokes);assert.equal(layout.props['wordList'].golden,engine.goldenId(board.targets,9000,10000));const p=board.placements[0]!;layout.props['onCommit'](p.a,p.b);await h.settle();assert.equal(h.find('PlayLayout').props['strokes'].length,1);assert.equal(h.find('PlayLayout').props['wordList'].strokes.length,0);
-   const sheet=openWords(h.find('PlayLayout').props['wordList']);const before=h.find('CompetitionHud').props['seconds'];h.time(12000);assert.notEqual(h.find('CompetitionHud').props['seconds'],before);assert.equal(sheet.find('WordList').props['strokes'].length,0);sheet.find('Modal').props['onClose']();sheet.paint();sheet.close();const controls=h.find('PlayLayout').props['footer'];walk(controls).find(n=>n.type==='MatchTools')!.props['onHelp']();h.paint();assert.equal(h.find('PlayLayout').props['wordListUnavailable'],true);
+   const sheet=openWords(h.find('PlayLayout').props['wordList']);const before=h.find('CompetitionHud').props['seconds'];h.time(12000);assert.notEqual(h.find('CompetitionHud').props['seconds'],before);assert.equal(sheet.find('WordList').props['strokes'].length,0);sheet.find('Modal').props['onClose']();sheet.paint();sheet.close();const controls=h.find('PlayLayout').props['headerAction'];walk(controls).find(n=>n.type==='MatchTools')!.props['onHelp']();h.paint();assert.equal(h.find('PlayLayout').props['wordListUnavailable'],true);
   }finally{h.close();}
  });
  it('uses confirmed Challenge strokes and blocks the word popup for exit and result',async()=>{
@@ -347,7 +347,7 @@ describe('living story sequential interaction, hints, replay and navigation',()=
   let selected:'stories'|'journey'='stories';const p=familiarProgress(),story=stories.LIVING_STORIES[2]!,b=content.journeyBoard(story);p.saves['route:'+story.id]=progress.cleanSave({strokes:[b.placements[0]!],elapsed:10,hints:0,complete:false,stars:0},b);
   let details=0;const calls:any[]=[],props={progress:p,onPlay:(c:any)=>calls.push(c),onDetails(){details++;},onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
   try{h.start('JourneyHome',{...props,initialView:'stories'});assert.equal(walk(h.tree).some(n=>n.type==='Modal'),false);walk(h.tree).find(n=>n.props?.['className']==='stage-play')!.props['onClick']();assert.equal(calls[0].journey,story.id);
-   walk(h.tree).find(n=>n.props?.['aria-label']==='Yolculuğum: bölümler ve albümler')!.props['onClick']();assert.equal(details,1);h.paint();assert.equal(selected,'stories');
+   walk(h.tree).find(n=>n.props?.['aria-label']==='Bölümler ve albümler')!.props['onClick']();assert.equal(details,1);h.paint();assert.equal(selected,'stories');
    walk(h.tree).find(n=>n.props?.['className']==='stage-milestone')!.props['onClick']();assert.equal(selected,'journey');
   }finally{h.close();}
  });
@@ -519,6 +519,14 @@ describe('result and play preference surfaces',()=>{
 });
 
 describe('Solo explicit pause resumes without changing progress',()=>{
+ it('header tools retain the timed heading, HUD and exit control unless quiet mode is explicit',()=>{
+  const h=shared({title:'Günlük bulmaca',kicker:'8 Kasım',headerAction:{type:'button',props:{'aria-label':'Ayarlar'}},children:{type:'span',props:{role:'timer',children:'01:00'}}});
+  try{const screen=walk(h.tree).find(n=>n.type==='section')!;assert(!screen.props['className'].includes('quiet-play'));assert(walk(h.tree).some(n=>n.props['aria-label']==='Geri'));assert(walk(h.tree).some(n=>n.props['role']==='timer'));assert.match(text(h.tree),/Günlük bulmaca/);}finally{h.close();}
+ });
+ it('leaving from Solo settings closes without resuming a clock the menu paused',()=>{
+  const h=view('components/game/common.tsx');let toggles=0,home=0;const props={settingsOnly:true,paused:false,onPause:()=>toggles++,zoom:false,onZoom(){},sound:false,onSound(){},hints:3,onHint(){},onHelp(){},onHome:()=>home++};
+  try{h.start('PlayControls',props);h.find('button').props['onClick']();h.paint();assert.equal(toggles,1);const exit=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Ana sayfaya dön')!;assert(exit.props['className'].includes('secondary'));exit.props['onClick']();h.paint();assert.equal(home,1);assert.equal(toggles,1);}finally{h.close();}
+ });
  it('routes a pause resume through shared layout, stays running on duplicate callback, and protects help',()=>{
   const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});const p=familiarProgress();
   try{h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1'},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});
