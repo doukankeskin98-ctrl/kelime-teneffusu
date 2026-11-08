@@ -37,11 +37,11 @@ try{
  const home=(await (await request('/')).text()).replace(/<!--[\s\S]*?-->/g,'');check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
  check(/<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(home),'production HTML declares a real device viewport and safe areas');
  check(home.includes('id="journey-home-title"')&&home.includes('stage-play')&&home.includes('Bölüm 1')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
- check(['Yolculuk','Arena','Koleksiyon','Diğer oyunlar'].every(label=>home.includes(label)),'main navigation preserves access to exploration, Arena, Daily and the album');
- check(home.includes('Yıldız İskelesi')&&home.includes('stage-trail')&&EXPEDITIONS.length===28,'numbered journey exposes twenty-eight independently registered routes');
- check(home.includes('Gökyüzüne bak')&&home.includes('Bütün yolculuk bölümlerini aç')&&!home.includes('stage-milestone'),'home preserves the actual next chapter and chapter map without duplicate shortcuts');
+ check(['Yolculuk','Arena','Yolculuğum','Diğer oyunlar'].every(label=>home.includes(label)),'main navigation preserves Journey, Arena and secondary games with on-demand journey details');
+ check(home.includes('Yıldız İskelesi')&&!home.includes('stage-trail')&&EXPEDITIONS.length===28,'numbered journey exposes twenty-eight independently registered routes');
+ check(home.includes('Gökyüzüne bak')&&home.includes('Yolculuğum: bölümler ve albümler')&&!home.includes('stage-milestone'),'home preserves the actual next chapter and chapter map without duplicate shortcuts');
  const released=releaseCatalogue();check(home.includes('Diğer oyunlar'),'secondary exploration and archive entry remains visible');
- check(home.replace(/<!--[\s\S]*?-->/g,'').includes('0/168')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
+ check(!home.includes('stage-reward')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
  check(home.includes('journey-stage')&&home.includes('/art/scenes/observatory-v1.webp'),'main journey presents the illustrated scene for its actual world');
@@ -191,7 +191,11 @@ try{
  // Eight independent trusted-account sessions through the actual production Worker.
  // This is isolated HTTP/identity persistence evidence, not real provider login or live load.
  const groupUsers=Array.from({length:8},(_,i)=>'arena-http-'+i),profiles=await Promise.all(groupUsers.map(nativeUser=>json('/api/game',{nativeUser})));
- const group=await json('/api/game',{nativeUser:groupUsers[0],method:'POST',body:{action:'enter',kind:'friend',mode:'group',expectedOwnerId:profiles[0].profile.id}});
+ const group=await json('/api/game',{nativeUser:groupUsers[0],method:'POST',body:{action:'enter',kind:'friend',mode:'group',roundPolicy:'mixed',expectedOwnerId:profiles[0].profile.id}});
+ check(group.roundPolicy==='mixed'&&group.roundKind==='words'&&group.nextRoundKind==='clue','new mixed rooms start with normal words through the production API');
+ await request('/api/game',{nativeUser:groupUsers[0],method:'POST',body:{action:'enter',kind:'friend',mode:'group',roundPolicy:'invalid'},expected:400});
+ // Historical clue-first room fixture: rolling deployments must not reinterpret it.
+ const legacyRow=await db.prepare('SELECT data FROM rooms WHERE id=?').bind(group.id).first();const legacyRoom=JSON.parse(legacyRow.data);delete legacyRoom.roundPolicy;legacyRoom.roundKind='clue';await db.prepare('UPDATE rooms SET data=? WHERE id=?').bind(JSON.stringify(legacyRoom),group.id).run();
  const action=(i,name,round,extra={})=>json('/api/game',{nativeUser:groupUsers[i],method:'POST',body:{action:name,id:group.id,round,expectedOwnerId:profiles[i].profile.id,...extra}});
  await Promise.all(groupUsers.slice(1).map((nativeUser,i)=>json('/api/game',{nativeUser,method:'POST',body:{action:'enter',kind:'friend',code:group.code,expectedOwnerId:profiles[i+1].profile.id}})));
  await Promise.all(groupUsers.map((_,i)=>action(i,'ready',1)));const groupActive=await action(0,'start',1);
@@ -242,7 +246,7 @@ try{
  const freshA=await returnAction(0,'enter',undefined,{kind:'quick',mode:'group'}),freshB=await returnAction(7,'enter',undefined,{kind:'quick',mode:'group'});
  check(freshA.id===freshB.id&&freshA.id!==group.id,'leaving and quick matching opens a different shared group');
  await returnAction(0,'ready',freshB.id);await returnAction(7,'ready',freshB.id);const freshGroup=await returnAction(0,'start',freshB.id);
- check(freshGroup.roundKind==='clue'&&freshGroup.board.targets.every(t=>!pastWords.has(t.text)),'new group excludes individual clues and words seen in previous rooms and duel');
+ check(freshGroup.roundPolicy==='words'&&freshGroup.roundKind==='words'&&freshGroup.board.targets.every(t=>!pastWords.has(t.text)),'new group excludes individual clues and words seen in previous rooms and duel');
  const freshPeer=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(JSON.stringify(freshPeer.board)===JSON.stringify(freshGroup.board),'returning participants still receive exactly the same board');
  await returnAction(0,'leave',freshB.id);await returnAction(7,'leave',freshB.id);
  // Sixteen actual guest sessions enter the public group queue concurrently.
@@ -255,7 +259,7 @@ try{
  await Promise.all(quickCookies.map((_,i)=>quickAction(i,'ready',1)));
  const host=quickProfiles.findIndex(p=>p.profile.id===quickViews[0].hostId),quickActive=await quickAction(host,'start',1);
  const activeQuickViews=await Promise.all(quickCookies.map(cookie=>json('/api/game?action=room',{cookie})));
- check(activeQuickViews.every(v=>v.board.size===9&&v.board.targets.length===7),'all sixteen public group boards have nine by nine and seven words');
+ check(activeQuickViews.every(v=>v.roundPolicy==='words'&&v.roundKind==='words'&&v.nextRoundKind==='words'&&v.board.size===9&&v.board.targets.length===7),'all sixteen public group boards have nine by nine and seven words');
  check(activeQuickViews.every(v=>v.starts===quickActive.starts&&v.ends===quickActive.ends&&JSON.stringify(v.board)===JSON.stringify(quickActive.board)),'sixteen public group sessions share one board and deadline');
  const quickStream=await request('/api/live?id='+quickId,{cookie:quickCookies[15]}),quickReader=quickStream.body.getReader();check(new TextDecoder().decode((await quickReader.read()).value).includes('event: room'),'shared public lobby UUID is accepted by the actual SSE route');await quickReader.cancel();
  await new Promise(resolve=>setTimeout(resolve,Math.max(0,quickActive.starts-Date.now()+50)));

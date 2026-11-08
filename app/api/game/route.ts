@@ -34,7 +34,7 @@ export async function POST(request:Request){try{
  await rateLimit(env.DB!,'game:'+user.userId,180);
  switch(data['action']){
   case 'rename':return json(await game.rename(user.userId,data['name']));
-  case 'enter':return json(await game.enter(user.userId,data['kind']==='friend'?'friend':'quick',typeof data['code']==='string'?data['code']:undefined,data['mode']==='group'));
+  case 'enter':if(data['roundPolicy']!==undefined&&!['words','mixed'].includes(String(data['roundPolicy'])))throw new GameError('Tur tercihi geçersiz.');return json(await game.enter(user.userId,data['kind']==='friend'?'friend':'quick',typeof data['code']==='string'?data['code']:undefined,data['mode']==='group',data['roundPolicy']==='mixed'?'mixed':'words'));
   case 'ready':return json(await game.ready(user.userId,id,data['round']));
   case 'start':return json(await game.start(user.userId,id,data['round']));
   case 'next':return json(await game.nextGame(user.userId,id,data['round']));

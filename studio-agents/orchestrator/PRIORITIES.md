@@ -1,3 +1,5 @@
+8 Kasım 2026 · 0.44.0: kabul edilmiş sade yolculuk/Arena tercihi ve hedef okunaklılığı uygulandı. Fiziksel iPhone uzun oturum, his ve iki gerçek oyuncu kabulü açık. Yeni geniş özellik araştırması yerine bu sürümün gerçek kullanım kabulü. docs/release-0.44.0.md.
+
 8 Kasım 2026 · 0.43.0: kabul edilmiş bölüm akışı ve yerleşme haptiki tamamlandı. Sonraki kapı bağlı iPhone üzerinde yedekli kurulum, son harf iniş hissi ve foreground devam kabulü; yeni geniş özellik araştırması değil. docs/release-0.43.0.md.
 
 8 Kasım 2026 · 0.42.1: fiziksel kurulum ve el rehberi kullanıcı kabulü; ayar/yardım ikincil düğmesinde hedefli kontrast düzeltmesi. Kayıtlar yedeklendi; uzun oturum/VoiceOver/mağaza kapıları açık. docs/release-0.42.1.md.

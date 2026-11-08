@@ -927,3 +927,8 @@ Gerçek iPhone/Android üzerinde ana sayfanın ilk ekranı, arşivden dönüş, 
 ## 7 Kasım 2026 · 0.42.0
 
 Kullanıcının WoW/oyun ayarları karşılaştırması: ana ayarlar kısa sahne menüsüne taşındı; ayrıntılar ayrı katmanda ve hesap silme başta. İlk öğretici el döngüsü gerçek seçimden bağımsız; hareket azaltma ve tüm görünürlük kapanışları korundu. Bekleyip çıkınca rehberin kaybolması ve hedef uyuşmazlığı giderildi. 827 test, 695 Worker, tip/içerik/şema/üretim/native paket kontrolü geçti. Mobil önizleme 414×736 ve321×570; fiziksel cihaz kurulmadı. Ayrıntı: release-0.42.0.md.
+
+
+## 8 Kasım 2026 · 0.44.0
+
+Son görüşülen sadeleştirme uygulandı: iki ana alan, ayrıntıya taşınan albümler, gerçek sıra numaraları, sabit hedef harfleri, görünür tek Arena tercihi ve politikaya ayrılmış kuyruk. 839 test, 697 Worker HTTP, tip/içerik/şema/web/mobil ve Xcode Release geçti. Yerel 414×628/375×667 önizleme; fiziksel telefon kurulmadı. Ayrıntı: release-0.44.0.md.

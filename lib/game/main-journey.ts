@@ -6,8 +6,7 @@ import {journeyById} from './content.ts';
 import {discoveryState,EXPEDITIONS,nextJourneyAfter,expeditionForChapter,expeditionBonusId} from './discovery.ts';
 import type {Progress} from './progress.ts';
 
-/** Presentation order v1. IDs, boards, saves and the existing 3/5/6 gates stay unchanged.
- * Append future content; never reuse a number or infer completion from its position. */
+/** Legacy catalog membership. Persisted IDs, boards and gates remain unchanged. */
 export const MAIN_JOURNEY_IDS:readonly string[]=[
  'uzay-1','uzay-2','uzay-3','turkiye-1','uzay-4','turkiye-2','turkiye-3','hababam-1','uzay-5','uzay-gozlemevi',
  'hababam-2','hababam-3','turkiye-4','turkiye-5','turkiye-kartpostal','hababam-4','hababam-5','hababam-yillik',
@@ -16,7 +15,9 @@ export const MAIN_JOURNEY_IDS:readonly string[]=[
  ...NATURE_CHAPTERS.map(c=>c.id),
  ...EVERYDAY_CHAPTERS.map(c=>c.id),
 ].map(replacementChapterId);
-export const MAIN_JOURNEY=MAIN_JOURNEY_IDS.map((id,i)=>({number:i+1,chapter:journeyById(id)!}));
+/** Display order follows the authored worlds, never the historical release order. */
+export const MAIN_JOURNEY_ORDER=EXPEDITIONS.flatMap(world=>[...world.chapterIds,expeditionBonusId(world)]).map(replacementChapterId).filter(id=>MAIN_JOURNEY_IDS.includes(id));
+export const MAIN_JOURNEY=MAIN_JOURNEY_ORDER.map((id,i)=>({number:i+1,chapter:journeyById(id)!}));
 export const mainChapter=(id?:string)=>MAIN_JOURNEY.find(item=>item.chapter.id===replacementChapterId(id??''))??null;
 const done=(p:Pick<Progress,'saves'>,id:string)=>chapterCredit(p,id)?.complete===true;
 const started=(save:Progress['saves'][string]|undefined)=>!!save&&(save.complete||save.strokes.length>0||save.elapsed>0||save.hints>0);

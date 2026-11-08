@@ -177,7 +177,7 @@ describe('achievement loop uses real Solo results and compact target access',()=
  it('carries one real route goal through confirmed completion and the existing next/replay callbacks',async()=>{
   const p=familiarProgress();for(const id of ['uzay-1','uzay-2']){const b=content.journeyBoard(content.journeyById(id)!);p.saves['route:'+id]=progress.cleanSave({strokes:b.placements,hints:0,elapsed:30,complete:false,stars:0},b);}
   const before=JSON.stringify(p),calls:any[]=[],h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{
-   h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-3'},progress:p,onProgress(){},onBack(){},onMap(){},onNext:(c:any)=>calls.push(c)});assert.equal(h.find('JourneyObjective').props['goal'].chapter.id,'uzay-3');const layout=h.find('PlayLayout');assert.equal(layout.props['inlineTargets'],true);assert.equal(walk(layout.props['aside']).some(n=>n.type==='WordList'),false);
+   h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-3'},progress:p,onProgress(){},onBack(){},onMap(){},onNext:(c:any)=>calls.push(c)});assert.equal(h.find('PlayLayout').props['chapterNumber'],3);const layout=h.find('PlayLayout');assert.equal(layout.props['inlineTargets'],true);assert.equal(walk(layout.props['aside']).some(n=>n.type==='WordList'),false);
    for(const stroke of layout.props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();const result=h.find('VictorySummary').props;assert.equal(result['goal'].chapter.id,'uzay-3');assert.equal(result['goal'].state.pieces,3);assert.equal(result['rewards'].filter((r:any)=>r.kind==='piece').length,1);assert.equal(result['rewards'].filter((r:any)=>r.kind==='world').length,1);
    const next=h.find('NextJourneyPreview').props['goal'];walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Sonraki bölüm')!.props['onClick']();assert.equal(calls[0].journey,next.chapter.id);walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).includes('Bir daha oyna'))!.props['onClick']();assert.equal(calls[1].journey,'uzay-3');assert.equal(calls[1].practice,true);assert.equal(JSON.stringify(p),before);
   }finally{h.close();}
@@ -301,7 +301,7 @@ describe('player-selected focus is guidance without extra rewards or hidden answ
   const calls:any[]=[],h=view('components/game/ChapterPicker.tsx',modules);let closed=0;
   try{h.start('ChapterPicker',{progress:p,onPlay:(c:any)=>calls.push(c),onClose:()=>closed++});
    const cards=()=>walk(h.tree).filter(n=>n.type==='button'&&String(n.props['aria-label']).startsWith('Bölüm '));assert.equal(cards().length,6);
-   assert.deepEqual(cards().map(n=>Number(String(n.props['aria-label']).split(':')[0]!.split(' ')[1])),[1,2,3,5,9,10]);
+   assert.deepEqual(cards().map(n=>Number(String(n.props['aria-label']).split(':')[0]!.split(' ')[1])),[1,2,3,4,5,6]);
    cards()[0]!.props['onClick']();assert.equal(calls[0].practice,true);assert.equal(calls[0].campaign,true);assert.equal(closed,1);
    walk(h.tree).find(n=>n.type==='select')!.props['onChange']({target:{value:'turkiye'}});h.paint();const locked=cards()[0]!;assert.equal(locked.props['disabled'],true);locked.props['onClick']();assert.equal(calls.length,1);assert.equal(closed,1);
   }finally{h.close();}
@@ -345,9 +345,9 @@ describe('living story sequential interaction, hints, replay and navigation',()=
  });
  it('resumes a saved story directly and cancelling a picker preserves the chosen home',()=>{
   let selected:'stories'|'journey'='stories';const p=familiarProgress(),story=stories.LIVING_STORIES[2]!,b=content.journeyBoard(story);p.saves['route:'+story.id]=progress.cleanSave({strokes:[b.placements[0]!],elapsed:10,hints:0,complete:false,stars:0},b);
-  const calls:any[]=[],props={progress:p,onPlay:(c:any)=>calls.push(c),onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
+  let details=0;const calls:any[]=[],props={progress:p,onPlay:(c:any)=>calls.push(c),onDetails(){details++;},onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
   try{h.start('JourneyHome',{...props,initialView:'stories'});assert.equal(walk(h.tree).some(n=>n.type==='Modal'),false);walk(h.tree).find(n=>n.props?.['className']==='stage-play')!.props['onClick']();assert.equal(calls[0].journey,story.id);
-   walk(h.tree).find(n=>n.props?.['aria-label']==='Bütün yolculuk bölümlerini aç')!.props['onClick']();h.paint();h.find('ChapterPicker').props['onClose']();h.paint();assert.equal(selected,'stories');
+   walk(h.tree).find(n=>n.props?.['aria-label']==='Yolculuğum: bölümler ve albümler')!.props['onClick']();assert.equal(details,1);h.paint();assert.equal(selected,'stories');
    walk(h.tree).find(n=>n.props?.['className']==='stage-milestone')!.props['onClick']();assert.equal(selected,'journey');
   }finally{h.close();}
  });
@@ -445,10 +445,10 @@ describe('world word veils survive every target surface and resume',()=>{
   for(const initial of [false,true])for(const canPause of [false,true]){
    let paused=initial,toggles=0,zoom=0,sound=0,help=0;
    const h=view('components/game/common.tsx'),props=()=>({paused,canPause,zoom:false,sound:false,hints:3,onPause(){paused=!paused;toggles++;},onZoom(){zoom++;},onSound(){sound++;},onHelp(){help++;},onHint(){}});
-   try{h.start('PlayControls',props());walk(h.tree).find(n=>n.props?.['aria-label']==='Oyun araçları')!.props['onClick']();h.update('PlayControls',props());assert.equal(paused,canPause?true:initial);
+   try{h.start('PlayControls',props());walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());assert.equal(paused,canPause?true:initial);
     walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Ses kapalı')!.props['onClick']();assert.equal(sound,1);
     walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Büyük harf modu')!.props['onClick']();h.update('PlayControls',props());assert.equal(zoom,1);assert.equal(paused,initial);assert.equal(toggles,canPause&&!initial?2:0);
-    walk(h.tree).find(n=>n.props?.['aria-label']==='Oyun araçları')!.props['onClick']();h.update('PlayControls',props());walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Kurallar')!.props['onClick']();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
+    walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Kurallar')!.props['onClick']();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
    }finally{h.close();}
   }
  });
@@ -553,7 +553,7 @@ describe('stable shared target shelf',()=>{
   }finally{h.close();}
  });
  it('never reveals an extra initial for the second part of a concealed name',()=>{
-  const board=engine.makeCustomPuzzle(['AKİL HOCA','SOBA'],91,8),group=board.targets[0]!.group,h=view('components/game/common.tsx');try{h.start('WordList',{board,strokes:[],rack:true,veils:{[group]:'initial'}});const label=walk(h.tree).find(n=>n.props['data-word-label']!==undefined)!;assert.equal(text(label),'A··· ····');assert(!JSON.stringify(h.tree).includes('AKİL HOCA'));}finally{h.close();}
+  const board=engine.makeCustomPuzzle(['AKİL HOCA','SOBA'],91,8),group=board.targets[0]!.group,h=view('components/game/common.tsx');try{h.start('WordList',{board,strokes:[],rack:true,veils:{[group]:'initial'}});const label=walk(h.tree).find(n=>n.props['data-word-label']!==undefined)!;assert.equal(text(label),'A✱✱✱ ✱✱✱✱');assert(!JSON.stringify(h.tree).includes('AKİL HOCA'));}finally{h.close();}
  });
 });
 

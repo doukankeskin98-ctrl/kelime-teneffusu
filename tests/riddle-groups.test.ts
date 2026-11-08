@@ -15,11 +15,11 @@ import {match} from '../lib/game/engine.ts';
 import {fixture} from './fixtures.ts';
 
 describe('reviewed optional riddle chapters preserve the numbered journey',()=>{
- it('adds144 complete, unique definitions and32 new four-answer chapters without renumbering existing content',()=>{
+ it('adds144 complete, unique definitions and32 new four-answer chapters without changing existing content IDs',()=>{
   const items=RIDDLE_BANKS.flatMap(b=>b.items.map(([word,clue])=>({id:riddleId(b.themeId,word),word,clue})));
   assert.equal(items.length,144);assert.equal(new Set(items.map(i=>i.id)).size,144);assert.equal(new Set(items.map(i=>i.clue)).size,144);
   assert.equal(RIDDLE_CHAPTERS.length,32);assert.equal(new Set(RIDDLE_CHAPTERS.map(c=>c.id)).size,32);
-  assert.equal(ALL_JOURNEYS.length,168);assert.equal(PLAYABLE_JOURNEYS.length,235);assert.deepEqual(MAIN_JOURNEY_IDS,MAIN_JOURNEY.map(c=>c.chapter.id));
+  assert.equal(ALL_JOURNEYS.length,168);assert.equal(PLAYABLE_JOURNEYS.length,235);assert.deepEqual([...MAIN_JOURNEY_IDS].sort(),MAIN_JOURNEY.map(c=>c.chapter.id).sort());
   for(const item of items){assert(/^[A-ZÇĞİÖŞÜ]{2,8}$/u.test(item.word));assert(item.clue.length>=12&&item.clue.length<=95);assert.notEqual(item.clue.toLocaleUpperCase('tr-TR'),item.word);}
   const oldSets=new Set(ALL_JOURNEYS.map(c=>JSON.stringify([...c.words].sort())));
   for(const c of RIDDLE_CHAPTERS){assert.equal(c.words.length,4);assert.equal(Object.keys(c.clues!).length,4);assert(!oldSets.has(JSON.stringify([...c.words].sort())),c.id);const board=journeyBoard(c);assert.equal(board.size,c.size);for(const p of board.placements){assert(c.clues![p.text]);assert.equal(match(board,p.a,p.b)?.id,p.id);}}
@@ -35,9 +35,9 @@ describe('reviewed optional riddle chapters preserve the numbered journey',()=>{
  });
 });
 
-async function lobby(count=4){const f=fixture(),users=Array.from({length:count},(_,i)=>'riddle-'+i),first=(await f.game.enter(users[0]!,'friend',undefined,true))!;await Promise.all(users.slice(1).map(u=>f.game.enter(u,'friend',first.code)));return {...f,users,id:first.id,code:first.code};}
+async function lobby(count=4){const f=fixture(),users=Array.from({length:count},(_,i)=>'riddle-'+i),first=(await f.game.enter(users[0]!,'friend',undefined,true))!;const legacy=f.room(first.id);delete legacy.roundPolicy;legacy.roundKind='clue';f.sqlite.prepare('UPDATE rooms SET data=? WHERE id=?').run(JSON.stringify(legacy),first.id);await Promise.all(users.slice(1).map(u=>f.game.enter(u,'friend',first.code)));return {...f,users,id:first.id,code:first.code};}
 async function start(f:Awaited<ReturnType<typeof lobby>>,round:number){await Promise.all(f.users.map(u=>f.game.ready(u,f.id,round)));const v=await f.game.start(f.users[0]!,f.id,round);f.advance(4000);return v;}
-describe('persistent alternating group rounds',()=>{
+describe('legacy persistent alternating group rounds',()=>{
  for(const count of [4,8])it(`${count} sessions share eight alternating rounds without any reused riddle, including reload and repeated next`,async()=>{
   const f=await lobby(count),used=new Set<string>(),words=new Set<string>(),grids=new Set<string>();
   for(let round=1;round<=8;round++){

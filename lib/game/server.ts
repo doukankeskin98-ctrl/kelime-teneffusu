@@ -8,7 +8,8 @@ export interface Statement { bind(...values: unknown[]): Statement; first<T=Reco
 export interface Database {prepare(sql:string):Statement;batch(statements:Statement[]):Promise<{meta:{changes:number}}[]>}
 export class GameError extends Error {constructor(message:string,public status=400,public code?:string){super(message);}}
 export interface DuelPlayer { id:string; name:string; ready:boolean; strokes:Stroke[]; score:number; seen:number; lastFind:number; rematch:boolean;left?:boolean }
-export interface Room {id:string;code:string;kind:'quick'|'friend';phase:'waiting'|'ready'|'active'|'finished'|'cancelled';themeId:string;level:number;seed:number;starts:number|null;ends:number|null;winner:string|null;reason:string;players:DuelPlayer[];round:number;queuedAt?:number;mode?:'group';protocol?:2;puzzle?:Puzzle;roundKind?:ArenaRoundKind;clues?:Record<string,string>;usedRiddleIds?:string[];contentOrdinal?:number;writeToken?:string;ranks?:Record<string,number>;lastResult?:ArenaResult}
+export type ArenaRoundPolicy='words'|'mixed';
+export interface Room {roundPolicy?:ArenaRoundPolicy;id:string;code:string;kind:'quick'|'friend';phase:'waiting'|'ready'|'active'|'finished'|'cancelled';themeId:string;level:number;seed:number;starts:number|null;ends:number|null;winner:string|null;reason:string;players:DuelPlayer[];round:number;queuedAt?:number;mode?:'group';protocol?:2;puzzle?:Puzzle;roundKind?:ArenaRoundKind;clues?:Record<string,string>;usedRiddleIds?:string[];contentOrdinal?:number;writeToken?:string;ranks?:Record<string,number>;lastResult?:ArenaResult}
 interface RoomRow {id:string;data:string;revision:number;expires:number}
 interface Daily {id:string;day:string;starts:number;strokes:Stroke[];hints:number;finished:number|null;duration:number}
 interface DailyRow {id:string;data:string;revision:number}
@@ -16,7 +17,7 @@ export interface ArenaParticipant {id:string;name:string;ready:boolean;count:num
 export interface ArenaResult {round:number;roundKind?:ArenaRoundKind;winner:string|null;reason:string;players:ArenaParticipant[]}
 export interface ArenaSeriesPlayer {id:string;name:string;played:number;wins:number;draws:number;score:number;rank:number;active:boolean}
 export interface ArenaSeries {rounds:number;players:ArenaSeriesPlayer[]}
-export interface RoomView {roundKind?:ArenaRoundKind;nextRoundKind?:ArenaRoundKind;clues?:Record<string,string>;roundUnavailable?:string;series?:ArenaSeries;lastResult?:ArenaResult;mode?:'group'|'duel';hostId?:string;canStart?:boolean;players?:ArenaParticipant[];contentOrdinal?:number;revision:number;id:string;code:string;kind:string;phase:Room['phase'];themeId:string;starts:number|null;ends:number|null;winner:string|null;reason:string;round:number;serverNow:number;board:Omit<Puzzle,'placements'>|null;golden:string|null;you:{id:string;name:string;ready:boolean;strokes:Stroke[];score:number;rematch:boolean};opponent:{name:string;ready:boolean;count:number;score:number;online:boolean;rematch:boolean}|null}
+export interface RoomView {roundPolicy?:ArenaRoundPolicy;roundKind?:ArenaRoundKind;nextRoundKind?:ArenaRoundKind;clues?:Record<string,string>;roundUnavailable?:string;series?:ArenaSeries;lastResult?:ArenaResult;mode?:'group'|'duel';hostId?:string;canStart?:boolean;players?:ArenaParticipant[];contentOrdinal?:number;revision:number;id:string;code:string;kind:string;phase:Room['phase'];themeId:string;starts:number|null;ends:number|null;winner:string|null;reason:string;round:number;serverNow:number;board:Omit<Puzzle,'placements'>|null;golden:string|null;you:{id:string;name:string;ready:boolean;strokes:Stroke[];score:number;rematch:boolean};opponent:{name:string;ready:boolean;count:number;score:number;online:boolean;rematch:boolean}|null}
 interface ArenaAllocation {poolId:string;from:number;next:number}
 export interface DailyView extends Daily {serverNow:number;board:Omit<Puzzle,'placements'>}
 export const publicBoard=({placements:_placements,...board}:Puzzle)=>board;
@@ -83,11 +84,11 @@ export class GameService {
    const ranks=room.ranks??this.ranks(room),sorted=[...room.players].sort((a,b)=>ranks[a.id]!-ranks[b.id]!||a.id.localeCompare(b.id));
    const participants=sorted.map(p=>({id:p.id,name:p.name,ready:p.ready,count:p.strokes.length,score:p.score,online:!p.left&&now-p.seen<15000,rematch:p.rematch,left:!!p.left,rank:ranks[p.id]!}));
    const starters=this.starters(room);
-   const roundKind=room.mode==='group'?(room.roundKind??'words'):'words',nextRoundKind=room.mode==='group'?nextArenaKind(roundKind):'words';
+   const roundKind=room.mode==='group'?(room.roundKind??'words'):'words',nextRoundKind=room.mode==='group'&&room.roundPolicy!=='words'?nextArenaKind(roundKind):'words';
    const roundUnavailable=room.mode==='group'&&roundKind==='clue'&&['waiting','ready'].includes(room.phase)&&!hasFreshRiddles(room.usedRiddleIds??[])?'Bu odadaki yeni bilmeceler tamamlandı. Önceki bilmece yeniden açılmadı.':'',clues=roundKind==='clue'?room.clues:undefined;
    // Older clients already render target.label. Mask answers there too, until confirmed.
    const board=puzzle?{...publicBoard(puzzle),targets:puzzle.targets.map(t=>({...t,label:clues?.[t.text]&&!you.strokes.some(s=>s.id===t.id)?clues[t.text]!:t.label}))}:null;
-   return {roundKind,nextRoundKind,clues:clues?{...clues}:undefined,roundUnavailable:roundUnavailable||undefined,lastResult:room.lastResult,revision,id:room.id,code:room.code,kind:room.kind,mode:room.mode??'duel',hostId:starters[0]?.id,canStart:!roundUnavailable&&starters.length>=2&&starters.every(p=>p.ready),players:participants,contentOrdinal:room.contentOrdinal,phase:room.phase,themeId:room.themeId,starts:room.starts,ends:room.ends,winner:room.winner,reason:room.reason,round:room.round,serverNow:now,board,golden:puzzle&&room.starts!==null?goldenId(puzzle.targets,room.starts,now):null,you:{id:you.id,name:you.name,ready:you.ready,strokes:you.strokes,score:you.score,rematch:you.rematch},opponent:other?{name:other.name,ready:other.ready,count:other.strokes.length,score:other.score,online:!other.left&&now-other.seen<15000,rematch:other.rematch}:null};
+   return {roundPolicy:room.roundPolicy,roundKind,nextRoundKind,clues:clues?{...clues}:undefined,roundUnavailable:roundUnavailable||undefined,lastResult:room.lastResult,revision,id:room.id,code:room.code,kind:room.kind,mode:room.mode??'duel',hostId:starters[0]?.id,canStart:!roundUnavailable&&starters.length>=2&&starters.every(p=>p.ready),players:participants,contentOrdinal:room.contentOrdinal,phase:room.phase,themeId:room.themeId,starts:room.starts,ends:room.ends,winner:room.winner,reason:room.reason,round:room.round,serverNow:now,board,golden:puzzle&&room.starts!==null?goldenId(puzzle.targets,room.starts,now):null,you:{id:you.id,name:you.name,ready:you.ready,strokes:you.strokes,score:you.score,rematch:you.rematch},opponent:other?{name:other.name,ready:other.ready,count:other.strokes.length,score:other.score,online:!other.left&&now-other.seen<15000,rematch:other.rematch}:null};
  }
  private fence(room:Room,expectedRound?:unknown){if(expectedRound===undefined&&!room.mode&&!room.protocol)return;if(!Number.isSafeInteger(expectedRound)||expectedRound!==room.round)throw new GameError('Maç değişti. Güncel odayı yeniden kontrol et.',409,'ARENA_ROUND_CHANGED');}
  private async publicView(room:Room,userId:string,revision=0):Promise<RoomView>{
@@ -204,29 +205,29 @@ export class GameService {
    }
    throw new GameError('Katılım yoğun. Odayı yeniden kontrol et.',409);
  }
- private async enterQuickGroup(userId:string){
+ private async enterQuickGroup(userId:string,roundPolicy:ArenaRoundPolicy){
    const now=this.clock();
-   const candidates=(await this.q("SELECT id,data,revision,expires FROM rooms WHERE kind='quick' AND json_extract(data,'$.mode')='group' AND phase IN ('waiting','ready') AND expires>? AND updated>? ORDER BY updated DESC LIMIT 64",now,now-15000).all<RoomRow>()).results;
+   const candidates=(await this.q("SELECT id,data,revision,expires FROM rooms WHERE kind='quick' AND json_extract(data,'$.mode')='group' AND json_extract(data,'$.roundPolicy')=? AND phase IN ('waiting','ready') AND expires>? AND updated>? ORDER BY updated DESC LIMIT 64",roundPolicy,now,now-15000).all<RoomRow>()).results;
    const attempt=async(row:RoomRow)=>{
-    const room=this.parse(row),fresh=Math.max(room.queuedAt??0,...room.players.filter(p=>!p.left).map(p=>p.seen));if(room.kind!=='quick'||room.mode!=='group'||row.expires<=this.clock()||fresh<this.clock()-15000||!['waiting','ready'].includes(room.phase))return null;
+    const room=this.parse(row),fresh=Math.max(room.queuedAt??0,...room.players.filter(p=>!p.left).map(p=>p.seen));if(room.kind!=='quick'||room.mode!=='group'||room.roundPolicy!==roundPolicy||row.expires<=this.clock()||fresh<this.clock()-15000||!['waiting','ready'].includes(room.phase))return null;
     try{return await this.joinRow(userId,row);}catch(e){if(!(e instanceof GameError)||e.status!==409)throw e;return null;}
    };
    for(const row of candidates){const joined=await attempt(row);if(joined)return joined;}
    for(let slot=0;slot<64;slot++){
     // A shared UUID v8 queue slot makes simultaneous first arrivals converge.
     // The existing room revision + membership transaction owns each real join.
-    const bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('kt:quick-group:'+Math.floor(now/60000)+':'+slot))).slice(0,16);
+    const bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('kt:quick-group:'+roundPolicy+':'+Math.floor(now/60000)+':'+slot))).slice(0,16);
     bytes[6]=(bytes[6]!&15)|128;bytes[8]=(bytes[8]!&63)|128;const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(''),id=hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
-    const room:Room={id,code:code(),kind:'quick',mode:'group',roundKind:'clue',protocol:2,phase:'waiting',themeId:THEMES[hash(id)%THEMES.length]!.id,level:2,seed:hash(id),starts:null,ends:null,winner:null,reason:'',players:[],round:1,queuedAt:now};
+    const room:Room={id,code:code(),kind:'quick',mode:'group',roundPolicy,roundKind:'words',protocol:2,phase:'waiting',themeId:THEMES[hash(id)%THEMES.length]!.id,level:2,seed:hash(id),starts:null,ends:null,winner:null,reason:'',players:[],round:1,queuedAt:now};
     await this.q('INSERT OR IGNORE INTO rooms(id,code,kind,phase,data,revision,expires,updated) VALUES(?,?,?,?,?,0,?,?)',id,room.code,room.kind,room.phase,JSON.stringify(room),now+30*60000,now).run();
     const row=await this.row(id),joined=await attempt(row);if(joined)return joined;
    }
    throw new GameError('Grup lobileri şu an yoğun. Biraz sonra yeniden dene veya özel oda oluştur.',503,'ARENA_QUEUE_BUSY');
  }
- async enter(userId:string,kind:'quick'|'friend',joinCode?:string,group=false){
+ async enter(userId:string,kind:'quick'|'friend',joinCode?:string,group=false,roundPolicy:ArenaRoundPolicy='words'){
    const active=await this.active(userId);if(active)return this.state(userId,active.id);
    if(joinCode){const row=await this.q("SELECT id,data,revision,expires FROM rooms WHERE code=? AND (kind='friend' OR json_extract(data,'$.mode')='group')",joinCode.trim().toUpperCase()).first<RoomRow>();if(!row)throw new GameError('Bu kodla bir oda bulunamadı.',404);return this.joinRow(userId,row);}
-   if(kind==='quick'&&group)return this.enterQuickGroup(userId);
+   if(kind==='quick'&&group)return this.enterQuickGroup(userId,roundPolicy);
    if(kind==='quick'){
      const rating=await this.rating(userId);
      for(let attempt=0;attempt<3;attempt++){
@@ -235,7 +236,7 @@ export class GameService {
      }
    }
    const now=this.clock();const id=crypto.randomUUID();const themeId=THEMES[hash(id)%THEMES.length]!.id;
-   const room:Room={protocol:2,...(kind==='friend'&&group?{mode:'group' as const,roundKind:'clue' as const}:{}),id,code:code(),kind,phase:'waiting',themeId,level:2,seed:hash(crypto.randomUUID()),starts:null,ends:null,winner:null,reason:'',players:[player(userId,(await this.profile(userId)).nickname,now)],round:1,queuedAt:now};
+   const room:Room={protocol:2,...(kind==='friend'&&group?{mode:'group' as const,roundPolicy,roundKind:'words' as const}:{}),id,code:code(),kind,phase:'waiting',themeId,level:2,seed:hash(crypto.randomUUID()),starts:null,ends:null,winner:null,reason:'',players:[player(userId,(await this.profile(userId)).nickname,now)],round:1,queuedAt:now};
    try{await this.db.batch([
      this.q('INSERT INTO rooms(id,code,kind,phase,data,revision,expires,updated) VALUES(?,?,?,?,?,0,?,?)',id,room.code,kind,room.phase,JSON.stringify(room),now+30*60000,now),
      this.q('INSERT INTO members(room_id,user_id,active) VALUES(?,?,1)',id,userId)
@@ -275,7 +276,7 @@ export class GameService {
     if(room.round>Number(expectedRound))return;
     this.fence(room,expectedRound);if(room.phase!=='finished')throw new GameError('Maç henüz bitmedi.',409);
     room.lastResult={round:room.round,roundKind:room.roundKind??'words',winner:room.winner,reason:room.reason,players:this.view(room,userId).players!};
-    if(room.mode==='group')room.roundKind=nextArenaKind(room.roundKind??'words');delete room.clues;
+    if(room.mode==='group')room.roundKind=room.roundPolicy==='words'?'words':nextArenaKind(room.roundKind??'words');delete room.clues;
     room.protocol=2;room.round++;room.starts=null;room.ends=null;room.winner=null;room.reason='';delete room.puzzle;delete room.contentOrdinal;delete room.ranks;
     room.players=room.players.filter(x=>!x.left).map(x=>player(x.id,x.name,this.clock()));room.phase=room.players.length>1?'ready':'waiting';
    });
