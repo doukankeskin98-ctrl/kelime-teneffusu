@@ -39,7 +39,7 @@ export async function POST(request:Request){try{
   case 'start':return json(await game.start(user.userId,id,data['round']));
   case 'next':return json(await game.nextGame(user.userId,id,data['round']));
   case 'claim':return json(await game.claim(user.userId,id,data['a'],data['b'],data['round']));
-  case 'leave':return json(await game.leave(user.userId,id,data['round']));
+  case 'leave':return json(await game.leave(user.userId,id,data['round'],data['waitingOnly']===true));
   case 'rematch':return json(await game.rematch(user.userId,id,data['round']));
   case 'daily':return json(await game.daily(user.userId));
   case 'dailyClaim':return json(await game.dailyClaim(user.userId,id,data['a'],data['b']));

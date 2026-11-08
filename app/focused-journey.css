@@ -95,3 +95,39 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 
 .arena-entry-sheet .or-line{color:#dce8d9}
 .album-detail-sheet .collection-dialog-intro,.album-detail-sheet .collection-piece-list small{color:#dce8d9}.album-detail-sheet .collection-piece-list b{color:#fff6df}.album-detail-sheet .collection-piece-list>li{border-color:#dce8d533}.album-detail-sheet .collection-piece-list>li>span{color:#dce8d9;border-color:#dce8d566}.album-detail-sheet .collection-piece-list>li.earned>span{color:#244e3c;background:#d8e8c7}
+/* Stable, in-flow feedback: never competes with the chapter topic or targets. */
+.scenic-play .play-notice{position:relative;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:0 0 36px;height:36px;min-height:36px;margin:0;padding:0 4px;color:#fff9e9;font-size:12px;line-height:16px;text-align:center}
+.play-notice>span:not(:empty):not(.sr-only){background:#163e38;padding:2px 8px;border-radius:6px;max-width:100%}
+.game-tools-modal .play-primary-settings{margin:4px 0 16px}
+.play-primary-settings .play-comfort-settings{border:0;margin:0;padding:0}
+.play-settings-details{border-block:1px solid #d8e4d540;margin:12px 0 18px;padding:0 0 10px}
+.play-settings-details summary{min-height:48px;display:list-item;align-content:center;cursor:pointer;color:#fff6de;font-size:15px;font-weight:650;padding:12px 6px;box-sizing:border-box}
+.play-settings-details .play-comfort-settings{border:0;margin:0;padding:0}
+.game-tools-modal .play-settings-details .play-tools-sheet{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px}
+.extra-games-details{margin:20px 0 10px;border-block:1px solid #d8e4d540}
+.extra-games-details>summary{min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#fff6de;font-size:16px;font-weight:650;cursor:pointer;list-style:none}
+.extra-games-details>summary::-webkit-details-marker{display:none}
+.extra-games-details[open]>summary>svg{transform:rotate(180deg)}
+.extra-games-details .event-menu{margin:0 0 12px}
+.extra-games .extra-games-menu{display:flex;flex-direction:column;gap:12px}
+.extra-games .extra-games-menu>button{min-height:80px}
+.short-games-menu button{background:#fff9e9;color:#213e35;box-shadow:none;min-height:84px}
+.short-games-menu small{color:#50665a;line-height:1.5}
+.arena-wait-alternative{width:100%;max-width:440px;margin:8px auto 16px;padding-top:12px;border-top:1px solid #d8e4d540}
+.arena-wait-alternative p{font-size:14px;line-height:1.5;color:#e2ebdf;margin-bottom:10px}
+.arena-room-actions .arena-wait-alternative>.button.secondary{color:#193e37;background:#fff6df;border-color:#b8c7ac;font-weight:750}
+button.native-stars{min-height:44px;border:0;cursor:pointer}
+.reward-total{display:flex;align-items:center;justify-content:center;gap:12px;color:#ffe0a0;font-size:38px;margin:8px 0 18px}
+.reward-info p,.reward-info dd{font-size:15px;line-height:1.6;color:#e3ebdf}
+.reward-info dl{margin:20px 0}.reward-info dl>div{margin-bottom:16px}.reward-info dt{font-weight:750;color:#fff6de;margin-bottom:4px}.reward-info dd{margin:0}
+
+.solo-control-dock{display:flex;flex-direction:column;width:100%}
+@media(max-width:759px) and (max-height:720px){
+ .scenic-play[data-dense-board=true] .solo-control-dock{flex-direction:row;align-items:center;gap:10px;margin-top:4px;min-height:44px}
+ .scenic-play[data-dense-board=true] .solo-control-dock .play-controls{flex:0 0 auto;width:auto;margin:0}
+ .scenic-play[data-dense-board=true] .solo-control-dock .play-notice{flex:1 1 0;width:0;min-width:0;height:44px;min-height:44px;padding:0;font-size:12px;line-height:14px;text-align:left}
+ .scenic-play[data-dense-board=true] .play-notice>span:not(:empty):not(.sr-only){padding:0 2px}
+}
+
+/* Dense racks use the same 16px letter cells for sizing as for painting. */
+.scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{flex-basis:calc(var(--word-chars)*10.24px + 4px)!important;width:calc(var(--word-chars)*10.24px + 4px)}

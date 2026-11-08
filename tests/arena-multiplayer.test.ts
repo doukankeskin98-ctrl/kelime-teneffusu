@@ -45,3 +45,29 @@ it('keeps the exact previous ranking available when another participant advances
 it('does not resurrect a departed opponent when leave races the legacy rematch membership count',async()=>{const s=fixture();const a=(await s.game.enter('ra','quick'))!;const b=(await s.game.enter('rb','quick'))!;await s.game.ready('ra',b.id,1);await s.game.ready('rb',b.id,1);s.advance(124000);await s.game.state('ra');await s.game.rematch('ra',b.id,1);let armed=true;
  const db={...s.db,prepare(sql:string){const wrap=(stmt:ReturnType<typeof s.db.prepare>):ReturnType<typeof s.db.prepare>=>new Proxy(stmt,{get(target,key){if(key==='bind')return (...args:unknown[])=>wrap(target.bind(...args));if(key==='first'&&sql.includes('COUNT(*) AS count FROM members'))return async()=>{const result=await target.first();if(armed){armed=false;await s.game.leave('ra',b.id,1);}return result;};const value=Reflect.get(target,key);return typeof value==='function'?value.bind(target):value;}});return wrap(s.db.prepare(sql));}};
  await assert.rejects(()=>new GameService(db,s.clock).rematch('rb',b.id,1));assert.equal(s.room(b.id).round,1);assert.equal(s.room(b.id).players.find(p=>p.id==='ra')!.left,true);s.sqlite.close();});
+
+it('only leaves an empty quick queue through the challenge alternative',async()=>{
+ const s=fixture();try{
+  const waiting=(await s.game.enter('waiting','quick',undefined,true))!;
+  await s.game.leave('waiting',waiting.id,1,true);assert.equal(await s.game.state('waiting'),null);
+  assert.equal(s.sqlite.prepare('SELECT count(*) n FROM results').get()!['n'],0);
+  const a=(await s.game.enter('a','quick',undefined,true))!;await s.game.enter('b','quick',undefined,true);
+  await assert.rejects(()=>s.game.leave('a',a.id,1,true),e=>e instanceof GameError&&e.status===409);
+  assert.equal(s.room(a.id).players.filter(p=>!p.left).length,2);
+  await s.game.ready('a',a.id,1);await s.game.ready('b',a.id,1);await s.game.start('a',a.id,1);
+  await assert.rejects(()=>s.game.leave('a',a.id,1,true),e=>e instanceof GameError&&e.status===409);
+  assert.equal(s.room(a.id).phase,'active');assert(!s.room(a.id).players.find(p=>p.id==='a')!.left);
+  const privateRoom=(await s.game.enter('private','friend',undefined,true))!;
+  await assert.rejects(()=>s.game.leave('private',privateRoom.id,1,true),e=>e instanceof GameError&&e.status===409);
+ }finally{s.sqlite.close();}
+});
+it('rechecks the quick-queue condition when an opponent joins during the leave transaction',async()=>{
+ const s=fixture();try{
+  const waiting=(await s.game.enter('waiting','quick',undefined,true))!;let armed=true;
+  const db={...s.db,batch:async(statements:Parameters<typeof s.db.batch>[0])=>{if(armed){armed=false;await s.game.enter('late','quick',undefined,true);}return s.db.batch(statements);}};
+  await assert.rejects(()=>new GameService(db,s.clock).leave('waiting',waiting.id,1,true),e=>e instanceof GameError&&e.status===409);
+  const kept=s.room(waiting.id);assert.equal(kept.phase,'ready');assert.equal(kept.players.filter(p=>!p.left).length,2);
+  assert.equal(s.sqlite.prepare('SELECT count(*) n FROM members WHERE active=1').get()!['n'],2);
+  assert.equal(s.sqlite.prepare('SELECT count(*) n FROM results').get()!['n'],0);
+ }finally{s.sqlite.close();}
+});

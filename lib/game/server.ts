@@ -262,8 +262,11 @@ export class GameService {
    p.strokes.push({id:target.id,a:a as Cell,b:b as Cell});p.score+=pointsFor(target,goldenId(board.targets,room.starts,now)===target.id);p.seen=now;p.lastFind=now;
    if(p.strokes.length===board.targets.length){room.phase='finished';room.winner=p.id;room.reason='Tüm kelimeler bulundu';room.ends=now;}
  });}
- async leave(userId:string,id:string,expectedRound?:unknown){
-   await this.mutate(userId,id,(room,p)=>{this.fence(room,expectedRound);if(p.left)return;p.left=true;
+ async leave(userId:string,id:string,expectedRound?:unknown,waitingOnly=false){
+   await this.mutate(userId,id,(room,p)=>{this.fence(room,expectedRound);
+    // Checked again inside every CAS retry: a new opponent must never be forfeited.
+    if(waitingOnly&&(room.kind!=='quick'||room.phase!=='waiting'||room.players.some(other=>other.id!==userId&&!other.left)))throw new GameError('Bir oyuncu katıldı. Odayı kontrol ederek devam et.',409);
+    if(p.left)return;p.left=true;
     if(room.phase==='active'){const remaining=room.players.filter(x=>!x.left);if(!room.mode||remaining.length<=1){room.phase='finished';room.winner=remaining[0]?.id??null;room.reason='Diğer oyuncular ayrıldı';room.ends=this.clock();}}
     else if(room.phase==='waiting'||room.phase==='ready'){const remaining=room.players.filter(x=>!x.left);if(!room.mode||!remaining.length){room.phase='cancelled';room.reason='Oyuncular ayrıldı';}else room.phase=remaining.length>1?'ready':'waiting';}
    },false,false);return {ok:true};

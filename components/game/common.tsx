@@ -123,11 +123,14 @@ export function PlayLayout({quietHeader=false,headerAction,chapterNumber,earlyTa
 export function GameToolsSheet({onHome,onClose,sound,onSound,zoom,onZoom,onHelp,finished=false,timed=false}:{onHome?:()=>void;onClose:(resume?:boolean)=>void;sound:boolean;onSound:()=>void;zoom?:boolean;onZoom?:()=>void;onHelp?:()=>void;finished?:boolean;timed?:boolean}){
  return <Modal className="game-tools-modal" title="Oyun ayarları" onClose={onClose} footer={<button className="button primary full" onClick={()=>onClose()}><Play size={19}/>{finished?'Tahtaya dön':'Oyuna dön'}</button>}>
   <p className="tools-context">{finished?'Tamamladığın tahta':timed?'Yarış süresi devam ediyor.':'Oyun duraklatıldı. İlerlemen kaydedildi.'}</p>
-  <div className="play-tools-sheet">
-   <button aria-pressed={sound} onClick={onSound}>{sound?<Volume2/>:<VolumeX/>}{sound?'Ses açık':'Ses kapalı'}</button>
+  <div className="game-settings play-primary-settings">
+   <button className="comfort-setting" role="switch" aria-checked={sound} onClick={onSound}>{sound?<Volume2/>:<VolumeX/>}<span><b>Ses</b></span><i className="switch" aria-hidden="true"/></button>
+   <PlayComfortSettings section="haptics"/>
+  </div>
+  <details className="play-settings-details"><summary>Görünüm ve yardım</summary><PlayComfortSettings section="motion"/><div className="play-tools-sheet">
    {onZoom&&<button aria-pressed={zoom} onClick={()=>{onZoom();onClose();}}><ZoomIn/>{zoom?'Normal tahta':'Büyük harf modu'}</button>}
    {onHelp&&<button onClick={()=>{onClose();onHelp();}}><HelpCircle/>Kurallar</button>}
-  </div><PlayComfortSettings/>{onHome&&<button className="button secondary full game-home-action" onClick={()=>{onClose(false);onHome();}}><House size={20}/>Ana sayfaya dön</button>}
+  </div></details>{onHome&&<button className="button secondary full game-home-action" onClick={()=>{onClose(false);onHome();}}><House size={20}/>Ana sayfaya dön</button>}
  </Modal>;
 }
 /** Timed modes keep their clock running while these presentation controls are open. */

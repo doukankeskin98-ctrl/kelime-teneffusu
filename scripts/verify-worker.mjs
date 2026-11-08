@@ -236,6 +236,9 @@ try{
  const pastWords=new Set([groupActive,second,third].flatMap(v=>v.board.targets.map(t=>t.text)));
  await Promise.all(groupUsers.map((_,i)=>action(i,'leave',3)));
  const returnAction=(i,name,id,extra={})=>json('/api/game',{nativeUser:groupUsers[i],method:'POST',body:{action:name,id,round:1,expectedOwnerId:profiles[i].profile.id,...extra}});
+ const waitOnly=await returnAction(0,'enter',undefined,{kind:'quick',mode:'group'});
+ await returnAction(0,'leave',waitOnly.id,{waitingOnly:true});
+ check(await json('/api/game?action=room',{nativeUser:groupUsers[0]})===null,'waiting alternative releases only an empty quick queue');
  const duelA=await returnAction(0,'enter',undefined,{kind:'quick'}),duelB=await returnAction(7,'enter',undefined,{kind:'quick'});
  check(duelA.id===duelB.id,'returning accounts enter a new ranked duel together');
  await returnAction(0,'ready',duelB.id);const returningDuel=await returnAction(7,'ready',duelB.id);
@@ -245,8 +248,10 @@ try{
  await returnAction(0,'leave',duelB.id);await returnAction(7,'leave',duelB.id);
  const freshA=await returnAction(0,'enter',undefined,{kind:'quick',mode:'group'}),freshB=await returnAction(7,'enter',undefined,{kind:'quick',mode:'group'});
  check(freshA.id===freshB.id&&freshA.id!==group.id,'leaving and quick matching opens a different shared group');
+ await request('/api/game',{nativeUser:groupUsers[0],method:'POST',body:{action:'leave',id:freshB.id,round:1,expectedOwnerId:profiles[0].profile.id,waitingOnly:true},expected:409});
  await returnAction(0,'ready',freshB.id);await returnAction(7,'ready',freshB.id);const freshGroup=await returnAction(0,'start',freshB.id);
  check(freshGroup.roundPolicy==='words'&&freshGroup.roundKind==='words'&&freshGroup.board.targets.every(t=>!pastWords.has(t.text)),'new group excludes individual clues and words seen in previous rooms and duel');
+ await request('/api/game',{nativeUser:groupUsers[0],method:'POST',body:{action:'leave',id:freshB.id,round:1,expectedOwnerId:profiles[0].profile.id,waitingOnly:true},expected:409});
  const freshPeer=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(JSON.stringify(freshPeer.board)===JSON.stringify(freshGroup.board),'returning participants still receive exactly the same board');
  await returnAction(0,'leave',freshB.id);await returnAction(7,'leave',freshB.id);
  // Sixteen actual guest sessions enter the public group queue concurrently.

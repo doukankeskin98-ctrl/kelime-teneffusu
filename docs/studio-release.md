@@ -1,5 +1,9 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.45.0 · Sabit bilgi alanı ve kolay seçim
+
+İpucu başlığı örtmez; yan oyunlarda üç ana giriş, ortak Ses/Titreşim anahtarları, yıldız açıklaması ve güvenli Arena bekleme alternatifi. Kayıtlar ve oyun hissi korunur. [Doğrulama ve sınırlar](release-0.45.0.md).
+
 ## 0.44.1 · Kelime onayı ve anlaşılır kontroller
 
 Tamamlanma çizgisi/soluklaşma geri geldi; belirgin ortak dişli, tahta simgeli Çevir düğmesi, dengeli ana ekran. Kayıtlar korunur. [Doğrulama ve sınırlar](release-0.44.1.md).

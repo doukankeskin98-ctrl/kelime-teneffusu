@@ -1,4 +1,6 @@
-8 Kasım 2026 · 0.44.1: gerçek oyuncu geri bildirimiyle tamamlanma işareti, kontrol tanınabilirliği ve ana ekran boşluğu düzeltildi. Son durumun görsel kabulü artık ayrı kanıt; fiziksel telefon kabulü açık. docs/release-0.44.1.md.
+8 Kasım 2026 · 0.45.0: Bilgi çakışmaları/yan menü tamamlandı; eklenen bekleme alternatifi sunucuda yarış koşuluna karşı korundu.853 test/703 Worker. Yeni sürüm fiziksel kurulum,uzun oturum,VoiceOver ve5–8 yeni oyuncu kabulü açık. Mağaza metin/çekim/deney hazırlığı docs/store-and-player-validation.md içinde; yeni genel tasarım turu yerine gerçek oyuncu kanıtı.
+
+8 Kasım 2026 · 0.44.1: gerçek oyuncu geri bildirimiyle tamamlanma işareti, kontrol tanınabilirliği ve ana ekran boşluğu düzeltildi. 0.44.1(31) fiziksel kurulumunda sekiz kayıt değeri eşit; kullanıcı ayar ve kelime onayını sorunsuz buldu. Uzun oturum/iki gerçek telefon kabulü ayrı açık. docs/release-0.44.1.md.
 
 8 Kasım 2026 · 0.44.0: kabul edilmiş sade yolculuk/Arena tercihi ve hedef okunaklılığı uygulandı. Fiziksel iPhone uzun oturum, his ve iki gerçek oyuncu kabulü açık. Yeni geniş özellik araştırması yerine bu sürümün gerçek kullanım kabulü. docs/release-0.44.0.md.
 

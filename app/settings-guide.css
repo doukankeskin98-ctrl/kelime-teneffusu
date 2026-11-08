@@ -5,14 +5,14 @@
 .settings-home>.modal-head h2{color:#fff9e8;font-size:32px;font-weight:800;line-height:1.2;text-align:center}
 .settings-home>.modal-head .icon-button{position:absolute;right:4px;top:2px;width:44px;height:44px;min-width:44px;background:#284b52;border:1px solid #e9d697b3;color:#fff2c4;box-shadow:none}
 .settings-home .game-settings{display:block;margin-bottom:24px}
-.settings-home :is(.setting-row,.comfort-setting){display:flex;align-items:center;gap:14px;width:100%;min-height:62px;padding:8px 0;border:0;background:transparent;color:#fff8e7;text-align:left;box-shadow:none}
-.settings-home :is(.setting-row,.comfort-setting)>svg{width:27px;height:27px;flex-shrink:0;color:#fff1c9}
-.settings-home :is(.setting-row,.comfort-setting)>span{flex:1;min-width:0}
-.settings-home :is(.setting-row,.comfort-setting) b{font-size:24px;font-weight:750;line-height:1.3}
-.settings-home :is(.setting-row,.comfort-setting) .switch{display:block;position:relative;flex:0 0 70px;width:70px;height:38px;min-width:70px;margin:0;padding:0;border:1px solid #92aba5;background:#385761;border-radius:24px;box-shadow:inset 0 2px 3px #0002;transition:background 150ms ease}
-.settings-home :is(.setting-row,.comfort-setting) .switch::after{content:'';position:absolute;top:4px;left:4px;width:28px;height:28px;margin:0;border-radius:50%;background:#fffbed;transform:none;box-shadow:0 1px 3px #0004;transition:transform 150ms ease}
-.settings-home :is(.setting-row,.comfort-setting)[aria-checked=true] .switch{background:#6ca380;border-color:#b3d0a5}
-.settings-home :is(.setting-row,.comfort-setting)[aria-checked=true] .switch::after{transform:translateX(32px)}
+:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting){display:flex;align-items:center;gap:14px;width:100%;min-height:62px;padding:8px 0;border:0;background:transparent;color:#fff8e7;text-align:left;box-shadow:none}
+:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting)>svg{width:27px;height:27px;flex-shrink:0;color:#fff1c9}
+:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting)>span{flex:1;min-width:0}
+:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting) b{font-size:24px;font-weight:750;line-height:1.3}
+:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting) .switch{display:block;position:relative;flex:0 0 70px;width:70px;height:38px;min-width:70px;margin:0;padding:0;border:1px solid #92aba5;background:#385761;border-radius:24px;box-shadow:inset 0 2px 3px #0002;transition:background 150ms ease}
+:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting) .switch::after{content:'';position:absolute;top:4px;left:4px;width:28px;height:28px;margin:0;border-radius:50%;background:#fffbed;transform:none;box-shadow:0 1px 3px #0004;transition:transform 150ms ease}
+:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting)[aria-checked=true] .switch{background:#6ca380;border-color:#b3d0a5}
+:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting)[aria-checked=true] .switch::after{transform:translateX(32px)}
 .settings-main-actions{display:grid;gap:12px}.settings-home .settings-main-actions>.button{display:flex;justify-content:center;position:relative;gap:12px;min-height:56px;width:100%;border-radius:28px;font-size:20px;font-weight:750;line-height:1.2;padding:12px 20px;box-shadow:0 3px 0 #052c3599}
 .settings-home .settings-main-actions>.primary{background:linear-gradient(#83b38d,#4d906f);border:1px solid #c4d6a0;color:#fffbed}.settings-home .settings-main-actions>.secondary{background:#345d65;border:1px solid #9ab6ad;color:#fffbed}
 .settings-main-actions svg{width:23px;height:23px;flex-shrink:0}
@@ -20,7 +20,7 @@
 .settings-home .settings-version{display:block;text-align:center;font-size:11px;line-height:1.5;color:#b7cbc8;margin-top:16px}
 .settings-home button:focus-visible{outline:3px solid #ffe3a0;outline-offset:3px}.settings-home button:active{filter:brightness(1.12)}
 @keyframes settings-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@media(max-height:600px){.modal.game-dialog.settings-home{padding-top:46px}.settings-home>.modal-head{margin-bottom:12px}.settings-home>.modal-head h2{font-size:28px}.settings-home .game-settings{margin-bottom:14px}.settings-home :is(.setting-row,.comfort-setting){min-height:54px}.settings-links{margin-top:10px}.settings-home .settings-version{margin-top:8px}}
+@media(max-height:600px){.modal.game-dialog.settings-home{padding-top:46px}.settings-home>.modal-head{margin-bottom:12px}.settings-home>.modal-head h2{font-size:28px}.settings-home .game-settings{margin-bottom:14px}:is(.settings-home,.play-primary-settings) :is(.setting-row,.comfort-setting){min-height:54px}.settings-links{margin-top:10px}.settings-home .settings-version{margin-top:8px}}
 /* The demonstration uses board coordinates and never enters the selection engine. */
 .draw-guide{position:absolute;inset:0;z-index:5;pointer-events:none!important;--guide-loop:2600ms}
 .draw-guide[hidden],.letter-board[data-selecting=true] .draw-guide{display:none}

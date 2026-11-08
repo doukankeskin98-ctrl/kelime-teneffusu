@@ -60,7 +60,7 @@ describe('actual daily Solo pending and lifetime UI',()=>{
   const h=await solo();try{
    h.hint();h.hint();h.commit();await h.settle();assert.equal(h.calls.length,1);assert.equal(h.controls().props['blocked'],true);assert.equal(h.controls().props['busy'],true);assert.equal(h.layout().props['paused'],false);assert.equal(h.layout().props['readOnly'],false);assert.equal(h.layout().props['inputBlocked'],true);assert.equal(h.controls().props['hints'],3);assert.equal(h.notice().props['state'].phase,'sending');assert.equal(h.sounds.length,0);
    const before=text(h.tree);h.advance(2000);await h.settle();assert.notEqual(text(h.tree),before);
-   const result=await h.f.game.dailyClaim('alice',h.initial.id,null,null,true,h.calls[0].intent.requestId) as action.DailyReply;h.gate.resolve(result);await h.settle();assert.equal(h.controls().props['hints'],2);assert.equal(h.controls().props['blocked'],false);assert.match(text(h.tree),/\+15 saniye/);
+   const result=await h.f.game.dailyClaim('alice',h.initial.id,null,null,true,h.calls[0].intent.requestId) as action.DailyReply;h.gate.resolve(result);await h.settle();assert.equal(h.controls().props['hints'],2);assert.equal(h.controls().props['blocked'],false);assert.match(text(h.layout().props['footer']),/\+15 saniye/);
   }finally{h.close();}
  });
  it('shows explicit recovery after a timeout and retains the same hint operation on retry',async t=>{
@@ -176,7 +176,7 @@ it('skips the daily final flight without resubmitting the day or duplicating its
   for(const stroke of h.board.placements.slice(0,-1))await h.f.game.dailyClaim('alice',h.initial.id,stroke.a,stroke.b);
   h.commit(h.board.placements.length-1);await h.settle();const last=h.board.placements.at(-1)!;h.gate.resolve(await h.f.game.dailyClaim('alice',h.initial.id,last.a,last.b));await h.settle();
   assert.equal(h.layout().props['readOnly'],true);assert.equal(nodes(h.tree).some(n=>n.type==='Modal'),false);
-  const controls=h.controls();assert.equal(h.layout().props['footer'],controls);
+  const controls=h.controls();assert(nodes(h.layout().props['footer']).includes(controls));
   const skip=controls.props['onSkipResult'];assert.equal(typeof skip,'function');const count=h.writes.length;
   skip();skip();await h.settle();assert(h.find('Modal'));assert.equal(h.controls().props['onSkipResult'],undefined);t.mock.timers.tick(wordFeedback.WORD_RESULT_DELAY_MS+100);await h.settle();
   assert.equal(h.calls.length,1);assert.equal(h.writes.length,count);assert.equal(JSON.stringify(h.value.days),JSON.stringify([h.initial.day]));assert.equal((await h.f.game.dailyState('alice',h.initial.id)).finished!==null,true);
