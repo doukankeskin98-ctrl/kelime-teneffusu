@@ -12,12 +12,14 @@ public class GameHapticsPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "selectionChanged", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "selectionEnd", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "word", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "landing", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "complete", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "menu", returnType: CAPPluginReturnPromise)
     ]
     private var letter: UIImpactFeedbackGenerator?
     private var wordImpact: UIImpactFeedbackGenerator?
     private var menuImpact: UIImpactFeedbackGenerator?
+    private var landingImpact: UIImpactFeedbackGenerator?
     private var success: UINotificationFeedbackGenerator?
     private var selecting = false
     private var lastLetter = -Double.infinity
@@ -32,7 +34,7 @@ public class GameHapticsPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private func reset() {
         selecting = false
-        letter = nil; wordImpact = nil; menuImpact = nil; success = nil
+        letter = nil; wordImpact = nil; menuImpact = nil; landingImpact = nil; success = nil
         lastLetter = -Double.infinity
     }
     private func onMain(_ call: CAPPluginCall, pulse: Bool = false, _ action: @escaping () -> Void) {
@@ -71,8 +73,17 @@ public class GameHapticsPlugin: CAPPlugin, CAPBridgedPlugin {
         onMain(call, pulse: true) {
             self.selecting = false
             self.wordImpact = self.wordImpact ?? UIImpactFeedbackGenerator(style: .medium)
+            self.landingImpact = self.landingImpact ?? UIImpactFeedbackGenerator(style: .light)
+            self.landingImpact?.prepare()
             self.wordImpact?.impactOccurred(intensity: 1)
             self.wordImpact?.prepare()
+        }
+    }
+    @objc func landing(_ call: CAPPluginCall) {
+        onMain(call, pulse: true) {
+            self.landingImpact = self.landingImpact ?? UIImpactFeedbackGenerator(style: .light)
+            self.landingImpact?.impactOccurred(intensity: 0.95)
+            self.landingImpact?.prepare()
         }
     }
     @objc func complete(_ call: CAPPluginCall) {
