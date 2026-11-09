@@ -6,8 +6,8 @@
 .board-words-trigger>small{margin-left:auto;flex-shrink:0;padding:3px 9px;border-radius:99px;background:#dfeccd;color:#36583f;font-size:12px;font-weight:700;white-space:nowrap}
 .board-words-trigger:hover{background:#e8f1db;border-color:#7eab7c}
 .board-words-trigger:focus-visible{outline:3px solid #c39536;outline-offset:3px}
-.board-words-summary{font-size:13px;line-height:1.65;color:#536650;margin-bottom:16px}
-.board-words-summary b{color:#254e39;white-space:nowrap}
+.board-words-summary{font-size:13px;line-height:1.65;color:inherit;margin-bottom:16px}
+.board-words-summary b{color:inherit;white-space:nowrap}
 .board-words-sheet .word-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:9px;max-height:none;overflow:visible}
 .board-words-sheet .word-tag{font-size:14px;line-height:1.5;min-height:44px;padding:10px 12px}
 .board-words-sheet .word-tag.found{animation:none}

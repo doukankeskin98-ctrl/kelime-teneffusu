@@ -12,8 +12,13 @@ public class GameSharingPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func share(_ call: CAPPluginCall) {
         // This bridge shares public invitations only, never a local URL or account data.
-        guard let raw = call.getString("url"), let parts = URLComponents(string: raw),
-              parts.scheme == "https", parts.host == "kelime-teneffusu.healica.chatgpt.site",
+        guard let configuredOrigin = getConfig().getString("publicOrigin"),
+              let origin = URLComponents(string: configuredOrigin),
+              origin.scheme == "https", let allowedHost = origin.host, !allowedHost.isEmpty,
+              origin.user == nil, origin.password == nil, origin.port == nil,
+              origin.query == nil, origin.fragment == nil, ["", "/"].contains(origin.path),
+              let raw = call.getString("url"), let parts = URLComponents(string: raw),
+              parts.scheme == "https", parts.host == allowedHost,
               parts.port == nil, parts.user == nil, parts.password == nil,
               parts.path == "/", parts.fragment == nil,
               let items = parts.queryItems, items.count == 1,

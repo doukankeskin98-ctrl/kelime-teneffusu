@@ -1,7 +1,6 @@
 'use client';
+import {deferredGameScreen} from './DeferredScreen';
 import {SettingsHome} from './SettingsHome';
-import {PrivacyInfo} from './PrivacyInfo';
-import {DeleteAccount} from './DeleteAccount';
 import {BlockedPlayers} from './PlayerSafety';
 import {gameRoute,gameRouteUrl} from '@/lib/game/navigation';
 import {SceneArt} from './SceneArt';
@@ -12,7 +11,6 @@ import type {LibraryPanel} from './Pages';
 import {attachMenuFeedback} from '@/lib/game/menu-feedback';
 import {EXPEDITIONS,discoveryState,expeditionForChapter,expeditionBonusId,expeditionTheme,nextJourneyAfter} from '@/lib/game/discovery';
 import {worldNeedsWelcome,wordTrail} from '@/lib/game/journey-flow';
-import {BonusRound} from './BonusRound';
 import {TrailBadge} from './WordTrail';
 import {livingStory} from '@/lib/game/story-content';
 import {isRiddleChapter} from '@/lib/game/riddle-content';
@@ -33,11 +31,8 @@ import {requestDaily} from './daily-transport';
 import {emptyProgress,loadProgress,mergeProgress,PROGRESS_KEY,streak,collectionStats} from '@/lib/game/progress';
 import {SAVE_KEY,validateSave} from '@/lib/game/legacy';
 import type {DailyView} from '@/lib/game/server';
-import {Sprint} from './Sprint';
 import {Arena} from './Arena';
 import {Challenges} from './Challenges';
-import {Friends} from './Friends';
-import {Mystery} from './Mystery';
 import {Platform} from './Platform';
 import {useCloudProgress} from './useCloudProgress';
 import {ProgressAccountNotice} from './ProgressAccountNotice';
@@ -49,12 +44,19 @@ import type {ReleasePair} from '@/lib/studio/release-stamps';
 import type {ChapterBrowseReturn} from '@/lib/studio/chapter-browse';
 import {api,getApi,Help,Modal} from './common';
 import {GameSettings,useComfort} from './GameSettings';
-import {SupportReport} from './SupportReport';
 import {Solo,type SoloConfig} from './Solo';
 import {Explore,DailyPage,ProfilePage,JourneyAlbums,type Account} from './Pages';
 type Nav='kesfet'|'arsiv'|'arena'|'gunluk'|'profil';
 type ArenaTab='live'|'challenge'|'friends';
 const TABS=[{id:'kesfet' as Nav,label:'Yolculuk',icon:House},{id:'arena' as Nav,label:'Arena',icon:Swords}];
+const Sprint=deferredGameScreen('Sprint',async()=>({default:(await import('./Sprint')).Sprint}));
+const Friends=deferredGameScreen('Friends',async()=>({default:(await import('./Friends')).Friends}));
+const Mystery=deferredGameScreen('Mystery',async()=>({default:(await import('./Mystery')).Mystery}));
+const BonusRound=deferredGameScreen('BonusRound',async()=>({default:(await import('./BonusRound')).BonusRound}));
+const SupportReport=deferredGameScreen('SupportReport',async()=>({default:(await import('./SupportReport')).SupportReport}));
+const DeleteAccount=deferredGameScreen('DeleteAccount',async()=>({default:(await import('./DeleteAccount')).DeleteAccount}));
+const PrivacyInfo=deferredGameScreen('PrivacyInfo',async()=>({default:(await import('./PrivacyInfo')).PrivacyInfo}));
+
 export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary[];releaseCounts?:Record<string,number>}){
  const membership=useMembership(),bootOwner=useRef('');
  const [deleting,setDeleting]=useState(false),[blockedList,setBlockedList]=useState(false),[privacy,setPrivacy]=useState(false),[settingsMore,setSettingsMore]=useState(false),[rewardsInfo,setRewardsInfo]=useState(false);
@@ -146,7 +148,7 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
   {!playing&&(nav==='arsiv'||nav==='gunluk'||nav==='arena'&&arenaTab!=='live')&&<div className="subpage-scenery" aria-hidden="true"><SceneArt theme={nav==='arena'?'futbol':progress.last?.themeId??'uzay'} eager/><div/></div>}
   <div className="main-area">{!playing&&<header className="native-topbar">
    {nav==='arsiv'||nav==='gunluk'||nav==='profil'?<button className="native-icon" onClick={()=>selectNav('kesfet')} aria-label="Yolculuğa dön"><ArrowLeft size={22}/></button>:<button className="native-avatar" onClick={()=>{selectNav('profil');setProfileOpen(true);}} aria-label="Oyuncu profilini aç">{progress.trailBadge&&wordTrail(progress).earned.some(t=>t.id===progress.trailBadge)?<TrailBadge id={progress.trailBadge}/>:account.profile?.nickname.slice(0,1)??'K'}</button>}
-   <span className="native-brand">{nav==='arsiv'?'Diğer oyunlar':nav==='gunluk'?'Günlük':nav==='arena'?'Arena':nav==='profil'?'Profil':<><span>Kelime</span><span>Teneffüsü</span></>}</span>
+   <span className="native-brand">{nav==='arsiv'||nav==='profil'?null:nav==='gunluk'?'Günlük':nav==='arena'?'Arena':<><span>Kelime</span><span>Teneffüsü</span></>}</span>
    <div className="native-top-actions"><button className="native-stars" onClick={()=>setRewardsInfo(true)} aria-label={`${stars} yıldız. Başarı bilgisi`} aria-haspopup="dialog"><Star size={16} fill="currentColor"/>{stars}</button><button className="native-icon" onClick={()=>setSettings(true)} aria-label="Ayarları aç"><Settings size={22}/></button></div>
   </header>}
   <main className={'main-content'+(playing?' arena-is-playing':'')} id="game-main"><div className="game-notices">{accountNotice}{(storageError||syncStatus==='storage-error')&&<div className="error-box" role="status">Bu tarayıcıda kayıt alanı kullanılamıyor. İlerlemeni korumak için hesabınla giriş yapabilirsin.</div>}{error&&nav!=='gunluk'&&<p className="error-box dismissible-notice" role="alert"><span>{error}</span><button className="text-button" aria-label="Bildirimi kapat" onClick={()=>setError('')}>Kapat</button></p>}{membership.user&&!membership.user.emailVerified&&<div className="auth-banner"><span>Kalıcı hesabın için e-posta adresini doğrula.</span><button className="text-button" onClick={()=>openAuth('verify')}>Doğrulamaya devam et</button></div>}</div>
