@@ -17,3 +17,39 @@
  .modal.game-dialog.scene-result[open]{display:block;overflow-y:auto}
  .modal.game-dialog.scene-result>.modal-content{overflow:visible}
 }
+
+/* A single, brief tools panel across solo and competitive play. */
+.modal.game-dialog.game-tools-modal{width:min(440px,calc(100% - 24px));padding:0;background:#153c46;color:#fff8e5;border:1px solid #dfebd83d;border-radius:16px;box-shadow:none}
+.game-tools-modal::backdrop{background:#0b263b94;backdrop-filter:none}
+.game-tools-modal .modal-head{padding:18px 20px;border-bottom:1px solid #dce8d526}
+.game-tools-modal .modal-head h2{font-size:23px;letter-spacing:-.02em;color:#fff8e5}
+.game-tools-modal .modal-head .icon-button{background:transparent;color:#fff8e5;border:0}
+.game-tools-modal .modal-content{padding:0 20px;overflow-y:auto}
+.game-tools-modal .tools-context{font-size:14px;line-height:1.5;color:#e0e9db;margin:16px 0}
+.game-tools-modal .play-tools-sheet{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.game-tools-modal .play-tools-sheet>button{min-height:78px;border:1px solid #e2e9d84a;background:#214e55;color:#fff6de;border-radius:12px;line-height:1.3;font-size:13px;padding:8px 5px}
+.game-tools-modal .play-tools-sheet>button[aria-pressed=true]{background:#376454;border-color:#dbd7a56b}
+.game-tools-modal .comfort-setting{background:transparent;color:#fff8e5;border:0;border-bottom:1px solid #deebd72b;border-radius:0;box-shadow:none;min-height:68px;padding:12px 0}
+.game-tools-modal .comfort-setting small{color:#dae6d9;font-size:12px}
+.game-tools-modal .comfort-setting i{background:#285159;color:#f6f3d7;font-size:12px}
+.game-tools-modal .comfort-setting[aria-checked=true] i{background:#e5d593;color:#224b3a}
+.game-tools-modal .modal-actions{padding:18px 20px 20px;background:transparent;border:0}
+.game-tools-modal .modal-actions .primary{min-height:52px;background:#68a87a;color:#102f26;border:0;font-size:17px}
+.game-tools-modal :focus-visible{outline:2px solid #fff0b8;outline-offset:3px}
+
+/* Shared sheet content and controls. Specialized scenic/settings layouts keep their own frames. */
+.modal.game-dialog .modal-head h2{min-width:0;overflow-wrap:anywhere}
+.modal.game-dialog .modal-head>.icon-button{flex-shrink:0;width:44px;min-width:44px;height:44px;min-height:44px}
+.modal-sheet-body{padding:0 20px 20px}
+.game-tools-modal .muted{color:#d7e4dc}
+.game-tools-modal .button.secondary{background:#f8f7ee;color:#193c35;border:1px solid #b3c6bc;box-shadow:none}
+.game-tools-modal .button.primary{background:#68a87a;color:#102f26;border:0;box-shadow:none}
+.game-tools-modal .button.gold{background:#edcf84;color:#183a32;border:0;box-shadow:none}
+.game-tools-modal .text-button{color:#f2e2ad}
+.game-tools-modal input,.game-tools-modal select{color:#193c35;background:#fffdf5}
+.game-tools-modal .modal-head{margin-bottom:16px}
+.game-tools-modal .modal-head>.icon-button{position:static}
+.game-tools-modal .modal-head :focus-visible{outline:2px solid #fff0b8;outline-offset:3px}
+
+.screen-load-state{min-height:120px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;padding:24px;text-align:center;font-size:16px;line-height:1.5;color:inherit}
+.screen-load-state p{width:100%;max-width:36ch;margin:0}

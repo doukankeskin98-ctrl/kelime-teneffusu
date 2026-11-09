@@ -2,7 +2,7 @@
 :root{--studio-forest:#214d3b;--studio-dark:#163e30;--studio-gold:#e9c47c;--studio-cream:#fffdf5;--studio-muted:#667567}
 body{background:#f4f3e9}.app-shell{background:radial-gradient(ellipse at 70% 0,#e8eddf,transparent 60%),#f4f3e9}
 .topbar{background:#faf9f0e8}.brand-mark{box-shadow:inset 0 1px 0 #ffffff50,0 3px 0 #173e2e33}.sidebar{background:#eaf0e3}.sidebar nav button{border-radius:14px}.sidebar nav button.active{background:#fffdf4;box-shadow:0 3px 10px #163e3009}
-.button{min-height:48px;border-radius:14px;font-size:14px}.button.primary{background:linear-gradient(180deg,#39765a,#28583f);box-shadow:inset 0 1px 0 #ffffff30,0 3px 0 #173e2f}.button:active:not(:disabled){transform:translateY(2px)}.modal-head .icon-button{min-height:44px;min-width:44px}.auth-nav-button{min-height:44px}.modal{background:#fffdf5;border-color:#dddcc8;box-shadow:0 24px 90px #13312555}
+.button{min-height:48px;border-radius:14px;font-size:14px}.button.primary{background:linear-gradient(180deg,#39765a,#28583f);box-shadow:inset 0 1px 0 #ffffff30,0 3px 0 #173e2f}.button:active:not(:disabled){transform:translateY(2px)}.auth-nav-button{min-height:44px}.modal{background:#fffdf5;border-color:#dddcc8;box-shadow:0 24px 90px #13312555}
 .studio-journey{max-width:1000px;width:100%;color:#214d3b;margin-bottom:32px}
 .studio-journey .journey-home-intro{margin-bottom:12px;min-height:44px}.studio-journey .journey-home-intro>span{display:flex;align-items:center;gap:7px;font-size:10px;letter-spacing:1.05px;color:#627563;line-height:1.5}
 .journey-map-trigger{display:flex;align-items:center;gap:7px;border:1px solid #d4decc;border-radius:12px;min-height:44px;padding:8px 12px;background:#fffdf5;font-size:13px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}

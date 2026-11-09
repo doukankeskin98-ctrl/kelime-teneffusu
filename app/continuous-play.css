@@ -4,7 +4,7 @@
 .app-shell button:active:not(:disabled),.game-app button:active:not(:disabled),.game-dialog button:active:not(:disabled){transform:scale(.97)}
 .app-shell button,.game-app button,.game-dialog button{font-family:var(--sans)}
 .game-dialog{font-family:var(--sans);animation:game-panel-in var(--panel-time) var(--settle-ease) both;border-radius:24px;border:1px solid #dce4d5;box-shadow:0 14px 55px #0b263536}
-.game-dialog .modal-head{min-height:60px;padding:14px 20px;border-bottom:1px solid #dce4d5}.game-dialog .modal-head h2{font-size:23px;font-weight:800;letter-spacing:-.04em}.game-dialog .modal-head .icon-button{border-radius:50%;box-shadow:none;min-width:40px;width:40px;height:40px}
+.game-dialog .modal-head{min-height:60px;padding:14px 20px;border-bottom:1px solid #dce4d5}.game-dialog .modal-head h2{font-size:23px;font-weight:800;letter-spacing:-.04em}.game-dialog .modal-head .icon-button{border-radius:50%;box-shadow:none;min-width:44px;width:44px;height:44px}
 .game-dialog::backdrop{background:#0b243965;backdrop-filter:none}
 .game-dialog .modal-content{padding:16px 20px}.game-dialog select,.game-dialog input{font:inherit;min-height:44px}
 @keyframes game-panel-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
