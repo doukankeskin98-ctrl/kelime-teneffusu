@@ -1,6 +1,5 @@
 'use client';
 import {deferredGameScreen} from './DeferredScreen';
-import {useAmbience} from './useAmbience';
 import {SettingsHome} from './SettingsHome';
 import {BlockedPlayers} from './PlayerSafety';
 import {gameRoute,gameRouteUrl} from '@/lib/game/navigation';
@@ -79,7 +78,6 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  const [browseReturn,setBrowseReturn]=useState<ChapterBrowseReturn|undefined>(undefined);
  const [sprint,setSprint]=useState(false);
  const [bonus,setBonus]=useState<{worldId:string;next:SoloConfig|null;owner:string|undefined}|null>(null);
- const changeAmbience=useAmbience(progress.ambience===true,account.profile?.id);
  const sceneOwner=useRef(account.profile?.id);useEffect(()=>{if(sceneOwner.current!==account.profile?.id){setBonus(null);sceneOwner.current=account.profile?.id;}},[account.profile?.id]);
  const [albumReturn,setAlbumReturn]=useState(false);
  const liveAccountOwner=useRef(account.profile?.id),dailyLaunch=useRef<{owner:string;controller:AbortController;retired:boolean}|null>(null);liveAccountOwner.current=account.profile?.id;if(dailyLaunch.current&&dailyLaunch.current.owner!==account.profile?.id)dailyLaunch.current.retired=true;
@@ -136,7 +134,7 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  const openExtra=(chapter:PublishedChapter,practice=false,pair?:ReleasePair,origin?:ChapterBrowseReturn)=>{if(!extra){extraOrigin.current=origin;setBrowseReturn(undefined);}if(theme)themeReturn.current=theme.id;else if(!extra)themeReturn.current=null;setExtraPractice(practice);setExtraPair(pair);setExtra(chapter);setTheme(null);window.scrollTo({top:0});};
  const accountNotice=<ProgressAccountNotice inGame={!!(bonus||sprint||extra||solo||mystery||playing)} status={syncStatus} onRefresh={()=>location.reload()} onRetry={()=>window.dispatchEvent(new Event('kt-sync-now'))}/>;
  const saveWarning=<div className="game-notices">{accountNotice}{(storageError||syncStatus==='storage-error')?<p className="save-warning" role="status">Bu cihazda kayıt yapılamıyor. İlerlemeni korumak için bağlantını ve hesap kaydını kontrol et.</p>:null}</div>;
- const preferences=(children:ReactNode)=><PlayPreferencesProvider value={{ambience:progress.ambience===true,onAmbience:()=>{if(liveAccountOwner.current!==account.profile?.id)return;const next=!progress.ambience;changeAmbience(next);setProgress(p=>({...p,ambience:next}));},haptics:progress.haptics,onHaptics:()=>setProgress(p=>({...p,haptics:!p.haptics})),comfort,onComfort:changeComfort}}>{children}</PlayPreferencesProvider>;
+ const preferences=(children:ReactNode)=><PlayPreferencesProvider value={{haptics:progress.haptics,onHaptics:()=>setProgress(p=>({...p,haptics:!p.haptics})),comfort,onComfort:changeComfort}}>{children}</PlayPreferencesProvider>;
  const wrap=' '+(progress.contrast?'contrast-mode':'');
 
  if(bonus&&ready&&bonus.owner===account.profile?.id)return preferences(<div className={'game-app journey-session'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<BonusRound key={(bonus.owner??'device')+':'+bonus.worldId} worldId={bonus.worldId} progress={progress} onProgress={update=>{if(liveAccountOwner.current===bonus.owner)setProgress(update);}} onBack={back} onContinue={()=>{const next=bonus.next;setBonus(null);if(next)openSolo(next);else back();}}/></div>);
