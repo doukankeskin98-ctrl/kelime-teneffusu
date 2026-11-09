@@ -1,5 +1,9 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.47.1 · Arka plan sesi kaldırıldı
+
+Kullanıcının isteğiyle ambiyans oynatıcısı ve ayarlardaki ambiyans seçeneği kaldırıldı. Alternatif piyano kaydı yayımlanmadı. Kelime geri bildirim sesleri, titreşimler ve mevcut ilerleme kayıtları korunur. [Doğrulama](release-0.47.1.md).
+
 ## 0.47.0 · Küçük Keşifler ve haftalık hatıra
 
 24 özgün bölümle 192 ana bölüm; bağımsız ve isteğe bağlı ambiyans; haftada beş farklı bölüm için otomatik, kalıcı hatıra. Yeni menü yok. Eski tahtalar/kayıtlar korunur. [Doğrulama ve sınırlar](release-0.47.0.md).

@@ -1,5 +1,5 @@
 'use client';
-import {AmbienceSetting,PlayComfortSettings} from './PlayPreferences';
+import {PlayComfortSettings} from './PlayPreferences';
 import {publicGameOrigin} from '@/lib/platform/runtime';
 import '@/lib/game/browser-compat';
 import {wordCardCopy,wordListProgress,focusedWordGroup,compactWordRack,veiledText,type WordVeil} from '@/lib/game/word-card';
@@ -125,7 +125,7 @@ export function GameToolsSheet({onHome,onClose,sound,onSound,zoom,onZoom,onHelp,
   <p className="tools-context">{finished?'Tamamladığın tahta':timed?'Yarış süresi devam ediyor.':'Oyun duraklatıldı. İlerlemen kaydedildi.'}</p>
   <div className="game-settings play-primary-settings">
    <button className="comfort-setting" role="switch" aria-checked={sound} onClick={onSound}>{sound?<Volume2/>:<VolumeX/>}<span><b>Ses</b></span><i className="switch" aria-hidden="true"/></button>
-   <AmbienceSetting/><PlayComfortSettings section="haptics"/>
+   <PlayComfortSettings section="haptics"/>
   </div>
   <details className="play-settings-details"><summary>Görünüm ve yardım</summary><PlayComfortSettings section="motion"/><div className="play-tools-sheet">
    {onZoom&&<button aria-pressed={zoom} onClick={()=>{onZoom();onClose();}}><ZoomIn/>{zoom?'Normal tahta':'Büyük harf modu'}</button>}
