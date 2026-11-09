@@ -138,34 +138,44 @@ export class GameService {
    if(next>=limit)throw new GameError('Benzersiz Arena havuzu tükendi. Önceki bölüm yeniden açılmadı; yeni içerik hazırlanması gerekiyor.',409,'ARENA_CONTENT_UNAVAILABLE');
    throw new GameError('Yeni içerik seçimi tamamlanamadı. Eski bölüm açılmadı; biraz sonra yeniden dene.',503,'ARENA_CONTENT_UNAVAILABLE');
  }
- private async pairWaiting(row:RoomRow):Promise<string>{
-   const current=this.parse(row);if(current.kind!=='quick'||current.mode||current.phase!=='waiting')return row.id;
-   const rating=await this.rating(current.players[0]!.id);
-   // Adjacent queue positions form disjoint pairs. A burst of clients must not all claim one oldest room.
-   const candidates=(await this.q("SELECT r.id,r.data,r.revision,r.expires FROM rooms r LEFT JOIN ratings e ON e.user_id=json_extract(r.data,'$.players[0].id') WHERE r.kind='quick' AND json_extract(r.data,'$.mode') IS NULL AND r.phase='waiting' AND r.expires>? AND r.updated>? AND (ABS(COALESCE(e.value,1000)-?)<=200+MAX(0,?-MIN(COALESCE(json_extract(r.data,'$.queuedAt'),r.updated),?))/50 OR MIN(COALESCE(json_extract(r.data,'$.queuedAt'),r.updated),?)<?) ORDER BY r.id LIMIT 64",this.clock(),this.clock()-15000,rating.value,this.clock(),current.queuedAt??this.clock(),current.queuedAt??this.clock(),this.clock()-60000).all<RoomRow>()).results;
-   const allowed:RoomRow[]=[];for(const candidate of candidates){const ids=[...current.players,...this.parse(candidate).players].filter(p=>!p.left).map(p=>p.id);if(!await blockedRoom(this.db,ids))allowed.push(candidate);}candidates.splice(0,candidates.length,...allowed);
+ private async pairWaiting(row:RoomRow,userId:string):Promise<string>{
+   const current=this.parse(row),group=current.mode==='group';
+   const lone=(room:Room)=>room.players.filter(p=>!p.left);
+   const initialGroup=(room:Room)=>room.kind==='quick'&&room.mode==='group'&&room.phase==='waiting'&&room.round===1&&!room.lastResult&&lone(room).length===1;
+   if(current.kind!=='quick'||current.phase!=='waiting'||!lone(current).some(p=>p.id===userId)||group&&!initialGroup(current))return row.id;
+   const now=this.clock();
+   let candidates:RoomRow[];
+   if(group){
+    candidates=(await this.q("SELECT id,data,revision,expires FROM rooms WHERE kind='quick' AND json_extract(data,'$.mode')='group' AND json_extract(data,'$.roundPolicy') IS ? AND phase='waiting' AND expires>? AND updated>? ORDER BY id LIMIT 64",current.roundPolicy??null,now,now-15000).all<RoomRow>()).results.filter(candidate=>{const room=this.parse(candidate);return initialGroup(room)&&lone(room)[0]!.seen>now-15000;});
+   }else{
+    const rating=await this.rating(userId);
+    candidates=(await this.q("SELECT r.id,r.data,r.revision,r.expires FROM rooms r LEFT JOIN ratings e ON e.user_id=json_extract(r.data,'$.players[0].id') WHERE r.kind='quick' AND json_extract(r.data,'$.mode') IS NULL AND r.phase='waiting' AND r.expires>? AND r.updated>? AND (ABS(COALESCE(e.value,1000)-?)<=200+MAX(0,?-MIN(COALESCE(json_extract(r.data,'$.queuedAt'),r.updated),?))/50 OR MIN(COALESCE(json_extract(r.data,'$.queuedAt'),r.updated),?)<?) ORDER BY r.id LIMIT 64",now,now-15000,rating.value,now,current.queuedAt??now,current.queuedAt??now,now-60000).all<RoomRow>()).results;
+   }
+   const allowed:RoomRow[]=[];for(const candidate of candidates){const ids=[...lone(current),...lone(this.parse(candidate))].map(p=>p.id);if(!await blockedRoom(this.db,ids))allowed.push(candidate);}candidates=allowed;
+   // Stable pairing prevents concurrent returning players from all claiming one lobby.
    const position=candidates.findIndex(candidate=>candidate.id===row.id);
    const other=position>=0?candidates[position%2===0?position+1:position-1]:candidates[hash(row.id)%Math.max(1,candidates.length)];
    if(!other||other.id===row.id)return row.id;
-   const [host,guest]=[row,other].sort((a,b)=>a.id.localeCompare(b.id));
-   if(!host||!guest)return row.id;
-   const joined=this.parse(host),retired=this.parse(guest),guestPlayer=retired.players[0];if(!guestPlayer)return row.id;
-   joined.players.push({...guestPlayer,seen:this.clock()});joined.phase='ready';retired.phase='cancelled';retired.reason='Oyuncular eşleştirildi';
+   const [host,guest]=[row,other].sort((a,b)=>a.id.localeCompare(b.id));if(!host||!guest)return row.id;
+   const joined=this.parse(host),retired=this.parse(guest),guestPlayer=lone(retired)[0],hostPlayer=lone(joined)[0];if(!guestPlayer||!hostPlayer)return row.id;
+   const token=crypto.randomUUID();joined.players=[...lone(joined),{...guestPlayer,seen:now}];joined.phase='ready';joined.writeToken=token;retired.phase='cancelled';retired.reason='Oyuncular eşleştirildi';retired.writeToken=token;
+   const transferred="EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='cancelled' AND json_extract(data,'$.writeToken')=?)";
    await this.db.batch([
-     this.q("UPDATE rooms SET data=?,phase='ready',revision=revision+1,updated=? WHERE id=? AND revision=? AND phase='waiting' AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='waiting')",JSON.stringify(joined),this.clock(),host.id,host.revision,guest.id,guest.revision),
-     this.q("UPDATE rooms SET data=?,phase='cancelled',revision=revision+1 WHERE id=? AND revision=? AND phase='waiting' AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND json_extract(data,'$.players[1].id')=?)",JSON.stringify(retired),guest.id,guest.revision,host.id,host.revision+1,guestPlayer.id),
-     this.q("UPDATE members SET room_id=? WHERE room_id=? AND active=1 AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='cancelled')",host.id,guest.id,guest.id,guest.revision+1)
+    this.q("UPDATE rooms SET data=?,phase='ready',revision=revision+1,updated=? WHERE id=? AND revision=? AND phase='waiting' AND expires>? AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='waiting' AND expires>?) AND EXISTS(SELECT 1 FROM members WHERE room_id=? AND user_id=? AND active=1) AND EXISTS(SELECT 1 FROM members WHERE room_id=? AND user_id=? AND active=1)",JSON.stringify(joined),now,host.id,host.revision,now,guest.id,guest.revision,now,host.id,hostPlayer.id,guest.id,guestPlayer.id),
+    this.q("UPDATE rooms SET data=?,phase='cancelled',revision=revision+1 WHERE id=? AND revision=? AND phase='waiting' AND EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND json_extract(data,'$.writeToken')=?)",JSON.stringify(retired),guest.id,guest.revision,host.id,host.revision+1,token),
+    this.q('UPDATE members SET active=0 WHERE room_id=? AND user_id=? AND active=1 AND '+transferred,guest.id,guestPlayer.id,guest.id,guest.revision+1,token),
+    this.q('INSERT INTO members(room_id,user_id,active) SELECT ?,?,1 WHERE '+transferred+' ON CONFLICT(room_id,user_id) DO UPDATE SET active=1',host.id,guestPlayer.id,guest.id,guest.revision+1,token)
    ]);
-   const active=await this.active(current.players[0]!.id);return active?.id??row.id;
+   const active=await this.active(userId);return active?.id??row.id;
  }
  async state(userId:string,id?:string):Promise<RoomView|null> {
    const active=await this.active(userId);
    let row=active??(id?await this.row(id):null);if(!row)return null;
    if(!this.parse(row).players.some(p=>p.id===userId))throw new GameError('Bu odada değilsin.',403);
-   const paired=await this.pairWaiting(row);if(paired!==row.id)row=await this.row(paired);
+   const paired=active?await this.pairWaiting(row,userId):row.id;if(paired!==row.id)row=await this.row(paired);
    return this.mutate(userId,row.id,(_room,p)=>{p.seen=this.clock();},true,false);
  }
- async watch(userId:string,id:string){const row=await this.row(id),room=this.parse(row);if(!room.players.some(p=>p.id===userId))throw new GameError('Bu odada değilsin.',403);if(room.phase==='active'&&room.ends!==null&&this.clock()>=room.ends)return {revision:row.revision+1,view:await this.mutate(userId,id,()=>{},false,false)};return {revision:row.revision,view:await this.publicView(room,userId,row.revision)};}
+ async watch(userId:string,id:string){const row=await this.row(id),room=this.parse(row);if(!room.players.some(p=>p.id===userId))throw new GameError('Bu odada değilsin.',403);if(room.phase==='cancelled'&&room.reason==='Oyuncular eşleştirildi'){const active=await this.active(userId);if(active&&active.id!==id){const view=await this.state(userId,active.id);if(view)return {revision:view.revision,view};}}if(room.phase==='active'&&room.ends!==null&&this.clock()>=room.ends)return {revision:row.revision+1,view:await this.mutate(userId,id,()=>{},false,false)};return {revision:row.revision,view:await this.publicView(room,userId,row.revision)};}
  private async mutate(userId:string,id:string,fn:(room:Room,you:DuelPlayer)=>void,heartbeat=false,requireActive=true):Promise<RoomView>{
    for(let tries=0;tries<64;tries++){
      const row=await this.row(id),room=this.parse(row);const you=room.players.find(p=>p.id===userId);if(!you)throw new GameError('Bu odada değilsin.',403);

@@ -267,6 +267,16 @@ try{
  const freshPeer=await json('/api/game?action=room',{nativeUser:groupUsers[7]});check(JSON.stringify(freshPeer.board)===JSON.stringify(freshGroup.board),'returning participants still receive exactly the same board');
  await returnAction(0,'leave',freshB.id);await returnAction(7,'leave',freshB.id);
  // Sixteen actual guest sessions enter the public group queue concurrently.
+ // A real guest returning after background suspension must rejoin the live queue.
+ const resumeCookies=await Promise.all(['Return A','Return B'].map(name=>request('/api/session',{method:'POST',body:{name}}).then(r=>r.headers.get('Set-Cookie'))));
+ const resumeEnter=cookie=>json('/api/game',{cookie,method:'POST',body:{action:'enter',kind:'quick',mode:'group',roundPolicy:'mixed'}});
+ const resumeA=await resumeEnter(resumeCookies[0]);const staleRow=await db.prepare('SELECT data FROM rooms WHERE id=?').bind(resumeA.id).first();const staleRoom=JSON.parse(staleRow.data),staleTime=Date.now()-20000;staleRoom.queuedAt=staleTime;for(const p of staleRoom.players)p.seen=staleTime;
+ await db.prepare('UPDATE rooms SET data=?,updated=? WHERE id=?').bind(JSON.stringify(staleRoom),staleTime,resumeA.id).run();
+ const resumeB=await resumeEnter(resumeCookies[1]);check(resumeA.id!==resumeB.id,'disconnected queue entrant initially remains separate');
+ const resumeStream=await request('/api/live?id='+resumeA.id,{cookie:resumeCookies[0]}),resumeReader=resumeStream.body.getReader(),resumeText=new TextDecoder().decode((await resumeReader.read()).value);await resumeReader.cancel();
+ const resumeEvent=JSON.parse(resumeText.split('data: ')[1].split('\n')[0]),resumePeer=await json('/api/game?action=room&id='+resumeB.id,{cookie:resumeCookies[1]});
+ check(resumeEvent.id===resumePeer.id&&resumePeer.phase==='ready'&&resumePeer.players.length===2,'real SSE recovery and guest polling converge after a stale queue split');
+ for(const cookie of resumeCookies)await json('/api/game',{cookie,method:'POST',body:{action:'leave',id:resumePeer.id,round:1}});
  const quickCookies=await Promise.all(Array.from({length:16},async(_,i)=>(await request('/api/session',{method:'POST',body:{name:'Quick '+i}})).headers.get('Set-Cookie')));
  const quickProfiles=await Promise.all(quickCookies.map(cookie=>json('/api/game',{cookie})));
  const quickEntry=await Promise.all(quickCookies.map((cookie,i)=>json('/api/game',{cookie,method:'POST',body:{action:'enter',kind:'quick',mode:'group',expectedOwnerId:quickProfiles[i].profile.id}})));
