@@ -2,7 +2,7 @@ import {DIRECTIONS,exactLine,hash,random,type Cell,type Puzzle,type Placement} f
 
 export const BONUS_DURATION=60_000;
 /** Authored one-word interludes. Separate from every published chapter and board. */
-export const BONUS_WORDS:Record<string,string>={uzay:'UZAY',turkiye:'KÖPRÜ',hababam:'KALEM',hayvanlar:'PANDA',lezzetler:'EKMEK',muzik:'NOTA',dunya:'ROTA',bilim:'DENEY',teknoloji:'EKRAN',doksanlar:'BİLYE',futbol:'KALE',basketbol:'POTA',sinema:'SAHNE',yesilcam:'SAHNE',diziler:'KALEM',mitoloji:'MASAL','kiyi-liman':'VAPUR','kiyi-carsi':'PAZAR','kiyi-patika':'PATİKA','kiyi-fener':'FENER','doga-bahce':'BAHÇE','doga-dere':'DERE','doga-kamp':'ÇADIR','doga-gozlem':'YILDIZ','renkler-bahce':'ELMA','renkler-mutfak':'TABAK','renkler-atolye':'İPLİK','renkler-muzik':'NOTA'};
+export const BONUS_WORDS:Record<string,string>={uzay:'UZAY',turkiye:'KÖPRÜ',hababam:'KALEM',hayvanlar:'PANDA',lezzetler:'EKMEK',muzik:'NOTA',dunya:'ROTA',bilim:'DENEY',teknoloji:'EKRAN',doksanlar:'BİLYE',futbol:'KALE',basketbol:'POTA',sinema:'SAHNE',yesilcam:'SAHNE',diziler:'KALEM',mitoloji:'MASAL','kiyi-liman':'VAPUR','kiyi-carsi':'PAZAR','kiyi-patika':'PATİKA','kiyi-fener':'FENER','doga-bahce':'BAHÇE','doga-dere':'DERE','doga-kamp':'ÇADIR','doga-gozlem':'YILDIZ','renkler-bahce':'ELMA','renkler-mutfak':'TABAK','renkler-atolye':'İPLİK','renkler-muzik':'NOTA','kesif-zanaat':'SERAMİK','kesif-kitap':'KİTAP','kesif-yolculuk':'YOLCU','kesif-zaman':'ZAMAN'};
 const cache=new Map<string,Puzzle>();
 const endpointKey=(a:Cell,b:Cell)=>[a.join(','),b.join(',')].sort().join(':');
 export function scanBonus(grid:string[][],word:string):Placement[]{

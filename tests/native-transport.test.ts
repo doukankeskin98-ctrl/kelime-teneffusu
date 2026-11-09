@@ -47,3 +47,10 @@ test('room polling pauses, ignores retired responses and never overlaps ordinary
  await tick();assert.equal(calls,1);active=false;poll.visibility();pending[0]!(1);await tick();assert.deepEqual(accepted,[]);assert.equal(calls,1);
  active=true;poll.visibility();await tick();assert.equal(calls,2);pending[1]!(2);await tick();assert.deepEqual(accepted,[2]);poll.stop();await new Promise(resolve=>setTimeout(resolve,8));assert.equal(calls,2);
 });
+
+test('native progress accepts the full save envelope and still bounds other JSON requests',async()=>{
+ let calls=0;const transport=nativeApiTransport(async()=>{calls++;return reply();});
+ const body=JSON.stringify({progress:{note:'ü'.repeat(90000)}});await transport('/api/progress',{method:'PUT',body});assert.equal(calls,1);
+ await assert.rejects(transport('/api/game',{method:'POST',body}));assert.equal(calls,1);
+ await assert.rejects(transport('/api/progress',{method:'PUT',body:JSON.stringify({note:'ü'.repeat(130000)})}));assert.equal(calls,1);
+});

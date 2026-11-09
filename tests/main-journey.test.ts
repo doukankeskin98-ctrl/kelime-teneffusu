@@ -10,7 +10,7 @@ const copy=(p:Progress)=>JSON.parse(JSON.stringify(p)) as Progress;
 
 describe('numbered main journey preserves the existing saved worlds',()=>{
  it('numbers every existing journey exactly once, without introducing duplicate content',()=>{
-  assert.equal(MAIN_JOURNEY.length,168);assert.equal(new Set(MAIN_JOURNEY_IDS).size,168);
+  assert.equal(MAIN_JOURNEY.length,192);assert.equal(new Set(MAIN_JOURNEY_IDS).size,192);
   assert.deepEqual([...MAIN_JOURNEY_IDS].sort(),ALL_JOURNEYS.map(j=>replacementChapterId(j.id)).sort());
   const words=MAIN_JOURNEY.map(x=>[...x.chapter.words].map(w=>w.toLocaleUpperCase('tr-TR').replace(/\s/g,'')).sort().join('|'));
   const grids=MAIN_JOURNEY.map(x=>JSON.stringify(journeyBoard(x.chapter).grid));
@@ -20,7 +20,7 @@ describe('numbered main journey preserves the existing saved worlds',()=>{
   let p=emptyProgress();assert.equal(mainJourneyState(p).current?.number,1);assert.equal(mainJourneyState(p).continuing,false);
   p.last={themeId:'hababam',level:2};assert.equal(mainJourneyState(p).current?.number,1);
   const b=journeyBoard(journeyById('turkiye-4')!);p.saves['route:turkiye-4']=cleanSave({strokes:[b.placements[0]!],elapsed:12,hints:1,complete:false,stars:0},b);p.last={themeId:'turkiye',level:0,journey:'turkiye-4'};
-  const loaded=loadProgress(JSON.stringify(p)),state=mainJourneyState(loaded);assert.equal(state.current?.number,10);assert.equal(state.continuing,true);assert.equal(state.completed,0);assert.equal(state.total,168);
+  const loaded=loadProgress(JSON.stringify(p)),state=mainJourneyState(loaded);assert.equal(state.current?.number,10);assert.equal(state.continuing,true);assert.equal(state.completed,0);assert.equal(state.total,192);
   assert.equal(nextMainChapter(loaded)?.number,1);assert.equal(loaded.saves['route:uzay-1'],undefined);
  });
  it('retains elapsed or hinted continuations with no found word, but does not call untouched content resumed',()=>{
@@ -50,7 +50,7 @@ describe('numbered main journey preserves the existing saved worlds',()=>{
   p.saves['route:uzay-1']=keepBestSave(p.saves['route:uzay-1'],cleanSave({strokes:b.placements,hints:3,elapsed:90,complete:false,stars:0},b));
   assert.deepEqual(discoveryRewards(before,p),[]);assert.equal(p.saves['route:uzay-1']!.stars,3);
   for(const item of MAIN_JOURNEY)finish(p,item.chapter.id);
-  assert.equal(mainJourneyState(loadProgress(JSON.stringify(p))).current,null);assert.equal(mainJourneyState(p).completed,168);assert.equal(nextMainMilestone(p),null);
+  assert.equal(mainJourneyState(loadProgress(JSON.stringify(p))).current,null);assert.equal(mainJourneyState(p).completed,192);assert.equal(nextMainMilestone(p),null);
  });
  it('uses readable Turkish next-action labels',()=>{assert.equal(nextChapterLabel(2),'Bölüm 2’ye geç');assert.equal(nextChapterLabel(6),'Bölüm 6’ya geç');assert.equal(nextChapterLabel(10),'Bölüm 10’a geç');});
 });
@@ -59,7 +59,7 @@ describe('numbered main journey preserves the existing saved worlds',()=>{
 describe('chapter picker and legacy continuation share access rules',()=>{
  it('locks unopened worlds and album finales without changing any progress',()=>{
   const p=emptyProgress(),before=JSON.stringify(p),items=mainJourneyChapters(p);
-  assert.equal(items.length,168);assert.equal(items.find(x=>x.chapter.id==='uzay-1')!.unlocked,true);
+  assert.equal(items.length,192);assert.equal(items.find(x=>x.chapter.id==='uzay-1')!.unlocked,true);
   assert.equal(items.find(x=>x.chapter.id==='turkiye-1')!.unlocked,false);
   assert.equal(items.find(x=>x.chapter.id==='uzay-gozlemevi')!.unlocked,false);assert.equal(JSON.stringify(p),before);
   for(let i=1;i<=5;i++)finish(p,'uzay-'+i);

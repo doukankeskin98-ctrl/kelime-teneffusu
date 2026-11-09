@@ -1,3 +1,4 @@
+import {PROGRESS_REQUEST_MAX_BYTES} from '../game/progress-limits.ts';
 import {GAME_ORIGIN,type ApiTransport} from './runtime.ts';
 export interface NativeRequest {url:string;method:string;headers:Record<string,string>;data?:unknown;connectTimeout:number;readTimeout:number;responseType:'json';disableRedirects:boolean}
 export interface NativeResponse {status:number;data:unknown;headers:Record<string,string>;url:string}
@@ -12,7 +13,7 @@ export function nativeApiTransport(request:(options:NativeRequest)=>Promise<Nati
   const headers:Record<string,string>={Accept:'application/json',Origin:GAME_ORIGIN};
   new Headers(init.headers).forEach((value,key)=>{if(['authorization','content-type'].includes(key.toLowerCase()))headers[key]=value;});
   let data:unknown;
-  try{if(init.body!=null){if(typeof init.body!=='string'||init.body.length>160000)throw new Error();data=JSON.parse(init.body);}}catch{reject(new Error('İstek okunamadı.'));return;}
+  try{if(init.body!=null){if(typeof init.body!=='string'||new TextEncoder().encode(init.body).length>(path==='/api/progress'?PROGRESS_REQUEST_MAX_BYTES:160000))throw new Error();data=JSON.parse(init.body);}}catch{reject(new Error('İstek okunamadı.'));return;}
   const method=(init.method??'GET').toUpperCase();
   if(!['GET','POST','PUT','DELETE'].includes(method)){reject(new Error('Desteklenmeyen işlem.'));return;}
   let settled=false;

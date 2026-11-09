@@ -21,7 +21,7 @@ describe('Günün Renkleri append-only authored pack',()=>{
   assert.equal(baseline.ids.length,144);assert.equal(Object.keys(baseline.boards).length,181);
   assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,144),baseline.ids.map(replacementChapterId));
   for(const [id,hash] of Object.entries(baseline.boards))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),hash,id);
-  assert.deepEqual(MAIN_JOURNEY_IDS.slice(144),EVERYDAY_CHAPTERS.map(c=>c.id));assert.equal(MAIN_JOURNEY_IDS.length,168);
+  assert.deepEqual(MAIN_JOURNEY_IDS.slice(144,168),EVERYDAY_CHAPTERS.map(c=>c.id));assert.equal(MAIN_JOURNEY_IDS.length,192);
  });
  it('adds 24 distinct target sets with no pack-internal word repetition or copied old set',()=>{
   assert.equal(EVERYDAY_CHAPTERS.length,24);const words=EVERYDAY_CHAPTERS.flatMap(c=>c.words.map(normalize));assert.equal(words.length,100);assert.equal(new Set(words).size,100);
@@ -50,10 +50,10 @@ describe('Günün Renkleri append-only authored pack',()=>{
    const before=loadProgress(JSON.stringify(p));assert.equal(mainJourneyState(p).current?.chapter.id,c.id);assert(mainJourneyChapters(p).find(x=>x.chapter.id===c.id)!.unlocked);
    finish(p,c.id);p.last={themeId:c.themeId,level:0,journey:c.id};
    const rewards=discoveryRewards(before,p);assert.equal(rewards.filter(r=>r.kind==='piece').length,1);assert.equal(rewards.filter(r=>r.kind==='album').length,i%6===5?1:0);
-   assert.equal(nextJourneyAfter(p,c.id)?.id,EVERYDAY_CHAPTERS[i+1]?.id);
+   assert.equal(nextJourneyAfter(p,c.id)?.id,EVERYDAY_CHAPTERS[i+1]?.id??'kesif-zanaat-1');
    p=loadProgress(JSON.stringify(p));assert.equal(mainJourneyState(p).completed,145+i);
   }
-  assert.equal(mainJourneyState(p).current,null);assert(discoveryState(p).every(s=>s.complete));
+  assert.equal(mainJourneyState(p).current?.number,169);assert(discoveryState(p).slice(0,28).every(s=>s.complete));
   const before=loadProgress(JSON.stringify(p)),c=EVERYDAY_CHAPTERS[0]!,b=journeyBoard(c),key='route:'+c.id;
   p.saves[key]=keepBestSave(p.saves[key],cleanSave({strokes:b.placements,hints:3,elapsed:80,complete:false,stars:0},b));assert.equal(p.saves[key]!.stars,3);assert.deepEqual(discoveryRewards(before,p),[]);
  });

@@ -1,3 +1,5 @@
+import * as discoveries from '../lib/game/discoveries-content.ts';
+import * as weekly from '../lib/game/weekly-reward.ts';
 import * as journeyFlow from '../lib/game/journey-flow.ts';
 import * as everydayContent from '../lib/game/everyday-content.ts';
 import * as nature from '../lib/game/nature-content.ts';
@@ -34,7 +36,7 @@ function component(file:string,imports:Record<string,unknown>){
  const exports:Record<string,any>={};
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
  const modules:Record<string,unknown>={react:React,'@/lib/game/nature-content':nature,'@/lib/game/coast-content':coast,'react/jsx-runtime':jsx,'lucide-react':icons,'@/lib/game/engine':engine,'@/lib/game/world-presentation':worldPresentation,'@/lib/game/scene':scenic,'@/lib/game/discovery':expeditionData,'./SceneArt':{SceneArt:({theme,scene}:{theme?:string;scene?:any})=>React.createElement('img',{src:scenic.sceneImage(scene??scenic.sceneForTheme(theme)),alt:''})},'@/lib/game/achievement-view':achievement,'@/lib/game/main-journey':mainJourney,'@/lib/game/riddle-content':riddleContent,'@/lib/game/story-content':stories,'@/lib/game/content':{journeyBoard},...imports};
- vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/everyday-content'?everydayContent:modules[name]??{}});return exports;
+ vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/game/discoveries-content'?discoveries:name==='@/lib/game/weekly-reward'?weekly:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/everyday-content'?everydayContent:modules[name]??{}});return exports;
 }
 const collection=component('components/game/Discovery.tsx',{'./WorldArt':art});
 const loop=component('components/game/AchievementLoop.tsx',{'./Discovery':collection});
@@ -111,7 +113,7 @@ describe('numbered journey home and real result',()=>{
   const p=emptyProgress(),b=journeyBoard(journeyById('uzay-2')!);p.saves['route:uzay-2']=cleanSave({strokes:[b.placements[0]!],hints:0,elapsed:10,complete:false,stars:0},b);p.last={themeId:'uzay',level:0,journey:'uzay-2'};
   let html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Bölüm 2/);assert.match(html,/Devam et/);assert.match(html,/Bölümler/);
   for(const item of mainJourney.MAIN_JOURNEY)finish(p,item.chapter.id);
-  html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/168 bölüm tamamlandı/);assert.doesNotMatch(html,/— Oyna|Devam et/);
+  html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/192 bölüm tamamlandı/);assert.doesNotMatch(html,/— Oyna|Devam et/);
  });
  it('renders actual album before/after and the new world, then keeps replay unchanged',()=>{
   const before=first(2),p=finish(copy(before),'uzay-3'),props={before:achievement.journeyGoal(before,'uzay-3'),after:achievement.journeyGoal(p,'uzay-3'),rewards:discoveryRewards(before,p),save:p.saves['route:uzay-3']};

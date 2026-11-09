@@ -1,3 +1,4 @@
+import {DISCOVERIES_CHAPTERS} from './discoveries-content.ts';
 import {chapterCredit,replacementChapterId} from './original-content.ts';
 import {EVERYDAY_CHAPTERS} from './everyday-content.ts';
 import {NATURE_CHAPTERS} from './nature-content.ts';
@@ -14,6 +15,7 @@ export const MAIN_JOURNEY_IDS:readonly string[]=[
  ...COAST_CHAPTERS.map(c=>c.id),
  ...NATURE_CHAPTERS.map(c=>c.id),
  ...EVERYDAY_CHAPTERS.map(c=>c.id),
+ ...DISCOVERIES_CHAPTERS.map(c=>c.id),
 ].map(replacementChapterId);
 /** Display order follows the authored worlds, never the historical release order. */
 export const MAIN_JOURNEY_ORDER=EXPEDITIONS.flatMap(world=>[...world.chapterIds,expeditionBonusId(world)]).map(replacementChapterId).filter(id=>MAIN_JOURNEY_IDS.includes(id));

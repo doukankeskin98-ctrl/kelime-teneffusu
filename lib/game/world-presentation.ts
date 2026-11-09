@@ -1,3 +1,4 @@
+import {discoveriesRouteForChapter} from './discoveries-content.ts';
 import {everydayRouteForChapter} from './everyday-content.ts';
 import {natureRouteForChapter} from './nature-content.ts';
 import {coastRouteForChapter} from './coast-content.ts';
@@ -45,7 +46,7 @@ export function chapterVeils(id:string|undefined,targets:Target[]):Record<number
  const groups=[...new Set(targets.map(t=>t.group))];
  for(const [i,group] of groups.entries()){
   const step=info.position;
-  if(coastRouteForChapter(id)||natureRouteForChapter(id)||everydayRouteForChapter(id)){veils[group]=i===groups.length-1?(step===4?'initial':(id==='kiyi-fener-6'||id==='doga-gozlem-6'||id==='renkler-muzik-6')?'hidden':'open'):'open';continue;}
+  if(discoveriesRouteForChapter(id)||coastRouteForChapter(id)||natureRouteForChapter(id)||everydayRouteForChapter(id)){veils[group]=i===groups.length-1?(step===4?'initial':(id==='kiyi-fener-6'||id==='doga-gozlem-6'||id==='renkler-muzik-6'||id==='kesif-zaman-6')?'hidden':'open'):'open';continue;}
   // Concealed words are occasional challenges; most targets stay readable.
   veils[group]=step>=4?(i===groups.length-1?'hidden':i===groups.length-2?'initial':'open'):step>=2&&i===groups.length-1?'initial':'open';
  }
