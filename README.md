@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.47.2 · Hızlı eşleşme toparlanması
+
+Kısa bağlantı kesintisi sonrasında ayrı ilk-tur lobilerinde kalan oyuncular yeniden eşleştirilir. Canlı bağlantı yeni odayı izler; aktif maçlar, tur tercihleri ve kayıtlar korunur. [Doğrulama](docs/release-0.47.2.md).
+
 ## 0.47.1 · Arka plan sesi kaldırıldı
 
 Kullanıcının isteğiyle ambiyans oynatıcısı ve ayarlardaki ambiyans seçeneği kaldırıldı. Alternatif piyano kaydı yayımlanmadı. Kelime geri bildirim sesleri, titreşimler ve mevcut ilerleme kayıtları korunur. [Doğrulama](docs/release-0.47.1.md).
