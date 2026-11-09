@@ -43,4 +43,3 @@ html[data-reduce-motion=true] .draw-guide-path line{stroke-dashoffset:0;stroke-d
 .settings-scenery{position:fixed;inset:0;z-index:80;pointer-events:none}.settings-scenery>.scene-art{width:100%;height:100%;object-fit:cover}
 
 /* The shared pale return action must keep dark text on both web and WKWebView. */
-.modal.game-dialog.game-tools-modal .button.secondary{background:#f8f7ee;color:#193c35;border:1px solid #b3c6bc}

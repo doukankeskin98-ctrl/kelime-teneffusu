@@ -5,6 +5,11 @@ const read=path=>readFile(path,'utf8');
 const config=JSON.parse(await read('ios/App/App/capacitor.config.json'));
 assert.equal(config.appId,'com.kelimeteneffusu.game');assert.equal(config.webDir,'dist-mobile');
 assert.equal(config.server,undefined,'A mobile release must bundle its own game; no remote server.url');
+const canonical=(await read('lib/platform/runtime.ts')).match(/GAME_ORIGIN='([^']+)'/)?.[1];
+assert(canonical,'The canonical game origin must be explicit');
+assert.equal(config.plugins.GameSharing?.publicOrigin,canonical,'Native invitations must use the same built origin as the web game');
+const origin=new URL(canonical);assert.equal(origin.protocol,'https:');assert.equal(origin.username+origin.password+origin.port+origin.search+origin.hash,'');assert.equal(origin.pathname,'/');
+
 assert.equal(config.plugins.CapacitorHttp.enabled,false,'Global fetch patch would break web streaming');
 assert.notEqual(config.ios?.scrollEnabled,false,'Native document scrolling must remain available for Collection and settings');
 const html=await read('dist-mobile/index.html');assert.match(html,/viewport-fit=cover/);assert.match(html,/lang="tr"/);assert(!html.includes('http://'));

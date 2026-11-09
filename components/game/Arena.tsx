@@ -2,6 +2,7 @@
 import {PlayerSafety} from './PlayerSafety';
 import {inviteLink,shareMessage,shareSucceeded} from '@/lib/platform/sharing';
 import {useResultPresentation} from './useResultPresentation';
+import {startArenaClock} from '@/lib/game/arena-clock';
 import {gameIsActive} from '@/lib/platform/runtime';
 import {useEffect,useRef,useState} from 'react';
 import {ArrowRight,Check,Clock,Copy,Link2,LoaderCircle,Radio,RefreshCw,Share2,ShieldCheck,Star,Swords,Trophy,Users,Volume2,VolumeX,WifiOff,ZoomIn} from 'lucide-react';
@@ -43,7 +44,7 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   if(!allowSwitch&&(!old||!next||old.id!==next.id))return;
   if(old&&next&&old.id===next.id&&(next.revision<old.revision||(next.revision===old.revision&&next.serverNow<old.serverNow)))return;
   if(next&&old?.id===next.id&&old.round===next.round&&old.phase==='active'&&next.phase==='finished'&&!result.wasPrepared()&&!ranking&&!rules&&!leaving)result.prepare(next.you.strokes.length>old.you.strokes.length);
-  if(next)offset.current=next.serverNow-Date.now();if(next&&(next.phase==='active'||next.phase==='finished')){setSeriesOpen(false);setPreviousResult(false);}currentRoom.current=next;setRoom(next);
+  if(next){offset.current=next.serverNow-Date.now();setNow(next.serverNow);}if(next&&(next.phase==='active'||next.phase==='finished')){setSeriesOpen(false);setPreviousResult(false);}currentRoom.current=next;setRoom(next);
  };
  const recover=async()=>{const stamp=context();try{const next=await arenaRequest(signal=>getApi<RoomView|null>('?action=room',signal));if(isCurrent(stamp)){accept(next,true);setError('');}}catch(e){if(isCurrent(stamp))setError((e as Error).message);}};
  useEffect(()=>{const blocked=()=>{epoch.current++;accept(null,true);setRanking(false);setPreviousResult(false);setPending(null);const url=new URL(location.href);url.searchParams.delete('oda');history.replaceState(null,'',url.pathname+url.search);};window.addEventListener('kt-player-blocked',blocked);return()=>window.removeEventListener('kt-player-blocked',blocked);},[]);
@@ -58,7 +59,16 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   return ()=>{mounted.current=false;};
  },[authenticated,ownerId]);
  useEffect(()=>{onPlaying?.(!!room);return ()=>onPlaying?.(false);},[room?.id]);
- useEffect(()=>{const timer=setInterval(()=>setNow(Date.now()+offset.current),200);return ()=>clearInterval(timer);},[]);
+ const clockStart=room?.phase==='active'?room.starts:null;
+ const waitingUntil=room?.kind==='quick'&&room.phase==='waiting'?joinedAt+15000:undefined;
+ useEffect(()=>{
+  let pageActive=true;
+  const clock=startArenaClock({localNow:Date.now,serverNow:()=>Date.now()+offset.current,visible:()=>pageActive&&!document.hidden&&gameIsActive(),publish:setNow,schedule:(fn,ms)=>setTimeout(fn,ms),cancel:id=>clearTimeout(id as ReturnType<typeof setTimeout>)},{starts:clockStart,waitingUntil});
+  document.addEventListener('visibilitychange',clock.refresh);
+  const hide=()=>{pageActive=false;clock.refresh();},show=()=>{pageActive=true;clock.refresh();};
+  window.addEventListener('pagehide',hide);window.addEventListener('pageshow',show);
+  return ()=>{clock.stop();document.removeEventListener('visibilitychange',clock.refresh);window.removeEventListener('pagehide',hide);window.removeEventListener('pageshow',show);};
+ },[clockStart,waitingUntil]);
  useEffect(()=>{if(room?.phase==='active'&&tracked.current!==room.id+':'+room.round){tracked.current=room.id+':'+room.round;track('arena_start');setReview(false);}if(room?.phase==='finished')track('arena_complete');},[room?.phase,room?.round]);
  useEffect(()=>{setPending(null);setPreview('');setReview(false);setRanking(false);setPreviousResult(false);setSeriesOpen(false);},[room?.id,room?.round]);
  const run=async(action:string,data:Record<string,unknown>={})=>{
@@ -78,7 +88,8 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
  };
  const copy=async()=>{if(!room)return;const stamp=context();setShare('');const result=await shareLink('Kelime Teneffüsü’nde birlikte yarışalım mı?',inviteLink('oda',room.code));if(!isCurrent(stamp)||result==='busy')return;setShare(shareMessage(result));if(shareSucceeded(result))track('invite_share');};
  const commit=async(a:Cell,b:Cell)=>{
-  if(!room?.board||actionLock.current||room.phase!=='active'||room.starts===null||now<room.starts||room.ends===null||now>=room.ends)return;
+  const claimNow=Date.now()+offset.current;
+  if(!room?.board||actionLock.current||!gameIsActive()||document.hidden||room.phase!=='active'||room.starts===null||claimNow<room.starts||room.ends===null||claimNow>=room.ends)return;
   const target=match(room.board,a,b);if(!target){chime('miss');setPreview('Bir başka yönden bak.');track('selection_miss');return;}
   if(room.you.strokes.some(s=>s.id===target.id)){setPreview('Bu kelimeyi bulmuştun.');return;}
   if(room.you.strokes.length+1===room.board.targets.length)result.prepare();
