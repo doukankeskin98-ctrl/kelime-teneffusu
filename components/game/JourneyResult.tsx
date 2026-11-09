@@ -1,6 +1,6 @@
 'use client';
 import {Check,Star} from 'lucide-react';
-import type {CSSProperties} from 'react';
+import type {CSSProperties,ReactNode} from 'react';
 import {journeyGoal,masteryCopy} from '@/lib/game/achievement-view';
 import type {DiscoveryReward} from '@/lib/game/discovery';
 import type {SavedLevel} from '@/lib/game/progress';
@@ -9,7 +9,7 @@ import {mainChapter} from '@/lib/game/main-journey';
 import {worldChapter} from '@/lib/game/world-presentation';
 import {SceneArt} from './SceneArt';
 
-export function JourneyResult({before,after,rewards,save,best}:{before:ReturnType<typeof journeyGoal>;after:ReturnType<typeof journeyGoal>;rewards:DiscoveryReward[];save:SavedLevel;best?:SavedLevel}){
+export function JourneyResult({before,after,rewards,save,best,reward}:{reward?:ReactNode;before:ReturnType<typeof journeyGoal>;after:ReturnType<typeof journeyGoal>;rewards:DiscoveryReward[];save:SavedLevel;best?:SavedLevel}){
  if(!after)return null;
  const major=rewards.some(r=>r.kind==='world'||r.kind==='album');
  const newPiece=rewards.some(r=>r.id===`piece:${after.state.expedition.id}:${after.position}`),unlocks=rewards.filter(r=>r.kind!=='piece'),mastery=masteryCopy(save.hints);
@@ -23,6 +23,7 @@ export function JourneyResult({before,after,rewards,save,best}:{before:ReturnTyp
   <div className="result-album-progress" aria-label={`${after.state.pieces} / 6 albüm parçası`}><span>{after.state.album.title}</span><b>{after.state.pieces}/6</b><div>{after.state.earned.map((earned,i)=><i key={i} className={(earned?'earned':'')+(newPiece&&i===after.position?' just-earned':'')}/>)}</div></div>
   {!newPiece&&<p className="journey-replay-note">Bu parça daha önce kazanıldı.</p>}
   {unlocks.map(reward=><div className="journey-unlock" key={reward.id}><div className="unlock-scene"><SceneArt theme={reward.themeId}/></div><span><small>{reward.kind==='world'?'Yeni dünya':reward.kind==='bonus'?'Final bölümü açıldı':'Albüm tamamlandı'}</small><b>{reward.title}</b></span><Check size={18}/></div>)}
+  {reward}
   <details className="journey-result-details"><summary>{timeLabel(save.elapsed)} · {save.hints} ipucu</summary><p>Albüm: {before?.state.pieces??after.state.pieces}/6 → {after.state.pieces}/6 parça.</p><p>{mastery.label}. {mastery.rule}</p>{best?.complete&&<p>Önceki en iyi: {best.stars} yıldız · {timeLabel(best.elapsed)}.</p>}</details>
  </div>;
 }

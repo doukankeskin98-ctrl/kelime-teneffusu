@@ -1,3 +1,5 @@
+import {DISCOVERIES_CHAPTERS} from '../lib/game/discoveries-content.ts';
+import {PROGRESS_REQUEST_MAX_BYTES} from '../lib/game/progress-limits.ts';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readdir,readFile} from 'node:fs/promises';
@@ -38,7 +40,7 @@ try{
  check(/<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(home),'production HTML declares a real device viewport and safe areas');
  check(home.includes('id="journey-home-title"')&&home.includes('stage-play')&&home.includes('Bölüm 1')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
  check(['Yolculuk','Arena','Bölümler','Diğer oyunlar'].every(label=>home.includes(label)),'main navigation preserves Journey, Arena and secondary games with on-demand journey details');
- check(home.includes('Yıldız İskelesi')&&!home.includes('stage-trail')&&EXPEDITIONS.length===28,'numbered journey exposes twenty-eight independently registered routes');
+ check(home.includes('Yıldız İskelesi')&&!home.includes('stage-trail')&&EXPEDITIONS.length===32,'numbered journey exposes thirty-two independently registered routes');
  check(home.includes('Gökyüzüne bak')&&home.includes('Bölümler ve albümler')&&!home.includes('stage-milestone'),'home preserves the actual next chapter and chapter map without duplicate shortcuts');
  const released=releaseCatalogue();check(home.includes('Diğer oyunlar'),'secondary exploration and archive entry remains visible');
  check(!home.includes('stage-reward')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
@@ -140,6 +142,16 @@ try{
  const untouchedProgress=await json('/api/progress?expectedOwnerId='+encodeURIComponent(b.profile.id),{cookie:bCookie});check(untouchedProgress.progress.sound===false&&untouchedProgress.progress.contrast===false,'rejected old-owner snapshots leave the other player unchanged');
  const guardedProgress=await json('/api/progress?expectedOwnerId='+encodeURIComponent(a.profile.id),{cookie:aCookie});check(guardedProgress.progress.boardColor==='walnut'&&untouchedProgress.progress.boardColor===undefined,'board paper survives a fresh owner read without changing another player');check(guardedProgress.progress.sound===true,'guarded reads for the same owner retain existing progress');
  const guardedWrite=await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:guardedProgress.progress}});check(guardedWrite.progress.boardColor==='walnut','board paper persists through the existing guarded progress merge');check(guardedWrite.progress.sound===true,'guarded writes remain compatible with existing merge behavior');
+
+ const discoveriesSaves=Object.fromEntries(DISCOVERIES_CHAPTERS.map(chapter=>['route:'+chapter.id,{strokes:journeyBoard(chapter).placements,elapsed:30,hints:0,complete:false,stars:99}]));
+ const week='2026-11-09',weekIds=DISCOVERIES_CHAPTERS.slice(0,5).map(c=>c.id);
+ await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...guardedWrite.progress,saves:discoveriesSaves,ambience:true,weekly:{weeks:{[week]:weekIds.slice(0,2)},earned:[]}}}});
+ const discoveriesSaved=await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:{...cloud.progress,weekly:{weeks:{[week]:weekIds.slice(2)},earned:[]}}}});
+ check(DISCOVERIES_CHAPTERS.every(c=>discoveriesSaved.progress.saves['route:'+c.id]?.complete),'all24 discoveries preserve validated completions through an old-client save');
+ check(discoveriesSaved.progress.ambience===true&&discoveriesSaved.progress.weekly.earned.join()===week,'independent offline weekly finishes merge once and preserve omitted ambience');
+ const untouchedWeekly=await json('/api/progress',{cookie:bCookie});check(!untouchedWeekly.progress.weekly&&!untouchedWeekly.progress.ambience,'new rewards and ambience remain private to the owner');
+ await request('/api/progress',{cookie:aCookie,method:'PUT',body:{progress:{note:'x'.repeat(PROGRESS_REQUEST_MAX_BYTES)}},expected:413});
+ check((await json('/api/progress',{cookie:aCookie})).progress.weekly.earned.join()===week,'an oversized request cannot erase earned progress');
 
  const bonus=JOURNEY_BONUSES[0],bonusBoard=journeyBoard(bonus),bonusKey='route:'+bonus.id;
  await json('/api/progress',{cookie:aCookie,method:'PUT',body:{progress:{...cloud.progress,tutorialDone:true,saves:{[bonusKey]:{strokes:bonusBoard.placements.map(({id,a,b})=>({id,a,b})),elapsed:45,hints:2,complete:true,stars:99}},last:{themeId:bonus.themeId,level:0,journey:bonus.id}}}});

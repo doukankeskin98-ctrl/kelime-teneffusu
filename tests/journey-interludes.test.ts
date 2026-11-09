@@ -11,7 +11,7 @@ import {ALL_THEMES} from '../lib/game/catalog.ts';
 const finish=(p:Progress,id:string)=>{const b=progressBoard('route:'+id)!;p.saves['route:'+id]=cleanSave({strokes:b.placements,hints:0,elapsed:12,complete:false,stars:0},b);return p;};
 
 describe('separate repeated-word bonus mechanics',()=>{
- it('covers all 28 worlds with deterministic 8x8 boards and every real occurrence',()=>{
+ it('covers all 32 worlds with deterministic 8x8 boards and every real occurrence',()=>{
   assert.deepEqual(Object.keys(BONUS_WORDS).sort(),EXPEDITIONS.map(w=>w.id).sort());
   for(const world of EXPEDITIONS){const b=bonusBoard(world.id);assert.equal(b.size,8);assert.equal(b.grid.length,8);assert(b.grid.every(r=>r.length===8));assert(b.targets.length>=8&&b.targets.length<=24,world.id);assert.deepEqual(b.placements,scanBonus(b.grid,BONUS_WORDS[world.id]!));assert.equal(b,bonusBoard(world.id));assert.equal(new Set(b.targets.map(t=>t.id)).size,b.targets.length);assert(b.targets.every(t=>t.text===BONUS_WORDS[world.id]));}
  });
@@ -56,6 +56,6 @@ describe('journey progression stays compatible',()=>{
   const p=emptyProgress(),keys=[...ALL_THEMES.flatMap(t=>Array.from({length:6},(_,i)=>t.id+'.'+i)),...ALL_JOURNEYS.map(j=>'route:'+j.id),...MYSTERIES.map(m=>'mystery:'+m.id)];
   for(const key of keys){const b=progressBoard(key);if(b)p.saves[key]=cleanSave({strokes:b.placements,hints:3,elapsed:604800,complete:false,stars:0},b);}
   p.days=Array.from({length:3660},(_,i)=>new Date(Date.UTC(2030,0,i+1)).toISOString().slice(0,10));p.bonuses=Object.fromEntries(EXPEDITIONS.map(w=>[w.id,cleanBonusSave(w.id,{attempt:1000000,found:bonusBoard(w.id).targets.map(t=>t.id),elapsed:60000})!]));p.welcomedWorlds=EXPEDITIONS.map(w=>w.id);p.mechanicGuides=['daily','mystery','concealed','riddle'];p.trailBadge='crown';
-  assert(Buffer.byteLength(JSON.stringify({progress:p}))<150000);const restored=loadProgress(JSON.stringify(p));assert.equal(Object.keys(restored.saves).length,Object.keys(p.saves).length);assert.equal(Object.keys(restored.bonuses!).length,28);assert.equal(wordTrail(restored).earned.length,8);assert.equal(mergeProgress(restored,emptyProgress()).bonuses?.['uzay']?.best,p.bonuses['uzay']!.best);assert.deepEqual(loadProgress(JSON.stringify(emptyProgress())),emptyProgress());
+  assert(Buffer.byteLength(JSON.stringify({progress:p}))<150000);const restored=loadProgress(JSON.stringify(p));assert.equal(Object.keys(restored.saves).length,Object.keys(p.saves).length);assert.equal(Object.keys(restored.bonuses!).length,32);assert.equal(wordTrail(restored).earned.length,8);assert.equal(mergeProgress(restored,emptyProgress()).bonuses?.['uzay']?.best,p.bonuses['uzay']!.best);assert.deepEqual(loadProgress(JSON.stringify(emptyProgress())),emptyProgress());
  });
 });
