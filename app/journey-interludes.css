@@ -83,3 +83,15 @@ html[data-reduce-motion=true] .world-welcome-art>.scene-art,html[data-reduce-mot
 .native-shell .settings-sheet .setting-row small{color:#d3e4db;font-size:13px;line-height:1.45}
 .settings-sheet .settings-help-actions .button.secondary{color:#193c35;background:#f8f7ee;border:0}
 .settings-sheet .board-color-field small{color:#d3e4db}
+
+/* Weekly keepsakes share the existing achievement surface, never the board. */
+.weekly-keepsakes{color:#fff6df;margin:0 0 30px;padding:0 0 24px;border-bottom:1px solid #d6e4d34d}.weekly-keepsakes header{display:flex;align-items:center;gap:12px}.weekly-keepsakes header>svg{color:#f4d792;flex:none}.weekly-keepsakes header>div{flex:1;min-width:0}.weekly-keepsakes h2{font-size:23px;line-height:1.2;color:inherit;margin:0 0 6px}.weekly-keepsakes p{font-size:14px;line-height:1.55;color:#e0e9db;margin:12px 0}.weekly-keepsakes header p{margin:0;color:#f4d792;font-weight:700}.weekly-keepsakes>small{display:block;line-height:1.5;color:#d8e6db;font-size:12px}.weekly-pips{display:flex;gap:7px;margin:16px 0 12px}.weekly-pips i{flex:1;height:7px;border-radius:5px;background:#496167}.weekly-pips .earned{background:#edd28d}.weekly-keepsakes details{margin-top:16px}.weekly-keepsakes summary{min-height:44px;padding:12px 0;cursor:pointer;font-size:14px;color:#f4d792;font-weight:700}.weekly-keepsakes ul{padding:0;margin:0;list-style:none}.weekly-keepsakes li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #d9e7d52e;font-size:14px}.weekly-keepsakes li>svg{flex:none;color:#f4d792}.weekly-keepsakes li>span{flex:1}.weekly-keepsakes li small{display:block;font-size:12px;color:#d8e6db;margin-top:4px}.weekly-keepsakes summary:focus-visible{outline:2px solid #fff1b9;outline-offset:2px}.weekly-keepsakes .text-button{min-height:44px;color:#f4d792}
+
+/* A reward belongs before optional timing details; keep it visible on short phones. */
+.modal.game-dialog.scene-result .trail-result{width:100%;box-sizing:border-box;margin:6px 0 0;padding:8px 0;line-height:1.35}
+@media(max-height:740px){
+ .modal.game-dialog.scenic-outcome.journey-outcome .result-chapter-number{margin:0 0 4px;line-height:18px}
+ .modal.game-dialog.scenic-outcome.journey-outcome .result-star-stage{height:78px;margin:2px 0 6px}
+ .modal.game-dialog.scenic-outcome.journey-outcome .result-keepsake{padding:4px 0}
+ .modal.game-dialog.scenic-outcome.journey-outcome .journey-result-details{margin:4px 0}
+}

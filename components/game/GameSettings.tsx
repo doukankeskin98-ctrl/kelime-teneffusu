@@ -5,6 +5,7 @@ import {useEffect,useState} from 'react';
 import {Hand,Move,ShieldCheck,Smartphone} from 'lucide-react';
 import type {Progress} from '@/lib/game/progress';
 import {hapticsAvailable} from '@/lib/game/haptics';
+import {AmbienceSetting} from './PlayPreferences';
 import {SoundSettings} from './SoundSettings';
 import {BoardColorSettings} from './BoardColorSettings';
 import {COMFORT_KEY as KEY,DEFAULT_COMFORT as DEFAULT,parseComfort,type Comfort} from '@/lib/game/comfort';
@@ -18,7 +19,7 @@ export function useComfort(){
 export function GameSettings({progress,onProgress,comfort,onComfort,compact=false}:{compact?:boolean;progress:Progress;onProgress:(p:Progress)=>void;comfort:Comfort;onComfort:(c:Comfort)=>void}){
  const [vibration,setVibration]=useState(false),stats=collectionStats(progress);
  useEffect(()=>setVibration(hapticsAvailable()),[]);
- return <div className="game-settings"><SoundSettings enabled={progress.sound} onChange={sound=>onProgress({...progress,sound})} compact={compact}/>
+ return <div className="game-settings"><SoundSettings enabled={progress.sound} onChange={sound=>onProgress({...progress,sound})} compact={compact}/><AmbienceSetting/>
  {vibration&&<button className="comfort-setting" role="switch" aria-checked={progress.haptics} onClick={()=>onProgress({...progress,haptics:!progress.haptics})}><Smartphone/><span><b>{compact?'Titreşim':'Dokunma titreşimi'}</b>{!compact&&<small>Menüler, harfler ve başarılar</small>}</span><i className={compact?'switch'+(progress.haptics?' on':''):undefined} aria-hidden={compact||undefined}>{!compact&&(progress.haptics?'Açık':'Kapalı')}</i></button>}
  {!compact&&<><details className="settings-group"><summary>Erişilebilirlik</summary><button className="comfort-setting" role="switch" aria-checked={progress.contrast} onClick={()=>onProgress({...progress,contrast:!progress.contrast})}><ShieldCheck/><span><b>Belirgin harfler</b><small>Daha yüksek kontrast</small></span><i>{progress.contrast?'Açık':'Kapalı'}</i></button>
  <button className="comfort-setting" role="switch" aria-checked={comfort.leftHanded} onClick={()=>onComfort({...comfort,leftHanded:!comfort.leftHanded})}><Hand/><span><b>Sol elle oynuyorum</b><small>İpucu düğmesi sağda, elinin dışında kalır</small></span><i>{comfort.leftHanded?'Açık':'Kapalı'}</i></button>

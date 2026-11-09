@@ -1,5 +1,13 @@
 # Kelime Teneffüsü
 
+## 0.47.0 · Küçük Keşifler ve haftalık hatıra
+
+24 özgün bölümle 192 ana bölüm; bağımsız ve isteğe bağlı ambiyans; haftada beş farklı bölüm için otomatik, kalıcı hatıra. Yeni menü yok. Eski tahtalar/kayıtlar korunur. [Doğrulama ve sınırlar](docs/release-0.47.0.md).
+
+## 0.46.0 · Ortak arayüz ve ölçülen performans
+
+Ortak ayar/yan ekran dili, görünmeyen çalışma döngülerinin durdurulması ve isteğe bağlı yan ekran paketleri. [Ölçümler](docs/shared-ui-performance-046.md).
+
 ## 0.45.0 · Sabit bilgi alanı ve kolay seçim
 
 İpucu başlığı örtmez; yan oyunlarda üç ana giriş, ortak Ses/Titreşim anahtarları, yıldız açıklaması ve güvenli Arena bekleme alternatifi. Kayıtlar ve oyun hissi korunur. [Doğrulama ve sınırlar](docs/release-0.45.0.md).
