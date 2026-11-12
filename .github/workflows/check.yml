@@ -22,6 +22,7 @@ jobs:
       - name: Verify committed migration snapshot
         run: git diff --exit-code -- drizzle
       - run: pnpm content:check
+      - run: pnpm lint:guard
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm mobile:build

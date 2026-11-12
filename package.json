@@ -1,6 +1,6 @@
 {
   "name": "kelime-teneffusu",
-  "version": "0.47.2",
+  "version": "0.48.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -14,12 +14,14 @@
     "db:generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --experimental-transform-types --test tests/*.test.ts",
-    "content:check": "node --experimental-strip-types --experimental-transform-types scripts/check-content.ts",
+    "content:check": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts --check && node --experimental-strip-types --experimental-transform-types scripts/check-content.ts",
     "mobile:build": "vite build --config mobile/vite.config.ts",
     "mobile:sync": "pnpm mobile:build && cap sync ios",
     "mobile:open": "cap open ios",
     "mobile:edge-test": "node scripts/verify-ios-edge.mjs",
-    "mobile:check": "node scripts/verify-mobile.mjs"
+    "mobile:check": "node scripts/verify-mobile.mjs",
+    "content:prepare": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts",
+    "lint:guard": "node scripts/lint-guard.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

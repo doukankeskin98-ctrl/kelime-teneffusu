@@ -1,6 +1,7 @@
 import {ARENA_CLUES,ARENA_LIBRARY,type ArenaEntry} from './arena-library.ts';
 import {arenaWordKey,arenaGridKey} from './arena-content.ts';
 import {hash,makeCustomPuzzle,match} from './engine.ts';
+import {safeSnapshot} from './board-quality.ts';
 
 // Independent monotonic cursors: no old pool, board seed or snapshot is reinterpreted.
 export const FRESH_GROUP_POOL='arena-original-group-v4',FRESH_CLUE_POOL='arena-original-clue-v4',FRESH_DUEL_POOL='arena-original-duel-v3';
@@ -40,7 +41,7 @@ export function freshArenaPuzzle(ordinal:number,options:FreshOptions){
  for(let attempt=0;attempt<8;attempt++){
   const seed=hash(pool+':'+ordinal+':'+words.join('|')+':'+attempt);
   try{
-   const board=makeCustomPuzzle(words,seed,size);
+   const board=safeSnapshot(makeCustomPuzzle(words,seed,size),seed,{size,bothDiagonals:true});
    if(board.size!==size||board.targets.length!==count||board.placements.some(p=>match(board,p.a,p.b)?.id!==p.id))continue;
    const slopes=new Set(board.placements.filter(p=>p.a[0]!==p.b[0]&&p.a[1]!==p.b[1]).map(p=>Math.sign((p.b[0]-p.a[0])*(p.b[1]-p.a[1]))));
    if(!slopes.has(1)||!slopes.has(-1))continue;

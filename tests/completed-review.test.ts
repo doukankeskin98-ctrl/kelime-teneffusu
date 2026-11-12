@@ -1,3 +1,5 @@
+import * as safePresentation from '../lib/game/journey-presentation.ts';
+import * as boardQuality from '../lib/game/board-quality.ts';
 import * as activity from '../lib/platform/activity.ts';
 import * as wordFeedback from '../lib/game/word-feedback.ts';
 import * as worldPresentation from '../lib/game/world-presentation.ts';
@@ -49,13 +51,13 @@ describe('shared completed controls and review instructions',()=>{
 
 type Slot={value?:any;deps?:unknown[];ref?:{current:any};cleanup?:()=>void};
 function mystery({complete=true,solved=true}:{complete?:boolean;solved?:boolean}={}){
- const spec=content.MYSTERIES[0]!,board=content.mysteryBoard(spec),key='mystery:'+spec.id;
- const initial=progress.cleanSave({strokes:complete?board.placements:[],elapsed:17,hints:1,complete:false,stars:0},board);
+ const spec=content.MYSTERIES[0]!,canonical=content.mysteryBoard(spec),board=safePresentation.presentationBoard(canonical,'mystery:'+spec.id),key='mystery:'+spec.id;
+ const initial=progress.cleanSave({strokes:complete?canonical.placements:[],elapsed:17,hints:1,complete:false,stars:0},canonical);
  let ownerProgress:progress.Progress={...progress.emptyProgress(),saves:{[key]:initial},mechanicGuides:['mystery' as const],mysteries:solved?[spec.id]:[]},tree:any,cursor=0,dirty=true,now=0,id=0,back=0;
  const slots:Slot[]=[],effects:(()=>void)[]=[],timers=new Map<number,()=>void>(),exports:Record<string,any>={},writes:progress.Progress[]=[],next:string[]=[];
  const changed=(slot:Slot,deps:unknown[])=>!slot.deps||deps.length!==slot.deps.length||deps.some((v,i)=>!Object.is(v,slot.deps![i]));
  const hooks={useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return[slot.value,(n:any)=>{const value=typeof n==='function'?n(slot.value):n;if(!Object.is(value,slot.value)){slot.value=value;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useMemo(fn:()=>any,deps:unknown[]){const slot=slots[cursor++]??={};if(changed(slot,deps)){slot.deps=deps;slot.value=fn();}return slot.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(changed(slot,deps)){slot.deps=deps;effects.push(()=>{slot.cleanup?.();const cleanup=fn();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;});}}};
- const modules:Record<string,unknown>={'./MechanicGuide':{MechanicGuide:'MechanicGuide'},react:hooks,'react/jsx-runtime':{jsx,jsxs:jsx,Fragment:'Fragment'},'lucide-react':icons,'@/lib/game/word-card':wordCard,'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/discovery':discovery,'@/lib/game/telemetry':{track(){}},'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},'./common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',Modal:'Modal',Help:'Help',WordList:'WordList',useChime:()=>()=>{}}};
+ const modules:Record<string,unknown>={'@/lib/game/journey-presentation':safePresentation,'@/lib/game/board-quality':boardQuality,'./MechanicGuide':{MechanicGuide:'MechanicGuide'},react:hooks,'react/jsx-runtime':{jsx,jsxs:jsx,Fragment:'Fragment'},'lucide-react':icons,'@/lib/game/word-card':wordCard,'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/discovery':discovery,'@/lib/game/telemetry':{track(){}},'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},'./common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',Modal:'Modal',Help:'Help',WordList:'WordList',useChime:()=>()=>{}}};
  const context:vm.Context={exports,require:(n:string)=>{assert.ok(n in modules,n);return modules[n];},window:Object.assign(new EventTarget(),{matchMedia:()=>({matches:false})}),document:Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}}}),Event,performance:{now:()=>now},setInterval:(fn:()=>void)=>{timers.set(++id,fn);return id;},clearInterval:(id:number)=>timers.delete(id),setTimeout:()=>++id,clearTimeout(){}};
  const hook:Record<string,unknown>={};vm.runInNewContext(compile('components/game/useResultPresentation.ts'),{...context,exports:hook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback});modules['./useResultPresentation']=hook;
  vm.runInNewContext(compile('components/game/Mystery.tsx'),context);
