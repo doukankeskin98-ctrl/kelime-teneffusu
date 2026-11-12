@@ -1,7 +1,7 @@
 import {hash, type Puzzle} from './engine.ts';
 import {mainChapter} from './main-journey.ts';
 import {worldChapter} from './world-presentation.ts';
-import {qualityPuzzle, type BoardPolicy} from './board-quality.ts';
+import {boardIssues, PRESENTATION_RULES, qualityPuzzle, repairFiller, type BoardPolicy} from './board-quality.ts';
 import {SAFE_LAYOUTS} from './safe-layouts.ts';
 
 export function journeyPolicy(id:string,source:Puzzle):BoardPolicy {
@@ -16,7 +16,13 @@ export function journeyPolicy(id:string,source:Puzzle):BoardPolicy {
 }
 
 export function preparePresentation(source:Puzzle,key:string):Puzzle {
-  return qualityPuzzle(source,hash('presentation:'+key),key.startsWith('route:')?journeyPolicy(key.slice(6),source):{});
+  const seed=hash('presentation:'+key), policy=key.startsWith('route:')?journeyPolicy(key.slice(6),source):{};
+  // The 0.48.0 layout is kept whenever it already passes the wider list, so boards
+  // players have seen do not move. Otherwise change filler letters only; a full new
+  // layout is the last resort when the hit is formed by target letters themselves.
+  const first=qualityPuzzle(source,seed,policy);
+  if(!boardIssues(first,PRESENTATION_RULES).length) return first;
+  return repairFiller(first,seed,PRESENTATION_RULES)??qualityPuzzle(source,seed,policy,PRESENTATION_RULES);
 }
 
 /** Precomputed layouts avoid generator work on the input/render path. */
