@@ -22,3 +22,12 @@ test('a veiled rack word reserves its revealed width, while open words size to t
   assert.match(tag,/min-width:44px/);
   assert.match(rule('.scenic-play .target-rack .word-tag.veiled-target,.game-app .scenic-play .target-rack .word-tag.veiled-target'),/min-width:max\(44px,calc\(var\(--word-chars\)\*\.64em \+ 4px\)\)/);
 });
+
+test('no rack rule gives an open word a per-character slot width',()=>{
+  // Every per-character width or basis must be scoped to veiled targets.
+  for(const match of css.replace(/\/\*[\s\S]*?\*\//g,'').matchAll(/([^{}]+)\{([^{}]*var\(--word-chars\)[^{}]*)\}/g)) {
+    const selectors=match[1]!.split(',').map(selector=>selector.trim());
+    assert(selectors.every(selector=>selector.includes('.veiled-target')),selectors.join(', '));
+  }
+  assert.match(rule('.scenic-play .target-rack .word-tag:not(.veiled-target),.game-app .scenic-play .target-rack .word-tag:not(.veiled-target)'),/flex-basis:auto!important;width:auto/);
+});

@@ -87,7 +87,7 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 .game-tools-modal .journey-albums .album-piece-dots i{color:#dce8d9;border-color:#cfe1cc66;background:transparent}
 .game-tools-modal .journey-albums .album-piece-dots i.earned{background:#d8e8c7;color:#244e3c}
 /* Legacy 12×12 saves still show every normal target; no clipped hidden row. */
-.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex-basis:calc(var(--word-chars)*.64em + 4px)!important}
+.scenic-play .target-rack .word-tag.veiled-target,.game-app .scenic-play .target-rack .word-tag.veiled-target{flex-basis:calc(var(--word-chars)*.64em + 4px)!important}
 .scenic-play .viewport-targets:not([data-many]) .target-rack{max-height:none!important;overflow:visible!important}
 .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{font-size:16px!important}
 
@@ -135,4 +135,8 @@ button.native-stars{min-height:44px;border:0;cursor:pointer}
 }
 
 /* Dense racks use the same 16px letter cells for sizing as for painting. */
-.scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{flex-basis:calc(var(--word-chars)*10.24px + 4px)!important;width:calc(var(--word-chars)*10.24px + 4px)}
+.scenic-play[data-dense-board] .target-rack .word-tag.veiled-target,.game-app .scenic-play[data-dense-board] .target-rack .word-tag.veiled-target{flex-basis:calc(var(--word-chars)*10.24px + 4px)!important;width:calc(var(--word-chars)*10.24px + 4px)}
+/* Open words size to their own letters in every rack density, so a wide word
+   never breaks mid-word and a narrow one carries no empty slot around it. */
+.scenic-play .target-rack .word-tag:not(.veiled-target),.game-app .scenic-play .target-rack .word-tag:not(.veiled-target){flex-basis:auto!important;width:auto}
+.scenic-play[data-dense-board] .target-rack .target-letters>[data-target-letter]:not(.masked-letter){padding:0}
