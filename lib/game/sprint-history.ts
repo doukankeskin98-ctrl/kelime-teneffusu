@@ -1,3 +1,4 @@
+import {safeSnapshot} from './board-quality.ts';
 import {hash,makeCustomPuzzle,type Puzzle} from './engine.ts';
 import {SPRINT_WORDS,ACTIVE_SPRINT_WORDS} from './sprint-vocabulary.ts';
 
@@ -44,7 +45,8 @@ export function variedSprintBoard(seed:number,round:number,history:SprintHistory
   try{
    // Four full-width words may not fit two forced opposite diagonals. Keep all
    // eight directions available in Sprint; authored/legacy boards retain their policy.
-   const board=makeCustomPuzzle(candidates,hash(`sprint-v2:${seed}:${round}:${attempt}:${candidates.join('|')}`),6,'any');
+   const layoutSeed=hash(`sprint-v2:${seed}:${round}:${attempt}:${candidates.join('|')}`);
+   const board=safeSnapshot(makeCustomPuzzle(candidates,layoutSeed,6,'any'),layoutSeed,{size:6});
    if(board.size===6&&board.targets.length===4)return board;
   }catch{/* A different valid set is preferable to silently dropping a word. */}
  }

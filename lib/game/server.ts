@@ -1,5 +1,6 @@
+import {dailyBoard} from './daily-board.ts';
 import {acceptablePlayerName,blockedRoom,safetyFailure} from './player-safety.ts';
-import { dailySpec, goldenId, hash, istanbulDay, makePuzzle, match, pointsFor, type Cell, type Puzzle, type Stroke } from './engine.ts';
+import { goldenId, hash, istanbulDay, makePuzzle, match, pointsFor, type Cell, type Puzzle, type Stroke } from './engine.ts';
 import { ACTIVE_THEMES as THEMES } from './catalog.ts';
 import {FRESH_GROUP_POOL,FRESH_CLUE_POOL,FRESH_DUEL_POOL,FRESH_POOL_LIMIT,freshArenaPuzzle,hasFreshRiddles,type WordHistory} from './arena-fresh.ts';
 import {nextArenaKind,arenaWordKey,arenaGridKey,type ArenaRoundKind} from './arena-content.ts';
@@ -303,7 +304,7 @@ export class GameService {
     if(room.players.every(x=>x.rematch)){room.lastResult={round:room.round,roundKind:room.roundKind??'words',winner:room.winner,reason:room.reason,players:this.view(room,userId).players!};room.protocol=2;room.round++;room.seed=hash(crypto.randomUUID());room.starts=null;room.ends=null;room.winner=null;room.reason='';room.phase='ready';delete room.puzzle;delete room.contentOrdinal;delete room.ranks;room.players=room.players.map(x=>player(x.id,x.name,this.clock()));}
    });
  }
- private dailyView(d:Daily&{hintReceipts?:{id:string;cell:Cell}[]}){const {hintReceipts:_receipts,...view}=d,spec=dailySpec(d.day);return {...view,serverNow:this.clock(),board:publicBoard(makePuzzle(spec.themeId,spec.level,spec.seed))};}
+ private dailyView(d:Daily&{hintReceipts?:{id:string;cell:Cell}[]}){const {hintReceipts:_receipts,...view}=d;return {...view,serverNow:this.clock(),board:publicBoard(dailyBoard(d.day))};}
  async dailyState(userId:string,id:string){
    const row=await this.q('SELECT data FROM dailies WHERE id=? AND user_id=?',id,userId).first<{data:string}>();
    if(!row)throw new GameError('Günlük oyun bulunamadı.',404);
@@ -329,7 +330,7 @@ export class GameService {
        if(fenced.meta.changes)throw new GameError('Bu günlük oyunun süresi doldu. Yeni güne geçebilirsin.',409,'DAILY_EXPIRED');
        continue;
      }
-     const spec=dailySpec(d.day),board=makePuzzle(spec.themeId,spec.level,spec.seed);let hintCell:Cell|null=null;
+     const board=dailyBoard(d.day);let hintCell:Cell|null=null;
      if(hint){if(d.hints>=3)throw new GameError('Üç ipucunu da kullandın.',400,'DAILY_HINT_LIMIT');if(targetId!==undefined&&(typeof targetId!=='string'||!board.targets.some(t=>t.id===targetId)))throw new GameError('İpucu hedefi bulunamadı.');if(targetId!==undefined&&d.strokes.some(s=>s.id===targetId))throw new GameError('Bu kelime zaten bulundu. Yeni bir hedef seç.',409,'DAILY_HINT_TARGET_FOUND');const target=targetId??board.targets.find(t=>!d.strokes.some(s=>s.id===t.id))?.id,remaining=board.placements.find(t=>t.id===target);if(remaining){d.hints++;hintCell=remaining.a;if(typeof requestId==='string')d.hintReceipts=[...(d.hintReceipts??[]),{id:requestId,cell:hintCell}].slice(-3);}}
      else{const target=match(board,a,b);if(!target)throw new GameError('Bu seçim listedeki bir kelimeyi oluşturmuyor.');if(!d.strokes.some(s=>s.id===target.id))d.strokes.push({id:target.id,a:a as Cell,b:b as Cell});}
      if(d.strokes.length===board.targets.length){d.finished=this.clock();d.duration=Math.max(1,d.finished-d.starts)+d.hints*15000;}

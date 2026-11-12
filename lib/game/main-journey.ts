@@ -76,13 +76,13 @@ export function nextMainMilestone(progress:Pick<Progress,'saves'>,fromId?:string
 /** Short, optional coaching for the actual first ten. Never promise an unearned unlock. */
 export const FIRST_TEN_LESSONS:Record<string,string>={
  'uzay-1':'Kaydırmak yerine kelimenin iki ucuna da dokunabilirsin.',
- 'uzay-2':'Çaprazlara da bak. Bir harf birkaç kelimede kullanılabilir.',
- 'uzay-3':'Uzun kelimelerde önce ilk ve son harfi ara.',
- 'uzay-4':'Kelimeleri tersten de seçebilirsin.',
+ 'uzay-2':'Kelimeleri soldan sağa ve yukarıdan aşağıya ara.',
+ 'uzay-3':'Şimdi çaprazlara da bak. Bir harf birkaç kelimede kullanılabilir.',
+ 'uzay-4':'Uzun kelimelerde önce ilk ve son harfi ara.',
  'uzay-5':'Aynı addaki parçaları ayrı ayrı bul.',
  'uzay-gozlemevi':'Takılırsan listedeki bir kelimeyi seç, sonra ipucu al.',
  'turkiye-1':'Yeni bir manzara, tanıdık kelimeler. Acele yok.',
- 'turkiye-2':'Yanlış seçim ceza getirmez. Farklı bir yön dene.',
+ 'turkiye-2':'Bazı kelimeler ters yönde. İki uçtan da başlayabilirsin.',
  'turkiye-3':'İpucu, seçtiğin kelimenin ilk harfini gösterir.',
  'turkiye-4':'Bulamazsan tahtayı döndürerek yeniden bak.',
 };
