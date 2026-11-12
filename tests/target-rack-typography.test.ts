@@ -31,3 +31,17 @@ test('no rack rule gives an open word a per-character slot width',()=>{
   }
   assert.match(rule('.scenic-play .target-rack .word-tag:not(.veiled-target),.game-app .scenic-play .target-rack .word-tag:not(.veiled-target)'),/flex-basis:auto!important;width:auto/);
 });
+
+test('an unrevealed veiled word keeps one slot grid and a rack word never breaks',()=>{
+  assert.match(rule('.word-tag.veiled-target:not(.found) .target-letters>[data-target-letter]'),/width:\.64em;padding:0/);
+  assert.match(rule('.target-rack .target-letters'),/flex-wrap:nowrap/);
+  // A revealed wide word may grow past its slot instead of wrapping.
+  assert.match(rule('.scenic-play[data-dense-board] .target-rack .word-tag.veiled-target,.game-app .scenic-play[data-dense-board] .target-rack .word-tag.veiled-target'),/width:auto;min-width:calc/);
+});
+
+test('short phones compact the dense rack instead of pushing the controls off screen',()=>{
+  const at=css.indexOf('@media(max-height:600px) and (orientation:portrait){');
+  assert.notEqual(at,-1);
+  const block=css.slice(at,css.indexOf('\n}',at));
+  assert.match(block,/\[data-dense-board\] \.target-rack \.word-tag[^{]*\{min-height:34px!important;font-size:15px!important/);
+});

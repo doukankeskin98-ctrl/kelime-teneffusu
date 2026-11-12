@@ -42,6 +42,11 @@
    only masked placeholders use a fixed slot. */
 .target-letters>[data-target-letter]{display:inline-flex;align-items:center;justify-content:center;width:auto;padding:0 .025em;min-height:1.25em;line-height:1.25em;text-decoration:inherit;flex:none}
 .target-letters>.masked-letter{width:.64em;padding:0}
+/* Until a veiled word is found, its open letters share the placeholder grid, so a
+   first-letter clue lines up with the masks and the word stays inside its slot. */
+.word-tag.veiled-target:not(.found) .target-letters>[data-target-letter]{width:.64em;padding:0}
+/* A rack entry is one word (multi-word names are separate parts): never break it. */
+.target-rack .target-letters{flex-wrap:nowrap}
 .target-letters>.target-space{width:.35em}
 .target-letters>.masked-letter{font-size:1em;font-weight:800}
 /* Each adjacent letter cell owns its segment: flex layout cannot swallow the
@@ -135,8 +140,14 @@ button.native-stars{min-height:44px;border:0;cursor:pointer}
 }
 
 /* Dense racks use the same 16px letter cells for sizing as for painting. */
-.scenic-play[data-dense-board] .target-rack .word-tag.veiled-target,.game-app .scenic-play[data-dense-board] .target-rack .word-tag.veiled-target{flex-basis:calc(var(--word-chars)*10.24px + 4px)!important;width:calc(var(--word-chars)*10.24px + 4px)}
+.scenic-play[data-dense-board] .target-rack .word-tag.veiled-target,.game-app .scenic-play[data-dense-board] .target-rack .word-tag.veiled-target{flex-basis:calc(var(--word-chars)*10.24px + 4px)!important;width:auto;min-width:calc(var(--word-chars)*10.24px + 4px)}
 /* Open words size to their own letters in every rack density, so a wide word
    never breaks mid-word and a narrow one carries no empty slot around it. */
 .scenic-play .target-rack .word-tag:not(.veiled-target),.game-app .scenic-play .target-rack .word-tag:not(.veiled-target){flex-basis:auto!important;width:auto}
 .scenic-play[data-dense-board] .target-rack .target-letters>[data-target-letter]:not(.masked-letter){padding:0}
+/* A 568px-tall phone cannot spare four 44px rack rows above a 10×10 board. Tighter
+   rows keep every target visible and the hint and turn controls on screen. */
+@media(max-height:600px) and (orientation:portrait){
+ .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 10px!important;padding:2px 6px!important}
+ .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:34px!important;font-size:15px!important;line-height:20px}
+}
