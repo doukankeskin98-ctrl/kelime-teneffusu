@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useMemo,useRef,useState,type Dispatch,type SetStateAction} from 'react';
 import {ArrowLeft,ArrowRight,Check,Clock,HelpCircle,Play,RefreshCw,Timer,Trophy,Settings} from 'lucide-react';
+import {presentationBoard} from '@/lib/game/journey-presentation';
 import {BONUS_DURATION,BONUS_WORDS,advanceBonus,bonusBoard,cleanBonusSave,freshBonus,mergeBonusSave,selectBonus,type BonusSave} from '@/lib/game/journey-bonus';
 import {EXPEDITIONS,expeditionTheme} from '@/lib/game/discovery';
 import type {Progress} from '@/lib/game/progress';
@@ -13,7 +14,8 @@ import {GameToolsSheet,Modal,PlayLayout,useChime} from './common';
 import {useResultPresentation} from './useResultPresentation';
 
 export function BonusRound({worldId,progress,onProgress,onBack,onContinue}:{worldId:string;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void;onContinue:()=>void}){
- const world=EXPEDITIONS.find(w=>w.id===worldId)!,board=useMemo(()=>bonusBoard(worldId),[worldId]),word=BONUS_WORDS[worldId]!,scene=sceneForTheme(expeditionTheme(world));
+ const world=EXPEDITIONS.find(w=>w.id===worldId)!,word=BONUS_WORDS[worldId]!,scene=sceneForTheme(expeditionTheme(world));
+ const {canonicalBoard,board}=useMemo(()=>{const canonicalBoard=bonusBoard(worldId);return {canonicalBoard,board:presentationBoard(canonicalBoard,'bonus:'+worldId)};},[worldId]);
  const [save,setSave]=useState(()=>{const old=cleanBonusSave(worldId,progress.bonuses?.[worldId]);return old&&!old.finished?old:freshBonus((old?.attempt??0)+1,old?.best??0);});
  const background=useRef(false),current=useRef(save),running=useRef(false),at=useRef(0),[started,setStarted]=useState(false),[paused,setPaused]=useState(false),[help,setHelp]=useState(false),[tools,setTools]=useState(false),toolsOpen=useRef(false),resumeAfterTools=useRef(false),[preview,setPreview]=useState(''),[message,setMessage]=useState(''),[review,setReview]=useState(false);
  const result=useResultPresentation(save.finished,worldId+':'+save.attempt),chime=useChime(progress.sound,progress.haptics);
@@ -30,7 +32,9 @@ export function BonusRound({worldId,progress,onProgress,onBack,onContinue}:{worl
  }),[started,help]);
  useEffect(()=>{if(!started||paused||help||tools||save.finished)return;const interval=setInterval(()=>{if(document.hidden||!gameIsActive())return;tick();},250);return ()=>clearInterval(interval);},[started,paused,help,tools,save.finished]);
  useEffect(()=>{const remote=progress.bonuses?.[worldId];if(!remote)return;const merged=mergeBonusSave(current.current,remote);if(merged.attempt>current.current.attempt||(merged.attempt===current.current.attempt&&(merged.finished!==current.current.finished||merged.found.join('|')!==current.current.found.join('|')||merged.elapsed>current.current.elapsed+1000))){running.current=false;current.current=merged;setSave(merged);setPaused(true);background.current=true;setMessage('Diğer cihazındaki bonus kaydı yüklendi.');if(started&&!help&&!toolsOpen.current&&!document.hidden&&gameIsActive()){background.current=false;resume();}}else if(merged.best!==current.current.best){current.current={...current.current,best:merged.best};setSave(current.current);}},[progress.bonuses?.[worldId]]);
- const commit=(a:Cell,b:Cell)=>{if(!running.current||paused||help||toolsOpen.current)return;const latest=tick();if(latest.finished)return;const selected=selectBonus(board,latest,a,b);if(!selected.accepted){setMessage('Aynı kelimenin başka bir yerini bul.');return;}if(selected.save.finished)result.prepare();publish(selected.save);if(!selected.save.finished)chime('word');setMessage('');};
+ const commit=(a:Cell,b:Cell)=>{if(!running.current||paused||help||toolsOpen.current)return;const latest=tick();if(latest.finished)return;const path=board.placements.find(p=>(p.a[0]===a[0]&&p.a[1]===a[1]&&p.b[0]===b[0]&&p.b[1]===b[1])||(p.b[0]===a[0]&&p.b[1]===a[1]&&p.a[0]===b[0]&&p.a[1]===b[1]));
+  const original=canonicalBoard.placements.find(p=>p.id===path?.id);
+  const selected=original?selectBonus(canonicalBoard,latest,original.a,original.b):{save:latest,accepted:false};if(!selected.accepted){setMessage('Aynı kelimenin başka bir yerini bul.');return;}if(selected.save.finished)result.prepare();publish(selected.save);if(!selected.save.finished)chime('word');setMessage('');};
  const back=()=>{if(started&&!current.current.finished)pause();onBack();};
  const replay=()=>{running.current=false;const next=freshBonus(current.current.attempt+1,current.current.best);current.current=next;setSave(next);setStarted(false);setPaused(false);setReview(false);setMessage('');result.skip();};
  const openTools=()=>{resumeAfterTools.current=running.current;toolsOpen.current=true;if(!current.current.finished)pause();setTools(true);};

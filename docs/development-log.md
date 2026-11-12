@@ -1,3 +1,6 @@
+## 12 Kasım 2026 · 0.48.0
+İçerik güvenliği → zorluk akışı → çevrimdışı Arena/hesap sınırı → lint artış kapısı sırası uygulandı. Eski kayıt biçimi, ödüller ve çizim motoru korundu. 897 test/722 Worker; tip/içerik/şema/web/mobil kontrolü ve küçük ekran önizlemesi geçti. Fiziksel cihaz ve mağaza dış kapıları açık. Ayrıntı: release-0.48.0.md.
+
 ## 8 Kasım 2026 · 0.45.0
 Bilgi çakışması ve yan menü önceliği uygulandı; yoğun rafta ek satır kaybı giderildi. Yıldız açıklaması, güncel ilk10 notları, sunucuda koşullu kuyruk çıkışı.853 test/703 Worker; tip/içerik/şema/web/mobil kontrolü geçti. Fiziksel uzun oyun/iki telefon/yeni oyuncu kabulü ayrı açık. Ayrıntı release-0.45.0.md.
 

@@ -1,3 +1,5 @@
+import * as safePresentation from '../lib/game/journey-presentation.ts';
+import * as boardQuality from '../lib/game/board-quality.ts';
 import * as mainJourney from '../lib/game/main-journey.ts';
 import * as activity from '../lib/platform/activity.ts';
 import * as journeyFlow from '../lib/game/journey-flow.ts';
@@ -45,7 +47,8 @@ function textOf(value:unknown):string{
  if(Array.isArray(value))return value.map(textOf).join(' ');
  return value&&typeof value==='object'?['children','footer'].map(key=>textOf((value as Node).props?.[key])).join(' '):'';
 }
-function harness({initial=saved([]),practice=false,known=false,reduced=true}:{initial?:SavedLevel;practice?:boolean;known?:boolean;reduced?:boolean}={}){
+function harness({initial=saved([]),practice=false,known=false,reduced=true,journeyId}:{initial?:SavedLevel;practice?:boolean;known?:boolean;reduced?:boolean;journeyId?:string}={}){
+ let player=progress.emptyProgress();if(journeyId){player.guideDone=true;player.saves['route:'+journeyId]=initial;}
  const slots:Slot[]=[],effects:(()=>void)[]=[],writes:SavedLevel[]=[];
  const timers=new Map<number,{fn:()=>void;repeat:boolean;at:number}>();
  let cursor=0,timerId=0,now=0,pending=true,tree:unknown,resume:SavedLevel|undefined;
@@ -66,6 +69,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
  const windowTarget=Object.assign(new EventTarget(),{matchMedia:()=>({matches:reduced})});
  const documentTarget=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}}});
  const modules:Record<string,unknown>={
+  '@/lib/game/board-quality':boardQuality,'@/lib/game/journey-presentation':safePresentation,
   react:hooks,'react/jsx-runtime':{jsx:(type:unknown,props:Record<string,unknown>)=>({type,props}),jsxs:(type:unknown,props:Record<string,unknown>)=>({type,props}),Fragment:'Fragment'},
   '@/lib/game/story-content':stories,'./StoryExperience':{StoryHud:'StoryHud',StoryResult:'StoryResult'},'@/lib/game/riddle-content':riddleContent,'@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
   '@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,
@@ -87,8 +91,8 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
   pending=false;cursor=0;
   for(const slot of slots)for(const update of slot.updates?.splice(0)??[])
    slot.value=typeof update==='function'?update(slot.value):update;
-  tree=play({config:{themeId:'hayvanlar',level:0,practice},progress:progress.emptyProgress(),
-   onProgress(){},onBack(){},onMap(){},onNext(){},external:{board,save:initial,resume,
+  tree=play({config:{themeId:journeyId?content.journeyById(journeyId)!.themeId:'hayvanlar',level:0,practice,journey:journeyId},progress:player,
+   onProgress(update:(p:progress.Progress)=>progress.Progress){player=update(player);if(journeyId)writes.push(player.saves['route:'+journeyId]!);},onBack(){},onMap(){},onNext(){},external:journeyId?undefined:{board,save:initial,resume,
     personalBestKnown:known,title:'Deneme keşfi',note:'',onSave:(value:SavedLevel)=>writes.push(value)}});
   for(const effect of effects.splice(0))effect();
  };
@@ -96,6 +100,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
  return {
   hide(){documentTarget.hidden=true;documentTarget.dispatchEvent(new Event('visibilitychange'));},
   show(){documentTarget.hidden=false;documentTarget.dispatchEvent(new Event('visibilitychange'));},
+  get player(){return player;},hint(){(find('PlayControls').props['onHint'] as ()=>void)();},
   writes,hasModal:()=>nodes(tree).some(n=>n.type==='Modal'),advance(ms:number){now+=ms;for(const [id,t] of [...timers])if(!t.repeat&&t.at<=now){timers.delete(id);t.fn();}},
   layout:()=>find('PlayLayout'),controls:()=>find('PlayControls'),result:()=>find('VictorySummary'),
   closeResult(){(find('Modal').props['onClose'] as ()=>void)();},
@@ -104,7 +109,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true}:{in
   get save(){assert.ok(writes.length);return writes.at(-1)!;},
   setResume(value:SavedLevel){resume=value;pending=true;},
   queueResumeThenCommit(value:SavedLevel,index:number){resume=value;pending=true;render();this.commit(index);},
-  commit(index:number){const stroke=board.placements[index]!;(find('PlayLayout').props['onCommit'] as (a:engine.Cell,b:engine.Cell)=>void)(stroke.a,stroke.b);},
+  commit(index:number){const stroke=(find('PlayLayout').props['board'] as engine.Puzzle).placements[index]!;(find('PlayLayout').props['onCommit'] as (a:engine.Cell,b:engine.Cell)=>void)(stroke.a,stroke.b);},
   tick(seconds:number){now+=seconds*1000;for(const entry of [...timers.values()])if(entry.repeat)entry.fn();},
   expire(){for(const [id,entry] of [...timers])if(!entry.repeat){timers.delete(id);entry.fn();}},
   pause(){(find('PlayControls').props['onPause'] as ()=>void)();},
@@ -220,4 +225,27 @@ it('saves the last word immediately while the result waits for its visible landi
 });
 it('resumes local play automatically after background without counting hidden time or closing help',async()=>{
  const page=harness({initial:saved([],5)});try{await page.settle();page.tick(2);await page.settle();assert.equal(page.save.elapsed,7);page.hide();await page.settle();assert.equal(page.layout().props['paused'],true);page.tick(30);await page.settle();assert.equal(page.save.elapsed,7);page.show();await page.settle();assert.equal(page.layout().props['paused'],false);page.tick(2);await page.settle();assert.equal(page.save.elapsed,9);page.help();await page.settle();page.hide();await page.settle();page.show();await page.settle();assert.equal(page.has('Help'),true);assert.equal(page.layout().props['paused'],true);page.closeHelp();await page.settle();assert.equal(page.layout().props['paused'],false);}finally{page.close();}
+});
+
+
+it('resumes a legacy alternate stroke on the safe board, hints there, and persists new finds in canonical coordinates',async()=>{
+ const j=mainJourney.MAIN_JOURNEY[5]!.chapter,canonical=content.journeyBoard(j);
+ const target=canonical.targets.find(t=>boardQuality.wordSegments(canonical.grid,t.text).length>1)!;
+ const alternate=boardQuality.wordSegments(canonical.grid,target.text).at(-1)!;
+ const old=progress.cleanSave({strokes:[{id:target.id,a:alternate.b,b:alternate.a}],elapsed:14,hints:0,complete:false,stars:0},canonical);
+ const page=harness({initial:old,journeyId:j.id});
+ try{
+  await page.settle();const display=page.layout().props['board'] as engine.Puzzle;
+  assert.deepEqual(boardQuality.boardIssues(display),[]);assert.notDeepEqual(display.grid,canonical.grid);
+  assert.deepEqual(JSON.parse(JSON.stringify(page.save.strokes)),old.strokes);
+  page.tick(1);await page.settle();assert.equal(page.save.elapsed,15);
+  const next=goalWordCard.hintTarget(display,page.save.strokes,null)!;
+  page.hint();await page.settle();assert.deepEqual(page.layout().props['hint'],display.placements.find(p=>p.id===next.id)!.a);
+  for(let i=0;i<display.placements.length;i++){page.commit(i);await page.settle();}
+  assert.equal(page.save.complete,true);assert.equal(page.save.stars,2);
+  assert.deepEqual(JSON.parse(JSON.stringify(page.save.strokes[0])),old.strokes[0]);
+  const loaded=progress.loadProgress(JSON.stringify(page.player));
+  assert.deepEqual(loaded.saves['route:'+j.id],JSON.parse(JSON.stringify(page.save)));
+  for(const stroke of page.layout().props['strokes'] as engine.Stroke[])assert.equal(engine.match(display,stroke.a,stroke.b)?.id,stroke.id);
+ }finally{page.close();}
 });

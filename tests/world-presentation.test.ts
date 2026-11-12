@@ -19,8 +19,8 @@ describe('complete world presentation without changing authored puzzles',()=>{
     const modes=Object.values(profile),open=modes.filter(v=>v==='open').length,initial=modes.filter(v=>v==='initial').length,hidden=modes.filter(v=>v==='hidden').length;
     assert(open>initial+hidden,j.id+' should keep most target groups fully readable');
     assert.equal(modes[0],'open',j.id+' should start with a readable target');
-    assert.equal(hidden,(j.id.startsWith('kiyi-')||j.id.startsWith('doga-')||j.id.startsWith('renkler-')||j.id.startsWith('kesif-'))?((j.id==='kiyi-fener-6'||j.id==='doga-gozlem-6'||j.id==='renkler-muzik-6'||j.id==='kesif-zaman-6')?1:0):info.position>=4?1:0,j.id+' hidden target limit');
-    assert.equal(initial,(j.id.startsWith('kiyi-')||j.id.startsWith('doga-')||j.id.startsWith('renkler-')||j.id.startsWith('kesif-'))?(info.position===4?1:0):info.position>=2?1:0,j.id+' initial-letter target limit');
+    assert.equal(hidden,info.world.id==='uzay'||info.world.id==='turkiye'?0:(j.id.startsWith('kiyi-')||j.id.startsWith('doga-')||j.id.startsWith('renkler-')||j.id.startsWith('kesif-'))?((j.id==='kiyi-fener-6'||j.id==='doga-gozlem-6'||j.id==='renkler-muzik-6'||j.id==='kesif-zaman-6')?1:0):info.position>=4?1:0,j.id+' hidden target limit');
+    assert.equal(initial,info.world.id==='uzay'?0:info.world.id==='turkiye'?(info.position===4?1:0):(j.id.startsWith('kiyi-')||j.id.startsWith('doga-')||j.id.startsWith('renkler-')||j.id.startsWith('kesif-'))?(info.position===4?1:0):info.position>=2?1:0,j.id+' initial-letter target limit');
     assert.equal(!!veilInstruction(profile),hidden+initial>0);
     assert.equal(modes.length,new Set(board.targets.map(t=>t.group)).size,'split names count as one target');
    }

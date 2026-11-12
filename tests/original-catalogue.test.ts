@@ -1,3 +1,4 @@
+import {presentationBoard} from '../lib/game/journey-presentation.ts';
 import {worldChapter} from '../lib/game/world-presentation.ts';
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
@@ -47,7 +48,7 @@ describe('chapter challenges use shared immutable content',()=>{
  });
  it('shares one canonical clue board, validates both directions and keeps every participant path private',async()=>{
   const f=fixture(),service=new SocialService(f.db,f.clock);try{
-   const chapter=ACTIVE_JOURNEYS.find(c=>c.clues)!,first=await service.create('alice',chapter.id),peer=await service.start('bob',first.code),board=journeyBoard(chapter);
+   const chapter=ACTIVE_JOURNEYS.find(c=>c.clues)!,first=await service.create('alice',chapter.id),peer=await service.start('bob',first.code),board=presentationBoard(journeyBoard(chapter),'route:'+chapter.id);
    assert.deepEqual(first.board,peer.board);assert.deepEqual(first.clues,chapter.clues);assert.equal(first.title,worldChapter(chapter.id)?.topic??chapter.title);assert.equal(first.chapterId,chapter.id);assert(!('placements' in first.board));
    const saved=JSON.parse(String(f.sqlite.prepare('SELECT content FROM challenges').get()!['content']));assert.deepEqual(saved.board,board);
    for(const p of board.placements){f.advance(100);await service.claim('alice',first.code,p.b,p.a);}const done=await service.state('alice',first.code);assert(done.finished);assert.equal(done.strokes.length,board.targets.length);const bob=await service.state('bob',first.code);assert.equal(bob.strokes.length,0);assert.equal(bob.ghost?.timeline.length,board.targets.length);assert(!JSON.stringify(bob.ghost).includes('placements'));

@@ -43,6 +43,13 @@ export function worldChapter(id?:string){
 export function chapterVeils(id:string|undefined,targets:Target[]):Record<number,WordVeil>{
  const info=worldChapter(id),veils:Record<number,WordVeil>={};
  if(!info||info.chapter.clues)return veils;
+ // Teach directions before introducing concealed answers. Old saves/gates are untouched.
+ if(info.world.id==='uzay')return Object.fromEntries(targets.map(t=>[t.group,'open' as const]));
+ if(info.world.id==='turkiye'){
+  for(const group of new Set(targets.map(t=>t.group)))veils[group]='open';
+  if(info.position===4)veils[targets.at(-1)!.group]='initial';
+  return veils;
+ }
  const groups=[...new Set(targets.map(t=>t.group))];
  for(const [i,group] of groups.entries()){
   const step=info.position;

@@ -1,5 +1,9 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.48.0 · Güvenli içerik ve kademeli başlangıç
+
+395 önceden hazırlanmış güvenli sunum tahtası; eski kayıt koordinatlarını koruyan eşleme; kademeli yön/gizli hedef akışı ve çevrimdışı Arena/hesap sınırı. 897 test, 722 Worker kontrolü. [Doğrulama ve sınırlar](release-0.48.0.md).
+
 ## 0.47.2 · Hızlı eşleşme toparlanması
 
 Kısa bağlantı kesintisi sonrasında ayrı ilk-tur lobilerinde kalan oyuncular yeniden eşleştirilir. Canlı bağlantı yeni odayı izler; aktif maçlar, tur tercihleri ve kayıtlar korunur. [Doğrulama](release-0.47.2.md).
