@@ -77,6 +77,8 @@
 .modal.game-dialog.ordinary-outcome.scene-result{min-height:min(560px,calc(100svh - 80px - env(safe-area-inset-top,0px)))}
 .ordinary-outcome .compact-keepsake .result-keepsake-art{display:none}
 .ordinary-outcome .compact-keepsake p{display:none}
+/* Without its thumbnail the piece name is a centred line like the title and stars above it. */
+.modal.game-dialog.scenic-outcome.scene-result.ordinary-outcome .result-keepsake.compact-keepsake{text-align:center}
 .ordinary-outcome .result-album-progress{padding-top:8px!important}
 .ordinary-outcome .result-star{animation-duration:.42s}
 @media(max-width:380px){.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{font-size:16px!important}.scenic-play .clue-slot>button>.clue-word{font-size:15px}.scenic-play .target-topic h1{font-size:17px}}
