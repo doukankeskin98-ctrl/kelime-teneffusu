@@ -22,18 +22,18 @@
 .arena-round-preference:focus-visible{outline:2px solid #ffe3a4;outline-offset:3px}
 .room-round-policy{color:#e5eddc;font-size:14px;text-align:center}
 /* Header and target title each have one job. Letter hit cells are unchanged. */
-.scenic-play.quiet-play .play-heading{justify-content:space-between;min-height:46px;gap:12px;margin-bottom:6px}
+.scenic-play.quiet-play .play-heading{justify-content:space-between;min-height:46px;gap:12px;margin-bottom:4px;padding-block:0!important}
 .scenic-play.quiet-play .play-title{flex:1;text-align:center;padding-left:44px}
 .scenic-play.quiet-play .play-chapter-number{font-size:21px;line-height:28px;font-weight:800;color:#fff6dc;letter-spacing:0}
 .scenic-play.quiet-play .play-heading>.icon-button{flex:none}
 .scenic-play.quiet-play .play-hud:has(>.sr-only:only-child){height:0;min-height:0;margin:0;padding:0}
 .scenic-play.quiet-play .game-note{display:none}
-.scenic-play .target-topic{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;background:#245957;border-radius:13px 13px 0 0;color:#fff6db}
+.scenic-play .target-topic{display:flex;align-items:center;justify-content:center;gap:8px;padding:4px 8px;background:#245957;border-radius:13px 13px 0 0;color:#fff6db}
 .scenic-play .target-topic h1{margin:0;flex:1;font-size:19px;line-height:24px;font-weight:800;text-align:center;overflow-wrap:anywhere}
 .scenic-play .target-topic>span{font-size:12px;line-height:20px;font-weight:700;font-variant-numeric:tabular-nums;color:#e3eadb}
 .scenic-play .viewport-targets:has(.target-topic){border-radius:14px;background:#fffdf4;overflow:hidden}
-.scenic-play .target-rack,.game-app .scenic-play .target-rack{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 12px!important;padding:4px 8px!important;border-radius:0 0 13px 13px}
-.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:auto;min-width:44px;max-width:100%;min-height:44px!important;height:auto;font-size:18px!important;line-height:24px}
+.scenic-play .target-rack,.game-app .scenic-play .target-rack{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 6px!important;padding:0 4px!important;border-radius:0 0 13px 13px}
+.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:auto;min-width:44px;max-width:100%;min-height:36px!important;height:auto;padding:0!important;font-size:18px!important;line-height:24px}
 /* A veiled word keeps its slot width, so revealing it never reflows the rack. */
 .scenic-play .target-rack .word-tag.veiled-target,.game-app .scenic-play .target-rack .word-tag.veiled-target{min-width:max(44px,calc(var(--word-chars)*.64em + 4px))}
 .scenic-play .target-rack .word-tag>div{width:auto;max-width:100%}
@@ -108,7 +108,7 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 .arena-entry-sheet .or-line{color:#dce8d9}
 .album-detail-sheet .collection-dialog-intro,.album-detail-sheet .collection-piece-list small{color:#dce8d9}.album-detail-sheet .collection-piece-list b{color:#fff6df}.album-detail-sheet .collection-piece-list>li{border-color:#dce8d533}.album-detail-sheet .collection-piece-list>li>span{color:#dce8d9;border-color:#dce8d566}.album-detail-sheet .collection-piece-list>li.earned>span{color:#244e3c;background:#d8e8c7}
 /* Stable, in-flow feedback: never competes with the chapter topic or targets. */
-.scenic-play .play-notice{position:relative;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:0 0 36px;height:36px;min-height:36px;margin:0;padding:0 4px;color:#fff9e9;font-size:12px;line-height:16px;text-align:center}
+.scenic-play .play-notice{position:relative;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:0 0 24px;height:24px;min-height:24px;margin:0;padding:0 4px;color:#fff9e9;font-size:12px;line-height:16px;text-align:center}
 .play-notice>span:not(:empty):not(.sr-only){background:#163e38;padding:2px 8px;border-radius:6px;max-width:100%}
 .game-tools-modal .play-primary-settings{margin:4px 0 16px}
 .play-primary-settings .play-comfort-settings{border:0;margin:0;padding:0}
@@ -150,10 +150,15 @@ button.native-stars{min-height:44px;border:0;cursor:pointer}
 /* Keep adjacent hit areas separate on short phones. Reclaim space from passive
    chrome, not the 44px target rows or the board's minimum cell size. */
 @media(max-height:600px) and (orientation:portrait){
- .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 10px!important;padding:1px 6px!important}
- .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:44px!important;font-size:15px!important;line-height:20px}
+ .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 6px!important;padding:0 4px!important}
+ .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:36px!important;font-size:15px!important;line-height:20px}
  .quiet-play[data-dense-board] .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){margin-top:0!important}
  .quiet-play[data-dense-board] .play-columns{margin-top:2px!important}
  .quiet-play[data-dense-board] .targets-panel{margin-bottom:4px!important}
  .quiet-play[data-dense-board] .target-topic{padding-block:2px}
 }
+
+/* Compact secondary word selectors own their exact row; unlike the old
+   absolute 44px overlays, these 36px controls cannot invade adjacent rows.
+   Primary game controls remain at least 44px. */
+.game-app .scenic-play .viewport-targets.has-word-rack .target-focus-button,.scenic-play .viewport-targets.has-word-rack .target-focus-button{min-height:36px;height:100%;min-width:0}

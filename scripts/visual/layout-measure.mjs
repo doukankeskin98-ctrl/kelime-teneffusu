@@ -16,7 +16,7 @@ export function capturePlayLayout() {
   const words = [...screen.querySelectorAll('.target-rack .target-letters')].filter(visible).map(word => ({
     ...named(word), letters:[...word.children].filter(letter => !letter.classList.contains('target-space')).map(named),
   }));
-  const targets = [...screen.querySelectorAll('.target-focus-button,.clue-slot>button')].filter(visible).map(named);
+  const targets = [...screen.querySelectorAll('.target-focus-button,.clue-slot>button')].filter(visible).map(element=>({...named(element),minTouchHeight:element.classList.contains('target-focus-button')?36:44}));
   const controls = [...screen.querySelectorAll('.play-controls button,.solo-control-dock button,.duel-controls button,.sprint-footer button')].filter(visible).map(named);
   const cells = [...board.querySelectorAll('[data-cell]')].map(rect);
   return {width:innerWidth,height:innerHeight,scrollHeight:document.scrollingElement.scrollHeight,
@@ -43,7 +43,7 @@ export function layoutProblems(sample) {
   }
   const buttons = [...sample.targets,...sample.controls];
   for (const button of buttons) {
-    if (button.width < 44-epsilon || button.height < 44-epsilon) issues.push('küçük dokunma alanı: '+button.name);
+    if (button.width < 44-epsilon || button.height < (button.minTouchHeight??44)-epsilon) issues.push('küçük dokunma alanı: '+button.name);
     if (outside(button,viewport)) issues.push('düğme ekran dışında: '+button.name);
     if (overlaps(button,sample.board)) issues.push('düğme tahtayı örtüyor: '+button.name);
   }

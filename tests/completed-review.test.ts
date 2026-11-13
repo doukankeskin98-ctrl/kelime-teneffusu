@@ -1,3 +1,4 @@
+import * as projection from '../lib/game/board-projection.ts';
 import * as safePresentation from '../lib/game/journey-presentation.ts';
 import * as boardQuality from '../lib/game/board-quality.ts';
 import * as activity from '../lib/platform/activity.ts';
@@ -24,7 +25,7 @@ function nodes(v:any):Node[]{return Array.isArray(v)?v.flatMap(nodes):v&&typeof 
 function text(v:any):string{return typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';}
 const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
 const icons=new Proxy({},{get:(_t,key)=>String(key)}),common:Record<string,any>={};
-vm.runInNewContext(compile('components/game/common.tsx'),{exports:common,require:(name:string)=>name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='react'?{useRef:()=>({current:null}),useEffect(){},useState:(initial:unknown)=>[initial,()=>{}]}:name==='lucide-react'?icons:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:name==='@/lib/game/word-card'?{wordCardCopy}:{}});
+vm.runInNewContext(compile('components/game/common.tsx'),{exports:common,require:(name:string)=>name==='@/lib/game/board-projection'?projection:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='react'?{useMemo:(fn:()=>unknown)=>fn(),useRef:()=>({current:null}),useEffect(){},useState:(initial:unknown)=>[initial,()=>{}]}:name==='lucide-react'?icons:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:name==='@/lib/game/word-card'?{wordCardCopy}:{}});
 
 describe('shared completed controls and review instructions',()=>{
  it('offers one native result button in the existing control row during the completion delay',()=>{

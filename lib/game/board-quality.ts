@@ -31,10 +31,10 @@ const segment = (a:Cell,b:Cell) => [a.join(','),b.join(',')].sort().join(':');
 const isReverse = (p:Pick<Placement,'a'|'b'>) => p.b[0]<p.a[0] || (p.b[0]===p.a[0] && p.b[1]<p.a[1]);
 
 export function wordSegments(grid:string[][], text:string):Array<{a:Cell;b:Cell}> {
-  const found = new Map<string,{a:Cell;b:Cell}>(), size=grid.length;
-  for(let r=0;r<size;r++) for(let c=0;c<size;c++) for(const [dr,dc] of DIRECTIONS) {
+  const found = new Map<string,{a:Cell;b:Cell}>(), rows=grid.length,columns=grid[0]?.length??0;
+  for(let r=0;r<rows;r++) for(let c=0;c<columns;c++) for(const [dr,dc] of DIRECTIONS) {
     const a:Cell=[r,c], b:Cell=[r+dr*(text.length-1),c+dc*(text.length-1)];
-    if(b[0]<0||b[1]<0||b[0]>=size||b[1]>=size) continue;
+    if(b[0]<0||b[1]<0||b[0]>=rows||b[1]>=columns) continue;
     if([...text].every((ch,i)=>grid[r+dr*i]![c+dc*i]===ch)) found.set(segment(a,b),{a,b});
   }
   return [...found.values()];
