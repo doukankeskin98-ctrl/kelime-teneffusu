@@ -12,16 +12,16 @@ export function capturePlayLayout() {
     return css.display !== 'none' && css.visibility !== 'hidden' && b.width > 0 && b.height > 0;
   };
   const named = element => ({...rect(element), name:element.getAttribute('aria-label') || element.textContent?.trim() || element.className});
-  const rack = screen.querySelector('.target-rack');
-  const words = [...screen.querySelectorAll('.target-rack .target-letters')].filter(visible).map(word => ({
+  const rack = screen.querySelector('.target-rack,.clue-slots');
+  const words = [...screen.querySelectorAll('.target-rack .target-letters,.clue-slots .target-letters')].filter(visible).map(word => ({
     ...named(word), letters:[...word.children].filter(letter => !letter.classList.contains('target-space')).map(named),
   }));
-  const targets = [...screen.querySelectorAll('.target-focus-button,.clue-slot>button')].filter(visible).map(element=>({...named(element),minTouchHeight:element.classList.contains('target-focus-button')?36:44}));
-  const controls = [...screen.querySelectorAll('.play-controls button,.solo-control-dock button,.duel-controls button,.sprint-footer button')].filter(visible).map(named);
+  const targets = [...screen.querySelectorAll('.target-focus-button,.clue-slot>button,.active-clue')].filter(visible).map(element=>({...named(element),minTouchHeight:44}));
+  const controls = [...screen.querySelectorAll('.play-heading>button,.play-controls button,.solo-control-dock button,.duel-controls button,.sprint-footer button')].filter(visible).map(named);
   const cells = [...board.querySelectorAll('[data-cell]')].map(rect);
   return {width:innerWidth,height:innerHeight,scrollHeight:document.scrollingElement.scrollHeight,
     scrollWidth:document.documentElement.scrollWidth,board:rect(board),rack:rack?rect(rack):null,
-    cell:cells.length?Math.min(...cells.map(c => c.width)):0,words,targets,controls};
+    cell:cells.length?Math.min(...cells.map(c => Math.min(c.width,c.height))):0,words,targets,controls};
 }
 
 export function layoutProblems(sample) {

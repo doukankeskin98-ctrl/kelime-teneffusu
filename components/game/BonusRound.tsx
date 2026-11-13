@@ -6,7 +6,7 @@ import {BONUS_DURATION,BONUS_WORDS,advanceBonus,bonusBoard,cleanBonusSave,freshB
 import {EXPEDITIONS,expeditionTheme} from '@/lib/game/discovery';
 import type {Progress} from '@/lib/game/progress';
 import type {Cell} from '@/lib/game/engine';
-import {sceneForTheme} from '@/lib/game/scene';
+import {sceneForRoute} from '@/lib/game/scene';
 import {gameIsActive} from '@/lib/platform/runtime';
 import {observeGameActivity} from '@/lib/platform/activity';
 import {GameScene} from './SceneArt';
@@ -14,7 +14,7 @@ import {GameToolsSheet,Modal,PlayLayout,useChime} from './common';
 import {useResultPresentation} from './useResultPresentation';
 
 export function BonusRound({worldId,progress,onProgress,onBack,onContinue}:{worldId:string;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void;onContinue:()=>void}){
- const world=EXPEDITIONS.find(w=>w.id===worldId)!,word=BONUS_WORDS[worldId]!,scene=sceneForTheme(expeditionTheme(world));
+ const world=EXPEDITIONS.find(w=>w.id===worldId)!,word=BONUS_WORDS[worldId]!,scene=sceneForRoute(worldId,expeditionTheme(world));
  const {canonicalBoard,board}=useMemo(()=>{const canonicalBoard=bonusBoard(worldId);return {canonicalBoard,board:presentationBoard(canonicalBoard,'bonus:'+worldId)};},[worldId]);
  const [save,setSave]=useState(()=>{const old=cleanBonusSave(worldId,progress.bonuses?.[worldId]);return old&&!old.finished?old:freshBonus((old?.attempt??0)+1,old?.best??0);});
  const background=useRef(false),current=useRef(save),running=useRef(false),at=useRef(0),[started,setStarted]=useState(false),[paused,setPaused]=useState(false),[help,setHelp]=useState(false),[tools,setTools]=useState(false),toolsOpen=useRef(false),resumeAfterTools=useRef(false),[preview,setPreview]=useState(''),[message,setMessage]=useState(''),[review,setReview]=useState(false);

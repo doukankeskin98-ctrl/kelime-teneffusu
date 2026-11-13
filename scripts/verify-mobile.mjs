@@ -17,7 +17,8 @@ for(const asset of html.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g))assert((aw
 // Scene path is taken from the actual catalogue, not a guessed directory.
 const sceneSource=await read('lib/game/scene.ts');
 const worldMap=sceneSource.match(/WORLD_SCENES=\{([^}]+)\}/)?.[1]??'';
-const sceneNames=[...worldMap.matchAll(/:'([^']+)'/g)].map(m=>m[1]);
+const routeMap=sceneSource.match(/ROUTE_SCENES[^=]*=\{([^}]+)\}/)?.[1]??'';
+const sceneNames=[...new Set([...worldMap.matchAll(/:'([^']+)'/g),...routeMap.matchAll(/:'([^']+)'/g)].map(m=>m[1]))];
 const paths=sceneNames.map(name=>`/art/scenes/${name}-v1.webp`);
 assert(paths.length>=16,'All world backgrounds must be packaged');
 for(const path of paths)assert((await stat('dist-mobile'+path)).size>0,path+' missing');
