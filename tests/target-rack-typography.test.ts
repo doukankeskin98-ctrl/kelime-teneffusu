@@ -39,9 +39,9 @@ test('an unrevealed veiled word keeps one slot grid and a rack word never breaks
   assert.match(rule('.scenic-play[data-dense-board] .target-rack .word-tag.veiled-target,.game-app .scenic-play[data-dense-board] .target-rack .word-tag.veiled-target'),/width:auto;min-width:calc/);
 });
 
-test('short phones compact the dense rack instead of pushing the controls off screen',()=>{
+test('short phones keep dense target rows as tall as their touch buttons',()=>{
   const at=css.indexOf('@media(max-height:600px) and (orientation:portrait){');
   assert.notEqual(at,-1);
   const block=css.slice(at,css.indexOf('\n}',at));
-  assert.match(block,/\[data-dense-board\] \.target-rack \.word-tag[^{]*\{min-height:34px!important;font-size:15px!important/);
+  assert.match(block,/\[data-dense-board\] \.target-rack \.word-tag[^{]*\{min-height:44px!important;font-size:15px!important/);
 });

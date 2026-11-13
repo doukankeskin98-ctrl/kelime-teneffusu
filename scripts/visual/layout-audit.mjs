@@ -9,6 +9,7 @@ import {createServer} from 'node:http';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {launch} from './chrome.mjs';
+import {capturePlayLayout,layoutProblems} from './layout-measure.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const site = path.join(root, 'dist-mobile');
@@ -44,28 +45,7 @@ const open = chapter => `(async () => {
   button.click(); await wait(1500);
   return 'ok';
 })()`;
-const measure = `(() => {
-  const box = element => element.getBoundingClientRect();
-  const board = document.querySelector('.letter-board');
-  if (!board) return {error: 'tahta yok'};
-  const cells = [...board.querySelectorAll('span[data-cell]')], rack = document.querySelector('.target-rack');
-  const tags = [...document.querySelectorAll('.target-rack .word-tag')];
-  const wrapped = tags.filter(tag => [...tag.querySelectorAll('.target-letters')].some(word => {
-    let top = null;
-    for (const letter of word.children) {
-      if (letter.classList.contains('target-space')) { top = null; continue; }
-      const y = Math.round(box(letter).top);
-      if (top !== null && Math.abs(y - top) > 4) return true;
-      top = y;
-    }
-    return false;
-  })).map(tag => tag.textContent.slice(0, 20));
-  const clipped = rack ? tags.filter(tag => box(tag).right > box(rack).right + 1 || box(tag).left < box(rack).left - 1).map(tag => tag.textContent.slice(0, 20)) : [];
-  const controls = [...document.querySelectorAll('.play-controls button, .solo-control-dock button')].filter(button => box(button).width > 0);
-  return {size: Math.round(Math.sqrt(cells.length)), cell: Math.round(box(cells[0]).width * 10) / 10,
-    boardBottom: Math.round(box(board).bottom), controlsBottom: controls.length ? Math.max(...controls.map(button => Math.round(box(button).bottom))) : 0,
-    height: innerHeight, scrolls: document.scrollingElement.scrollHeight > innerHeight, sideways: document.documentElement.scrollWidth > innerWidth, wrapped, clipped};
-})()`;
+const measure = '('+capturePlayLayout.toString()+')()';
 
 let failures = 0;
 const page = await launch();
@@ -80,7 +60,7 @@ try {
       const opened = await page.evaluate(open(chapter));
       rows.push({number: chapter.number, id: chapter.id, ...(opened === 'ok' ? await page.evaluate(measure) : {error: opened})});
     }
-    const bad = rows.filter(row => row.error || row.scrolls || row.sideways || row.wrapped.length || row.clipped.length || row.boardBottom > row.height || row.controlsBottom > row.height);
+    const bad = rows.map(row => ({number:row.number,id:row.id,issues:layoutProblems(row)})).filter(row => row.issues.length);
     const measured = rows.filter(row => !row.error);
     console.log(`${width}x${height}: ${rows.length} bölüm, ${bad.length} sorun; en küçük hücre ${Math.min(...measured.map(row => row.cell))} px`);
     for (const row of bad) console.log(' ', JSON.stringify(row));

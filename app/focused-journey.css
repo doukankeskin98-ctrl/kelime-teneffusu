@@ -147,9 +147,13 @@ button.native-stars{min-height:44px;border:0;cursor:pointer}
    never breaks mid-word and a narrow one carries no empty slot around it. */
 .scenic-play .target-rack .word-tag:not(.veiled-target),.game-app .scenic-play .target-rack .word-tag:not(.veiled-target){flex-basis:auto!important;width:auto}
 .scenic-play[data-dense-board] .target-rack .target-letters>[data-target-letter]:not(.masked-letter){padding:0}
-/* A 568px-tall phone cannot spare four 44px rack rows above a 10×10 board. Tighter
-   rows keep every target visible and the hint and turn controls on screen. */
+/* Keep adjacent hit areas separate on short phones. Reclaim space from passive
+   chrome, not the 44px target rows or the board's minimum cell size. */
 @media(max-height:600px) and (orientation:portrait){
- .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 10px!important;padding:2px 6px!important}
- .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:34px!important;font-size:15px!important;line-height:20px}
+ .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 10px!important;padding:1px 6px!important}
+ .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:44px!important;font-size:15px!important;line-height:20px}
+ .quiet-play[data-dense-board] .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){margin-top:0!important}
+ .quiet-play[data-dense-board] .play-columns{margin-top:2px!important}
+ .quiet-play[data-dense-board] .targets-panel{margin-bottom:4px!important}
+ .quiet-play[data-dense-board] .target-topic{padding-block:2px}
 }
