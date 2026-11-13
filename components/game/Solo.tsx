@@ -144,7 +144,7 @@ export function Solo({config,progress,onProgress,onBack,onMap,onNext,onBonus,ext
   if(finish&&!daily){result.prepare();if(main&&!external)weeklyFinish.current=istanbulDay();}
   if(!daily)chime(finish);if(!daily&&!foundRef.current.length)track('first_word',performance.now()-started.current);
   if(daily){setHint(null);setHintEnd(null);void dailySession.current?.act({kind:'claim',stroke,label:target.label});}
-  else{if(story){track('story_step');if(finish)track('story_complete');}const strokes=[...foundRef.current,stroke];foundRef.current=strokes;setSave(s=>{const latest=[...s.strokes,...(s.strokes.some(found=>found.id===stroke.id)?[]:[stroke])],complete=latest.length===board.targets.length;return {...s,strokes:latest,complete,stars:complete?3-Math.min(2,s.hints):0};});setMessage(story?story.steps.find(step=>step.word===target.text)!.reveal:finish?(main?'Bölüm tamamlandı!':'Keşif tamamlandı!'):config.tutorial?'Kelime bulundu. Sıradakini bul.':foundLabel+' bulundu · '+(board.targets.length-strokes.length)+' kelime kaldı');}
+  else{if(story){track('story_step');if(finish)track('story_complete');}const strokes=[...foundRef.current,stroke];foundRef.current=strokes;setSave(s=>{const latest=[...s.strokes,...(s.strokes.some(found=>found.id===stroke.id)?[]:[stroke])],complete=latest.length===board.targets.length;return {...s,strokes:latest,complete,stars:complete?3-Math.min(2,s.hints):0};});setMessage(story?story.steps.find(step=>step.word===target.text)!.reveal:finish?(main?'Bölüm tamamlandı!':'Keşif tamamlandı!'):config.tutorial?'Kelime bulundu. Sıradakini bul.':foundLabel+' bulundu · '+wordListProgress(board,strokes).remaining+' kelime kaldı');}
   setHint(null);setHintEnd(null);
  };
  const requestHint=async()=>{

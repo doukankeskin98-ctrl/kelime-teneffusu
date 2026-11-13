@@ -1,3 +1,5 @@
+13 Kasım 2026 · 0.49.0: sıkı hedef rafı, kayıt koordinatlarını koruyan güvenli dikdörtgen sunum. Bölüm 5, 414×736: raf 140→72 px, hücre 36,4→45,1 px. 923 test ve 722 Worker kontrolü geçti. 320/375/414 px tarayıcı çizimi ve devam/sonuç geçişi doğrulandı. Fiziksel iPhone ve çok cihazlı Arena kabulü açık. docs/release-0.49.0.md.
+
 ## 12 Kasım 2026 · 0.48.0
 İçerik güvenliği → zorluk akışı → çevrimdışı Arena/hesap sınırı → lint artış kapısı sırası uygulandı. Eski kayıt biçimi, ödüller ve çizim motoru korundu. 897 test/722 Worker; tip/içerik/şema/web/mobil kontrolü ve küçük ekran önizlemesi geçti. Fiziksel cihaz ve mağaza dış kapıları açık. Ayrıntı: release-0.48.0.md.
 

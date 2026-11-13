@@ -1,13 +1,16 @@
+import {dimensions,type BoardShape} from './board-projection.ts';
 /** Preserve legibility when a short screen or enlarged text cannot fit everything. */
-export function fittedBoardSize(width:number,availableHeight:number,cells:number,insets=0){
+export function fittedBoardSize(width:number,availableHeight:number,cells:BoardShape,insets=0){
  const safeWidth=Math.max(0,Math.floor(width));
- const readableMinimum=Math.min(safeWidth,cells*26+insets);
- return Math.max(readableMinimum,Math.min(safeWidth,720,Math.floor(availableHeight)));
+ const {rows,columns}=dimensions(cells),ratio=rows/columns||1;
+ const readableMinimum=Math.min(safeWidth,columns*26+insets);
+ return Math.max(readableMinimum,Math.min(safeWidth,720,Math.floor((availableHeight-insets)/ratio+insets)));
 }
 
 /** Height reserved by HUD, targets and controls is measured, not a device guess. */
-export function fitGameFrame(width:number,height:number,overhead:number,cells:number,targetsMinimum=0,insets=0){
- const floor=Math.min(Math.max(0,Math.floor(width)),cells*26+insets);
+export function fitGameFrame(width:number,height:number,overhead:number,cells:BoardShape,targetsMinimum=0,insets=0){
+ const {rows,columns}=dimensions(cells),floorWidth=Math.min(Math.max(0,Math.floor(width)),columns*26+insets);
+ const floor=(floorWidth-insets)*(rows/columns||1)+insets;
  return {minHeight:Math.ceil(Math.max(overhead+floor,targetsMinimum)),boardSize:fittedBoardSize(width,Math.max(0,height-overhead),cells,insets)};
 }
 
@@ -38,7 +41,7 @@ function intrinsicHeight(element:HTMLElement|null,view:View){
 
 /** Independent of flex/grid's allocated stage height: Safari may stretch that track.
  * Use real header/target/control boxes, including borders, margins and wrapper padding. */
-export function measurePlayFrame(screen:HTMLElement,stage:HTMLElement,cells:number,zoom:boolean,view:View){
+export function measurePlayFrame(screen:HTMLElement,stage:HTMLElement,cells:BoardShape,zoom:boolean,view:View){
  const columns=screen.querySelector<HTMLElement>('.play-columns')!,panel=screen.querySelector<HTMLElement>('.board-panel')!,targets=screen.querySelector<HTMLElement>('.targets-panel');
  const heading=screen.querySelector<HTMLElement>('.play-heading'),hud=screen.querySelector<HTMLElement>('.play-hud');
  const viewport=view.visualViewport,visible=viewport?.height||view.innerHeight,top=Math.max(0,screen.getBoundingClientRect().top-(viewport?.offsetTop||0));
@@ -57,11 +60,11 @@ export function measurePlayFrame(screen:HTMLElement,stage:HTMLElement,cells:numb
  const fitted=fitGameFrame(stage.clientWidth,height,overhead,zoom?0:cells,stacked?0:frameChrome+targetHeight,zoom?96:insets);
  // Portrait play keeps the square immediately below its targets. Spare vertical
  // room belongs below the play area, never half above the board inside a centred track.
- return {...fitted,height,overhead,stageHeight:stacked&&!zoom?fitted.boardSize:Math.max(0,Math.floor(Math.max(height,fitted.minHeight)-overhead)),overflow:fitted.minHeight>height};
+ return {...fitted,height,overhead,stageHeight:stacked&&!zoom?(fitted.boardSize-insets)*(dimensions(cells).rows/dimensions(cells).columns||1)+insets:Math.max(0,Math.floor(Math.max(height,fitted.minHeight)-overhead)),overflow:fitted.minHeight>height};
 }
 
 /** ResizeObserver is an enhancement, never a requirement for the first fit. */
-export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,zoom:boolean,view:View){
+export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:BoardShape,zoom:boolean,view:View){
  let frame=0,disposed=false,deferred=false;
  const fit=()=>{if(disposed)return;view.cancelAnimationFrame(frame);frame=view.requestAnimationFrame(()=>{
   if(disposed)return;
@@ -93,14 +96,15 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:number,
 }
 
 /** A real pixel square also works without aspect-ratio, container units or ResizeObserver. */
-export function attachBoardSize(element:HTMLElement,cells:number,zoom:boolean,onResize:(rect:DOMRect,reason:'viewport'|'layout')=>void,view:View){
+export function attachBoardSize(element:HTMLElement,cells:BoardShape,zoom:boolean,onResize:(rect:DOMRect,reason:'viewport'|'layout')=>void,view:View){
+ const {rows,columns}=dimensions(cells);
  let previous:DOMRect|null=null,disposed=false,viewportWidth=view.innerWidth;
  const update=(reason:'viewport'|'layout'='layout',force=false)=>{if(disposed)return;
   const parent=element.parentElement;
-  if(zoom&&parent){const css=view.getComputedStyle(parent);set(element,'width',Math.max(cells*46,Math.floor(parent.clientWidth-pixels(css.paddingLeft)-pixels(css.paddingRight)))+'px');}
+  if(zoom&&parent){const css=view.getComputedStyle(parent);set(element,'width',Math.max(columns*46,Math.floor(parent.clientWidth-pixels(css.paddingLeft)-pixels(css.paddingRight)))+'px');}
   else set(element,'width','100%');
   const width=Math.floor(element.getBoundingClientRect().width);if(width<=0)return;
-  set(element,'height',width+'px');set(element,'--board-letter-size',Math.max(zoom?24:13,Math.min(zoom?48:42,Math.floor((width-2)/cells*.57)))+'px');
+  set(element,'height',Math.round(width*rows/columns)+'px');set(element,'--board-letter-size',Math.max(zoom?24:13,Math.min(zoom?48:42,Math.floor((width-2)/columns*.57)))+'px');
   const rect=element.getBoundingClientRect();if(previous&&(force||rect.width!==previous.width||rect.height!==previous.height||rect.top!==previous.top||rect.left!==previous.left))onResize(rect,reason);previous=rect;
  };
  const layout=()=>update('layout'),viewport=(event:Event)=>{
