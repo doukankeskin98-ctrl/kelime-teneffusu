@@ -1,6 +1,6 @@
 {
   "name": "kelime-teneffusu",
-  "version": "0.48.0",
+  "version": "0.48.1",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -21,7 +21,8 @@
     "mobile:edge-test": "node scripts/verify-ios-edge.mjs",
     "mobile:check": "node scripts/verify-mobile.mjs",
     "content:prepare": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts",
-    "lint:guard": "node scripts/lint-guard.mjs"
+    "lint:guard": "node scripts/lint-guard.mjs",
+    "layout:audit": "pnpm mobile:build && node scripts/visual/layout-audit.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
