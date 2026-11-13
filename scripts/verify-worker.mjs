@@ -1,3 +1,6 @@
+import {encodeProgress} from '../lib/game/progress-codec.ts';
+import {emptyProgress,cleanSave} from '../lib/game/progress.ts';
+import {journeyRevision} from '../lib/game/journey-revisions.ts';
 import {HORIZON_CHAPTERS} from '../lib/game/horizons-content.ts';
 import {DISCOVERIES_CHAPTERS} from '../lib/game/discoveries-content.ts';
 import {PROGRESS_REQUEST_MAX_BYTES} from '../lib/game/progress-limits.ts';
@@ -143,6 +146,14 @@ try{
  const untouchedProgress=await json('/api/progress?expectedOwnerId='+encodeURIComponent(b.profile.id),{cookie:bCookie});check(untouchedProgress.progress.sound===false&&untouchedProgress.progress.contrast===false,'rejected old-owner snapshots leave the other player unchanged');
  const guardedProgress=await json('/api/progress?expectedOwnerId='+encodeURIComponent(a.profile.id),{cookie:aCookie});check(guardedProgress.progress.boardColor==='walnut'&&untouchedProgress.progress.boardColor===undefined,'board paper survives a fresh owner read without changing another player');check(guardedProgress.progress.sound===true,'guarded reads for the same owner retain existing progress');
  const guardedWrite=await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,progress:guardedProgress.progress}});check(guardedWrite.progress.boardColor==='walnut','board paper persists through the existing guarded progress merge');check(guardedWrite.progress.sound===true,'guarded writes remain compatible with existing merge behavior');
+
+ const compactRead=await json('/api/progress?format=3&expectedOwnerId='+encodeURIComponent(a.profile.id),{cookie:aCookie});
+ check(compactRead.progress.v===3&&compactRead.capabilities.progress===3,'compact transport is explicitly negotiated');
+ const compactWrite=await json('/api/progress',{cookie:aCookie,method:'PUT',body:{expectedOwnerId:a.profile.id,format:3,progress:compactRead.progress}});
+ check(compactWrite.progress.v===3&&compactWrite.progress.boardColor==='walnut','compact roundtrip retains settings');
+ const readerFirstRow=await db.prepare('SELECT c.data,m.source_data,m.compact_data,c.revision,m.source_revision FROM campaign_saves c JOIN campaign_save_migrations m ON c.user_id=m.user_id WHERE c.user_id=?').bind(a.profile.id).first();
+ check(JSON.parse(readerFirstRow.data).v===2&&readerFirstRow.data===readerFirstRow.source_data&&readerFirstRow.revision===readerFirstRow.source_revision&&JSON.parse(readerFirstRow.compact_data).v===3,'reader-first keeps v2 authoritative and binds shadow to its exact source revision');
+ check((await json('/api/progress',{cookie:aCookie})).progress.v===2,'legacy clients still receive v2 after a compact reader');
 
  const discoveriesSaves=Object.fromEntries(DISCOVERIES_CHAPTERS.map(chapter=>['route:'+chapter.id,{strokes:journeyBoard(chapter).placements,elapsed:30,hints:0,complete:false,stars:99}]));
  const horizonSaves=Object.fromEntries(HORIZON_CHAPTERS.map(chapter=>['route:'+chapter.id,{strokes:journeyBoard(chapter).placements,elapsed:35,hints:0,complete:false,stars:99}]));
@@ -322,10 +333,21 @@ try{
  await safetyPost('block');check((await json('/api/safety',{cookie:safetyCookies[0]})).players.some(p=>p.id===target),'blocked-player list belongs to the reporting owner');
  const blockedEntry=await json('/api/game',{cookie:safetyCookies[0],method:'POST',body:{action:'enter',kind:'friend',code:safetyRoom.code,expectedOwnerId:reporter},expected:409});check(blockedEntry.error==='Bu oyuncuyla aynı oyuna katılamazsın.','room-code entry explains the player block');
  await safetyPost('unblock');check((await json('/api/safety',{cookie:safetyCookies[0]})).players.length===0,'unblock restores the owner list');
+ const revisionProgress=emptyProgress(),revisionChapter=journeyRevision('ufuk-gok-1',2),revisionBoard=journeyBoard(revisionChapter);
+ revisionProgress.saves['route:'+revisionChapter.id]=cleanSave({strokes:revisionBoard.placements.slice(0,1),elapsed:12,hints:0,complete:false,stars:0,revision:2},revisionBoard);
+ const revisionSaved=await json('/api/progress',{cookie:safetyCookies[0],method:'PUT',body:{expectedOwnerId:reporter,format:3,progress:JSON.parse(encodeProgress(revisionProgress))}});
+ check(revisionSaved.progress.saves['route:ufuk-gok-1'][5]===2,'revision-aware HTTP transport preserves the captured content revision');
+ const upgradeRead=await json('/api/progress',{cookie:safetyCookies[0],expected:409});check(upgradeRead.code==='PROGRESS_UPGRADE_REQUIRED','unsupported old reader receives an explicit upgrade response');
+ await request('/api/progress',{cookie:safetyCookies[0],method:'PUT',body:{progress:emptyProgress()},expected:409});
+ check((await json('/api/progress?format=3',{cookie:safetyCookies[0]})).progress.saves['route:ufuk-gok-1'][0].length===1,'old client cannot erase a modern partial run');
+ await db.prepare('UPDATE campaign_save_migrations SET backup_data=source_data,backup_revision=source_revision WHERE user_id=?').bind(reporter).run();
+ const otherShadow=await db.prepare('SELECT compact_data FROM campaign_save_migrations WHERE user_id=?').bind(a.profile.id).first();
  const receipt='7'.repeat(64),eraseBody={receipt,expectedOwner:reporter,confirm:'DELETE'};
  await request('/api/account/delete',{cookie:safetyCookies[0],method:'POST',originHeader:'https://foreign.test',body:eraseBody,expected:403});
  await request('/api/account/delete',{cookie:safetyCookies[0],method:'POST',body:{...eraseBody,expectedOwner:target},expected:409});
  const erased=await json('/api/account/delete',{cookie:safetyCookies[0],method:'POST',body:eraseBody});check(erased.complete&&erased.erased,'confirmed guest erasure completes through the production route');
+ check(!(await db.prepare('SELECT 1 FROM campaign_save_migrations WHERE user_id=?').bind(reporter).first()),'account erasure removes compact shadow and migration backup');
+ check((await db.prepare('SELECT compact_data FROM campaign_save_migrations WHERE user_id=?').bind(a.profile.id).first()).compact_data===otherShadow.compact_data,'erasure preserves another owner compact shadow');
  check((await json('/api/account/delete',{method:'POST',body:{receipt}})).complete,'erasure retries succeed without the revoked login and do not repeat destructive work');
  check(!(await json('/api/game',{cookie:safetyCookies[0]})).authenticated,'an erased guest cannot renew or recreate its old session');
  check((await json('/api/game',{cookie:safetyCookies[1]})).profile.id===target,'erasing one owner preserves the other player');

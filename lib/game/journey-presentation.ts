@@ -16,7 +16,7 @@ export function journeyPolicy(id:string,source:Puzzle):BoardPolicy {
 }
 
 export function preparePresentation(source:Puzzle,key:string):Puzzle {
-  const seed=hash('presentation:'+key), policy=key.startsWith('route:')?journeyPolicy(key.slice(6),source):{};
+  const seed=hash('presentation:'+key), policy=key.startsWith('route:')?journeyPolicy(key.slice(6).replace(/@2$/,''),source):{};
   // The 0.48.0 layout is kept whenever it already passes the wider list, so boards
   // players have seen do not move. Otherwise change filler letters only; a full new
   // layout is the last resort when the hit is formed by target letters themselves.
