@@ -1,4 +1,6 @@
 'use client';
+import {encodeProgress} from '@/lib/game/progress-codec';
+import {readStoredProgress,writeStoredProgress} from '@/lib/game/progress-storage';
 import {GameCenterAccess} from './GameCenterAccess';
 import {deferredGameScreen} from './DeferredScreen';
 import {SettingsHome} from './SettingsHome';
@@ -89,18 +91,18 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  useEffect(()=>{if(dailyLaunch.current?.retired)cancelDailyLaunch();},[account.profile?.id]);
  useEffect(()=>()=>{const launch=dailyLaunch.current;dailyLaunch.current=null;launch?.controller.abort();},[]);
  const authenticated=account.authenticated,syncStatus=useCloudProgress(deleting?undefined:account.profile?.id,progress,setProgress,ready);
- const openAuth=(mode:AuthMode='signin')=>{if(account.kind==='guest'){try{sessionStorage.setItem('kt-upgrade-progress',JSON.stringify(progress));sessionStorage.setItem('kt-upgrade-owner',account.profile?.id??'');}catch{}}const url=new URL(location.href);url.searchParams.set('sekme',nav);if(nav==='arena'&&arenaTab!=='live')url.searchParams.set('mod',arenaTab==='challenge'?'meydan':'arkadaslar');setAuthReturn(safeReturnTo(url.pathname+url.search));setAuthMode(mode);};
+ const openAuth=(mode:AuthMode='signin')=>{if(account.kind==='guest'){try{sessionStorage.setItem('kt-upgrade-progress',encodeProgress(progress));sessionStorage.setItem('kt-upgrade-owner',account.profile?.id??'');}catch{}}const url=new URL(location.href);url.searchParams.set('sekme',nav);if(nav==='arena'&&arenaTab!=='live')url.searchParams.set('mod',arenaTab==='challenge'?'meydan':'arkadaslar');setAuthReturn(safeReturnTo(url.pathname+url.search));setAuthMode(mode);};
  useEffect(()=>{
-  let loaded=emptyProgress();try{bootOwner.current=localStorage.getItem(PROGRESS_KEY+':last-user')??'';loaded=loadProgress(localStorage.getItem(bootOwner.current?PROGRESS_KEY+':'+bootOwner.current:PROGRESS_KEY));setProgress(loaded);}catch{setStorageError(true);}
+  let loaded=emptyProgress();try{bootOwner.current=localStorage.getItem(PROGRESS_KEY+':last-user')??'';loaded=readStoredProgress(localStorage,bootOwner.current);setProgress(loaded);}catch{setStorageError(true);}
   const route=gameRoute(location.search);setNav(route.nav);setArenaTab(route.section);setInvites(route.invites);
   setReady(true);
  },[]);
- useEffect(()=>{if(!ready||authenticated)return;try{localStorage.setItem(bootOwner.current?PROGRESS_KEY+':'+bootOwner.current:PROGRESS_KEY,JSON.stringify(progress));}catch{setStorageError(true);}},[progress,ready,authenticated]);
+ useEffect(()=>{if(!ready||authenticated)return;try{writeStoredProgress(localStorage,bootOwner.current,progress);}catch{setStorageError(true);}},[progress,ready,authenticated]);
  useEffect(()=>{
   if(!membership.ready||!online||!navigator.onLine)return;
   const c=new AbortController();getApi<Account>('',c.signal).then(next=>{
    if(c.signal.aborted)return;
-   if(bootOwner.current&&next.profile?.id&&bootOwner.current!==next.profile.id){cancelDailyLaunch();setSolo(null);setMystery(null);setDaily(null);setSprint(false);setExtra(null);setPlaying(false);try{setProgress(loadProgress(localStorage.getItem(PROGRESS_KEY+':'+next.profile.id)));}catch{setProgress(emptyProgress());}}if(next.profile?.id)bootOwner.current=next.profile.id;if(next.authenticated&&next.kind!=='guest'){try{const upgrade=sessionStorage.getItem('kt-upgrade-progress');if(upgrade){setProgress(p=>mergeProgress(p,loadProgress(upgrade)));sessionStorage.removeItem('kt-upgrade-progress');sessionStorage.removeItem('kt-upgrade-owner');}}catch{}}setAccount(next);setProfileError('');
+   if(bootOwner.current&&next.profile?.id&&bootOwner.current!==next.profile.id){cancelDailyLaunch();setSolo(null);setMystery(null);setDaily(null);setSprint(false);setExtra(null);setPlaying(false);try{setProgress(readStoredProgress(localStorage,next.profile.id));}catch{setProgress(emptyProgress());}}if(next.profile?.id)bootOwner.current=next.profile.id;if(next.authenticated&&next.kind!=='guest'){try{const upgrade=sessionStorage.getItem('kt-upgrade-progress');if(upgrade){setProgress(p=>mergeProgress(p,loadProgress(upgrade)));sessionStorage.removeItem('kt-upgrade-progress');sessionStorage.removeItem('kt-upgrade-owner');}}catch{}}setAccount(next);setProfileError('');
    if(next.needsUsername){setAuthReturn(safeReturnTo(location.pathname+location.search));setAuthMode('username');}
   }).catch(e=>{if(!c.signal.aborted&&e.name!=='AbortError'&&navigator.onLine)setProfileError('Oyuncu profiline ulaşılamadı. Solo bölümlere devam edebilirsin.');});
   return ()=>c.abort();

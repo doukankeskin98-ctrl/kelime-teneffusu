@@ -1,3 +1,6 @@
+import * as journeyRevisions from '../lib/game/journey-revisions.ts';
+import * as progressStorage from '../lib/game/progress-storage.ts';
+import * as progressCodec from '../lib/game/progress-codec.ts';
 import * as safePresentation from '../lib/game/journey-presentation.ts';
 import * as boardQuality from '../lib/game/board-quality.ts';
 import * as mainJourney from '../lib/game/main-journey.ts';
@@ -82,7 +85,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true,jour
  vm.runInNewContext(ts.transpileModule(readFileSync('components/game/useResultPresentation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:resultHook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback,window:windowTarget,document:documentTarget,performance:{now:()=>now},setTimeout:timer(false),clearTimeout:(id:number)=>timers.delete(id)});
  modules['./useResultPresentation']=resultHook;
  const exports:Record<string,unknown>={};
- vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
+ vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
   window:windowTarget,document:documentTarget,performance:{now:()=>now},Event,
   setInterval:timer(true),setTimeout:timer(false),clearInterval:(id:number)=>timers.delete(id),clearTimeout:(id:number)=>timers.delete(id)
  });
@@ -248,4 +251,13 @@ it('resumes a legacy alternate stroke on the safe board, hints there, and persis
   assert.deepEqual(loaded.saves['route:'+j.id],JSON.parse(JSON.stringify(page.save)));
   for(const stroke of page.layout().props['strokes'] as engine.Stroke[])assert.equal(engine.match(display,stroke.a,stroke.b)?.id,stroke.id);
  }finally{page.close();}
+});
+
+it('resumes revision two on its distinct board and persists the logical save key through a found word',async()=>{
+ const chapter=journeyRevisions.journeyRevision('ufuk-gok-1',2)!,canonical=content.journeyBoard(chapter);
+ const initial=progress.cleanSave({revision:2,strokes:canonical.placements.slice(0,1),elapsed:23,hints:1,complete:false,stars:0},canonical);
+ const h=harness({journeyId:chapter.id,initial});await h.settle();
+ assert.equal((h.layout().props['board'] as engine.Puzzle).targets.length,5);assert.equal((h.layout().props['strokes'] as engine.Stroke[]).length,1);
+ h.commit(1);await h.settle();assert.equal(h.player.saves['route:'+chapter.id]!.revision,2);assert.equal(h.player.saves['route:'+chapter.id]!.strokes.length,2);
+ assert.equal(Object.keys(h.player.saves).some(key=>key.includes('@')),false);assert.deepEqual(progress.readProgress(progressCodec.encodeProgress(h.player)),JSON.parse(JSON.stringify(h.player)));h.close();
 });

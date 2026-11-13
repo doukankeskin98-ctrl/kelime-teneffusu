@@ -1,5 +1,9 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.51.0 · Kayıt ve içerik uyumluluğu
+
+Çift okuyucu/v2 ana yazıcı; sahip ayrımlı doğrulanan kompakt gölge, değişmeyen 312 bölüm ve revizyonlar arası ödül tekilleştirme. Yeni içerik ve v3 yazımı fiziksel kabul öncesinde açılmaz. [Kanıt ve aktivasyon koşulları](release-0.51.0.md).
+
 ## 0.48.0 · Güvenli içerik ve kademeli başlangıç
 
 395 önceden hazırlanmış güvenli sunum tahtası; eski kayıt koordinatlarını koruyan eşleme; kademeli yön/gizli hedef akışı ve çevrimdışı Arena/hesap sınırı. 897 test, 722 Worker kontrolü. [Doğrulama ve sınırlar](release-0.48.0.md).

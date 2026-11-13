@@ -1,3 +1,4 @@
+import {journeyRevision,savedRevision} from './journey-revisions.ts';
 import type {Progress} from './progress.ts';
 import {MAIN_JOURNEY,mainChapter,mainJourneyChapters} from './main-journey.ts';
 import {chapterCredit} from './original-content.ts';
@@ -19,9 +20,9 @@ export function bonusOffer(before:Progress,after:Progress,chapterId:string){
  return discoveryState(after).find(s=>s.expedition.id===world.id)?.complete?world:null;
 }
 /** Uses the real authored load. No new locks, targets, timer or save identity. */
-export function chapterPace(id:string){
- const info=worldChapter(id);if(!info)return null;
- const board=journeyBoard(info.chapter),veils=chapterVeils(id,board.targets);
+export function chapterPace(id:string,revision=1){
+ const info=worldChapter(id,revision);if(!info)return null;
+ const board=journeyBoard(info.chapter),veils=chapterVeils(id,board.targets,revision);
  if(info.position===0)return {kind:'easy',label:'Rahat başlangıç',detail:`${info.chapter.words.length} açık kelime`} as const;
  if(Object.values(veils).includes('hidden')||Object.values(veils).includes('initial'))return {kind:'challenge',label:'Saklı kelime',detail:Object.values(veils).includes('hidden')?'Konuya bak, saklı kelimeyi keşfet':'İlk harfiyle verilen kelimeyi keşfet'} as const;
  return {kind:'normal',label:info.chapter.clues?'Bilmece':'Keşif',detail:`${info.chapter.words.length} kelime`} as const;
@@ -36,15 +37,17 @@ export const WORD_TRAIL=[
  {id:'spark',at:420,title:'Yıldız izi',icon:'sparkles'},
  {id:'crown',at:600,title:'Kelime ustası',icon:'crown'},
 ] as const;
-export function wordTrail(progress:Pick<Progress,'saves'>){
+export function wordTrail(progress:Pick<Progress,'saves'|'revisionSaves'>){
  let words=0;
  for(const {chapter} of MAIN_JOURNEY){
   const save=chapterCredit(progress,chapter.id);if(!save)continue;
-  if(save.complete){words+=chapter.words.length;continue;}
-  // Partial target groups count once, including multi-part labels.
-  const current=progress.saves['route:'+chapter.id];if(!current)continue;
-  const board=journeyBoard(chapter),found=new Set(current.strokes.map(s=>s.id));
-  words+=[...new Set(board.targets.map(t=>t.group))].filter(g=>board.targets.filter(t=>t.group===g).every(t=>found.has(t.id))).length;
+  const candidates=[save,...Object.values(progress.revisionSaves?.['route:'+chapter.id]??{})];
+  words+=Math.max(...candidates.map(saved=>{
+   const version=journeyRevision(chapter.id,savedRevision(saved))??chapter;
+   if(saved.complete)return version.words.length;
+   const board=journeyBoard(version),found=new Set(saved.strokes.map(s=>s.id));
+   return [...new Set(board.targets.map(t=>t.group))].filter(g=>board.targets.filter(t=>t.group===g).every(t=>found.has(t.id))).length;
+  }));
  }
  const earned=WORD_TRAIL.filter(t=>words>=t.at),next=WORD_TRAIL.find(t=>words<t.at);
  return {words,earned,next,remaining:next?next.at-words:0};
