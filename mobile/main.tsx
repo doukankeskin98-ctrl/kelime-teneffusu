@@ -8,6 +8,7 @@ import {setNativeTransport,setGameActive,gameIsActive} from '@/lib/platform/runt
 import {nativeApiTransport} from '@/lib/platform/native-transport';
 import {nativeHaptics,type NativeHapticDriver} from '@/lib/platform/native-haptics';
 import {setHapticsAdapter,stopHapticSelection} from '@/lib/game/haptics';
+import {installNativeGameCenter} from './game-center';
 import {installNativeSharing} from './sharing';
 import '@/app/game-styles.css';
 import './native.css';
@@ -27,4 +28,6 @@ if(Capacitor.isNativePlatform()){
  document.documentElement.dataset['nativeApp']='true';
 }
 const catalogue=releaseCatalogue();
-createRoot(document.getElementById('root')!).render(<GameApp releases={catalogue.chapters} releaseCounts={catalogue.themeCounts}/>);
+createRoot(document.getElementById('root')!,{onUncaughtError:()=>{(window as Window&{kelimeBootFailed?:()=>void}).kelimeBootFailed?.();}}).render(<GameApp releases={catalogue.chapters} releaseCounts={catalogue.themeCounts}/>);
+
+if(Capacitor.isNativePlatform())requestAnimationFrame(()=>{void installNativeGameCenter();});

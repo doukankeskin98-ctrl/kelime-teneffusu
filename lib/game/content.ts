@@ -1,3 +1,4 @@
+import {HORIZON_CHAPTERS} from './horizons-content.ts';
 import {DISCOVERIES_CHAPTERS} from './discoveries-content.ts';
 import {ORIGINAL_CHAPTERS,CHAPTER_REPLACEMENTS} from './original-content.ts';
 import {EVERYDAY_CHAPTERS} from './everyday-content.ts';
@@ -51,6 +52,8 @@ JOURNEYS.push(...EVERYDAY_CHAPTERS.filter((_,i)=>i%6!==5));
 JOURNEY_BONUSES.push(...EVERYDAY_CHAPTERS.filter((_,i)=>i%6===5));
 JOURNEYS.push(...DISCOVERIES_CHAPTERS.filter((_,i)=>i%6!==5));
 JOURNEY_BONUSES.push(...DISCOVERIES_CHAPTERS.filter((_,i)=>i%6===5));
+JOURNEYS.push(...HORIZON_CHAPTERS.filter((_,i)=>i%6!==5));
+JOURNEY_BONUSES.push(...HORIZON_CHAPTERS.filter((_,i)=>i%6===5));
 export const ALL_JOURNEYS=[...JOURNEYS,...JOURNEY_BONUSES];
 /** Optional clue chapters never grow the fixed main path or its earned album gates. */
 export const PLAYABLE_JOURNEYS=[...ALL_JOURNEYS,...RIDDLE_CHAPTERS,...LIVING_STORIES,...ORIGINAL_CHAPTERS];

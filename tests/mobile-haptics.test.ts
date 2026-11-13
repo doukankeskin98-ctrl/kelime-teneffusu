@@ -22,10 +22,10 @@ function boot(native=true,available=true){
   '@/lib/platform/runtime':{setNativeTransport(){},setGameActive:(value:boolean)=>{active=value;},gameIsActive:()=>active},
   '@/lib/platform/native-transport':{nativeApiTransport:()=>{}},'@/lib/platform/native-haptics':{nativeHaptics},
   '@/lib/game/haptics':{setHapticsAdapter:(value:HapticsAdapter)=>{adapter=value;},stopHapticSelection:()=>adapter?.stopSelection?.()},
-  '@/app/game-styles.css':{},'./native.css':{},'./sharing':{installNativeSharing(){}}
+  '@/app/game-styles.css':{},'./game-center':{installNativeGameCenter(){}},'./native.css':{},'./sharing':{installNativeSharing(){}}
  };
  const document=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},getElementById:()=>({})});
- vm.runInNewContext(compiled,{exports:{},require:(name:string)=>{assert(name in modules,name);return modules[name];},window:new EventTarget(),document,Event});
+ vm.runInNewContext(compiled,{exports:{},require:(name:string)=>{assert(name in modules,name);return modules[name];},window:new EventTarget(),document,Event,requestAnimationFrame:(fn:()=>void)=>{fn();return 1;}});
  return {calls,registrations,get adapter(){return adapter;},state:(isActive:boolean)=>listener?.({isActive})};
 }
 it('actual mobile entry selects the local iOS plugin and sends one distinct success cue',async()=>{

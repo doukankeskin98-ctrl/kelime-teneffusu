@@ -11,7 +11,7 @@ import {arenaPuzzle,arenaWordKey,arenaGridKey} from '../lib/game/arena-content.t
 import {GameService,GameError} from '../lib/game/server.ts';
 import {FRESH_POOL_LIMIT as ARENA_RIDDLE_POOL_SIZE,freshArenaPuzzle} from '../lib/game/arena-fresh.ts';
 import {ARENA_CLUES} from '../lib/game/arena-library.ts';
-const arenaRiddlePuzzle=(ordinal:number)=>freshArenaPuzzle(ordinal,{group:true,clue:true});
+const arenaRiddlePuzzle=(ordinal:number)=>freshArenaPuzzle(ordinal,{safety:'wide-v1',group:true,clue:true});
 import {match} from '../lib/game/engine.ts';
 import {fixture} from './fixtures.ts';
 
@@ -20,7 +20,7 @@ describe('reviewed optional riddle chapters preserve the numbered journey',()=>{
   const items=RIDDLE_BANKS.flatMap(b=>b.items.map(([word,clue])=>({id:riddleId(b.themeId,word),word,clue})));
   assert.equal(items.length,144);assert.equal(new Set(items.map(i=>i.id)).size,144);assert.equal(new Set(items.map(i=>i.clue)).size,144);
   assert.equal(RIDDLE_CHAPTERS.length,32);assert.equal(new Set(RIDDLE_CHAPTERS.map(c=>c.id)).size,32);
-  assert.equal(ALL_JOURNEYS.length,192);assert.equal(PLAYABLE_JOURNEYS.length,259);assert.deepEqual([...MAIN_JOURNEY_IDS].sort(),MAIN_JOURNEY.map(c=>c.chapter.id).sort());
+  assert.equal(ALL_JOURNEYS.length,312);assert.equal(PLAYABLE_JOURNEYS.length,379);assert.deepEqual([...MAIN_JOURNEY_IDS].sort(),MAIN_JOURNEY.map(c=>c.chapter.id).sort());
   for(const item of items){assert(/^[A-ZÇĞİÖŞÜ]{2,8}$/u.test(item.word));assert(item.clue.length>=12&&item.clue.length<=95);assert.notEqual(item.clue.toLocaleUpperCase('tr-TR'),item.word);}
   const oldSets=new Set(ALL_JOURNEYS.map(c=>JSON.stringify([...c.words].sort())));
   for(const c of RIDDLE_CHAPTERS){assert.equal(c.words.length,4);assert.equal(Object.keys(c.clues!).length,4);assert(!oldSets.has(JSON.stringify([...c.words].sort())),c.id);const board=journeyBoard(c);assert.equal(board.size,c.size);for(const p of board.placements){assert(c.clues![p.text]);assert.equal(match(board,p.a,p.b)?.id,p.id);}}
@@ -89,5 +89,5 @@ it('preserves every old and new solo save plus3660 daily dates and all dated kee
  p.days=Array.from({length:3660},(_,i)=>new Date(Date.UTC(2016,0,i+1)).toISOString().slice(0,10));
  p.weekly={weeks:{},earned:[]};for(let d=Date.parse('2026-11-09T12:00:00Z');d<Date.parse('2100-01-01T00:00:00Z');d+=7*86400000)p.weekly.earned.push(new Date(d).toISOString().slice(0,10));
  const raw=JSON.stringify(p);assert(Buffer.byteLength(raw)<PROGRESS_MAX_BYTES);assert(Buffer.byteLength(JSON.stringify({progress:p,expectedOwnerId:'test-owner'}))<PROGRESS_REQUEST_MAX_BYTES);
- const restored=loadProgress(raw);assert.deepEqual(restored.weekly,p.weekly);assert.equal(Object.keys(restored.saves).length,391);assert.equal(restored.days.length,3660);for(const key of keys)assert.equal(restored.saves[key]!.complete,true,key);
+ const restored=loadProgress(raw);assert.deepEqual(restored.weekly,p.weekly);assert.equal(Object.keys(restored.saves).length,511);assert.equal(restored.days.length,3660);for(const key of keys)assert.equal(restored.saves[key]!.complete,true,key);
 });

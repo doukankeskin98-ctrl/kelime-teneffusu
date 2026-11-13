@@ -1,3 +1,4 @@
+import {HORIZON_ROUTES} from './horizons-content.ts';
 import {DISCOVERIES_ROUTES} from './discoveries-content.ts';
 import {ORIGINAL_ROUTES,chapterCredit,replacementChapterId} from './original-content.ts';
 import {EVERYDAY_ROUTES} from './everyday-content.ts';
@@ -21,6 +22,7 @@ const LEGACY_EXPEDITIONS:readonly Expedition[]=[
  ...NATURE_ROUTES.map((r,i)=>({id:r.id,themeId:r.chapters[0]!.themeId,title:r.title,subtitle:r.subtitle,place:String(i+21).padStart(2,'0'),pieces:r.pieces,accent:'#8fbd93',chapterIds:r.chapters.slice(0,5).map(c=>c.id),bonusId:r.chapters[5]!.id,album:{themeId:r.id,title:r.album,description:r.subtitle,stamp:'DOĞA GÜNLÜĞÜ'}})),
  ...EVERYDAY_ROUTES.map((r,i)=>({id:r.id,themeId:r.chapters[0]!.themeId,title:r.title,subtitle:r.subtitle,place:String(i+25).padStart(2,'0'),pieces:r.pieces,accent:'#d9b97a',chapterIds:r.chapters.slice(0,5).map(c=>c.id),bonusId:r.chapters[5]!.id,album:{themeId:r.id,title:r.album,description:r.subtitle,stamp:'GÜNÜN RENKLERİ'}})),
  ...DISCOVERIES_ROUTES.map((r,i)=>({id:r.id,themeId:r.chapters[0]!.themeId,title:r.title,subtitle:r.subtitle,place:String(i+29).padStart(2,'0'),pieces:r.pieces,accent:'#d9b97a',chapterIds:r.chapters.slice(0,5).map(c=>c.id),bonusId:r.chapters[5]!.id,album:{themeId:r.id,title:r.album,description:r.subtitle,stamp:'KÜÇÜK KEŞİFLER'}})),
+ ...HORIZON_ROUTES.map((r,i)=>({id:r.id,themeId:r.chapters[0]!.themeId,title:r.title,subtitle:r.subtitle,place:String(i+33).padStart(2,'0'),pieces:r.pieces,accent:'#d9b97a',chapterIds:r.chapters.slice(0,5).map(c=>c.id),bonusId:r.chapters[5]!.id,album:{themeId:r.id,title:r.album,description:r.subtitle,stamp:'YENİ UFUKLAR'}})),
 ];
 export const EXPEDITIONS:readonly Expedition[]=LEGACY_EXPEDITIONS.map(world=>{const route=ORIGINAL_ROUTES.find(r=>r.legacyThemeId===world.id);return route?{...world,title:route.title,subtitle:'Altı bölüm, altı yeni konu.',themeId:route.themeId,chapterIds:route.chapters.slice(0,5).map(c=>c.id),bonusId:route.chapters[5]!.id,album:{themeId:world.id,title:route.title+' Albümü',description:'Altı bölümden hatıralar.',stamp:'YOLCULUK HATIRASI'}}:world;});
 export const expeditionTheme=(world:Expedition)=>world.themeId??world.id;

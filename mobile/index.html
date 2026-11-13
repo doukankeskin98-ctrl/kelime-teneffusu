@@ -1,1 +1,22 @@
-<!doctype html><html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#163c32"><title>Kelime Teneffüsü</title></head><body><div id="root"></div><script type="module" src="/main.tsx"></script></body></html>
+<!doctype html>
+<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#123b45"><title>Kelime Teneffüsü</title>
+<style>
+html,body{margin:0;background:#123b45}#native-boot{min-height:100vh;min-height:100dvh;box-sizing:border-box;display:grid;place-content:center;gap:20px;padding:32px;text-align:center;background:radial-gradient(ellipse at 50% 30%,#24545b,#102d38);color:#fff8e7;font:600 18px/1.5 system-ui,-apple-system,sans-serif}#native-boot h1{font-size:30px;line-height:1.15;margin:0}#native-boot p{max-width:28ch;margin:0 auto;color:#e3e9e5}#native-boot .boot-mark{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 8px;border-radius:20px;border:1px solid #f2d58c;background:#214c51;color:#f2d58c;font-size:36px}#native-boot button{min-height:48px;border:0;border-radius:16px;padding:12px 24px;background:#f2d58c;color:#183b36;font:700 18px system-ui;cursor:pointer}#native-boot button:focus-visible{outline:3px solid white;outline-offset:4px}#native-boot [hidden]{display:none}
+</style></head><body>
+<div id="root"><div id="native-boot" aria-live="polite"><span class="boot-mark" aria-hidden="true">K</span><h1>Kelime Teneffüsü</h1><p data-boot-status>Oyun hazırlanıyor…</p><button data-boot-retry hidden>Yeniden dene</button><noscript>Oyunu açmak için JavaScript etkin olmalı.</noscript></div></div>
+<script>
+(()=>{
+ const root=document.getElementById('root'),template=root.firstElementChild.cloneNode(true);
+ const failed=(force=false)=>{
+  if(!force&&!document.getElementById('native-boot'))return;
+  if(!document.getElementById('native-boot'))root.replaceChildren(template.cloneNode(true));
+  const boot=document.getElementById('native-boot');
+  boot.querySelector('[data-boot-status]').textContent='Oyun açılamadı. Kayıtların yerinde; yeniden deneyebilirsin.';
+  const retry=boot.querySelector('[data-boot-retry]');retry.hidden=false;retry.onclick=()=>location.reload();
+ };
+ window.kelimeBootFailed=()=>failed(true);
+ window.addEventListener('error',()=>failed(),true);
+ setTimeout(()=>failed(),15000);
+})();
+</script>
+<script type="module" src="/main.tsx"></script></body></html>

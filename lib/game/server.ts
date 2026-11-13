@@ -126,7 +126,7 @@ export class GameService {
     FROM receipts r,json_each(CASE WHEN json_valid(r.words_key) THEN CASE WHEN json_type(r.words_key)='array' THEN r.words_key ELSE '[]' END ELSE '[]' END) j
     WHERE j.type='text' GROUP BY j.value`,participants).all<WordHistory>()).results;
    for(let ordinal=from;ordinal<Math.min(from+128,limit);ordinal++){
-    const candidate=freshArenaPuzzle(ordinal,{group,clue,history,usedRiddleIds:used,variation:ordinal-from});if(!candidate)continue;
+    const candidate=freshArenaPuzzle(ordinal,{safety:'wide-v1',group,clue,history,usedRiddleIds:used,variation:ordinal-from});if(!candidate)continue;
     const riddle=clue?candidate:null;
     const seen=await this.q('SELECT 1 AS seen FROM arena_seen WHERE user_id IN (SELECT value FROM json_each(?)) AND (words_key=? OR grid_key=?) LIMIT 1',participants,candidate.wordsKey,candidate.gridKey).first();
     if(seen)continue;

@@ -9,7 +9,7 @@ import {match} from '../lib/game/engine.ts';
 
 describe('living story content and existing saved worlds',()=>{
  it('adds five distinct deterministic stories without changing the existing campaign',()=>{
-  assert.equal(LIVING_STORIES.length,5);assert.equal(ALL_JOURNEYS.length,192);assert.equal(MAIN_JOURNEY_IDS.length,192);
+  assert.equal(LIVING_STORIES.length,5);assert.equal(ALL_JOURNEYS.length,312);assert.equal(MAIN_JOURNEY_IDS.length,312);
   assert.equal(new Set(LIVING_STORIES.map(s=>s.id)).size,5);
   assert.equal(LIVING_STORIES.flatMap(s=>s.steps).length,24);
   for(const story of LIVING_STORIES){

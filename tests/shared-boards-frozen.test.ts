@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {test} from 'node:test';
 import {freshArenaPuzzle} from '../lib/game/arena-fresh.ts';
-import {dailyBoard,SAFE_DAILY_FROM} from '../lib/game/daily-board.ts';
+import {dailyBoardV1,SAFE_DAILY_FROM} from '../lib/game/daily-board.ts';
 import {hash} from '../lib/game/engine.ts';
 import {parseSprintHistory,variedSprintBoard} from '../lib/game/sprint-history.ts';
 
@@ -12,9 +12,9 @@ import {parseSprintHistory,variedSprintBoard} from '../lib/game/sprint-history.t
 // their already-issued board snapshots are covered by original-catalogue.test.ts.
 const digest=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0,16);
 
-test('daily boards issued before and after the safe boundary are byte-identical to 0.48.0',()=>{
+test('legacy daily generator remains byte-identical to 0.48.0 including future fixtures',()=>{
   const boards=[];
-  for(let n=-10;n<60;n++) boards.push(dailyBoard(new Date(Date.parse(SAFE_DAILY_FROM)+n*86400000).toISOString().slice(0,10)));
+  for(let n=-10;n<60;n++) boards.push(dailyBoardV1(new Date(Date.parse(SAFE_DAILY_FROM)+n*86400000).toISOString().slice(0,10)));
   assert.equal(digest(boards),'b06c8ec070bb4010');
 });
 

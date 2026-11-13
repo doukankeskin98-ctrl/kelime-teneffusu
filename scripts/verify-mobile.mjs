@@ -25,6 +25,12 @@ const manifest=await read('ios/App/App/PrivacyInfo.xcprivacy');assert.match(mani
 assert.match(await read('ios/App/App.xcodeproj/project.pbxproj'),/PrivacyInfo.xcprivacy in Resources/);
 const plist=await read('ios/App/App/Info.plist');assert(!plist.includes('NSAllowsArbitraryLoads'));assert(!plist.includes('NSCameraUsageDescription'));assert(!plist.includes('NSMicrophoneUsageDescription'));
 assert.match(plist,/<key>LSSupportsGameMode<\/key>\s*<true\s*\/>/);
+if(/<key>KTGameCenterEnabled<\/key>\s*<true\s*\/>/.test(plist)){
+ const project=await read('ios/App/App.xcodeproj/project.pbxproj');
+ const paths=[...project.matchAll(/CODE_SIGN_ENTITLEMENTS\s*=\s*"?([^;"\n]+)"?;/g)].map(m=>m[1].trim());
+ assert(paths.length>=2,'Game Center requires explicit entitlements in every build configuration');
+ for(const path of new Set(paths))assert.match(await read('ios/App/'+path),/<key>com\.apple\.developer\.game-center<\/key>\s*<true\s*\/>/,'Enable Game Center in Apple Developer and refresh the provisioning profile before release');
+}
 const count=await verifyNativeCopy('dist-mobile','ios/App/App/public');
 const version=JSON.parse(await read('package.json')).version;
 const build=verifyNativeVersion(version,await read('ios/App/App.xcodeproj/project.pbxproj'));
