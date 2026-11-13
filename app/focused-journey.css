@@ -33,7 +33,7 @@
 .scenic-play .target-topic>span{font-size:12px;line-height:20px;font-weight:700;font-variant-numeric:tabular-nums;color:#e3eadb}
 .scenic-play .viewport-targets:has(.target-topic){border-radius:14px;background:#fffdf4;overflow:hidden}
 .scenic-play .target-rack,.game-app .scenic-play .target-rack{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 6px!important;padding:0 4px!important;border-radius:0 0 13px 13px}
-.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:auto;min-width:44px;max-width:100%;min-height:36px!important;height:auto;padding:0!important;font-size:18px!important;line-height:24px}
+.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:auto;min-width:44px;max-width:100%;min-height:44px!important;height:auto;padding:0!important;font-size:18px!important;line-height:24px}
 /* A veiled word keeps its slot width, so revealing it never reflows the rack. */
 .scenic-play .target-rack .word-tag.veiled-target,.game-app .scenic-play .target-rack .word-tag.veiled-target{min-width:max(44px,calc(var(--word-chars)*.64em + 4px))}
 .scenic-play .target-rack .word-tag>div{width:auto;max-width:100%}
@@ -151,14 +151,20 @@ button.native-stars{min-height:44px;border:0;cursor:pointer}
    chrome, not the 44px target rows or the board's minimum cell size. */
 @media(max-height:600px) and (orientation:portrait){
  .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 6px!important;padding:0 4px!important}
- .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:36px!important;font-size:15px!important;line-height:20px}
+ .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:44px!important;font-size:15px!important;line-height:20px}
  .quiet-play[data-dense-board] .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){margin-top:0!important}
  .quiet-play[data-dense-board] .play-columns{margin-top:2px!important}
  .quiet-play[data-dense-board] .targets-panel{margin-bottom:4px!important}
  .quiet-play[data-dense-board] .target-topic{padding-block:2px}
+ /* Short legacy boards share one header: number above topic, settings alongside.
+    This returns the former 28px topic band to the board without shrinking hits. */
+ .quiet-play[data-dense-board] .play-title{align-self:flex-start;padding-left:0;text-align:left}
+ .quiet-play[data-dense-board] .play-heading{animation-name:quiet-heading-enter}
+ .quiet-play[data-dense-board] .play-chapter-number{display:block;font-size:12px;line-height:16px;text-align:left}
+ .quiet-play[data-dense-board] .target-topic{position:absolute;top:19px;left:8px;right:64px;height:24px;padding:0;background:transparent;border-radius:0}
+ .quiet-play[data-dense-board] .target-topic h1{font-size:17px;line-height:22px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
+@keyframes quiet-heading-enter{from{opacity:0}to{opacity:1}}
 
-/* Compact secondary word selectors own their exact row; unlike the old
-   absolute 44px overlays, these 36px controls cannot invade adjacent rows.
-   Primary game controls remain at least 44px. */
-.game-app .scenic-play .viewport-targets.has-word-rack .target-focus-button,.scenic-play .viewport-targets.has-word-rack .target-focus-button{min-height:36px;height:100%;min-width:0}
+/* The row itself owns the full hit area; adjacent rows never overlap. */
+.game-app .scenic-play .viewport-targets.has-word-rack .target-focus-button,.scenic-play .viewport-targets.has-word-rack .target-focus-button{min-height:44px;height:100%;min-width:0}

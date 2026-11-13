@@ -25,7 +25,7 @@ export function JourneyHome({progress,onPlay,onExplore,onDetails,onDaily,initial
  const world=goal?.state.expedition??EXPEDITIONS[0]!;
  const play=(item:typeof chapters[number])=>{if(!item.unlocked)return;onPlay({themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(item.complete?{practice:true}:{})});};
  return <section className="journey-stage" aria-labelledby="journey-home-title" data-light={(horizonRouteForChapter(current?.chapter.id)??discoveriesRouteForChapter(current?.chapter.id)??coastRouteForChapter(current?.chapter.id)??natureRouteForChapter(current?.chapter.id)??everydayRouteForChapter(current?.chapter.id))?.light??'default'}>
-  <div className="journey-stage-art" aria-hidden="true"><SceneArt theme={expeditionTheme(world)} scene={story?.scene} eager/><div className="journey-stage-shade"/></div>
+  <div className="journey-stage-art" aria-hidden="true"><SceneArt theme={expeditionTheme(world)} scene={story?.scene} worldId={world.id} eager/><div className="journey-stage-shade"/></div>
   <div className="journey-stage-top"><button className="stage-map-button" onClick={onDetails} aria-label="Bölümler ve albümler"><Map size={19}/><span>Bölümler</span></button></div>
   <div className="journey-stage-title"><span>{story?'HİKÂYELER':world.subtitle==='Doğa Günlüğü'?'DOĞA GÜNLÜĞÜ':world.subtitle.startsWith('Kıyı Günlüğü')?'KIYI GÜNLÜĞÜ':`DÜNYA ${world.place}`}</span><h1 id="journey-home-title">{story?.title??world.title}</h1></div>
   <div className="journey-stage-space" aria-hidden="true"><i/><i/><i/></div>

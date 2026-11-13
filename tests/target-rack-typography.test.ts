@@ -43,6 +43,6 @@ test('compact target rows and their overlay buttons share the same bounds',()=>{
   const at=css.indexOf('@media(max-height:600px) and (orientation:portrait){');
   assert.notEqual(at,-1);
   const block=css.slice(at,css.indexOf('\n}',at));
-  assert.match(rule('.game-app .scenic-play .viewport-targets.has-word-rack .target-focus-button,.scenic-play .viewport-targets.has-word-rack .target-focus-button'),/min-height:36px;height:100%/);
-  assert.match(block,/\[data-dense-board\] \.target-rack \.word-tag[^{]*\{min-height:36px!important;font-size:15px!important/);
+  assert.match(rule('.game-app .scenic-play .viewport-targets.has-word-rack .target-focus-button,.scenic-play .viewport-targets.has-word-rack .target-focus-button'),/min-height:44px;height:100%/);
+  assert.match(block,/\[data-dense-board\] \.target-rack \.word-tag[^{]*\{min-height:44px!important;font-size:15px!important/);
 });

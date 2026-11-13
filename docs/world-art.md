@@ -93,3 +93,12 @@ A breathtaking mythic hilltop sanctuary above clouds, gleaming ivory Greek templ
 PNG: `/Users/dogukankeskin/.codex/generated_images/01a1930c-cacd-7d42-913b-095633ca312a/exec-34d2e10c-914e-4ef0-8d17-4ca7154c11c2.png`
 
 Dağıtım: `public/art/scenes/temple-v1.webp`
+
+## 0.50.1 — rota bazlı sahne düzeltmesi
+
+İki özgün yerleşik imagegen illüstrasyonu, 13 Kasım 2026. Başka oyunun görseli kullanılmadı. 1024×1536 WebP, kalite 78; kaynak PNG'ler üretim klasöründe korundu. Görsel yönlendirmesi `ROUTE_SCENES` ile yapılır; bulmaca `themeId`, tohum veya koordinatları değiştirilmez. Ana sayfa, bölüm, sonuç, dünya kartı, albüm ve bonus aynı rota eşlemesini kullanır.
+
+- `winter-room-v1.webp`: Sıcak ahşap/taş ev, sol kenarda şömine, sağda battaniyeli koltuk, üstte geniş kemerli pencereden karlı çam ve dağ manzarası; ortada sakin zemin; amber ve soğuk mavi dengesi. Metin, kişi ve arayüz yok. Kaynak `exec-507ae3bd-b64d-41db-9411-bd412b8a5dc4.png`.
+- `farmstead-v1.webp`: Anadolu çiftlik avlusu, kenarda ahşap/taş ambar, buğday tarlası ve tepeler, sağda kümes ve saman, çerçevede elma dalları; sakin toprak avlu; altın/sage renkleri. Metin, logo ve kişi yok. Kaynak `exec-eb395b7b-3d99-4ca3-b0be-87fe902c51dd.png`.
+
+Kalan sınır: diğer yeni rotalar uygun mevcut sahneleri paylaşır. Yağmur sahnesi güneşli bahçeyi, pazar fırın çevresini, fotoğraf kent meydanını kullanır. Bunlar 20 ayrı özgün sahne olarak sunulmaz. Yeni çiftlik/kış görselleri ses eklemez.

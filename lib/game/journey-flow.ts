@@ -23,7 +23,7 @@ export function chapterPace(id:string){
  const info=worldChapter(id);if(!info)return null;
  const board=journeyBoard(info.chapter),veils=chapterVeils(id,board.targets);
  if(info.position===0)return {kind:'easy',label:'Rahat başlangıç',detail:`${info.chapter.words.length} açık kelime`} as const;
- if(info.position>=4||Object.values(veils).includes('hidden'))return {kind:'challenge',label:'Ustalık',detail:info.chapter.clues?'Kısa tanımlardan kelimeleri bul':Object.values(veils).includes('hidden')?'Konuya bak, saklı kelimeyi keşfet':Object.values(veils).includes('initial')?'İlk harfiyle verilen kelimeyi keşfet':'Bütün kelimeler açık; farklı yönleri keşfet'} as const;
+ if(Object.values(veils).includes('hidden')||Object.values(veils).includes('initial'))return {kind:'challenge',label:'Saklı kelime',detail:Object.values(veils).includes('hidden')?'Konuya bak, saklı kelimeyi keşfet':'İlk harfiyle verilen kelimeyi keşfet'} as const;
  return {kind:'normal',label:info.chapter.clues?'Bilmece':'Keşif',detail:`${info.chapter.words.length} kelime`} as const;
 }
 export const WORD_TRAIL=[
