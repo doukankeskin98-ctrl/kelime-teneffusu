@@ -1,3 +1,4 @@
+import {PROGRESS_REQUEST_MAX_BYTES} from '../lib/game/progress-limits.ts';
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {createHash} from 'node:crypto';
@@ -19,7 +20,7 @@ describe('atlas continuation and clue hunts',()=>{
   for(const [id,sha] of Object.entries(legacyHashes))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),sha,id);
  });
  it('gives a completed old atlas a new unlocked recommended map and real next chapter',()=>{
-  const p=veteran(),states=discoveryState(p);assert.equal(states.length,32);assert(states.slice(0,3).every(s=>s.complete));assert.equal(states[3]!.unlocked,true);assert.equal(states[4]!.unlocked,false);
+  const p=veteran(),states=discoveryState(p);assert.equal(states.length,52);assert(states.slice(0,3).every(s=>s.complete));assert.equal(states[3]!.unlocked,true);assert.equal(states[4]!.unlocked,false);
   assert.equal(recommendedExpedition(p).expedition.id,'hayvanlar');assert.equal(nextDiscovery(p).config.journey,'hayvanlar-atlas-1');assert.equal(nextJourneyAfter(p,'hababam-yillik')?.id,'hayvanlar-atlas-1');
  });
  it('registers 78 immutable chapters with distinct IDs, playable clues and bounded boards',()=>{
@@ -44,6 +45,6 @@ describe('atlas continuation and clue hunts',()=>{
   const p=emptyProgress(),keys=[...THEMES.flatMap(t=>Array.from({length:6},(_,i)=>t.id+'.'+i)),...ALL_JOURNEYS.map(j=>'route:'+j.id),...MYSTERIES.map(m=>'mystery:'+m.id)];
   for(const key of keys){const b=progressBoard(key)!;p.saves[key]=cleanSave({strokes:b.placements,hints:3,elapsed:604800,complete:false,stars:0},b);}
   p.days=Array.from({length:3660},(_,i)=>new Date(Date.UTC(2030,0,i+1)).toISOString().slice(0,10));
-  const raw=JSON.stringify(p);assert(Buffer.byteLength(JSON.stringify({progress:p}))<150000);assert.equal(Object.keys(loadProgress(raw).saves).length,keys.length);assert.equal(loadProgress(raw).days.length,3660);
+  const raw=JSON.stringify(p);assert(Buffer.byteLength(JSON.stringify({progress:p}))<PROGRESS_REQUEST_MAX_BYTES);assert.equal(Object.keys(loadProgress(raw).saves).length,keys.length);assert.equal(loadProgress(raw).days.length,3660);
  });
 });

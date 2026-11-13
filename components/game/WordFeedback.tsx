@@ -15,8 +15,13 @@ export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:
  const clear=()=>{for(const stop of [...work.current.values()])stop();};
  useEffect(()=>{
   const hide=()=>{if(document.hidden||!gameIsActive())clear();},blur=()=>clear();
+  const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const preference=()=>{if(motion.matches||document.documentElement.dataset['reduceMotion']==='true')clear();};
+  motion.addEventListener?.('change',preference);
+  const observer=typeof MutationObserver==='function'?new MutationObserver(preference):null;
+  observer?.observe(document.documentElement,{attributes:true,attributeFilter:['data-reduce-motion']});
   document.addEventListener('visibilitychange',hide);window.addEventListener('blur',blur);window.addEventListener('pagehide',blur);window.addEventListener('orientationchange',blur);window.addEventListener('resize',blur);
-  return ()=>{clear();document.removeEventListener('visibilitychange',hide);window.removeEventListener('blur',blur);window.removeEventListener('pagehide',blur);window.removeEventListener('orientationchange',blur);window.removeEventListener('resize',blur);};
+  return ()=>{clear();motion.removeEventListener?.('change',preference);observer?.disconnect();document.removeEventListener('visibilitychange',hide);window.removeEventListener('blur',blur);window.removeEventListener('pagehide',blur);window.removeEventListener('orientationchange',blur);window.removeEventListener('resize',blur);};
  },[]);
  useLayoutEffect(()=>{
   const changedTurn=previousTurn.current!==turned;previousTurn.current=turned;

@@ -5,7 +5,7 @@ import {keepBestSave} from '../game/discovery.ts';
 import {istanbulDay,type Puzzle} from '../game/engine.ts';
 import {THEMES} from '../game/catalog.ts';
 import {ALL_JOURNEYS,MYSTERIES} from '../game/content.ts';
-import {checkChapter,validChapterId,StudioError,type AdminChapter,type ChapterSpec,type PublishedChapter,type PlayableChapter} from './content.ts';
+import {checkNewChapter,validChapterId,StudioError,type AdminChapter,type ChapterSpec,type PublishedChapter,type PlayableChapter} from './content.ts';
 import {HEALTH_AREAS} from './health.ts';
 import {releasedChapter,reservedReleaseId,releaseCatalogue} from './releases.ts';
 import {cardProgress} from './card-progress.ts';
@@ -76,7 +76,7 @@ export class AdminStore extends ChapterStore {
   return this.session(userId);
  }
  private auditChapter(actor:string,action:string,id:string,summary:string,op:string):Statement{return this.q('INSERT INTO admin_audit(id,actor_id,action,entity_id,summary,created) SELECT ?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM studio_chapters WHERE id=? AND last_operation=?)',op,actor,action,id,summary,this.clock(),id,op);}
- async preview(actor:string|null,raw:unknown){await this.authorize(actor);const checked=checkChapter(raw);return {...checked,contentHash:await digest(JSON.stringify(checked.spec))};}
+ async preview(actor:string|null,raw:unknown){await this.authorize(actor);const checked=checkNewChapter(raw);return {...checked,contentHash:await digest(JSON.stringify(checked.spec))};}
  async chapters(actor:string|null,filter='all',query='',offset=0){
   await this.authorize(actor);const state=['draft','published','archived'].includes(filter)?filter:'all',start=offsetValue(offset),needle=query.slice(0,60).normalize('NFC').toLocaleLowerCase('tr-TR').replace(/[\\%_]/g,'\\$&'),params=[state,state,'%'+needle+'%'];
   const where="(?='all' OR c.status=?) AND c.search_text LIKE ? ESCAPE '\\'";
@@ -87,7 +87,7 @@ export class AdminStore extends ChapterStore {
  async chapter(actor:string|null,id:unknown){await this.authorize(actor);return rowAdmin(await this.row(id));}
  async saveDraft(actor:string|null,raw:unknown,id?:unknown,expected?:unknown,creationId?:unknown){
   if(reservedReleaseId(id)||reservedReleaseId(creationId)){await this.authorize(actor);throw new StudioError('Kaynakta yayımlanan bu bölüm değişmez. Yeni bir taslak kimliği kullan.',409);}
-  const userId=await this.authorize(actor),checked=checkChapter(raw),spec=JSON.stringify(checked.spec),board=JSON.stringify(checked.board),contentHash=await digest(spec),now=this.clock(),op=crypto.randomUUID();
+  const userId=await this.authorize(actor),checked=checkNewChapter(raw),spec=JSON.stringify(checked.spec),board=JSON.stringify(checked.board),contentHash=await digest(spec),now=this.clock(),op=crypto.randomUUID();
   if(id!==undefined){const old=await this.row(id);revision(expected);if(old.status!=='draft'||old.published!==null)throw new StudioError('Yayımlanan tahtalar değişmez. Yeni bir taslak olarak kopyalayabilirsin.',409);
    const result=await this.db.batch([this.q("UPDATE studio_chapters SET spec=?,board=?,content_hash=?,search_text=?,revision=revision+1,updated=?,last_operation=? WHERE id=? AND revision=? AND status='draft' AND published IS NULL",spec,board,contentHash,searchText(checked.spec),now,op,old.id,expected),this.auditChapter(userId,'draft_saved',old.id,checked.spec.title+' taslağı kaydedildi.',op)]);
    if(!result[0]?.meta.changes)throw new StudioError('Taslak başka bir sekmede değişti. Son sürümü yeniden aç.',409);return rowAdmin(await this.row(old.id));
@@ -101,7 +101,7 @@ export class AdminStore extends ChapterStore {
   if(confirmation!==spec.title)throw new StudioError('İşlemi onaylamak için bölüm adını aynen yaz.');
   const next=action==='publish'&&old.status==='draft'&&old.published===null?'published':action==='archive'&&old.status==='published'?'archived':action==='restore'&&old.status==='archived'?'published':null;
   if(!next)throw new StudioError('Bölümün durumu değişti. Son sürümü yeniden aç.',409);
-  if(action==='publish'){const checked=checkChapter(spec);if(JSON.stringify(checked.board)!==old.board||await digest(JSON.stringify(checked.spec))!==old.content_hash)throw new StudioError('Kayıtlı tahta doğrulanamadı. Taslağı yeniden kaydet.',409);}
+  if(action==='publish'){const checked=checkNewChapter(spec);if(JSON.stringify(checked.board)!==old.board||await digest(JSON.stringify(checked.spec))!==old.content_hash)throw new StudioError('Kayıtlı tahta doğrulanamadı. Taslağı yeniden kaydet.',409);}
   const now=this.clock(),op=crypto.randomUUID(),message=spec.title+(action==='publish'?' oyuna yayımlandı.':action==='archive'?' yeni keşiflerden arşive taşındı.':' yeniden görünür yapıldı.');
   const result=await this.db.batch([this.q('UPDATE studio_chapters SET status=?,revision=revision+1,updated=?,published=COALESCE(published,?),last_operation=? WHERE id=? AND revision=? AND status=?',next,now,now,op,old.id,expected,old.status),this.auditChapter(userId,String(action),old.id,message,op)]);
   if(!result[0]?.meta.changes)throw new StudioError('Bölüm başka bir sekmede değişti. Son sürümü yeniden aç.',409);return rowAdmin(await this.row(old.id));

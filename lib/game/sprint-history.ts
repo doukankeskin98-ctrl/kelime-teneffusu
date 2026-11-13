@@ -1,4 +1,4 @@
-import {safeSnapshot} from './board-quality.ts';
+import {safeSnapshot,PRESENTATION_RULES,SHARED_RULES} from './board-quality.ts';
 import {hash,makeCustomPuzzle,type Puzzle} from './engine.ts';
 import {SPRINT_WORDS,ACTIVE_SPRINT_WORDS} from './sprint-vocabulary.ts';
 
@@ -31,7 +31,7 @@ export function mergeSprintHistory(a:SprintHistory,b:SprintHistory):SprintHistor
 }
 
 /** Select fresh vocabulary first; after exhaustion spread reuse across the whole library. */
-export function variedSprintBoard(seed:number,round:number,history:SprintHistory):Puzzle{
+export function variedSprintBoard(seed:number,round:number,history:SprintHistory,safety?:'wide-v1'):Puzzle{
  const ranked=[...ACTIVE_SPRINT_WORDS].sort((a,b)=>{
   const x=history.words[a],y=history.words[b];
   return (x?.uses??0)-(y?.uses??0)||(x?.last??0)-(y?.last??0)||hash(`${seed}:${round}:${a}`)-hash(`${seed}:${round}:${b}`)||a.localeCompare(b,'tr');
@@ -46,7 +46,7 @@ export function variedSprintBoard(seed:number,round:number,history:SprintHistory
    // Four full-width words may not fit two forced opposite diagonals. Keep all
    // eight directions available in Sprint; authored/legacy boards retain their policy.
    const layoutSeed=hash(`sprint-v2:${seed}:${round}:${attempt}:${candidates.join('|')}`);
-   const board=safeSnapshot(makeCustomPuzzle(candidates,layoutSeed,6,'any'),layoutSeed,{size:6});
+   const board=safeSnapshot(makeCustomPuzzle(candidates,layoutSeed,6,'any'),layoutSeed,{size:6},safety==='wide-v1'?PRESENTATION_RULES:SHARED_RULES);
    if(board.size===6&&board.targets.length===4)return board;
   }catch{/* A different valid set is preferable to silently dropping a word. */}
  }

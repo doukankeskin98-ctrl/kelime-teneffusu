@@ -1,5 +1,7 @@
 # iOS yayın dosyası · 7 Kasım 2026
 
+0.50.0 (40): 312 ana bölüm, geniş içerik kapısı, native açılış kurtarması ve koşullu Game Center köprüsü hazır. Game Center etkin değil; Apple yapılandırması ve gerçek cihaz kabulü açık. [0.50.0 kanıtları ve sınırlar](release-0.50.0.md).
+
 0.41.0 (26): yerel native paket ile son web çıktısı içerik/sürüm eşitliği doğrulandı. Sade oyun akışı ve ortak ayar arayüzü hazır. Bu bir TestFlight yüklemesi veya dağıtım arşivi kabulü değildir. [7 Kasım kaynak incelemesi](../studio-agents/journal/entries/2026-11-07-testflight-readiness.md).
 
 0.37.0: Atlanabilir ilk tahta rehberi; Arkadaşlar/Meydan/Günlük/Arşiv ortak sahnesi; Meydan ve Gizli Tema final uçuş sırası; misafir kimliğini kalıcı hesaba bağlama; aktif misafir oturumunu yenileme; uygulamadan profil silme; oyuncu bildir/engelle ve yetkili inceleme kuyruğu uygulandı. Bunlar kaynak ve izole test kanıtıdır. Sağlayıcı gerçek hesap silme, iki fiziksel cihaz ve mağaza kabulü değildir. Güncel teslim/sınırlar: [0.37.0 uygulama raporu](release-0.37.0.md).

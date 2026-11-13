@@ -21,7 +21,7 @@ describe('Günün Renkleri append-only authored pack',()=>{
   assert.equal(baseline.ids.length,144);assert.equal(Object.keys(baseline.boards).length,181);
   assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,144),baseline.ids.map(replacementChapterId));
   for(const [id,hash] of Object.entries(baseline.boards))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),hash,id);
-  assert.deepEqual(MAIN_JOURNEY_IDS.slice(144,168),EVERYDAY_CHAPTERS.map(c=>c.id));assert.equal(MAIN_JOURNEY_IDS.length,192);
+  assert.deepEqual(MAIN_JOURNEY_IDS.slice(144,168),EVERYDAY_CHAPTERS.map(c=>c.id));assert.equal(MAIN_JOURNEY_IDS.length,312);
  });
  it('adds 24 distinct target sets with no pack-internal word repetition or copied old set',()=>{
   assert.equal(EVERYDAY_CHAPTERS.length,24);const words=EVERYDAY_CHAPTERS.flatMap(c=>c.words.map(normalize));assert.equal(words.length,100);assert.equal(new Set(words).size,100);

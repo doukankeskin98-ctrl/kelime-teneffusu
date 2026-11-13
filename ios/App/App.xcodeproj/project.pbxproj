@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A03640010000000000000001 /* GameSharingPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03640020000000000000001 /* GameSharingPlugin.swift */; };
+		A05000010000000000000001 /* GameCenterPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05000020000000000000001 /* GameCenterPlugin.swift */; };
 		A03400010000000000000002 /* GameBridgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03400020000000000000002 /* GameBridgeViewController.swift */; };
 		A03400010000000000000001 /* GameHapticsPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03400020000000000000001 /* GameHapticsPlugin.swift */; };
 		A02900010000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A02900010000000000000002 /* PrivacyInfo.xcprivacy */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		A03640020000000000000001 /* GameSharingPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSharingPlugin.swift; sourceTree = "<group>"; };
+		A05000020000000000000001 /* GameCenterPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterPlugin.swift; sourceTree = "<group>"; };
 		A03400020000000000000002 /* GameBridgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameBridgeViewController.swift; sourceTree = "<group>"; };
 		A03400020000000000000001 /* GameHapticsPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHapticsPlugin.swift; sourceTree = "<group>"; };
 		A02900010000000000000002 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 			children = (
 				A03400020000000000000001 /* GameHapticsPlugin.swift */,
 				A03640020000000000000001 /* GameSharingPlugin.swift */,
+				A05000020000000000000001 /* GameCenterPlugin.swift */,
 				A03400020000000000000002 /* GameBridgeViewController.swift */,
 				9582B6822FE993A50072D4E8 /* SceneDelegate.swift */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
@@ -174,6 +177,7 @@
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				A03400010000000000000001 /* GameHapticsPlugin.swift in Sources */,
 				A03640010000000000000001 /* GameSharingPlugin.swift in Sources */,
+				A05000010000000000000001 /* GameCenterPlugin.swift in Sources */,
 				A03400010000000000000002 /* GameBridgeViewController.swift in Sources */,
 				9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */,
 			);
@@ -316,14 +320,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 39;
+				CURRENT_PROJECT_VERSION = 40;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.49.0;
+				MARKETING_VERSION = 0.50.0;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kelimeteneffusu.game;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -338,14 +342,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 39;
+				CURRENT_PROJECT_VERSION = 40;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.49.0;
+				MARKETING_VERSION = 0.50.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kelimeteneffusu.game;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";

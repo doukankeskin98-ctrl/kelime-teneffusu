@@ -20,7 +20,7 @@ import {newerChallenge} from '../lib/game/challenge-state.ts';
 const finish=(p:ReturnType<typeof emptyProgress>,id:string,hints=0)=>{const b=journeyBoard(journeyById(id)!);p.saves['route:'+id]=cleanSave({strokes:b.placements,elapsed:42,hints,complete:false,stars:0},b);};
 describe('original catalogue retains earned progress',()=>{
  it('replaces thirty active slots, keeps every legacy board resolvable and bounds new authored boards',()=>{
-  assert.equal(ORIGINAL_CHAPTERS.length,30);assert.equal(MAIN_JOURNEY.length,192);
+  assert.equal(ORIGINAL_CHAPTERS.length,30);assert.equal(MAIN_JOURNEY.length,312);
   for(const [old,next] of Object.entries(CHAPTER_REPLACEMENTS)){assert(journeyById(old));assert(ACTIVE_JOURNEYS.some(j=>j.id===next));assert(!ACTIVE_JOURNEYS.some(j=>j.id===old));assert(!MAIN_JOURNEY.some(j=>j.chapter.id===old));assert(journeyBoard(journeyById(next)!).size<=9,next);}
   assert(ACTIVE_THEMES.every(t=>!RETIRED_THEMES.has(t.id)));
   const forbidden=['AMELİE','MATRİX','ATARI','OSCAR','ROCKY','TAZO','AVATAR','BATMAN'];
@@ -85,7 +85,7 @@ describe('chapter challenges use shared immutable content',()=>{
   }finally{f.sqlite.close();}
  });
  it('lists all active main and optional chapters and all eligible source releases, beyond the shelf page',async()=>{
-  const f=fixture(Date.parse('2026-11-06T12:00:00Z'));try{const choices=await challengeCatalogue(f.db,f.clock());assert.equal(choices.length,266);assert.equal(new Set(choices.map(c=>c.id)).size,choices.length);for(const j of ACTIVE_JOURNEYS)assert(choices.some(c=>c.id===j.id),j.id);assert(!choices.some(c=>c.id==='20261027-0002-4000-8000-000000000001'));assert(choices.filter(c=>c.kind==='extra').length>24);}finally{f.sqlite.close();}
+  const f=fixture(Date.parse('2026-11-06T12:00:00Z'));try{const choices=await challengeCatalogue(f.db,f.clock());assert.equal(choices.length,386);assert.equal(new Set(choices.map(c=>c.id)).size,choices.length);for(const j of ACTIVE_JOURNEYS)assert(choices.some(c=>c.id===j.id),j.id);assert(!choices.some(c=>c.id==='20261027-0002-4000-8000-000000000001'));assert(choices.filter(c=>c.kind==='extra').length>24);}finally{f.sqlite.close();}
  });
  it('shares one canonical clue board, validates both directions and keeps every participant path private',async()=>{
   const f=fixture(),service=new SocialService(f.db,f.clock);try{

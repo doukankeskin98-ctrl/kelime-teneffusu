@@ -22,7 +22,7 @@ export const PRESENTATION_BLOCKED = [...BLOCKED_SEQUENCES,
   'ESRAR', 'TECAVÜZ', 'İNTİHAR'] as const;
 // Reviewed targets that legitimately contain a wider-list sequence: seksek (the game) and geçiş.
 export const PRESENTATION_RULES:QualityRules = {version:'quality-2', blocked:PRESENTATION_BLOCKED,
-  exceptions:new Set([...LITERAL_EXCEPTIONS, 'SEKSEK', 'GEÇİŞ'])};
+  exceptions:new Set([...LITERAL_EXCEPTIONS, 'SEKSEK', 'GEÇİŞ', 'KAKAO', 'MAKAK', 'KISAYOL', 'BOKS'])};
 // Hand-tuned Turkish-friendly filler, not a claim of measured corpus frequencies.
 const FILLER = [...'AAAAAAEEEEEEİİİİIIIIIINNNNRRRRLLLLKKKKDDTTSSMMUUYYBBÇÇOOÖÖÜÜŞŞGGCCPHVZFĞJ'];
 export interface BoardPolicy {size?:number; directions?:'straight'|'forward'|'all'; reverseLimit?:number; bothDiagonals?:boolean; diagonalRequired?:boolean}
@@ -181,10 +181,10 @@ export function presentationStrokes(source:Puzzle,display:Puzzle,strokes:Stroke[
 
 const safeCache=new Map<string,Puzzle>();
 /** Only new non-persisted boards or new server snapshots use this path. */
-export function safeSnapshot(source:Puzzle,seed:number,policy:BoardPolicy={}):Puzzle {
-  const key=JSON.stringify([source.grid,source.targets,seed,policy]);
+export function safeSnapshot(source:Puzzle,seed:number,policy:BoardPolicy={},rules:QualityRules=SHARED_RULES):Puzzle {
+  const key=JSON.stringify([source.grid,source.targets,seed,policy,rules.version]);
   const cached=safeCache.get(key);if(cached)return cached;
-  const board=qualityPuzzle(source,seed,policy);
+  const board=qualityPuzzle(source,seed,policy,rules);
   if(safeCache.size>=32)safeCache.delete(safeCache.keys().next().value!);
   safeCache.set(key,board);return board;
 }

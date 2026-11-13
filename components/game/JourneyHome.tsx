@@ -1,4 +1,5 @@
 'use client';
+import {horizonRouteForChapter} from '@/lib/game/horizons-content';
 import {discoveriesRouteForChapter} from '@/lib/game/discoveries-content';
 import {LIVING_STORIES} from '@/lib/game/story-content';
 import {everydayRouteForChapter} from '@/lib/game/everyday-content';
@@ -23,7 +24,7 @@ export function JourneyHome({progress,onPlay,onExplore,onDetails,onDaily,initial
  const playStory=()=>{if(story)onPlay({themeId:story.themeId,level:0,journey:story.id});};
  const world=goal?.state.expedition??EXPEDITIONS[0]!;
  const play=(item:typeof chapters[number])=>{if(!item.unlocked)return;onPlay({themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(item.complete?{practice:true}:{})});};
- return <section className="journey-stage" aria-labelledby="journey-home-title" data-light={(discoveriesRouteForChapter(current?.chapter.id)??coastRouteForChapter(current?.chapter.id)??natureRouteForChapter(current?.chapter.id)??everydayRouteForChapter(current?.chapter.id))?.light??'default'}>
+ return <section className="journey-stage" aria-labelledby="journey-home-title" data-light={(horizonRouteForChapter(current?.chapter.id)??discoveriesRouteForChapter(current?.chapter.id)??coastRouteForChapter(current?.chapter.id)??natureRouteForChapter(current?.chapter.id)??everydayRouteForChapter(current?.chapter.id))?.light??'default'}>
   <div className="journey-stage-art" aria-hidden="true"><SceneArt theme={expeditionTheme(world)} scene={story?.scene} eager/><div className="journey-stage-shade"/></div>
   <div className="journey-stage-top"><button className="stage-map-button" onClick={onDetails} aria-label="Bölümler ve albümler"><Map size={19}/><span>Bölümler</span></button></div>
   <div className="journey-stage-title"><span>{story?'HİKÂYELER':world.subtitle==='Doğa Günlüğü'?'DOĞA GÜNLÜĞÜ':world.subtitle.startsWith('Kıyı Günlüğü')?'KIYI GÜNLÜĞÜ':`DÜNYA ${world.place}`}</span><h1 id="journey-home-title">{story?.title??world.title}</h1></div>
