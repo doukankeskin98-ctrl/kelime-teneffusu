@@ -1,3 +1,5 @@
+import {boardIssues,PRESENTATION_RULES} from '../game/board-quality.ts';
+import {targetSafetyIssues,proseSafetyIssues} from '../game/content-safety.ts';
 import {ALL_THEMES as THEMES,normalize} from '../game/catalog.ts';
 import {makeCustomPuzzle,exactLine,type Puzzle} from '../game/engine.ts';
 
@@ -34,3 +36,11 @@ export function checkChapter(raw:unknown){
 }
 export const validChapterId=(id:unknown):id is string=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
 export const NEW_CHAPTER:ChapterSpec={title:'Küçük bir keşif',themeId:'uzay',words:['KELİME','MERAK','KEŞİF','DÜNYA'],size:6,seed:42,difficulty:'Rahat',note:'Acele yok. Çaprazlara da bak.'};
+
+export function checkNewChapter(raw:unknown){
+ const spec=parseChapterSpec(raw);
+ if(spec.words.some(w=>targetSafetyIssues(w).length)||proseSafetyIssues(spec.title+' '+spec.note).length)throw new StudioError('Bölüm içeriği güvenlik incelemesi gerektiriyor.');
+ const checked=checkChapter(spec);
+ if(boardIssues(checked.board,PRESENTATION_RULES).length)throw new StudioError('Harf yerleşimi içerik denetiminden geçemedi. Yerleşim numarasını değiştirip yeniden dene.');
+ return checked;
+}

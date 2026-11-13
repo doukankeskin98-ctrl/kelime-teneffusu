@@ -42,7 +42,7 @@ describe('safe layouts preserve historical player credit',()=>{
    for(const s of shown)assert.equal(match(display,s.a,s.b)?.id,s.id,j.id);
    assert.equal(JSON.stringify(saved),before,'presentation must not mutate old coordinates');
   }
-  assert.equal(alternate,19);
+  assert.equal(alternate,21);
   const loaded=loadProgress(JSON.stringify(progress));assert.deepEqual(loaded.saves,progress.saves);
   assert.deepEqual(mergeProgress(loaded,progress).saves,progress.saves);
   assert.deepEqual(collectionStats(loaded),collectionStats(progress));

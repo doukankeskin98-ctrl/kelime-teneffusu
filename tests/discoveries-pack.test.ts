@@ -17,7 +17,7 @@ describe('Küçük Keşifler authored expansion',()=>{
   assert.deepEqual(MAIN_JOURNEY_IDS.slice(0,168),baseline.ids);assert.deepEqual(MAIN_JOURNEY_ORDER.slice(0,168),baseline.order);
   assert.deepEqual(JSON.parse(JSON.stringify(EXPEDITIONS.slice(0,28))),baseline.worlds);
   for(const [id,hash] of Object.entries(baseline.boards))assert.equal(createHash('sha256').update(JSON.stringify(journeyBoard(journeyById(id)!))).digest('hex'),hash,id);
-  assert.equal(MAIN_JOURNEY_IDS.length,192);assert.deepEqual(MAIN_JOURNEY_ORDER.slice(168),DISCOVERIES_CHAPTERS.map(c=>c.id));
+  assert.equal(MAIN_JOURNEY_IDS.length,312);assert.deepEqual(MAIN_JOURNEY_ORDER.slice(168,192),DISCOVERIES_CHAPTERS.map(c=>c.id));
  });
  it('adds24 distinct actual topics and101 unique targets within the pack',()=>{
   assert.equal(DISCOVERIES_CHAPTERS.length,24);assert.equal(DISCOVERIES_ROUTES.length,4);
@@ -40,9 +40,9 @@ describe('Küçük Keşifler authored expansion',()=>{
    assert.equal(mainJourneyState(p).current?.chapter.id,c.id);assert(mainJourneyChapters(p).find(x=>x.chapter.id===c.id)!.unlocked);
    const before=structuredClone(p);finish(p,c.id);p.last={themeId:c.themeId,level:0,journey:c.id};
    assert.equal(discoveryRewards(before,p).filter(r=>r.kind==='album').length,i%6===5?1:0);
-   assert.equal(nextJourneyAfter(p,c.id)?.id,DISCOVERIES_CHAPTERS[i+1]?.id);p=mergeProgress(old,loadProgress(JSON.stringify(p)));
+   assert.equal(nextJourneyAfter(p,c.id)?.id,DISCOVERIES_CHAPTERS[i+1]?.id??MAIN_JOURNEY_ORDER[192]);p=mergeProgress(old,loadProgress(JSON.stringify(p)));
   }
-  assert.equal(mainJourneyState(p).current,null);assert.equal(mainJourneyState(p).completed,192);assert(discoveryState(p).every(w=>w.complete));
+  assert.equal(mainJourneyState(p).current?.number,193);assert.equal(mainJourneyState(p).completed,192);assert(discoveryState(p).slice(0,32).every(w=>w.complete));
   for(const [key,save] of Object.entries(old.saves))assert.deepEqual(p.saves[key],save);
  });
 });

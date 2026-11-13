@@ -1,9 +1,12 @@
+import {targetSafetyIssues,proseSafetyIssues} from './content-safety.ts';
 import {normalize,splitWord} from './catalog.ts';
 import {PLAYABLE_JOURNEYS} from './content.ts';
 export interface DraftReview {errors:string[];warnings:string[];clues:Record<string,string>|undefined;longest:number}
 /** Editorial diagnostics only. This cannot publish or mutate any existing chapter. */
 export function reviewDraft(words:string[],size:number,definitions:string):DraftReview{
  const errors:string[]=[],warnings:string[]=[],normalized=words.map(normalize),longest=Math.max(0,...words.flatMap(w=>splitWord(w).map(x=>x.length)));
+ for(const word of words)if(targetSafetyIssues(word).length)errors.push(`${word}: içerik güvenliği incelemesi gerekiyor.`);
+ if(proseSafetyIssues(definitions).length)errors.push('Tanımlarda uygun olmayan bir ifade var.');
  if(new Set(normalized).size!==normalized.length)errors.push('Aynı kelime birden fazla yazılmış.');
  if(longest>size)errors.push(`${longest} harfli hedef bu tahtaya sığmıyor.`);
  const signature=[...normalized].sort().join('|'),duplicate=PLAYABLE_JOURNEYS.find(j=>j.words.map(normalize).sort().join('|')===signature);
