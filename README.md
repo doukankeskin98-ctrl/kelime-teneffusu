@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.48.1 · Okunaklı hedefler ve mobil yerleşim
+
+Doğal harf aralıkları, çakışmayan 44 px hedef satırları, sahne/kart düzeltmeleri ve genişletilmiş hazırlanmış içerik denetimi. İlerleme ve eski meydan okumalar korunur. [Yayın ve geri dönüş notları](docs/release-0.48.1.md).
+
 ## 0.48.0 · Güvenli içerik ve kademeli başlangıç
 
 395 önceden hazırlanmış güvenli sunum tahtası; eski kayıt koordinatlarını koruyan eşleme; kademeli yön/gizli hedef akışı ve çevrimdışı Arena/hesap sınırı. 897 test, 722 Worker kontrolü. [Doğrulama ve sınırlar](docs/release-0.48.0.md).
