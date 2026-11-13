@@ -1,3 +1,4 @@
+import {JOURNEY_REVISION_TWO,journeyRevision,journeyPresentationKey} from '../lib/game/journey-revisions.ts';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {RETIRED_RELEASE_IDS} from '../lib/game/original-content.ts';
 import {BONUS_WORDS,bonusBoard} from '../lib/game/journey-bonus.ts';
@@ -6,7 +7,7 @@ import {ACTIVE_JOURNEYS,journeyBoard,MYSTERIES,mysteryBoard,TUTORIAL} from '../l
 import {ACTIVE_THEMES} from '../lib/game/catalog.ts';
 import {hash,makePuzzle,type Puzzle} from '../lib/game/engine.ts';
 import {preparePresentation} from '../lib/game/journey-presentation.ts';
-const inputs:Array<[string,Puzzle]>=[...Object.keys(BONUS_WORDS).map(id=>['bonus:'+id,bonusBoard(id)] as [string,Puzzle]),...RELEASE_BATCHES.flatMap(b=>b.chapters.filter(({chapter:c})=>!RETIRED_RELEASE_IDS.has(c.id)).map(({chapter:c})=>['release:'+c.id,c.board] as [string,Puzzle])),...ACTIVE_JOURNEYS.map(j=>['route:'+j.id,journeyBoard(j)] as [string,Puzzle]),
+const inputs:Array<[string,Puzzle]>=[...Object.keys(JOURNEY_REVISION_TWO).map(id=>{const chapter=journeyRevision(id,2)!;return [journeyPresentationKey(chapter),journeyBoard(chapter)] as [string,Puzzle];}),...Object.keys(BONUS_WORDS).map(id=>['bonus:'+id,bonusBoard(id)] as [string,Puzzle]),...RELEASE_BATCHES.flatMap(b=>b.chapters.filter(({chapter:c})=>!RETIRED_RELEASE_IDS.has(c.id)).map(({chapter:c})=>['release:'+c.id,c.board] as [string,Puzzle])),...ACTIVE_JOURNEYS.map(j=>['route:'+j.id,journeyBoard(j)] as [string,Puzzle]),
   ...MYSTERIES.map(m=>['mystery:'+m.id,mysteryBoard(m)] as [string,Puzzle]),['tutorial',TUTORIAL],
   ...ACTIVE_THEMES.flatMap(t=>Array.from({length:6},(_,level)=>[`${t.id}.${level}`,makePuzzle(t.id,level,hash(`campaign-v2:${t.id}:${level}`))] as [string,Puzzle]))];
 const layouts:Record<string,unknown>={};let max=0;

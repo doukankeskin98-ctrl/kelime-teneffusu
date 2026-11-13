@@ -1,3 +1,4 @@
+import * as progressRollout from '../lib/game/progress-rollout.ts';
 import * as progressLimits from '../lib/game/progress-limits.ts';
 // Real progress route/store/SQLite, hook and notice with controlled auth and hook/IO boundaries.
 // Not a live-account, DOM, concurrent React, phone or identity-provider test.
@@ -6,7 +7,9 @@ import {readFileSync} from 'node:fs';
 import {describe,it} from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
-import {CloudProgress} from '../lib/game/cloud.ts';
+import * as progressCodec from '../lib/game/progress-codec.ts';
+import * as progressModule from '../lib/game/progress.ts';
+import {CloudProgress,ProgressUpgradeRequired} from '../lib/game/cloud.ts';
 import * as sync from '../lib/game/progress-sync.ts';
 import {emptyProgress,PROGRESS_KEY,progressBoard,cleanSave,type Progress} from '../lib/game/progress.ts';
 import {GameError} from '../lib/game/server.ts';
@@ -17,8 +20,8 @@ const changed=()=>{const b=progressBoard('uzay.0')!;return {...emptyProgress(),s
 function deferred<T>(){let resolve!:(value:T)=>void;const promise=new Promise<T>(yes=>{resolve=yes;});return {promise,resolve};}
 async function route(){
  const f=fixture(),exports:Record<string,any>={};let reads=0,writes=0;
- class Store extends CloudProgress {override async read(id:string){reads++;return super.read(id);}override async save(id:string,value:unknown){writes++;return super.save(id,value);}}
- const modules:Record<string,unknown>={'@/lib/game/progress-limits':progressLimits,'cloudflare:workers':{env:{DB:f.db}},'@/lib/auth/server':{gameMember:async(r:Request)=>r.headers.has('x-test-owner')?{userId:r.headers.get('x-test-owner')}:null,authJson:(v:unknown,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}}),boundedJson:(r:Request)=>r.json(),requireSameOrigin:(r:Request)=>{if(r.headers.get('Origin')!=='https://test')throw new IdentityError('origin',403);}},'@/lib/game/cloud':{CloudProgress:Store},'@/lib/game/server':{GameError},'@/lib/auth/verify':{IdentityError},'@/lib/game/security':{rateLimit:async()=>{}},'@/lib/studio/health':{recordOperationalFault:async()=>{}}};
+ class Store extends CloudProgress {override async read(id:string,format:2|3=2){reads++;return super.read(id,format);}override async save(id:string,value:unknown,format:2|3=2){writes++;return super.save(id,value,format);}}
+ const modules:Record<string,unknown>={'@/lib/game/progress-limits':progressLimits,'cloudflare:workers':{env:{DB:f.db}},'@/lib/auth/server':{gameMember:async(r:Request)=>r.headers.has('x-test-owner')?{userId:r.headers.get('x-test-owner')}:null,authJson:(v:unknown,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}}),boundedJson:(r:Request)=>r.json(),requireSameOrigin:(r:Request)=>{if(r.headers.get('Origin')!=='https://test')throw new IdentityError('origin',403);}},'@/lib/game/progress-codec':progressCodec,'@/lib/game/cloud':{CloudProgress:Store,ProgressUpgradeRequired},'@/lib/game/server':{GameError},'@/lib/auth/verify':{IdentityError},'@/lib/game/security':{rateLimit:async()=>{}},'@/lib/studio/health':{recordOperationalFault:async()=>{}}};
  vm.runInNewContext(compile('app/api/progress/route.ts'),{exports,URL,require:(n:string)=>{assert.ok(n in modules,n);return modules[n];}});
  const store=new CloudProgress(f.db);await store.save('alice',{...emptyProgress(),sound:true});await store.save('bob',emptyProgress());
  return {store,get reads(){return reads;},get writes(){return writes;},request:(method:'GET'|'PUT',owner:string|undefined,expected?:unknown,guard=true)=>{const url=new URL('https://test/api/progress');if(method==='GET'&&guard)url.searchParams.set('expectedOwnerId',String(expected??''));const headers:Record<string,string>={Origin:'https://test'};if(owner)headers['x-test-owner']=owner;return exports[method](new Request(url,{method,headers,...(method==='PUT'?{body:JSON.stringify({progress:{...emptyProgress(),sound:true,contrast:true},...(guard?{expectedOwnerId:expected}:{})})}:{})})) as Promise<Response>;}};
@@ -45,7 +48,7 @@ function hook(mode:'owner-load'|'owner-save'|'conflict'|'load-failure'|'body-del
  const hooks={useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return [slot.value,(next:any)=>{const v=typeof next==='function'?next(slot.value):next;if(!Object.is(v,slot.value)){slot.value=v;dirty=true;}}];},useRef(initial:any){return (slots[cursor++]??={}).ref??={current:initial};},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((d,i)=>!Object.is(d,slot.deps![i]))){slot.deps=deps;effects.push(()=>{slot.cleanup?.();const clean=fn();slot.cleanup=typeof clean==='function'?clean:undefined;});}}};
  const response=(code?:string)=>code?{ok:false,status:409,json:async()=>({code})}:{ok:true,status:200,json:async()=>({progress:emptyProgress()})};
  const request=async(url:string,init:RequestInit)=>{requests.push({url,init});if(delay&&requests.length===1)return gate.promise;if(mode==='load-failure'&&requests.length===1)throw new Error('Controlled GET failure');if(mode==='body-delay'&&requests.length===1)return {ok:true,status:200,json:()=>gate.promise};if((mode==='owner-load'&&!init.method)||(mode==='owner-save'&&init.method==='PUT'))return response('PROGRESS_OWNER_CHANGED');if(mode==='conflict'&&init.method==='PUT')return response('CONCURRENT_UPDATE');if(init.method==='PUT')return {ok:true,status:200,json:async()=>({progress:JSON.parse(String(init.body)).progress})};return response();};
- const modules={'react':hooks,'@/lib/auth/firebase-client':{memberFetch:request},'@/lib/game/progress-sync':sync};
+ const modules={'@/lib/game/progress-rollout':progressRollout,'@/lib/game/progress':progressModule,'@/lib/game/progress-codec':progressCodec,'react':hooks,'@/lib/auth/firebase-client':{memberFetch:request},'@/lib/game/progress-sync':sync};
  vm.runInNewContext(compile('components/game/useCloudProgress.ts'),{exports,require:(n:string)=>modules[n as keyof typeof modules],window:events,document:doc,navigator:{onLine:true},localStorage:{getItem:(k:string)=>cache.get(k)??null,setItem:(k:string,v:string)=>cache.set(k,v)},setInterval:(fn:()=>void)=>{timers.set(++id,fn);return id;},clearInterval:(n:number)=>timers.delete(n)});
  const paint=(commit=true)=>{for(let i=0;dirty&&i<30;i++){dirty=false;cursor=0;status=exports['useCloudProgress'](owner,value,update,true);if(commit)while(effects.length)effects.shift()!();}return status;};
  paint();
@@ -54,7 +57,7 @@ function hook(mode:'owner-load'|'owner-save'|'conflict'|'load-failure'|'body-del
 describe('actual cloud hook guards requests and preserves retry semantics',()=>{
  it('sends its owner in GET and PUT, then blocks that channel only on explicit owner mismatch',async()=>{
   const h=hook('owner-save');await h.settle();h.change(changed());h.retry();await h.settle();assert.equal(new URL(h.requests[0]!.url,'https://test').searchParams.get('expectedOwnerId'),'alice');
-  const sent=h.requests.find(r=>r.init.method==='PUT')!;assert.equal(JSON.parse(String(sent.init.body)).expectedOwnerId,'alice');assert.equal(h.status,'account-changed');const count=h.requests.length;h.retry();await h.settle();assert.equal(h.requests.length,count);h.unmount();
+  const sent=h.requests.find(r=>r.init.method==='PUT')!;assert.equal(JSON.parse(String(sent.init.body)).expectedOwnerId,'alice');assert.equal(JSON.parse(String(sent.init.body)).format,2);assert.equal(JSON.parse(String(sent.init.body)).progress.v,2);assert.equal(h.status,'account-changed');const count=h.requests.length;h.retry();await h.settle();assert.equal(h.requests.length,count);h.unmount();
  });
  it('handles owner mismatch on initial GET without attempting an upload',async()=>{const h=hook('owner-load');await h.settle();h.change(changed());h.retry();await h.settle();assert.equal(h.status,'account-changed');assert.equal(h.requests.length,1);assert.ok(h.cache.get(PROGRESS_KEY+':alice')?.includes('uzay.0'));h.unmount();});
  it('does not misclassify a normal concurrency409 and continues retrying',async()=>{const h=hook('conflict');await h.settle();h.change(changed());h.retry();await h.settle();assert.equal(h.status,'offline');const count=h.requests.length;h.retry();await h.settle();assert.equal(h.requests.length,count+1);assert.equal(sync.progressOwnerChanged(h.status),false);h.unmount();});

@@ -1,3 +1,4 @@
+import {playableJourney} from './journey-revisions.ts';
 import {HORIZON_CHAPTERS} from './horizons-content.ts';
 import {DISCOVERIES_CHAPTERS} from './discoveries-content.ts';
 import {chapterCredit,replacementChapterId} from './original-content.ts';
@@ -33,7 +34,7 @@ export function mainJourneyChapters(progress:Pick<Progress,'saves'>){
   const world=states.find(s=>s.expedition.id===expeditionForChapter(item.chapter.id)?.id)!;
   const save=chapterCredit(progress,item.chapter.id);
   const unlocked=world.unlocked&&(world.bonus.id!==item.chapter.id||world.bonusUnlocked||started(save));
-  return {...item,world,unlocked,complete:save?.complete===true,stars:save?.stars??0,
+  return {...item,chapter:playableJourney(item.chapter.id,progress)??item.chapter,world,unlocked,complete:save?.complete===true,stars:save?.stars??0,
    continuing:!!save&&!save.complete&&(save.strokes.length>0||save.elapsed>0||save.hints>0)};
  });
 }
@@ -47,7 +48,7 @@ export function mainJourneyState(progress:Pick<Progress,'saves'|'last'>){
  const worldOrder=EXPEDITIONS.flatMap(world=>MAIN_JOURNEY.filter(item=>expeditionForChapter(item.chapter.id)?.id===world.id));
  const current=resume??(following?mainChapter(following.id):null)??worldOrder.find(item=>!done(progress,item.chapter.id)&&available.has(item.chapter.id))??null;
  const currentSave=current?chapterCredit(progress,current.chapter.id):undefined;
- return {current,continuing:!!(currentSave&&!currentSave.complete&&(currentSave.strokes.length||currentSave.elapsed||currentSave.hints)),completed:MAIN_JOURNEY.filter(item=>done(progress,item.chapter.id)).length,total:MAIN_JOURNEY.length};
+ return {current:current?{...current,chapter:playableJourney(current.chapter.id,progress)??current.chapter}:null,continuing:!!(currentSave&&!currentSave.complete&&(currentSave.strokes.length||currentSave.elapsed||currentSave.hints)),completed:MAIN_JOURNEY.filter(item=>done(progress,item.chapter.id)).length,total:MAIN_JOURNEY.length};
 }
 
 /** The next new chapter is the earliest actual gap, not current number + 1. */

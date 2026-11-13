@@ -34,3 +34,14 @@ export const deletedPlayers=sqliteTable('deleted_players',{userId:text('user_id'
 export const playerBlocks=sqliteTable('player_blocks',{userId:text('user_id').notNull(),blockedId:text('blocked_id').notNull(),created:integer('created').notNull()},t=>[primaryKey({columns:[t.userId,t.blockedId]})]);
 export const playerReports=sqliteTable('player_reports',{id:text('id').primaryKey(),reporterId:text('reporter_id').notNull(),targetId:text('target_id').notNull(),reason:text('reason').notNull(),nameSnapshot:text('name_snapshot').notNull(),status:text('status').notNull().default('open'),created:integer('created').notNull(),reviewed:integer('reviewed'),reviewerId:text('reviewer_id'),reviewOperation:text('review_operation')},t=>[uniqueIndex('one_open_player_report').on(t.reporterId,t.targetId,t.reason).where(sql`${t.status}='open'`),index('reports_queue').on(t.status,t.created)]);
 export const playerRestrictions=sqliteTable('player_restrictions',{userId:text('user_id').primaryKey(),nameLocked:integer('name_locked').notNull().default(1),created:integer('created').notNull()});
+
+// Reader-first migration audit; exact legacy backup is retained only at activation.
+export const campaignSaveMigrations = sqliteTable('campaign_save_migrations', {
+ userId: text('user_id').primaryKey(),
+ sourceRevision: integer('source_revision').notNull(),
+ sourceData: text('source_data').notNull(),
+ compactData: text('compact_data').notNull(),
+ backupData: text('backup_data'),
+ backupRevision: integer('backup_revision'),
+ updated: integer('updated').notNull(),
+});

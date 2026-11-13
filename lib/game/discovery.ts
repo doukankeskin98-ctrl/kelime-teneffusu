@@ -1,3 +1,4 @@
+import {playableJourney} from './journey-revisions.ts';
 import {HORIZON_ROUTES} from './horizons-content.ts';
 import {DISCOVERIES_ROUTES} from './discoveries-content.ts';
 import {ORIGINAL_ROUTES,chapterCredit,replacementChapterId} from './original-content.ts';
@@ -74,6 +75,6 @@ export function keepBestSave(current:SavedLevel|undefined,incoming:SavedLevel):S
 /** Continue in the current world first, then the first unlocked unfinished one. */
 export function nextJourneyAfter(progress:Pick<Progress,'saves'>,journeyId:string):Journey|null{
  const states=discoveryState(progress),current=states.find(s=>s.chapters.some(j=>j.id===journeyId)||s.bonus.id===journeyId);
- if(current?.next)return current.next;
- return states.find(s=>s.unlocked&&s.next)?.next??null;
+ if(current?.next)return playableJourney(current.next.id,progress)??current.next;
+ const next=states.find(s=>s.unlocked&&s.next)?.next;return next?(playableJourney(next.id,progress)??next):null;
 }

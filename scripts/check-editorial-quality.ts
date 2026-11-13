@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {catalogueQuality,capacityProbe} from './content-quality-model.ts';
+import {JOURNEY_REVISION_TWO,journeyRevision,journeyPresentationKey} from '../lib/game/journey-revisions.ts';
+import {MAIN_JOURNEY} from '../lib/game/main-journey.ts';
+import {reviewNovelty} from '../lib/game/editorial-quality.ts';
+import {journeyBoard} from '../lib/game/content.ts';
+import {presentationBoard} from '../lib/game/journey-presentation.ts';
+import {boardIssues,PRESENTATION_RULES} from '../lib/game/board-quality.ts';
 const baseline=JSON.parse(readFileSync(new URL('../tests/fixtures/journey-0500-quality.json',import.meta.url),'utf8')) as {
  rows:{id:string;number:number;contentHash:string;boardHash:string;displayHash:string}[];
  capacity:{bytes:number};knownDebt:{nearCopies:{id:string;matches:string[]}[];routes:{id:string;chapters:string[];issues:string[]}[]}};
@@ -32,3 +38,16 @@ const report={releaseGate:'passed-with-explicit-existing-debt',publishedChapters
 const output=process.argv.indexOf('--report');if(output>=0&&process.argv[output+1])writeFileSync(process.argv[output+1]!,JSON.stringify(report,null,2)+'\n');
 console.log(`Editorial gate: ${rows.length} immutable published chapters; ${report.existingNearCopies.length} known near-copy chapters; ${report.difficultyDebt.length} routes need authored curve review (NOT fixed).`);
 console.log(`Combined synthetic save: ${capacity.bytes}/${capacity.limit} bytes; ${capacity.headroom} bytes headroom. Content expansion requires the compact-save rollout.`);
+
+// Inactive candidates are held to word novelty/safety independently of the
+// immutable released catalogue. Four pilot chapters are NOT a complete route.
+for(const id of Object.keys(JOURNEY_REVISION_TWO)){
+ const chapter=journeyRevision(id,2)!,index=MAIN_JOURNEY.findIndex(c=>c.chapter.id===id);
+ const history=MAIN_JOURNEY.slice(0,index).map(c=>journeyRevision(c.chapter.id,JOURNEY_REVISION_TWO[c.chapter.id]?2:1)!);
+ const review=reviewNovelty(chapter.words,history);
+ assert.equal(review.nearCopies.length,0,id+' revision near-copy');
+ assert(review.repeatRatio<=.5,id+' revision repeats more than half its words');
+ assert(review.nearestRepeat===null||review.nearestRepeat>12,id+' revision repeat within twelve chapters');
+ assert.deepEqual(boardIssues(presentationBoard(journeyBoard(chapter),journeyPresentationKey(chapter)),PRESENTATION_RULES),[],id+' unsafe revision board');
+}
+console.log('4 inactive revision pilots: novelty and safe-board checks passed; full route and device acceptance still required.');

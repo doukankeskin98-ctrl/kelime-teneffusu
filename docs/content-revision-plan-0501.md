@@ -1,6 +1,6 @@
-# İçerik ve kayıt geçişi — karar için hazır plan
+# İçerik ve kayıt geçişi — onaylı aşamalı plan
 
-Durum: 0.50.1'de geçiş uygulanmadı. Bu belge, yayımlanmış kelimeleri/tahtaları ve kayıt biçimini değiştirmeden önce istenen somut plandır. Telefon testi kullanıcı isteğiyle ertelendi.
+Durum: Kullanıcı planı onayladı. 0.51.0 çift okuyucu + v2 ana yazıcı + doğrulanan v3 gölge aşamasını uygular. Kalıcı v3 yazıcısı ve otomatik rev2 seçimi kapalıdır. Telefon testi kullanıcı isteğiyle ertelendi. Ayrıntı ve aktivasyon koşulları: [0.51.0 raporu](release-0.51.0.md).
 
 ## Şimdi korunan sözleşme
 
@@ -35,4 +35,4 @@ Durum: 0.50.1'de geçiş uygulanmadı. Bu belge, yayımlanmış kelimeleri/tahta
 
 Eski tam ve kısmi kayıt → v3 → eski anlam birebir eşit; çevrimdışı eski/yeni iki cihaz; çakışan revizyonlarda çizimleri karıştırmama; aynı ödülü iki kez vermeme; hesap değişimi; yarıda kapanma ve kota hatası; maksimum alan uzunlukları; sunucu CAS çakışması; geri dönüş paketiyle okuma; güvenlik taraması; küçük ekran ve fiziksel iPhone. Kayıt boyutunda en az 64 KB pay. Geçiş planı onayından sonra önce bu kanıtlar ve geri dönüş paketi hazırlanır, sonra yazıcı açılır.
 
-**Karar gerektiren adım:** Revizyonlu içerik ve v3 kayıpsız kayıt geçişini bu sözleşmeyle uygulamak. 0.50.1 bu geçişi açmaz, yayımlanmış bulmacaları değiştirmez. Gerçek zorluk/tekrar sorunu bu adım tamamlanmadan çözüldü diye raporlanmaz.
+**Onaylanan adım:** Revizyonlu içerik ve v3 kayıpsız kayıt geçişini bu sözleşmeyle uygulamak. 0.50.1 bu geçişi açmaz, yayımlanmış bulmacaları değiştirmez. Gerçek zorluk/tekrar sorunu bu adım tamamlanmadan çözüldü diye raporlanmaz.

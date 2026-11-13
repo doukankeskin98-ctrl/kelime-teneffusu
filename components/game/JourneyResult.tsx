@@ -15,7 +15,7 @@ export function JourneyResult({before,after,rewards,save,best,reward}:{reward?:R
  const newPiece=rewards.some(r=>r.id===`piece:${after.state.expedition.id}:${after.position}`),unlocks=rewards.filter(r=>r.kind!=='piece'),mastery=masteryCopy(save.hints);
  return <div className={'journey-result polished-result'+(newPiece?' has-new-piece':'')}>
   <p className="result-chapter-number">Bölüm {mainChapter(after.chapter.id)?.number} tamamlandı</p>
-  <p className="world-result-heading">{worldChapter(after.chapter.id)?.topic??after.chapter.title}</p>
+  <p className="world-result-heading">{worldChapter(after.chapter.id,save.revision)?.topic??after.chapter.title}</p>
   <div className="result-star-stage" aria-label={`Bu tur ${save.stars} / 3 yıldız`}>
    {[0,1,2].map(i=><div className={'result-star'+(i<save.stars?' earned':'')} key={i} style={{'--star-index':i} as CSSProperties}><Star fill={i<save.stars?'currentColor':'none'} aria-hidden="true"/></div>)}
   </div>

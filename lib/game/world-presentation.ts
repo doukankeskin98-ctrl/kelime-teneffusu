@@ -1,10 +1,10 @@
+import {journeyRevision} from './journey-revisions.ts';
 import {horizonRouteForChapter} from './horizons-content.ts';
 import {discoveriesRouteForChapter} from './discoveries-content.ts';
 import {everydayRouteForChapter} from './everyday-content.ts';
 import {natureRouteForChapter} from './nature-content.ts';
 import {coastRouteForChapter} from './coast-content.ts';
 import {EXPEDITIONS,expeditionForChapter,expeditionBonusId} from './discovery.ts';
-import {journeyById} from './content.ts';
 import type {Target} from './engine.ts';
 import type {WordVeil} from './word-card.ts';
 
@@ -31,18 +31,18 @@ const TOPICS:Record<string,readonly string[]>={
  diziler:['Hikâye başlıyor','Dizi seti','Sıradaki bölüm','Bir mahalle dizisi','Çekim arası','Ekranın sırları'],
  mitoloji:['Olimpos sakinleri','Tanrıların öyküleri','Efsanevi izler','Yunan mitolojisi','Mitoloji dünyası','Efsanenin son sayfası'],
 };
-export function worldChapter(id?:string){
- const chapter=id?journeyById(id):null;if(!chapter)return null;
+export function worldChapter(id?:string,revision=1){
+ const chapter=id?journeyRevision(id,revision):null;if(!chapter)return null;
  const world=expeditionForChapter(chapter.id);if(!world)return null;
  const index=world.chapterIds.indexOf(chapter.id),bonus=chapter.id===expeditionBonusId(world);
  if(index<0&&!bonus)return null;
  const position=bonus?5:index;
- return {world,position,topic:chapter.id.startsWith('ozgun-')?chapter.title:TOPICS[world.id]?.[position]??chapter.title,chapter};
+ return {world,position,topic:revision===2||chapter.id.startsWith('ozgun-')?chapter.title:TOPICS[world.id]?.[position]??chapter.title,chapter};
 }
 
 /** Fixed per chapter/group across resumes, devices and replays. Clues retain their own rules. */
-export function chapterVeils(id:string|undefined,targets:Target[]):Record<number,WordVeil>{
- const info=worldChapter(id),veils:Record<number,WordVeil>={};
+export function chapterVeils(id:string|undefined,targets:Target[],revision=1):Record<number,WordVeil>{
+ const info=worldChapter(id,revision),veils:Record<number,WordVeil>={};
  if(!info||info.chapter.clues)return veils;
  // Teach directions before introducing concealed answers. Old saves/gates are untouched.
  if(info.world.id==='uzay')return Object.fromEntries(targets.map(t=>[t.group,'open' as const]));

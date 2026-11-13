@@ -1,3 +1,4 @@
+import {playableJourney} from './journey-revisions.ts';
 import {discoveryState,DISCOVERY_GATE} from './discovery.ts';
 import type {Progress} from './progress.ts';
 
@@ -6,7 +7,7 @@ export function journeyGoal(progress:Pick<Progress,'saves'>,journeyId?:string){
  if(!journeyId)return null;
  const states=discoveryState(progress),index=states.findIndex(s=>s.chapters.some(j=>j.id===journeyId)||s.bonus.id===journeyId);
  if(index<0)return null;
- const state=states[index]!,chapters=[...state.chapters,state.bonus],position=chapters.findIndex(j=>j.id===journeyId),chapter=chapters[position]!,nextWorld=states[index+1];
+ const state=states[index]!,chapters=[...state.chapters,state.bonus],position=chapters.findIndex(j=>j.id===journeyId),chapter=playableJourney(journeyId,progress)??chapters[position]!,nextWorld=states[index+1];
  const milestone=!state.unlocked?{label:`${state.previousTitle}: ${state.remaining} bölüm daha`,value:DISCOVERY_GATE-state.remaining,total:DISCOVERY_GATE}
   :nextWorld&&!nextWorld.unlocked?{label:`${nextWorld.expedition.title} için ${Math.max(0,DISCOVERY_GATE-state.done)} durak daha`,value:Math.min(DISCOVERY_GATE,state.done),total:DISCOVERY_GATE}
   :!state.bonusUnlocked?{label:`Albümün son bölümüne ${state.chapters.length-state.done} bölüm kaldı`,value:state.done,total:state.chapters.length}
