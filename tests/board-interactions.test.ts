@@ -1,3 +1,4 @@
+import * as projection from '../lib/game/board-projection.ts';
 import * as viewport from '../lib/game/viewport.ts';
 import * as legacyUI from '../lib/game/legacy-ui.ts';
 import * as gestures from '../lib/game/input-gesture.ts';
@@ -37,6 +38,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  if(options.legacy)delete (element as any).setPointerCapture;
  Object.assign(windowTarget,{...(options.legacy?{}:{PointerEvent:class{}}),innerWidth:900,innerHeight:900,Event,ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id)});
  vm.runInNewContext(compiled,{exports,require:(name:string)=>{
+  if(name==='@/lib/game/board-projection')return {...projection,surfaceLine:(...args:Parameters<typeof projection.surfaceLine>)=>{pathBuilds++;return projection.surfaceLine(...args);}};
   if(name==='./DrawGuide')return {DrawGuide:'DrawGuide'};
   if(name==='@/lib/platform/runtime')return {gameIsActive:()=>true};
   if(name==='@/lib/game/input-gesture')return gestures;if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
@@ -46,10 +48,10 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  },window:windowTarget,document:documentTarget,performance:{now:()=>100},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id),ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}}});
  const boardNode=()=>{const n=nodes(tree).find(n=>n.props?.['role']==='application');assert.ok(n);return n;};
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);renders++;for(const node of nodes(tree))mount(node);}if(commit)while(effects.length)effects.shift()!();}return tree;};
- const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/props.board.size,clientY:top+(cell[0]+.5)*height/props.board.size,preventDefault(){},...extra};boardNode().props[name](e);paint();};
+ const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/props.board.grid[0]!.length,clientY:top+(cell[0]+.5)*height/props.board.grid.length,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
  return {letters,commits,previews,accepted,props,paint,boardNode,send,attributes:element.attributes,get pathBuilds(){return pathBuilds;},
-  native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/props.board.size,clientY:top+(cell[0]+.5)*height/props.board.size});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
+  native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/props.board.grid[0]!.length,clientY:top+(cell[0]+.5)*height/props.board.grid.length});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
   reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
   toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
   rotate(){windowTarget.dispatchEvent(new Event('orientationchange'));paint();},
@@ -505,4 +507,15 @@ describe('decorative guide never owns a gesture',()=>{
    assert.equal(h.commits.length,0);
   }finally{h.unmount();}
  });
+});
+
+
+it('rectangular Board handles fast edge swipes, pivoting and keyboard bounds',()=>{
+ const source=journeyBoard(journeyById('uzay-5')!);
+ // Use a deterministic rectangle even when the original unsanitized source cannot compact.
+ const board={...source,size:10,grid:Array.from({length:10},(_,r)=>Array.from({length:8},(_,c)=>r===9?'DENEMEXY'[c]!: 'A'))};
+ const h=harness();h.setProps({board});h.send('onPointerDown',[9,0]);h.send('onPointerMove',[0,0]);h.send('onPointerMove',[9,5]);h.send('onPointerUp',[9,5]);
+ assert.deepEqual(h.commits.at(-1),{a:[9,0],b:[9,5]});
+ h.focus();for(let i=0;i<20;i++){h.key('ArrowDown');h.key('ArrowRight');}
+ assert.match(h.boardNode().props['aria-label'],/10. satır, 8. sütun/);h.unmount();
 });

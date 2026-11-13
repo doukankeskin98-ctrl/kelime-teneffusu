@@ -1,5 +1,9 @@
 # Kelime Teneffüsü
 
+## 0.49.0 · Tahtaya daha fazla alan
+
+Sıkı hedef rafı ve kayıt koordinatlarını koruyan güvenli dikdörtgen sunum. Gönderilen 5. bölümde harf başına alan 414×736 önizlemede yaklaşık %24 büyüdü; bütün hedefler korundu. [Ölçümler ve sınırlar](docs/release-0.49.0.md).
+
 ## 0.48.1 · Okunaklı hedefler ve mobil yerleşim
 
 Doğal harf aralıkları, çakışmayan 44 px hedef satırları, sahne/kart düzeltmeleri ve genişletilmiş hazırlanmış içerik denetimi. İlerleme ve eski meydan okumalar korunur. [Yayın ve geri dönüş notları](docs/release-0.48.1.md).

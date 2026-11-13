@@ -20,3 +20,8 @@ test('rejects controls outside the viewport, missing controls and undersized tou
  sample.controls=[box(100,510,100,34)];
  assert(layoutProblems(sample).some((s:string)=>s.startsWith('küçük dokunma alanı')));
 });
+
+test('compact word selectors fit their 36px rows; primary controls still require 44px',()=>{
+ const sample={...frame(),targets:[{...box(10,60,100,36),minTouchHeight:36},{...box(10,96,100,36),minTouchHeight:36}]};
+ assert.deepEqual(layoutProblems(sample),[]);sample.controls=[box(10,510,100,36)];assert(layoutProblems(sample).some((s:string)=>s.startsWith('küçük dokunma')));
+});
