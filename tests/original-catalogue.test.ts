@@ -1,6 +1,7 @@
 import {presentationBoard} from '../lib/game/journey-presentation.ts';
 import {worldChapter} from '../lib/game/world-presentation.ts';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {describe,it} from 'node:test';
 import {ACTIVE_THEMES} from '../lib/game/catalog.ts';
 import {ACTIVE_JOURNEYS,journeyById,journeyBoard} from '../lib/game/content.ts';
@@ -12,7 +13,7 @@ import {ARENA_LIBRARY} from '../lib/game/arena-library.ts';
 import {ACTIVE_SPRINT_WORDS} from '../lib/game/sprint-vocabulary.ts';
 import {dailySpec,makePuzzle} from '../lib/game/engine.ts';
 import {fixture} from './fixtures.ts';
-import {challengeCatalogue} from '../lib/game/challenge-content.ts';
+import {challengeCatalogue,challengeContent,type ChallengeContent} from '../lib/game/challenge-content.ts';
 import {SocialService,type ChallengeView} from '../lib/game/social.ts';
 import {newerChallenge} from '../lib/game/challenge-state.ts';
 
@@ -43,6 +44,46 @@ describe('original catalogue retains earned progress',()=>{
  });
 });
 describe('chapter challenges use shared immutable content',()=>{
+ it('keeps an issued 0.48.0 challenge for both players while new challenges use the updated layout',async()=>{
+  const old=JSON.parse(readFileSync(new URL('./fixtures/challenge-0480.json',import.meta.url),'utf8')).content as ChallengeContent;
+  const f=fixture(),service=new SocialService(f.db,f.clock);
+  try{
+   const current=await challengeContent(f.db,old.chapterId,f.clock());
+   assert.notDeepEqual(current.board.grid,old.board.grid,'fixture must exercise an actually changed board');
+   assert.notDeepEqual(current.board.placements,old.board.placements,'fixture must cover relocated targets');
+   const issued=await service.create('alice',old.chapterId);
+   f.sqlite.prepare('UPDATE challenges SET content=? WHERE code=?').run(JSON.stringify(old),issued.code);
+   const oldAlice=await service.state('alice',issued.code),oldBob=await service.start('bob',issued.code);
+   assert.deepEqual(oldAlice.board,oldBob.board);assert.deepEqual(oldAlice.board.grid,old.board.grid);
+   assert(!('placements' in oldBob.board));
+   for(const p of old.board.placements){
+    f.advance(100);
+    await service.claim('alice',issued.code,p.a,p.b);
+    await service.claim('bob',issued.code,p.b,p.a);
+   }
+   for(const id of ['alice','bob']){
+    const resumed=await service.start(id,issued.code);
+    assert(resumed.finished);assert.equal(resumed.strokes.length,old.board.targets.length);
+    assert.deepEqual(resumed.board.grid,old.board.grid);
+   }
+   const oldResult=await service.state('alice',issued.code);
+   assert.equal(oldResult.results.length,2);
+   const next=await service.create('alice',old.chapterId),peer=await service.start('bob',next.code);
+   assert.deepEqual(next.board,peer.board);assert.deepEqual(next.board.grid,current.board.grid);
+   for(const p of current.board.placements){
+    f.advance(100);
+    await service.claim('alice',next.code,p.b,p.a);
+    await service.claim('bob',next.code,p.a,p.b);
+   }
+   assert((await service.state('alice',next.code)).finished);
+   assert((await service.state('bob',next.code)).finished);
+   const preserved=await service.state('alice',issued.code);
+   assert.deepEqual(preserved.results,oldResult.results);
+   assert.equal(preserved.duration,oldResult.duration);
+   assert.equal(preserved.finished,oldResult.finished);
+   assert.deepEqual(preserved.strokes,oldResult.strokes);
+  }finally{f.sqlite.close();}
+ });
  it('lists all active main and optional chapters and all eligible source releases, beyond the shelf page',async()=>{
   const f=fixture(Date.parse('2026-11-06T12:00:00Z'));try{const choices=await challengeCatalogue(f.db,f.clock());assert.equal(choices.length,266);assert.equal(new Set(choices.map(c=>c.id)).size,choices.length);for(const j of ACTIVE_JOURNEYS)assert(choices.some(c=>c.id===j.id),j.id);assert(!choices.some(c=>c.id==='20261027-0002-4000-8000-000000000001'));assert(choices.filter(c=>c.kind==='extra').length>24);}finally{f.sqlite.close();}
  });

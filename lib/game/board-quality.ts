@@ -7,13 +7,14 @@ export const BLOCKED_SEQUENCES = ['SİK', 'PİÇ', 'GÖT', 'AMK', 'OROSPU', 'YAR
 const LITERAL_EXCEPTIONS = new Set(['BİSİKLET', 'BİSİKLETÇİ', 'KLASİK', 'KLASİKLER', 'SİKKE', 'ÇİPURA', 'TOKMAK']);
 
 /**
- * Rules are versioned because shared boards (Arena, daily, Sprint, challenges) must
- * stay byte-identical for every player. `quality-1` is frozen. Solo presentation
- * layouts additionally pass the wider `PRESENTATION_RULES` list below.
+ * `quality-1` remains frozen for existing daily generation and this release's
+ * Arena/Sprint inputs. Arena and challenge runs persist their complete boards;
+ * new catalogue challenges may use the wider presentation layouts without
+ * changing an already-issued challenge. Daily changes need a date boundary.
  */
 export interface QualityRules {version:string; blocked:readonly string[]; exceptions:ReadonlySet<string>}
 export const SHARED_RULES:QualityRules = {version:BOARD_QUALITY_VERSION, blocked:BLOCKED_SEQUENCES, exceptions:LITERAL_EXCEPTIONS};
-/** Wider family-audience list for boards only one player sees. Not a moderation guarantee. */
+/** Wider list for prepared presentation layouts, also copied into new catalogue challenges. Not a moderation guarantee. */
 export const PRESENTATION_BLOCKED = [...BLOCKED_SEQUENCES,
   'AMCIK', 'AMINA', 'AMINI', 'ANANI', 'YARAK', 'TAŞAK', 'İBNE', 'PUŞT', 'KAHPE', 'GAVAT', 'KALTAK', 'SÜRTÜK', 'FAHİŞE',
   'DALYARAK', 'YAVŞAK', 'BOK', 'SIÇ', 'SIK', 'ÇÜK', 'DÖL', 'SEKS', 'PORNO', 'MEME', 'KAKA', 'ÇİŞ', 'PİPİ', 'OSUR',

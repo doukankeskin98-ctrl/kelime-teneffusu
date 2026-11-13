@@ -1,0 +1,185 @@
+{
+  "sourceCommit": "ce70fba830d79161298edc734a8896f3f5148ad4",
+  "content": {
+    "version": 1,
+    "chapterId": "riddle-teknoloji-1",
+    "title": "Atölyenin sırları · İlk ipuçları",
+    "themeId": "teknoloji",
+    "board": {
+      "version": 2,
+      "size": 8,
+      "grid": [
+        [
+          "K",
+          "L",
+          "L",
+          "M",
+          "D",
+          "N",
+          "G",
+          "U"
+        ],
+        [
+          "İ",
+          "N",
+          "O",
+          "Y",
+          "O",
+          "N",
+          "G",
+          "A"
+        ],
+        [
+          "Ş",
+          "A",
+          "C",
+          "İ",
+          "N",
+          "Ü",
+          "O",
+          "A"
+        ],
+        [
+          "G",
+          "R",
+          "L",
+          "I",
+          "A",
+          "G",
+          "İ",
+          "Ü"
+        ],
+        [
+          "T",
+          "K",
+          "P",
+          "N",
+          "N",
+          "H",
+          "G",
+          "N"
+        ],
+        [
+          "M",
+          "E",
+          "Ü",
+          "L",
+          "I",
+          "T",
+          "A",
+          "D"
+        ],
+        [
+          "Z",
+          "E",
+          "R",
+          "I",
+          "M",
+          "A",
+          "R",
+          "I"
+        ],
+        [
+          "I",
+          "C",
+          "I",
+          "Y",
+          "A",
+          "R",
+          "A",
+          "T"
+        ]
+      ],
+      "targets": [
+        {
+          "id": "0.0",
+          "label": "EKRAN",
+          "text": "EKRAN",
+          "group": 0
+        },
+        {
+          "id": "1.0",
+          "label": "TARAYICI",
+          "text": "TARAYICI",
+          "group": 1
+        },
+        {
+          "id": "2.0",
+          "label": "DONANIM",
+          "text": "DONANIM",
+          "group": 2
+        },
+        {
+          "id": "3.0",
+          "label": "YONGA",
+          "text": "YONGA",
+          "group": 3
+        }
+      ],
+      "placements": [
+        {
+          "id": "0.0",
+          "label": "EKRAN",
+          "text": "EKRAN",
+          "group": 0,
+          "a": [
+            5,
+            1
+          ],
+          "b": [
+            1,
+            1
+          ]
+        },
+        {
+          "id": "1.0",
+          "label": "TARAYICI",
+          "text": "TARAYICI",
+          "group": 1,
+          "a": [
+            7,
+            7
+          ],
+          "b": [
+            7,
+            0
+          ]
+        },
+        {
+          "id": "2.0",
+          "label": "DONANIM",
+          "text": "DONANIM",
+          "group": 2,
+          "a": [
+            0,
+            4
+          ],
+          "b": [
+            6,
+            4
+          ]
+        },
+        {
+          "id": "3.0",
+          "label": "YONGA",
+          "text": "YONGA",
+          "group": 3,
+          "a": [
+            1,
+            3
+          ],
+          "b": [
+            1,
+            7
+          ]
+        }
+      ]
+    },
+    "clues": {
+      "EKRAN": "Dijital görüntünün gösterildiği yüzey.",
+      "TARAYICI": "Web sitelerini gezmek için kullanılan program.",
+      "DONANIM": "Bir bilgisayarın elle tutulabilen parçaları.",
+      "YONGA": "Küçük bir yüzeye işlenmiş elektronik devre parçası."
+    }
+  }
+}

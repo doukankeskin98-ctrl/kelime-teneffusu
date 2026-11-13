@@ -6,9 +6,10 @@ import {dailyBoard,SAFE_DAILY_FROM} from '../lib/game/daily-board.ts';
 import {hash} from '../lib/game/engine.ts';
 import {parseSprintHistory,variedSprintBoard} from '../lib/game/sprint-history.ts';
 
-// Every player must receive the same shared board. These digests were recorded from
-// 0.48.0 (ce70fba). A change here means Arena, daily or Sprint boards moved: that
-// needs a new dated generator version, never an edit to the frozen `quality-1` rules.
+// Digests recorded from 0.48.0 (ce70fba) keep these generators stable in this patch.
+// Daily generation needs a date boundary; Arena persists each room's board and
+// Sprint is local single-player. New catalogue challenges may use new layouts:
+// their already-issued board snapshots are covered by original-catalogue.test.ts.
 const digest=(value:unknown)=>createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0,16);
 
 test('daily boards issued before and after the safe boundary are byte-identical to 0.48.0',()=>{

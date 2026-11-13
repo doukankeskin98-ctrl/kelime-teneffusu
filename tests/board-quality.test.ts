@@ -116,7 +116,7 @@ it('uses the same safe future daily on the server for both players, hints and cl
 
 describe('wider family list on solo presentation boards',()=>{
  const rules=boardQualityRules.PRESENTATION_RULES;
- it('clears every prepared solo layout, including bonus, mystery, archive and classic boards',()=>{
+ it('clears every prepared layout, including bonus, mystery, archive and theme levels (not legacy classic mode)',()=>{
   const inputs:[string,ReturnType<typeof journeyBoard>][]=[
    ...ACTIVE_JOURNEYS.map(j=>['route:'+j.id,journeyBoard(j)] as [string,ReturnType<typeof journeyBoard>]),
    ...MYSTERIES.map(m=>['mystery:'+m.id,mysteryBoard(m)] as [string,ReturnType<typeof journeyBoard>]),
