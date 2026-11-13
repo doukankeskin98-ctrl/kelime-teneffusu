@@ -1,6 +1,7 @@
 import {targetSafetyIssues,proseSafetyIssues} from './content-safety.ts';
 import {normalize,splitWord} from './catalog.ts';
 import {PLAYABLE_JOURNEYS} from './content.ts';
+import {reviewNovelty} from './editorial-quality.ts';
 export interface DraftReview {errors:string[];warnings:string[];clues:Record<string,string>|undefined;longest:number}
 /** Editorial diagnostics only. This cannot publish or mutate any existing chapter. */
 export function reviewDraft(words:string[],size:number,definitions:string):DraftReview{
@@ -11,6 +12,9 @@ export function reviewDraft(words:string[],size:number,definitions:string):Draft
  if(longest>size)errors.push(`${longest} harfli hedef bu tahtaya sığmıyor.`);
  const signature=[...normalized].sort().join('|'),duplicate=PLAYABLE_JOURNEYS.find(j=>j.words.map(normalize).sort().join('|')===signature);
  if(duplicate)errors.push(`Bu kelime kümesi mevcut: ${duplicate.title}. Yeni bir bölüm için hedefleri değiştir.`);
+ const novelty=reviewNovelty(words,PLAYABLE_JOURNEYS);
+ if(!duplicate&&novelty.nearCopies.length)errors.push(`Bu bölüm mevcut bir bölümle çok benzer: ${novelty.nearCopies[0]!.title}. En az üç hedef ortak; kelime grubunu yeniden düzenle.`);
+ if(novelty.repeatRatio>.5)warnings.push(`Hedeflerin %${Math.round(novelty.repeatRatio*100)} kadarı önceki bölümlerde kullanılmış. Konuya uygun yeni kelimeler seç.`);
  if(size>9)warnings.push('Küçük telefonda sıkışabilir. Daha kısa hedeflerle 6–9 satırlı tahtayı dene.');
  if(words.length>7)warnings.push('Çok sayıda hedef taramayı zorlaştırabilir. Oynayarak kontrol et.');
  let clues:Record<string,string>|undefined;

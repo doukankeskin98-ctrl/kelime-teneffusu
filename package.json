@@ -1,6 +1,6 @@
 {
   "name": "kelime-teneffusu",
-  "version": "0.50.0",
+  "version": "0.50.1",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -14,7 +14,7 @@
     "db:generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --experimental-transform-types --test tests/*.test.ts",
-    "content:check": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts --check && node --experimental-strip-types --experimental-transform-types scripts/check-content.ts",
+    "content:check": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts --check && node --experimental-strip-types --experimental-transform-types scripts/check-content.ts && pnpm content:quality",
     "mobile:build": "vite build --config mobile/vite.config.ts",
     "mobile:sync": "pnpm mobile:build && cap sync ios",
     "mobile:open": "cap open ios",
@@ -22,7 +22,8 @@
     "mobile:check": "node scripts/verify-mobile.mjs",
     "content:prepare": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts",
     "lint:guard": "node scripts/lint-guard.mjs",
-    "layout:audit": "pnpm mobile:build && node scripts/visual/layout-audit.mjs"
+    "layout:audit": "pnpm mobile:build && node scripts/visual/layout-audit.mjs",
+    "content:quality": "node --experimental-strip-types --experimental-transform-types scripts/check-editorial-quality.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

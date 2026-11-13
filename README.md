@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.50.0** — 312 ana bölüm, 52 rota. [Teslim ve doğrulama](docs/release-0.50.0.md).
+Güncel geliştirme: **0.50.1** — 312 ana bölüm, 52 rota; içerik kabulü, kayıt sınırı koruması ve rota sahneleri. [Teslim ve doğrulama](docs/release-0.50.1.md). [Onay öncesi içerik/kayıt geçiş planı](docs/content-revision-plan-0501.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 

@@ -2,6 +2,8 @@ import {boardIssues,PRESENTATION_RULES} from '../game/board-quality.ts';
 import {targetSafetyIssues,proseSafetyIssues} from '../game/content-safety.ts';
 import {ALL_THEMES as THEMES,normalize} from '../game/catalog.ts';
 import {makeCustomPuzzle,exactLine,type Puzzle} from '../game/engine.ts';
+import {PLAYABLE_JOURNEYS} from '../game/content.ts';
+import {reviewNovelty} from '../game/editorial-quality.ts';
 
 export class StudioError extends Error {status:number;constructor(message:string,status=400){super(message);this.status=status;}}
 export interface ChapterSpec {title:string;themeId:string;words:string[];size:number;seed:number;difficulty:'Rahat'|'Dengeli'|'Ustalık';note:string}
@@ -40,6 +42,7 @@ export const NEW_CHAPTER:ChapterSpec={title:'Küçük bir keşif',themeId:'uzay'
 export function checkNewChapter(raw:unknown){
  const spec=parseChapterSpec(raw);
  if(spec.words.some(w=>targetSafetyIssues(w).length)||proseSafetyIssues(spec.title+' '+spec.note).length)throw new StudioError('Bölüm içeriği güvenlik incelemesi gerektiriyor.');
+ if(reviewNovelty(spec.words,PLAYABLE_JOURNEYS).nearCopies.length)throw new StudioError('Bu kelime grubu mevcut bir bölüme çok benziyor. En az üç hedef ortak; farklı hedefler seç.');
  const checked=checkChapter(spec);
  if(boardIssues(checked.board,PRESENTATION_RULES).length)throw new StudioError('Harf yerleşimi içerik denetiminden geçemedi. Yerleşim numarasını değiştirip yeniden dene.');
  return checked;

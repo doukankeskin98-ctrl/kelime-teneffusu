@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
 import {RELEASE_BATCHES,releasedChapter} from '../lib/studio/releases.ts';
 import {ChapterStore,AdminStore} from '../lib/studio/store.ts';
-import {StudioError} from '../lib/studio/content.ts';
+import {StudioError,NEW_CHAPTER} from '../lib/studio/content.ts';
 import {cleanSave} from '../lib/game/progress.ts';
 import {digest} from '../lib/game/security.ts';
 import {cardProgress,parseCardProgress,mergeCardProgress,chapterCardCopy} from '../lib/studio/card-progress.ts';
@@ -51,9 +51,9 @@ describe('private batched chapter card reads',()=>{
  });
  it('rejects malformed and oversized batches and omits unknown or unpublished editor IDs',async()=>{
   const f=fixture(now),store=new ChapterStore(f.db,f.clock),denied=(e:unknown)=>e instanceof StudioError&&e.status===400;await assert.rejects(()=>store.cardProgress('alice',[]),denied);await assert.rejects(()=>store.cardProgress('alice',['not-an-id']),denied);await assert.rejects(()=>store.cardProgress('alice',Array(25).fill(chapter.id)),denied);assert.equal((await store.cardProgress('alice',['11111111-1111-4111-8111-111111111111'])).chapters.length,0);
-  const token='e'.repeat(64),admin=new AdminStore(f.db,{hash:await digest('kelime-admin-setup-v1:'+token),expiresAt:String(now+86400000)},f.clock);await admin.claim('owner',token);const draft=await admin.saveDraft('owner',chapter.spec);assert.equal((await store.cardProgress('alice',[draft.id])).chapters.length,0);
+  const token='e'.repeat(64),admin=new AdminStore(f.db,{hash:await digest('kelime-admin-setup-v1:'+token),expiresAt:String(now+86400000)},f.clock);await admin.claim('owner',token);const draft=await admin.saveDraft('owner',NEW_CHAPTER);assert.equal((await store.cardProgress('alice',[draft.id])).chapters.length,0);
  });
  it('retains a completed editor chapter’s card after reversible archiving',async()=>{
-  const f=fixture(now),token='f'.repeat(64),admin=new AdminStore(f.db,{hash:await digest('kelime-admin-setup-v1:'+token),expiresAt:String(now+86400000)},f.clock),store=new ChapterStore(f.db,f.clock);await admin.claim('owner',token);const draft=await admin.saveDraft('owner',chapter.spec),published=await admin.transition('owner',draft.id,'publish',draft.revision,draft.spec.title);await store.saveProgress('alice',published.id,save(100,30));await admin.transition('owner',published.id,'archive',published.revision,published.spec.title);const read=await store.cardProgress('alice',[published.id]);assert.equal(read.chapters[0]!.progress.complete,true);assert.equal(read.chapters[0]!.progress.stars,3);
+  const f=fixture(now),token='f'.repeat(64),admin=new AdminStore(f.db,{hash:await digest('kelime-admin-setup-v1:'+token),expiresAt:String(now+86400000)},f.clock),store=new ChapterStore(f.db,f.clock);await admin.claim('owner',token);const draft=await admin.saveDraft('owner',NEW_CHAPTER),published=await admin.transition('owner',draft.id,'publish',draft.revision,draft.spec.title);await store.saveProgress('alice',published.id,cleanSave({strokes:published.board.placements,elapsed:30,hints:0,complete:false,stars:0},published.board));await admin.transition('owner',published.id,'archive',published.revision,published.spec.title);const read=await store.cardProgress('alice',[published.id]);assert.equal(read.chapters[0]!.progress.complete,true);assert.equal(read.chapters[0]!.progress.stars,3);
  });
 });
