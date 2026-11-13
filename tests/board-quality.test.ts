@@ -10,6 +10,7 @@ import {ACTIVE_JOURNEYS,journeyBoard,MYSTERIES,mysteryBoard,TUTORIAL} from '../l
 import {MAIN_JOURNEY} from '../lib/game/main-journey.ts';
 import {dailySpec,makePuzzle,hash,makeCustomPuzzle,match} from '../lib/game/engine.ts';
 import {boardIssues,canonicalStroke,presentationStrokes,qualityPuzzle,wordSegments} from '../lib/game/board-quality.ts';
+import * as boardQualityRules from '../lib/game/board-quality.ts';
 import {presentationBoard,journeyPolicy} from '../lib/game/journey-presentation.ts';
 import {cleanSave,emptyProgress,loadProgress,mergeProgress,collectionStats} from '../lib/game/progress.ts';
 import {chapterVeils} from '../lib/game/world-presentation.ts';
@@ -111,4 +112,53 @@ it('uses the same safe future daily on the server for both players, hints and cl
   const target=b.placements[0]!,receipt=await f.game.dailyClaim('safe-a',alice.id,target.b,target.a);
   assert.equal(receipt.strokes.length,1);assert.equal(receipt.strokes[0]!.id,target.id);
  }finally{f.sqlite.close();}
+});
+
+describe('wider family list on solo presentation boards',()=>{
+ const rules=boardQualityRules.PRESENTATION_RULES;
+ it('clears every prepared layout, including bonus, mystery, archive and theme levels (not legacy classic mode)',()=>{
+  const inputs:[string,ReturnType<typeof journeyBoard>][]=[
+   ...ACTIVE_JOURNEYS.map(j=>['route:'+j.id,journeyBoard(j)] as [string,ReturnType<typeof journeyBoard>]),
+   ...MYSTERIES.map(m=>['mystery:'+m.id,mysteryBoard(m)] as [string,ReturnType<typeof journeyBoard>]),
+   ...Object.keys(BONUS_WORDS).map(id=>['bonus:'+id,bonusBoard(id)] as [string,ReturnType<typeof journeyBoard>]),
+   ...RELEASE_BATCHES.flatMap(b=>b.chapters).filter(({chapter:c})=>!RETIRED_RELEASE_IDS.has(c.id)).map(({chapter:c})=>['release:'+c.id,c.board] as [string,ReturnType<typeof journeyBoard>]),
+   ...ACTIVE_THEMES.flatMap(t=>Array.from({length:6},(_,level)=>[`${t.id}.${level}`,makePuzzle(t.id,level,hash(`campaign-v2:${t.id}:${level}`))] as [string,ReturnType<typeof journeyBoard>])),
+   ['tutorial',TUTORIAL],
+  ];
+  assert(inputs.length>=395);
+  for(const [key,source] of inputs){
+   const display=presentationBoard(source,key);
+   assert.deepEqual(boardQualityRules.boardIssues(display,rules),[],key);
+   assert.deepEqual(display.targets,source.targets,key);
+   for(const p of display.placements)assert.equal(match(display,p.a,p.b)?.text,p.text,key);
+  }
+ });
+ it('repairs a hit by replacing filler only, leaving every target on its cells',()=>{
+  const source=makeCustomPuzzle(['ELMA','ARMUT','KİRAZ'],7,7),clean=qualityPuzzle(source,7,{size:7});
+  const onTarget=new Set(clean.placements.flatMap(p=>{const dr=Math.sign(p.b[0]-p.a[0]),dc=Math.sign(p.b[1]-p.a[1]);return [...p.text].map((_,i)=>(p.a[0]+dr*i)+','+(p.a[1]+dc*i));}));
+  // Plant BOK on three free cells in a row; skip the fixture if this layout has no such run.
+  let planted:number[][]|null=null;
+  for(let r=0;r<7&&!planted;r++)for(let c=0;c+2<7&&!planted;c++)if([0,1,2].every(i=>!onTarget.has(r+','+(c+i))))planted=[[r,c],[r,c+1],[r,c+2]];
+  assert(planted,'fixture needs three adjacent filler cells');
+  const dirty={...clean,grid:clean.grid.map(row=>[...row])};planted.forEach(([r,c],i)=>{dirty.grid[r!]![c!]='BOK'[i]!;});
+  assert(boardQualityRules.boardIssues(dirty,rules).some(issue=>issue.text==='BOK'));
+  const fixed=boardQualityRules.repairFiller(dirty,7,rules);assert(fixed);
+  assert.deepEqual(boardQualityRules.boardIssues(fixed,rules),[]);
+  assert.deepEqual(fixed.placements,dirty.placements);
+  let changed=0;
+  for(let r=0;r<7;r++)for(let c=0;c<7;c++)if(fixed.grid[r]![c]!==dirty.grid[r]![c]){changed++;assert(!onTarget.has(r+','+c),'target letter changed');}
+  assert(changed>=1&&changed<=3);
+  assert.deepEqual(boardQualityRules.repairFiller(dirty,7,rules),fixed,'deterministic');
+ });
+ it('keeps reviewed real words and names an unreviewed one for the content author',()=>{
+  const source=makeCustomPuzzle(['SEKSEK','GEÇİŞ','ELMA'],11,8),board=qualityPuzzle(source,11,{size:8},rules);
+  assert.deepEqual(boardQualityRules.boardIssues(board,rules),[]);
+  assert.deepEqual(board.targets.map(t=>t.text).sort(),['ELMA','GEÇİŞ','SEKSEK']);
+  assert.throws(()=>qualityPuzzle(makeCustomPuzzle(['KÜÇÜK','ELMA'],3,7),3,{size:7},rules),/"KÜÇÜK" hedefi "ÇÜK" dizisini içeriyor/);
+  assert.throws(()=>qualityPuzzle(makeCustomPuzzle(['KISA','ELMA'],3,7),3,{size:7},rules),/"KISA" hedefi "SIK" dizisini içeriyor/);
+ });
+ it('leaves the frozen shared rules exactly as issued',()=>{
+  assert.deepEqual([...boardQualityRules.SHARED_RULES.blocked],['SİK','PİÇ','GÖT','AMK','OROSPU','YARRAK','SİKTİR','PEZEVENK']);
+  assert.equal(boardQualityRules.SHARED_RULES.version,'quality-1');
+ });
 });

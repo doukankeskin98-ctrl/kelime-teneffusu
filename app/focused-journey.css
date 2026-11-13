@@ -33,10 +33,20 @@
 .scenic-play .target-topic>span{font-size:12px;line-height:20px;font-weight:700;font-variant-numeric:tabular-nums;color:#e3eadb}
 .scenic-play .viewport-targets:has(.target-topic){border-radius:14px;background:#fffdf4;overflow:hidden}
 .scenic-play .target-rack,.game-app .scenic-play .target-rack{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 12px!important;padding:4px 8px!important;border-radius:0 0 13px 13px}
-.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:calc(var(--word-chars)*.64em + 4px);max-width:100%;min-height:44px!important;height:auto;font-size:18px!important;line-height:24px}
+.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:auto;min-width:44px;max-width:100%;min-height:44px!important;height:auto;font-size:18px!important;line-height:24px}
+/* A veiled word keeps its slot width, so revealing it never reflows the rack. */
+.scenic-play .target-rack .word-tag.veiled-target,.game-app .scenic-play .target-rack .word-tag.veiled-target{min-width:max(44px,calc(var(--word-chars)*.64em + 4px))}
 .scenic-play .target-rack .word-tag>div{width:auto;max-width:100%}
 .target-letters{display:inline-flex;flex-wrap:wrap;justify-content:center;max-width:100%;vertical-align:middle}
-.target-letters>[data-target-letter]{display:inline-flex;align-items:center;justify-content:center;width:.64em;min-height:1.25em;line-height:1.25em;text-decoration:inherit;flex:none}
+/* Open letters keep the typeface's own widths (I and İ are narrow, M is wide);
+   only masked placeholders use a fixed slot. */
+.target-letters>[data-target-letter]{display:inline-flex;align-items:center;justify-content:center;width:auto;padding:0 .025em;min-height:1.25em;line-height:1.25em;text-decoration:inherit;flex:none}
+.target-letters>.masked-letter{width:.64em;padding:0}
+/* Until a veiled word is found, its open letters share the placeholder grid, so a
+   first-letter clue lines up with the masks and the word stays inside its slot. */
+.word-tag.veiled-target:not(.found) .target-letters>[data-target-letter]{width:.64em;padding:0}
+/* A rack entry is one word (multi-word names are separate parts): never break it. */
+.target-rack .target-letters{flex-wrap:nowrap}
 .target-letters>.target-space{width:.35em}
 .target-letters>.masked-letter{font-size:1em;font-weight:800}
 /* Each adjacent letter cell owns its segment: flex layout cannot swallow the
@@ -67,6 +77,8 @@
 .modal.game-dialog.ordinary-outcome.scene-result{min-height:min(560px,calc(100svh - 80px - env(safe-area-inset-top,0px)))}
 .ordinary-outcome .compact-keepsake .result-keepsake-art{display:none}
 .ordinary-outcome .compact-keepsake p{display:none}
+/* Without its thumbnail the piece name is a centred line like the title and stars above it. */
+.modal.game-dialog.scenic-outcome.scene-result.ordinary-outcome .result-keepsake.compact-keepsake{text-align:center}
 .ordinary-outcome .result-album-progress{padding-top:8px!important}
 .ordinary-outcome .result-star{animation-duration:.42s}
 @media(max-width:380px){.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{font-size:16px!important}.scenic-play .clue-slot>button>.clue-word{font-size:15px}.scenic-play .target-topic h1{font-size:17px}}
@@ -82,7 +94,7 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 .game-tools-modal .journey-albums .album-piece-dots i{color:#dce8d9;border-color:#cfe1cc66;background:transparent}
 .game-tools-modal .journey-albums .album-piece-dots i.earned{background:#d8e8c7;color:#244e3c}
 /* Legacy 12×12 saves still show every normal target; no clipped hidden row. */
-.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex-basis:calc(var(--word-chars)*.64em + 4px)!important}
+.scenic-play .target-rack .word-tag.veiled-target,.game-app .scenic-play .target-rack .word-tag.veiled-target{flex-basis:calc(var(--word-chars)*.64em + 4px)!important}
 .scenic-play .viewport-targets:not([data-many]) .target-rack{max-height:none!important;overflow:visible!important}
 .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{font-size:16px!important}
 
@@ -130,4 +142,18 @@ button.native-stars{min-height:44px;border:0;cursor:pointer}
 }
 
 /* Dense racks use the same 16px letter cells for sizing as for painting. */
-.scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{flex-basis:calc(var(--word-chars)*10.24px + 4px)!important;width:calc(var(--word-chars)*10.24px + 4px)}
+.scenic-play[data-dense-board] .target-rack .word-tag.veiled-target,.game-app .scenic-play[data-dense-board] .target-rack .word-tag.veiled-target{flex-basis:calc(var(--word-chars)*10.24px + 4px)!important;width:auto;min-width:calc(var(--word-chars)*10.24px + 4px)}
+/* Open words size to their own letters in every rack density, so a wide word
+   never breaks mid-word and a narrow one carries no empty slot around it. */
+.scenic-play .target-rack .word-tag:not(.veiled-target),.game-app .scenic-play .target-rack .word-tag:not(.veiled-target){flex-basis:auto!important;width:auto}
+.scenic-play[data-dense-board] .target-rack .target-letters>[data-target-letter]:not(.masked-letter){padding:0}
+/* Keep adjacent hit areas separate on short phones. Reclaim space from passive
+   chrome, not the 44px target rows or the board's minimum cell size. */
+@media(max-height:600px) and (orientation:portrait){
+ .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 10px!important;padding:1px 6px!important}
+ .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:44px!important;font-size:15px!important;line-height:20px}
+ .quiet-play[data-dense-board] .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){margin-top:0!important}
+ .quiet-play[data-dense-board] .play-columns{margin-top:2px!important}
+ .quiet-play[data-dense-board] .targets-panel{margin-bottom:4px!important}
+ .quiet-play[data-dense-board] .target-topic{padding-block:2px}
+}
