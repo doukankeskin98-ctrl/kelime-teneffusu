@@ -40,7 +40,7 @@
 .modal.game-dialog.scenic-outcome.scene-result .achievement-secondary .text-button{min-height:44px;font-size:13px;opacity:1}
 .modal.game-dialog.scenic-outcome.scene-result .modal-actions .primary{min-height:64px;font-size:20px;line-height:1.2}
 .modal.game-dialog.scenic-outcome.scene-result .continue-topic{font-size:13px;line-height:1.4;margin-top:5px}
-.modal.game-dialog.scenic-outcome.scene-result :focus-visible{outline:2px solid #fff1bb;outline-offset:3px}
+.modal.game-dialog.scenic-outcome.scene-result :focus-visible:not(h2){outline:2px solid #fff1bb;outline-offset:3px}
 
 @media(max-height:650px){
  .modal.game-dialog.scenic-outcome.scene-result{min-height:0}

@@ -219,6 +219,45 @@ describe('confirmed Challenge and phase-based Sprint sound',()=>{
  });
 });
 
+describe('first-word guidance yields to real play',()=>{
+ it('keeps help after a miss, retires it after a successful presented word, and preserves the saved board',async()=>{
+  let p=progress.emptyProgress();const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
+  const props={config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:p,onProgress(fn:(value:ReturnType<typeof progress.emptyProgress>)=>ReturnType<typeof progress.emptyProgress>){p=fn(p);},onBack(){},onMap(){},onNext(){}};
+  try{
+   h.start('Solo',props);const layout=h.find('PlayLayout'),shown=layout.props['board'],guide=h.find('FirstPlayGuide').props['guide'];
+   assert.ok(walk(layout.props['footer']).some(n=>n.type==='FirstPlayGuide'));
+   layout.props['onCommit']([0,0],[0,0]);await h.settle();assert.notEqual(p.guideDone,true);assert.equal(h.find('FirstPlayGuide').props['guide'].step,1);
+   layout.props['onCommit'](guide.target.a,guide.target.b);await h.settle();
+   assert.equal(walk(h.tree).some(n=>n.type==='FirstPlayGuide'),false);assert.equal(h.find('PlayLayout').props['demonstration'],undefined);
+   assert.equal(typeof h.find('PlayControls').props['onTurn'],'function');assert.equal(p.guideDone,true);assert.equal(p.tutorialDone,false);
+   assert.equal(p.saves['route:uzay-1']?.strokes.length,1);assert.equal(p.saves['route:uzay-1']?.complete,false);assert.equal(p.saves['route:uzay-1']?.hints,0);
+   assert.equal(h.find('PlayLayout').props['board'],shown);assert.equal(Object.values(p.saves).some(s=>s.complete),false);
+   const canonical=content.journeyBoard(content.journeyById('uzay-1')!);const stroke=p.saves['route:uzay-1']!.strokes[0]!;
+   assert.ok(engine.match(canonical,stroke.a,stroke.b));
+  }finally{h.close();}
+ });
+ it('keeps hint and near-miss guidance visible in the existing guide',async()=>{
+  let p=progress.emptyProgress();const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
+  try{
+   h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:p,onProgress(fn:(value:ReturnType<typeof progress.emptyProgress>)=>ReturnType<typeof progress.emptyProgress>){p=fn(p);},onBack(){},onMap(){},onNext(){}});
+   const target=h.find('FirstPlayGuide').props['guide'].target;
+   await h.find('PlayControls').props['onHint']();await h.settle();assert.match(h.find('FirstPlayGuide').props['feedback'],/ilk harf/i);
+   const end=target.b.map((n:number,i:number)=>n-Math.sign(n-target.a[i]));
+   await h.find('PlayLayout').props['onCommit'](target.a,end);await h.settle();assert.match(h.find('FirstPlayGuide').props['feedback'],/harfine kadar kaydır/);
+   assert.notEqual(p.guideDone,true);assert.equal(p.saves['route:uzay-1']?.strokes.length,0);assert.equal(p.saves['route:uzay-1']?.hints,1);
+  }finally{h.close();}
+ });
+ for(const flag of ['guideDone','tutorialDone'] as const)it('honors a late '+flag+' preference without changing the active board',()=>{
+  const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs}),p=progress.emptyProgress();
+  const props={config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}};
+  try{h.start('Solo',props);const shown=h.find('PlayLayout').props['board'];assert.equal(h.find('FirstPlayGuide').props['guide'].step,1);h.update('Solo',{...props,progress:{...p,[flag]:true}});assert.equal(walk(h.tree).some(n=>n.type==='FirstPlayGuide'),false);assert.equal(h.find('PlayLayout').props['board'],shown);assert.equal(h.find('PlayLayout').props['strokes'].length,0);}finally{h.close();}
+ });
+ it('still demonstrates the deliberately opened practice lesson for an experienced player',()=>{
+  const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
+  try{h.start('Solo',{config:{themeId:'uzay',level:0,tutorial:true},progress:{...progress.emptyProgress(),guideDone:true,tutorialDone:true},onProgress(){},onBack(){},onMap(){},onNext(){}});assert.ok(h.find('FirstPlayGuide').props['guide'].target);assert.ok(h.find('PlayLayout').props['demonstration']);}finally{h.close();}
+ });
+});
+
 describe('actual numbered Solo completes, advances and replays without new awards',()=>{
  it('persists real completion and opens the correct numbered next chapter',async()=>{
   let p=familiarProgress();const calls:any[]=[],h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});

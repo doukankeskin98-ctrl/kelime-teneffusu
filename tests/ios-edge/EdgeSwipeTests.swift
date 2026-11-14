@@ -85,3 +85,56 @@ final class ReleaseFlowTests: XCTestCase {
 
     }
 }
+
+// Dedicated fresh-install bundle: never opens or resets the player's application.
+final class FirstSessionTests: XCTestCase {
+    func testGuideHintSuccessAndResume() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication(bundleIdentifier: "com.kelimeteneffusu.firstsession0521qa")
+        app.launch()
+        let play = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Bölüm 1")).firstMatch
+        XCTAssertTrue(play.waitForExistence(timeout: 30), app.debugDescription)
+        play.tap()
+        let board = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Kelime tahtası.")).firstMatch
+        let skip = app.buttons["İlk oyun rehberini kapat"].firstMatch
+        XCTAssertTrue(board.waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertTrue(skip.exists)
+        let initialTop = board.frame.minY
+        func proof(_ name: String) {
+            let attachment = XCTAttachment(screenshot: app.screenshot())
+            attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+        }
+        func draw(_ row: CGFloat, _ start: CGFloat, _ end: CGFloat) {
+            let rect = board.frame
+            func cell(_ column: CGFloat) -> XCUICoordinate {
+                app.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: rect.minX + (column + 0.5) * rect.width / 6, dy: rect.minY + (row + 0.5) * rect.height / 6))
+            }
+            cell(start).press(forDuration: 0.08, thenDragTo: cell(end), withVelocity: .slow, thenHoldForDuration: 0.05)
+        }
+        proof("first-session-guide")
+        app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "İpucu")).firstMatch.tap()
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "ilk harfi")).firstMatch.waitForExistence(timeout: 3), app.debugDescription)
+        draw(5,1,4)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "harfine kadar kaydır")).firstMatch.waitForExistence(timeout: 3), app.debugDescription)
+        proof("first-session-near-miss")
+        draw(5,1,5)
+        expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: skip)
+        waitForExpectations(timeout: 4)
+        XCTAssertEqual(board.frame.minY, initialTop, accuracy: 2)
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Tahtayı")).firstMatch.exists, app.debugDescription)
+        proof("first-session-success")
+        draw(3,1,5); draw(1,1,4); draw(4,0,5)
+        let heading = app.staticTexts["Tebrikler!"].firstMatch
+        let next = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Sonraki bölüm")).firstMatch
+        XCTAssertTrue(heading.waitForExistence(timeout: 8), app.debugDescription)
+        expectation(for: NSPredicate { _, _ in heading.isHittable && next.isHittable }, evaluatedWith: nil)
+        waitForExpectations(timeout: 5)
+        proof("first-session-result")
+        next.tap()
+        XCTAssertTrue(app.staticTexts["Bölüm 2"].firstMatch.waitForExistence(timeout: 5), app.debugDescription)
+        XCTAssertFalse(skip.exists)
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Bölüm 2")).firstMatch.waitForExistence(timeout: 15), app.debugDescription)
+        proof("first-session-reopen")
+    }
+}
