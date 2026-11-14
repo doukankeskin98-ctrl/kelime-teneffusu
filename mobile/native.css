@@ -1,1 +1,6 @@
 html,body,#root{margin:0;min-height:100%;overscroll-behavior:none}body{-webkit-touch-callout:none}input,textarea{-webkit-touch-callout:default}html[data-native-app=true] .mobile-nav{padding-bottom:max(6px,env(safe-area-inset-bottom))}html[data-native-app=true] .native-scene{background-color:#163c32}
+
+html[data-native-app=true] body{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+html[data-native-app=true] input,html[data-native-app=true] textarea,html[data-native-app=true] [contenteditable=true]{-webkit-user-select:text;user-select:text;touch-action:auto}
+html[data-native-app=true] img{-webkit-user-drag:none}
+.modal-head h2:focus:not(:focus-visible){outline:none}

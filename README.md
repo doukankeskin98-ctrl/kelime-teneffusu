@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.51.0** — 312 ana bölüm korunur; çift kayıt okuyucu, doğrulanan kompakt gölge ve revizyon uyumluluğu. Kalıcı v3 yazımı ve yeni rev2 seçimi kapalı. [Teslim ve doğrulama](docs/release-0.51.0.md). [Onaylı geçiş planı](docs/content-revision-plan-0501.md).
+Güncel geliştirme: **0.52.0** — açılış, kontrollü hareket, Arena otomatik başlangıcı ve altı kapalı içerik adayı. 312 bölüm ve kayıt uyumluluğu korunur. [Teslim](docs/release-0.52.0.md) · [Mağaza hazırlığı](docs/app-store-readiness.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 

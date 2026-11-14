@@ -5,5 +5,6 @@ class GameBridgeViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(GameHapticsPlugin())
         bridge?.registerPluginInstance(GameSharingPlugin())
         bridge?.registerPluginInstance(GameCenterPlugin())
+        bridge?.registerPluginInstance(GameEngagementPlugin())
     }
 }

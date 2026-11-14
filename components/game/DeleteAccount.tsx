@@ -1,4 +1,5 @@
 'use client';
+import {setDailyReminder} from '@/lib/platform/engagement';
 import {useRef,useState} from 'react';
 import {getAuthClient,bearerHeaders,signOutProvider} from '@/lib/auth/firebase-client';
 import {appFetch} from '@/lib/platform/runtime';
@@ -13,7 +14,7 @@ export function DeleteAccount({owner,kind,onBusy,onErased}:{owner?:string;kind?:
    localStorage.setItem(ERASURE_KEY,JSON.stringify(job));if(localStorage.getItem(ERASURE_KEY)!==JSON.stringify(job))throw new Error('Silme işleminin devam bilgisi saklanamadı. Hiçbir istek gönderilmedi.');setPending(job);
    const headers=await bearerHeaders().catch(()=>({}));const r=await appFetch('/api/account/delete',{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify({receipt:job.receipt,expectedOwner:job.owner,confirm:'DELETE'})}),v=await r.json() as {erased?:boolean;complete?:boolean;requiresEmail?:boolean;error?:string};
    if(v.requiresEmail)setNeedsEmail(true);if(!r.ok)throw new Error(v.error??'Hesap silinemedi. Kayıtların korunuyor.');
-   if(v.erased){job={...job,erased:true};localStorage.setItem(ERASURE_KEY,JSON.stringify(job));setPending(job);clearErasedProgress(job.owner,localStorage,sessionStorage);onErased();}
+   if(v.erased){job={...job,erased:true};localStorage.setItem(ERASURE_KEY,JSON.stringify(job));setPending(job);clearErasedProgress(job.owner,localStorage,sessionStorage);try{const reminder=await setDailyReminder(false);if(reminder.enabled)throw new Error();}catch{throw new Error('Hesabın silindi, ancak bu cihazdaki hatırlatma kapatılamadı. Silme işlemini kontrol ederek yeniden dene.');}onErased();}
    if(!v.complete)throw new Error(v.error??'Hesap kapanışı bekliyor. Tekrar dene.');
    await signOutProvider();localStorage.removeItem(ERASURE_KEY);
    if(kind==='native')location.assign('/signout-with-chatgpt?return_to=%2F');else location.assign('/');

@@ -10,7 +10,7 @@ async function group(count=4,quick=false){
  if(!quick)await Promise.all(users.slice(1).map(u=>s.game.enter(u,'friend',first.code)));
  return {...s,users,id:first.id,code:first.code};
 }
-async function start(s:Awaited<ReturnType<typeof group>>,round:number){await Promise.all(s.users.map(u=>s.game.ready(u,s.id,round)));const v=await s.game.start(s.room(s.id).players.find(p=>!p.left)!.id,s.id,round);s.advance(4000);return v;}
+async function start(s:Awaited<ReturnType<typeof group>>,round:number){await Promise.all(s.users.map(u=>s.game.ready(u,s.id,round)));const v=await s.game.start(s.room(s.id).players.find(p=>!p.left)!.id,s.id,round);s.advance(v.starts!-s.clock());return v;}
 async function win(s:Awaited<ReturnType<typeof group>>,who:string,round:number){for(const p of s.puzzle(s.id).placements)await s.game.claim(who,s.id,p.a,p.b,round);return (await s.game.state(who,s.id))!;}
 
 describe('public quick groups share one authoritative lobby',()=>{

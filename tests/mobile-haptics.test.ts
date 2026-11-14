@@ -1,3 +1,4 @@
+import {attachIncomingLinks} from '../lib/platform/incoming-links.ts';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {it} from 'node:test';
@@ -22,7 +23,7 @@ function boot(native=true,available=true){
   '@/lib/platform/runtime':{setNativeTransport(){},setGameActive:(value:boolean)=>{active=value;},gameIsActive:()=>active},
   '@/lib/platform/native-transport':{nativeApiTransport:()=>{}},'@/lib/platform/native-haptics':{nativeHaptics},
   '@/lib/game/haptics':{setHapticsAdapter:(value:HapticsAdapter)=>{adapter=value;},stopHapticSelection:()=>adapter?.stopSelection?.()},
-  '@/app/game-styles.css':{},'./game-center':{installNativeGameCenter(){}},'./native.css':{},'./sharing':{installNativeSharing(){}}
+  '@/lib/platform/engagement':{setEngagementAdapter(){}},'@/lib/platform/incoming-links':{attachIncomingLinks},'@/app/game-styles.css':{},'./game-center':{installNativeGameCenter(){}},'./native.css':{},'./sharing':{installNativeSharing(){}}
  };
  const document=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},getElementById:()=>({})});
  vm.runInNewContext(compiled,{exports:{},require:(name:string)=>{assert(name in modules,name);return modules[name];},window:new EventTarget(),document,Event,requestAnimationFrame:(fn:()=>void)=>{fn();return 1;}});

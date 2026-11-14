@@ -5,7 +5,7 @@ function fixture(state='running'){
  const nodes:{kind:string;stops:number[];started:number[];disconnected:boolean;onended?:()=>void;gain:any}[]=[],params:{method:string;values:number[]}[]=[];
  let creates=0,resumes=0,closes=0,wall=1000,level=.3;
  const param=()=>({value:0,...Object.fromEntries(['setValueAtTime','linearRampToValueAtTime','exponentialRampToValueAtTime','setTargetAtTime','cancelScheduledValues'].map(method=>[method,(...values:number[])=>params.push({method,values})]))});
- const node=(kind:string)=>{const n={kind,stops:[] as number[],started:[] as number[],disconnected:false,gain:param(),frequency:param(),Q:param(),threshold:param(),knee:param(),ratio:param(),attack:param(),release:param(),type:'',connect(){},disconnect(){n.disconnected=true;},start(t:number){n.started.push(t);},stop(t:number){n.stops.push(t);}};nodes.push(n);return n;};
+ const node=(kind:string)=>{const n={kind,stops:[] as number[],started:[] as number[],disconnected:false,gain:param(),frequency:param(),Q:param(),playbackRate:param(),threshold:param(),knee:param(),ratio:param(),attack:param(),release:param(),type:'',connect(){},disconnect(){n.disconnected=true;},start(t:number){n.started.push(t);},stop(t:number){n.stops.push(t);}};nodes.push(n);return n;};
  const ctx={state,currentTime:10,onstatechange:null as (()=>void)|null,destination:{},createGain:()=>node('gain'),createBiquadFilter:()=>node('filter'),createDynamicsCompressor:()=>node('compressor'),createOscillator:()=>node('osc'),createBuffer:()=>({}),createBufferSource:()=>node('buffer'),resume:async()=>{resumes++;},close:async()=>{closes++;ctx.state='closed';}};
  const sound=new GameSound(()=>{creates++;return ctx as unknown as AudioContext;},()=>level,()=>wall);
  return {sound,ctx,nodes,params,setLevel(value:number){level=value;sound.refreshVolume();},advance(ms:number){wall+=ms;},get creates(){return creates;},get resumes(){return resumes;},get closes(){return closes;},osc:()=>nodes.filter(n=>n.kind==='osc')};
@@ -85,4 +85,18 @@ describe('stronger adjustable mix and bounded melodic letter channel',()=>{
   for(const cue of Object.keys(SOUND_PHRASES) as (keyof typeof SOUND_PHRASES)[]){assert(peak(cue)<.55,cue);if(SOUND_PHRASES[cue].priority>0&&SOUND_PHRASES[cue].priority<4)assert(peak(cue)+peak('letter')<.8,cue);}
   assert.equal(soundLevel(0),0);assert.equal(soundLevel(1),1);assert.equal(soundLevel('.73'),.73);
  });
+});
+
+it('decoded one-shots use immediate finite playback, pitched letters and stop on background',async()=>{
+ const previous=Object.getOwnPropertyDescriptor(globalThis,'window');
+ Object.defineProperty(globalThis,'window',{configurable:true,value:{fetch:async()=>new Response(new Uint8Array(8))}});
+ const f=fixture();Object.assign(f.ctx,{decodeAudioData:async()=>({duration:.12})});
+ try{
+  f.sound.setEnabled(true);f.sound.unlock();for(let n=0;n<30;n++)await Promise.resolve();
+  assert(f.sound.play('word'));assert.equal(f.osc().length,0);
+  const sample=f.nodes.find(n=>n.kind==='buffer')!;assert.deepEqual(sample.started,[10]);
+  assert(f.sound.play('letter',3));assert(f.params.some(p=>p.method==='setValueAtTime'&&p.values[0]===2**(4/12)));
+  f.sound.setVisible(false);assert(sample.stops.includes(10.025));assert(!f.sound.play('word'));
+  for(const n of f.nodes.filter(n=>n.kind==='buffer')){n.onended?.();assert(n.disconnected);}
+ }finally{f.sound.dispose();if(previous)Object.defineProperty(globalThis,'window',previous);else Reflect.deleteProperty(globalThis,'window');}
 });

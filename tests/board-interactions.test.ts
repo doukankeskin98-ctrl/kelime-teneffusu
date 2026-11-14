@@ -22,11 +22,14 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  const slots:Slot[]=[],effects:(()=>void)[]=[],frames=new Map<number,()=>void>(),exports:Record<string,any>={};
  const windowTarget=new EventTarget(),documentTarget=Object.assign(new EventTarget(),{hidden:false});
  let selections=0,selectionEnds=0,renders=0,pathBuilds=0;
- const dom=new Map<string,any>();
- const mount=(node:Node)=>{const r=node.props?.['ref'];if(!r)return;if(node.props['role']==='application'){r.current=element;return;}const key=node.props['data-cell']??node.props['className']??'selection-line';let el=dom.get(key);if(!el){const names=new Set<string>();el={attributes:new Map(),classList:{add:(v:string)=>names.add(v),remove:(v:string)=>names.delete(v),contains:(v:string)=>names.has(v)},setAttribute(k:string,v:string){this.attributes.set(k,v);}};dom.set(key,el);}if(typeof r==='function')r(el);else r.current=el;};
+ type Ink={attributes:Map<string,string>;classList:{add():void;remove():void;contains():boolean};setAttribute(k:string,v:string):void;removeAttribute(k:string):void;cloneNode():Ink;remove():void;parentNode:{appendChild(node:Ink):void}};
+ const dom=new Map<string,any>(),clones=new Set<Ink>();
+ const makeInk=():Ink=>{const el:Ink={attributes:new Map(),classList:{add(){},remove(){},contains(){return false;}},setAttribute(k:string,v:string){this.attributes.set(k,v);},removeAttribute(k:string){this.attributes.delete(k);},cloneNode:()=>makeInk(),remove(){clones.delete(el);},parentNode:{appendChild(node:Ink){clones.add(node);}}};return el;};
+ const mount=(node:Node)=>{const r=node.props?.['ref'];if(!r)return;if(node.props['role']==='application'){r.current=element;return;}const key=node.props['data-cell']??node.props['className']??'selection-line';let el=dom.get(key);if(!el){const names=new Set<string>();el={attributes:new Map(),classList:{add:(v:string)=>names.add(v),remove:(v:string)=>names.delete(v),contains:(v:string)=>names.has(v)},setAttribute(k:string,v:string){this.attributes.set(k,v);}};if(key==='active-selection')el=makeInk();dom.set(key,el);}if(typeof r==='function')r(el);else r.current=el;};
  const letters:number[]=[],commits:{a:Cell;b:Cell}[]=[],previews:string[]=[],accepted=options.strokes??[];
  let cursor=0,dirty=true,mounted=true,afterUnmount=0,frameId=0,tree:unknown,resize=()=>{},width=600,height=600,left=10,top=20;
- const element=Object.assign(new EventTarget(),{attributes:new Map<string,string>(),setAttribute(k:string,v:string){this.attributes.set(k,v);},style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left,top,width,height}),setPointerCapture(_id:number){}});
+ const boardClasses=new Set<string>();
+ const element=Object.assign(new EventTarget(),{classList:{add:(name:string)=>boardClasses.add(name),remove:(name:string)=>boardClasses.delete(name),contains:(name:string)=>boardClasses.has(name)},attributes:new Map<string,string>(),setAttribute(k:string,v:string){this.attributes.set(k,v);},style:{values:new Map<string,string>(),getPropertyValue(name:string){return this.values.get(name)??'';},setProperty(name:string,value:string){this.values.set(name,value);}},get clientWidth(){return width;},get clientHeight(){return height;},getBoundingClientRect:()=>({left,top,width,height}),setPointerCapture(_id:number){}});
  const hooks={
   useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return [slot.value,(next:any)=>{if(!mounted)afterUnmount++;const value=typeof next==='function'?next(slot.value):next;if(!Object.is(value,slot.value)){slot.value=value;dirty=true;}}];},
   useRef(initial:any){return (slots[cursor++]??={}).ref??={current:initial};},
@@ -42,15 +45,15 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
   if(name==='./DrawGuide')return {DrawGuide:'DrawGuide'};
   if(name==='@/lib/platform/runtime')return {gameIsActive:()=>true};
   if(name==='@/lib/game/input-gesture')return gestures;if(name==='@/lib/game/browser-compat')return {};if(name==='@/lib/game/viewport')return viewport;if(name==='@/lib/game/legacy-ui')return legacyUI;
-  if(name==='react')return hooks;if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
+  if(name==='react')return {...hooks,useLayoutEffect:hooks.useEffect};if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
   if(name==='@/lib/game/engine')return {snapLine:(...args:Parameters<typeof snapLine>)=>{pathBuilds++;return snapLine(...args);}};if(name==='@/lib/game/telemetry')return {track(){}};
   throw new Error('Unexpected module: '+name);
- },window:windowTarget,document:documentTarget,performance:{now:()=>100},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id),ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}}});
+ },setTimeout,clearTimeout,window:windowTarget,document:documentTarget,performance:{now:()=>100},requestAnimationFrame:(fn:()=>void)=>{const id=++frameId;frames.set(id,fn);return id;},cancelAnimationFrame:(id:number)=>frames.delete(id),ResizeObserver:class{constructor(fn:()=>void){resize=fn;}observe(){}disconnect(){}}});
  const boardNode=()=>{const n=nodes(tree).find(n=>n.props?.['role']==='application');assert.ok(n);return n;};
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);renders++;for(const node of nodes(tree))mount(node);}if(commit)while(effects.length)effects.shift()!();}return tree;};
  const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/props.board.grid[0]!.length,clientY:top+(cell[0]+.5)*height/props.board.grid.length,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
- return {letters,commits,previews,accepted,props,paint,boardNode,send,attributes:element.attributes,get pathBuilds(){return pathBuilds;},
+ return {get rejected(){return clones.size;},letters,commits,previews,accepted,props,paint,boardNode,send,attributes:element.attributes,get pathBuilds(){return pathBuilds;},
   native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/props.board.grid[0]!.length,clientY:top+(cell[0]+.5)*height/props.board.grid.length});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
   reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
   toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
@@ -518,4 +521,13 @@ it('rectangular Board handles fast edge swipes, pivoting and keyboard bounds',()
  assert.deepEqual(h.commits.at(-1),{a:[9,0],b:[9,5]});
  h.focus();for(let i=0;i<20;i++){h.key('ArrowDown');h.key('ArrowRight');}
  assert.match(h.boardNode().props['aria-label'],/10. satır, 8. sütun/);h.unmount();
+});
+
+it('invalid ink is transient, never commits twice and cannot survive a new contact or unmount',()=>{
+ const h=harness();h.setProps({earlyTargets:TUTORIAL.targets});
+ const a:Cell=[0,0],b:Cell=[0,1];assert(!match(TUTORIAL,a,b));
+ drag(h,a,b);h.send('onPointerUp',b);assert.equal(h.rejected,1);assert.equal(h.commits.length,1);
+ h.send('onPointerDown',[2,2]);assert.equal(h.rejected,0);h.send('onPointerCancel',[2,2]);
+ drag(h,a,b);h.send('onPointerUp',b);assert.equal(h.rejected,1);assert.equal(h.commits.length,2);
+ h.unmount();assert.equal(h.rejected,0);
 });

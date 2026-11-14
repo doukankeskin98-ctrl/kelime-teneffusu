@@ -1,80 +1,70 @@
-# iOS yayın dosyası · 7 Kasım 2026
+# App Store hazırlığı — 14 Kasım 2026
 
-0.50.0 (40): 312 ana bölüm, geniş içerik kapısı, native açılış kurtarması ve koşullu Game Center köprüsü hazır. Game Center etkin değil; Apple yapılandırması ve gerçek cihaz kabulü açık. [0.50.0 kanıtları ve sınırlar](release-0.50.0.md).
+Çalışma paketi: **0.52.0 / iOS yapı 43**. Son yayımlanan taban: 0.51.0 (`be10b96`, Sites v105). Güncel yayın makbuzu ayrı tutulur. Bu belge bir mağaza kabulü veya hukuki uygunluk garantisi değildir.
 
-0.41.0 (26): yerel native paket ile son web çıktısı içerik/sürüm eşitliği doğrulandı. Sade oyun akışı ve ortak ayar arayüzü hazır. Bu bir TestFlight yüklemesi veya dağıtım arşivi kabulü değildir. [7 Kasım kaynak incelemesi](../studio-agents/journal/entries/2026-11-07-testflight-readiness.md).
+## Kesinleşen ürün kararları
 
-0.37.0: Atlanabilir ilk tahta rehberi; Arkadaşlar/Meydan/Günlük/Arşiv ortak sahnesi; Meydan ve Gizli Tema final uçuş sırası; misafir kimliğini kalıcı hesaba bağlama; aktif misafir oturumunu yenileme; uygulamadan profil silme; oyuncu bildir/engelle ve yetkili inceleme kuyruğu uygulandı. Bunlar kaynak ve izole test kanıtıdır. Sağlayıcı gerçek hesap silme, iki fiziksel cihaz ve mağaza kabulü değildir. Güncel teslim/sınırlar: [0.37.0 uygulama raporu](release-0.37.0.md).
+İlk paket **reklamsız, satın almasız, genel kitleye yönelik**. Mevcut `https://kelime-teneffusu.healica.chatgpt.site` adresi korunur. Yeni izleme SDK'sı yok. Ambiyans/müzik yok. 312 yayımlanmış bölüm / 52 rota korunur. Altı rev2 taslağı kapalıdır; kayıt v3 yazıcısı açılmadı. Apple Developer, yayıncı kimliği ve destek adresi kullanıcı kararıyla şimdilik atlandı. Tekrar kimlik bilgisi istemeyin; sahte değerle gönderim yapmayın.
 
-0.36.5: Sorun bildir hazırlama/kopyalama ekranı var; gerçek gönderim kanalı, destek URL'si ve TestFlight feedback adresi açık. Game Center henüz yok; Oyun Modu bildirimi onun yerine geçmez. Bireysel ücretli üyelikle TestFlight başlayıp aynı üyeliği şirket üyeliğine dönüştürmek önerilir; yalnız TestFlight uygulaması standart hesaplar arası transferin en az bir App Store sürümü koşulunu karşılamaz. Güncel Apple kaynakları, kayıt bağlama/hesap silme/moderasyon ve UI açıkları: [6 Kasım incelemesi](studio-audit-2026-11-06.md).
+## Gönderimi engelleyen açık işler
 
-0.36.4 ek kanıtı: iOS native sistem paylaşımı ve herkese açık davet URL'leri düzeltildi. Simülatörde üç tür için Copy; ayrıca oda davetinin sistem Paste içeriği, iptal ve yeniden açma geçti. Bu sonuç fiziksel cihaz, iki oyuncu, Universal Links veya App Store yayın kabulü değildir. Telefon kurulumu ertelendi; aşağıdaki mağaza kapıları açık kalır.
+1. Aktif Apple Developer üyeliği, doğru Team ID, App Store Connect uygulama kaydı ve dağıtım imzası. Simülatör `.app` paketi TestFlight `.ipa` değildir.
+2. Gerçek yayıncı/veri sorumlusu, takip edilen destek kanalı, moderasyon sorumlusu ve yanıt süresi; gizlilik/saklama/sağlayıcı listesi hukuki kontrolü. Yerel rapor kopyalamak çalışan destek kanalı değildir.
+3. Soğuk açılış kabulü: simülatörde beyaz parlama yok, fakat uzun siyah sistem geçişinin nedeni doğrulanamadı; alanı dar test makinesi dışında tekrar ölçülmeli. Fiziksel iPhone kabulü: kayıt devamı, çizim/yön değiştirme, ses ve sessiz anahtarı, titreşim, arka plan dönüşü, VoiceOver, çevrimdışı oyun, iki cihazlı Arena. Kullanıcı bu adımı erteledi; doğrulanmış sayılmadı.
+4. Son dağıtım arşivinin Validate App, birleşik Privacy Report, sembol dosyaları, destek/gizlilik URL'leri, yaş anketi ve gerçek hesap silme denemesi.
+5. Son native paketten mağaza ekran görüntüleri. Tek K ikonu kullanıcı tarafından seçildi ve uygulandı; altı gerçek tarayıcı görüntüsü 1290×2796 taslak olarak hazır, fiziksel cihaz görüntüsü değildir.
 
-İlk sürüm için yayıncının seçtiği hedef genel kitle. Yayıncı adı ve takip edilen destek adresi henüz belirlenmedi. Ücretli üyelik, dağıtım arşivi, TestFlight ve inceleme kaydı açık. Bu çalışma sürümünde gerçek reklam veya satış bulunmuyor. Mevcut App Store Connect beyanı, politika veya yaş derecesi yayımlanmış sayılmaz.
+## Apple kuralları ve kanıt ayrımı
 
-## 0.36.2 sürüm kararı
+| Başlık | Bu oyun için kontrol |
+|---|---|
+| 2.1 / 1.5 | Tam çalışan paket, erişilebilir sunucu ve gerçek destek iletişimi. Hesapsız yolculuk ile misafir Arena incelenebilir olmalı. |
+| 1.2 | Oyuncu adları: filtre, bildir/engelle, gerçek moderasyon ve iletişim. Kodun bulunması işletilen moderasyon kanıtı değildir. |
+| 4.2 | Oyuna özgü değer ve akış; yerel HTML select/details kullanılması tek başına yasak değildir. Gereksiz kontrol değişimi yerine kullanılabilirlik doğrulanır. |
+| 4.8 | Son pakette sunulan üçüncü taraf girişleri ve istisnalar birlikte değerlendirilir; native'de ChatGPT giriş düğmesi saklı. E-posta/misafir akışı otomatik ihlal sayılmaz. |
+| 5.1.1 | Uygulama ve metadata içinde erişilebilir politika, doğru veri beyanı, misafir dahil hesap silme ve sağlayıcıda tamamlanma. |
+| 5.2 | WoW'dan görsel/ses/marka kopyalanmadı. Efektlerin CC0 kaynak kaydı pakette. |
 
-| Sıra | Teslim | Kabul kanıtı |
-|---|---|---|
-| 1 · Dokunma ve oturum | Gerçek tahtada sağ ve sol elle uzun kenar kelimeleri; çaprazlar, pivot, son örnek, kenardan taşma; kesilen çizim, kilit ve geri dönüş | Bölüm 12 tek sürüklemede BADİ EKREM. Özgün iOS dokunma testi ve eski kayıt kontrolleri var. Fiziksel telefonda kısa ve uzun oturum ile kare sürelerini ayrıca ölç |
-| 2 · Oyuncu hesabı ve Arena | Ayarlardan yeniden doğrulanmış silme; misafir, e-posta, tüm oturumlar ve sağlayıcı silmesini kapsayan yeniden denenebilir işlem. Ortak maç kayıtlarında diğer oyuncuyu koru. İsimleri bildir/engelle ve işleten bir moderasyon kuyruğu veya önceden denetlenen isimler | İki deneme hesabıyla silme ve yeniden giriş, iki gerçek cihazla Arena engelleme/rövanş, inceleme notu ve yanıt veren destek kanalı |
-| 3 · Mağaza paketi ve erişilebilirlik | Gerçek yayıncı, herkese açık çalışan gizlilik ve destek URL’leri, iletişim ve saklama uygulaması, hesap/sağlayıcı veri envanteri, arşiv gizlilik raporu, yaş anketi, telif envanteri. İlk oynanış/sonraki bölüm VoiceOver ve azaltılmış hareketle kontrol edilir | İmzalı dağıtım arşivi, uygun üyelik, TestFlight, ekran görüntüleri ve inceleme erişimi. Çevrimdışı solo, yeniden kurulum/ilerleme aktarımı, düşük güçlü cihazda uzun oyun ve ağ kesintisi doğrulanır |
-| 4 · İçerik ve ekonomi | Oynayarak açılan bölümler/albüm parçaları ilk ödül döngüsü. Bir sonraki özgün bölüm paketi için konu/kelime editör kontrolü, eski tahta kimlikleri ve Arena tekrar kontrolü | Mağaza paketinde dağıtım hakkı doğrulanmış metin/görsel/font/ses bulunur. Ayrı bir gelir denemesi ancak temel oyun ve hesap güvenliği kabul edildikten sonra başlar |
+Kaynak: [Apple App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/). Bu tablo yaklaşık gereksinim özeti; son gönderimde maddelerin bütünü tekrar kontrol edilir.
 
-## Oyun Modu, reklam ve satın alma
+14 Kasım doğrulaması: yükleme için Xcode26+/iOS26 SDK+; minimum destek hedefi iOS13+. Proje hedefi15; kullanılan Xcode27.2/iOS27.2 simülatör derlemesi dağıtım arşivi değildir. Genel kitle otomatik4+ veya Kids Category demek değildir. Yaş anketinin güncel sosyal özellik soruları cevaplanır; 16 Kasım'daki Shared Location ve Dating/Relationships alanları dahil güncel form kullanılmalı; duyurulan son tarih12Ocak2027. [Apple gereksinimleri](https://developer.apple.com/news/upcoming-requirements/), [yaş anketi](https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating/).
 
-iOS oyun paketi `LSSupportsGameMode` ile sistem Oyun Modu desteğini bildiriyor. Uygun iPhone'da sistem, oyun tam ekrandayken durumu ve bildirimi yönetir. Oyun içi açılış bildirimi taklit edilmez. Apple, arka plan işlerini sınırlar ve bazı kablosuz aksesuarların gecikmesini azaltır. Oyunun dokunma doğruluğu ve uzun oturum performansı ayrıca test edilir. [Apple WWDC](https://developer.apple.com/videos/play/wwdc2025/209/) · [Apple Oyun Modu](https://support.apple.com/en-ie/105118)
+## App Privacy beyan taslağı
 
-Önerilen ilk TestFlight reklamsızdır. Daha sonra oyuncunun kendi isteğiyle açtığı tek deneme önerisi bir **solo pratik ipucudur**. Ödül ve koşul düğmeye basılmadan görünür. Reklam yüklenmezse oyuncu oynamaya devam eder. Kullanılmayan bir ipucu yıldız hesabını etkilemez; kullanılınca mevcut ipucu kuralları geçerlidir. Hikâye geçişine zorunlu reklam veya Arena'da puan/süre üstünlüğü eklenmez.
+Aşağıdaki tablo kaynak incelemesidir; App Store Connect'e gönderilmedi. Son archive'ın uygulama+Capacitor+eklentilerin `.xcprivacy` dosyalarını birleştiren raporuyla ve gerçek ağ akışıyla karşılaştırılmalı.
 
-Ürün sahibi gelir modelini seçtikten sonra ağda uygulama ve reklam birimi oluşturulur. Test kimlikleriyle yükleme, vazgeçme, tamamlama ve tekrar gelen bildirim denenir. Sunucu imza ve işlem kimliğini doğrular, ödülü tek kez kaydeder. Arka plana alma veya geç onay oyuncuya iki ödül vermez. Yeni SDK için veri etiketleri ve saklama incelenir. Bölgeye göre rıza akışı, Apple'ın tanımladığı şekilde uygulamalar arası takip yapılacaksa ATT kararı gerekir. Kişiselleştirme veya izin reddi oyun girişini engellemez. Dijital içerik satışı seçilirse StoreKit satın alma, işlem doğrulama ve uygulanabilir geri yükleme akışları ayrı test edilir. [Ödüllü reklam](https://developers.google.com/admob/ios/rewarded) · [AdMob ödül kuralları](https://support.google.com/admob/answer/7313578?hl=en) · [Sunucu doğrulaması](https://developers.google.com/admob/ios/ssv) · [Apple veri kullanımı](https://developer.apple.com/app-store/user-privacy-and-data-use/) · [StoreKit](https://developer.apple.com/documentation/storekit/in-app-purchase)
+| Veri | Kaynak/amaç | Kimlikle ilişkisi | İzleme |
+|---|---|---|---|
+| Oyuncu adı, hesap/e-posta | Misafir veya isteğe bağlı e-posta hesabı; uygulama işlevi | Evet | Hayır |
+| Kullanıcı kimliği | Oturum, kayıt eşitleme, güvenlik | Evet | Hayır |
+| Oynanış içeriği | Bölümler, çizgiler, puan, Arena geçmişi/tekrar engeli | Evet | Hayır |
+| Sosyal bağlantılar | Arkadaş/engelleme grafiği; Apple Contacts kategorisi yalnız telefon rehberi değildir | Evet | Hayır |
+| Bildirim/şikâyet içerikleri | Sunucuya gönderilen moderasyon raporları; Customer Support | Evet | Hayır |
+| Ürün etkileşimi ve performans | Kullanıcının isteğe bağlı ölçümü, başlangıçta kapalı | Kaynakta toplu/kimliksiz | Hayır |
+| Diğer tanı verisi | İşletim hata sayaçları; ham oyuncu veya parola yazılmaz | Kaynakta toplu | Hayır |
+| Destek taslağı | Şu anda yalnız cihazda kopyalanır; gelecekte gönderim açılırsa beyan yenilenir | Sunucuya gönderilmiyor | Hayır |
 
-## Şimdi uygulanan temel
+Reklamsızlık “veri toplanmıyor” anlamına gelmez. Kamera, mikrofon, konum, reklam kimliği ve ATT eklenmedi. Gömülü sağlayıcının sunucu log/saklama davranışı ayrıca kesinleştirilmeli. [Apple App Privacy](https://developer.apple.com/app-store/app-privacy-details/).
 
-Ana yolculukta 168 bölüm ve 28 rota; paketli sahneler; iOS 15+; yerel açılış; opsiyonel haptics; arka plan→ön plan sınırı; sabit HTTPS JSON API; native tek-uçuşlu Arena sorgusu, mevcut web SSE; mevcut sunucu yetki/puan/anti-repeat kuralları. Kişisel geliştirme imzası cihaz kurulumu için doğrulandı. Dağıtım imzası açık. Bundle ID geliştirme kimliği, Apple'da rezervasyon iddiası yok.
+## Türkiye kapsamı
 
-App Privacy manifest oyuncu bildirimleri için Customer Support kategorisiyle güncellendi; kaynakta gerçekten işlenen kategorileri gösterir: kullanıcı kimliği, oyun içeriği, arkadaş grafiği, yapılandırılmış üyelikte e-posta; isteğe bağlı ürün etkileşimi/performans, toplu hata sayımları. Reklam/IDFA/tracking SDK yok; bu, sunucuda veri toplanmıyor demek değildir. Son arşiv privacy raporu ve ağ denetimi yapılmadan App Store Connect beyanı tamamlandı sayılmaz. Sistem HTTPS/Web Crypto kullanımı için export alanı exempt olarak hazırlanmıştır; yeni kripto/SDK eklenirse yayıncı yeniden değerlendirir.
+7578 sayılı Kanun'un oyun tanımı çevrimdışı oynanıp internetten dağıtılan oyunu da kapsar. Sosyal ağ hükmündeki15yaş sınırı her kelime oyununa otomatik uygulanmaz. Oyun platformlarına ilişkin derecelendirme ve ebeveyn kontrolü hükümlerinin bu hizmet modeline uygulanışı ayrıca değerlendirilmelidir.100.000 kullanıcı eşiği bütün yükümlülüklerden genel muafiyet değildir. İlgili22–23.maddelerin yürürlüğü1Kasım2026;7590 sonrası yetki atıfları Siber Güvenlik Başkanlığı yönünde güncellenmiştir. İşletmecinin geliştirici/platform/sosyal ağ niteliği, ikincil düzenlemelerin uygulanışı ve KVKK metni **hukuki doğrulama bekliyor**; yalnız App Store derecesi yeterli varsayılmadı.
 
-## Mağaza gönderimini engelleyen açıklar
+[7578 resmî TBMM metni](https://cdn.tbmm.gov.tr/KKBSPublicFile/D28/Y4/KanunMetni/9bf93173-7648-4771-ab36-0e45666c423d.htm), [7590 resmî TBMM metni](https://cdn.tbmm.gov.tr/KKBSPublicFile/D28/Y4/KanunMetni/152a9101-15fe-4138-aceb-99a304bb9ec3.htm). Ayrıntılı kaynak sınırları uzman günlüğündedir; açılmayan ikincil mevzuat doğrulanmış sayılmadı.
 
-| Koşul | Somut tamamlanma ölçütü | Durum |
-|---|---|---|
-| Yayıncı/Apple hesabı | Bireysel veya şirket hesabı, Team ID, imzalı arşiv, uygun bundle ID | Kişisel cihaz imzası var; mağaza hesabı/arşivi açık |
-| Mevcut oyuncunun geçişi | Safari'deki aynı kimliğin, solo/ek bölümlerin ve Arena geçmişinin uygulamada güvenli devamı; ikinci cihaz ve eski yanıt testi | Aynı misafir sahibini hesapla bağlama uygulandı; ikinci gerçek cihaz/Firebase ve eski Safari kimliği geçişi kabulü açık |
-| Hesap silme | Uygulamadan başlatma, sahiplik/yeniden doğrulama, tüm oturumları iptal, D1 ve sağlayıcı kapsamı, ortak maçları bozmadan silme/anonimleştirme | D1 silme/anonimleştirme, tüm oturum iptali, yeniden doğrulama ve sağlayıcı kuyruğu uygulandı; gerçek sağlayıcı/cihaz ve işletim kabulü açık |
-| Paylaşılan adlar | Uygunsuz adı bildirme, engelleme, moderasyon kuyruğu ve cevap veren destek kanalı | Ad filtresi, bildir/engelle, yetkili inceleme/isim kısıtlama kodu hazır; gerçek yanıt veren işletim ve destek açık |
-| Gizlilik/KVKK | Gerçek işletmeci, amaç/hukuki sebep, sağlayıcı/aktarım, saklama ve imha uygulaması, hak başvurusu, çalışan kamu URL'si | Bilgi + işletim kararı bekliyor |
-| Native giriş | ChatGPT/Sites hesabı için güvenli geçiş, gerekiyorsa 4.8 eşdeğer giriş; e-posta sağlayıcısının cihaz testi | Açık; işlevsiz ChatGPT yönlendirmesi native'de gösterilmez |
-| Yaş ve haklar | Gerçek özelliklerle yaş anketi; marka/karakter/isim/sahne/ses/font hak envanteri | Açık; 4+ veya Kids iddiası yok |
-| Cihaz kalitesi | Küçük ve düşük güçlü gerçek iPhone, 20 dk oyun, kilit/arama/bağlantı kesintisi, VoiceOver, ses/haptics, kare süreleri, iki gerçek Arena oyuncusu | Fiziksel iPhone açılış/ayar/kaydırma/seçim görüldü; uzun oturum, his/FPS ve diğer cihazlar açık |
+## Gönderim kontrol sırası
 
-## Gizlilik metni için hazırlanmış içerik
+- [ ] Üyelik/Team/Bundle ID `com.kelimeteneffusu.game`, sahiplik ve dağıtım profili.
+- [ ] Yayıncı ve destek bilgilerini `store-052/legal-drafts.md` taslağına koy; herkese açık sayfaları aynı domainde yayımla; uygulama bağlantılarını gerçek hedefe bağla.
+- [ ] Age Rating/App Privacy/şifreleme sorularını son uygulama ve archive raporuyla doldur.
+- [ ] Giriş gerektiren özellikler için süreli inceleme hesabı ya da çalışan misafir akışı; kimlik bilgilerini repoya koyma. Sunucu inceleme boyunca erişilebilir kalsın.
+- [ ] İmzalı Release Archive → Organizer Validate → kullanıcı açık yükleme onayı → TestFlight. Dış test için Beta App Review gerekebilir.
+- [ ] Fiziksel cihaz beş dakikalık kabulü ve çok cihazlı Arena; başarısız madde açık kalır.
+- [ ] Son native paketten altı ekran; Apple'ın mevcut6.9inç kabul ettiği1320×2868 veya1290×2796 dikey ölçülerini gönderim formunda doğrula. iPad hedefi kapalıdır. [Apple ekran görüntüsü ölçüleri](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/).
+- [ ] TestFlight deneyimi ardından App Store'a ayrı açık onay; yükleme/yayın otomatik değildir.
 
-**TASLAK — yayımlanacak hukuki metin değildir.** İşletmeci: kesinleşmedi. İletişim: kesinleşmedi.
+## İnceleme notu taslağı
 
-Kelime Teneffüsü solo ilerlemeyi cihazda tutar. Çevrimiçi profile bağlanıldığında ilerleme, oyuncu kimliği/takma ad, maç sonuçları ve arkadaş ilişkileri oyun hizmeti için sunucuda işlenir. Arena'da daha önce görülen içerik, yeni odalarda tekrarı azaltmak için aynı oyuncu kimliğiyle tutulur. Kullanıcı adı ve ilgili skorlar diğer oyuncular tarafından görülebilir. Oyun telefon rehberi, kamera, mikrofon veya konum izni istemez.
+“Kelime Teneffüsü Türkçe bir kelime arama oyunudur. Yolculuk çevrimdışı oynanabilir. Arena ve meydan okuma internet bağlantısı ister; Misafir olarak oyna ile deneme profili açılabilir. İlk sürüm reklam, uygulama içi satın alma veya abonelik içermez. Ayarlar → Gizlilik ve hesap bölümünde silme; oyuncu ekranlarında bildir/engelle bulunur. Game Center ve evrensel bağlantılar yalnız son pakette gerçekten aktive edilirse burada belirtilir.”
 
-İsteğe bağlı kullanım ölçümü başlangıçta kapalıdır. Açılırsa olay ve performans aralıkları toplu sayılır. E-posta, çizilen kelime yolları veya kalıcı analitik kimliği bu ölçümlerde gönderilmez. Güvenlik için istek sınırları ve toplu teknik hata kayıtları bulunur. Sunucu ve sağlayıcı loglarının gerçek saklama süreleri ayrıca doğrulanmalıdır.
-
-E-posta üyeliği yapılandırıldığında Firebase doğrulama/e-posta akışını, web Sites girişi platform kimlik akışını kullanır. Barındırma ve veri hizmeti mevcut Sites/Cloudflare altyapısıdır. Sağlayıcı sözleşmeleri ve yurt dışı aktarım hukuki düzeni işletmeci tarafından netleştirilmeden kesin uygunluk beyanı yapılmaz.
-
-Veri saklama: mevcut kaynak bütün hesap kayıtları için uygulanmış otomatik imha süresi içermiyor. 30/90gün gibi uydurma süre yazılmayacak. Hesap silme ve destek başvurusu devreye alındığında politika gerçek işlemleri açıklayacak. Misafir profilinden çıkmak veri silmek değildir. Uygulamayı kaldırmak sunucudaki veriyi silmez.
-
-## Kullanım koşulları / destek taslağı için kararlar
-
-Hizmet sağlayıcı, iletişim, hedef ülkeler/yaş ve yürürlük tarihi kesinleşmeli. Rekabet kuralları sunucu doğrulaması, uygunsuz takma ad/hile yasağı ve uygulanabilir itiraz yolu ile açıklanmalı. Ödeme/reklam/abonelik şu an uygulanmıyor; hayali satın alma veya iade hükümleri eklenmez. WoW yalnız deneyim referansıdır; adı/logo/görseli/varlıkları mağaza materyaline taşınmaz. Mevcut Hababam/film/sanatçı içerikleri ticari hak incelemesi tamamlanmadan temizlenmiş kabul edilmez; eski oyuncu kayıtları sessizce değiştirilmez.
-
-Destek URL'si ve gelen kutusu doğrulandıktan sonra hata bildirimi; uygulama sürümü, cihaz/iOS ve sorunun açıklamasıyla yapılmalı, parola/oturum anahtarı istenmemeli. Silme/moderasyon başvuruları ayrı görev olarak işlenmeli. Yanıt süresi işletmecinin gerçek kapasitesiyle belirlenmeli.
-
-## Güncel birincil kaynaklar
-
-- [Apple4.2 /4.8 /1.2 /5.1 /5.2](https://developer.apple.com/app-store/review/guidelines/)
-- [Misafir dahil hesap silme](https://developer.apple.com/help/app-review/guideline-reference/5-1-1-account-deletion)
-- [App Privacy beyanı](https://developer.apple.com/app-store/app-privacy-details/)
-- [Privacy manifest kategorileri](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacycollecteddatatypes/nsprivacycollecteddatatype)
-- [SDK manifest gereksinimleri](https://developer.apple.com/support/third-party-SDK-requirements/)
-- [Export compliance](https://developer.apple.com/help/app-store-connect/manage-app-information/overview-of-export-compliance/)
-- [Yaş derecelendirmesi](https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating/)
-- [KVKK aydınlatma](https://www.kvkk.gov.tr/Icerik/6765/AYDINLATMA-YUKUMLULUGUNUN-YERINE-GETIRILMESI-HAKKINDA-KAMUOYU-DUYURUSU)
-
-Kaynak temelli ayrıntılı veri envanteri: `studio-agents/journal/entries/2026-11-03-ios-policy-review.md`. App Store hesabında herhangi bir beyan gönderilmedi ve ücretli kayıt açılmadı. Kişisel cihaz testi Xcode’daki kullanıcı hesabıyla imzalandı.
+İnceleme hesabı: **henüz oluşturulmadı**. Gerçek destek adresi: **bekliyor**. Bu boşluklar doldurulmadan paket “gönderime hazır” sayılmaz.

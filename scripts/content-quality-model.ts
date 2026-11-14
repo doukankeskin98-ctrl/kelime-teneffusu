@@ -1,3 +1,4 @@
+import {journeyRevision,journeyPresentationKey,JOURNEY_REVISION_TWO} from '../lib/game/journey-revisions.ts';
 import {createHash} from 'node:crypto';
 import {MAIN_JOURNEY} from '../lib/game/main-journey.ts';
 import {journeyBoard,PLAYABLE_JOURNEYS,MYSTERIES} from '../lib/game/content.ts';
@@ -44,4 +45,17 @@ export function capacityProbe(){
  p.welcomedWorlds=EXPEDITIONS.map(w=>w.id);p.mechanicGuides=['daily','mystery','concealed','riddle'];p.trailBadge='crown';
  const bytes=Buffer.byteLength(JSON.stringify(p));
  return {progress:p,savedBoards:Object.keys(p.saves).length,legacyBytes,bytes,limit:PROGRESS_MAX_BYTES,headroom:PROGRESS_MAX_BYTES-bytes};
+}
+
+/** Separate, inactive route evidence. Never substitutes released catalogue hashes. */
+export function revisionCatalogueQuality(){
+ return Object.keys(JOURNEY_REVISION_TWO).map(id=>{
+  const chapter=journeyRevision(id,2)!,board=presentationBoard(journeyBoard(chapter),journeyPresentationKey(chapter)),projection=projectBoard(board);
+  const veils=Object.values(chapterVeils(id,board.targets,2));
+  const load:ChapterLoad={words:chapter.words.length,cells:projection.shape.rows*projection.shape.columns,
+   diagonal:board.placements.filter(p=>p.a[0]!==p.b[0]&&p.a[1]!==p.b[1]).length,
+   reverse:board.placements.filter(p=>p.b[0]<p.a[0]||p.b[0]===p.a[0]&&p.b[1]<p.a[1]).length,
+   initial:veils.filter(v=>v==='initial').length,hidden:veils.filter(v=>v==='hidden').length,riddle:!!chapter.clues};
+  return {id,chapter,board,load};
+ });
 }

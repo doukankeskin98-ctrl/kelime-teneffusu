@@ -56,3 +56,17 @@ html[data-reduce-motion=true] .scenic-play[data-result-phase=exit] *{animation:n
 
 .modal.game-dialog.scenic-outcome.scene-result .achievement-secondary{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;margin-top:10px}
 .modal.game-dialog.scenic-outcome.scene-result .achievement-secondary .text-button{width:auto;flex:1;margin:0;padding:6px 0;white-space:normal}
+
+/* Presentation only. A touch cancels entrance/turn before geometry is read. */
+.board-entering .letter-grid span{animation:board-letters-in 180ms var(--game-ease) var(--letter-enter-delay,0ms) both}
+.board-turning{animation:board-turn var(--motion-turn) var(--game-ease) both}
+.board-turning .letter-grid span{animation:board-counter-turn var(--motion-turn) var(--game-ease) both}
+.rejected-selection{pointer-events:none;animation:selection-reject var(--motion-feedback) ease-out both}
+.rejected-selection line{stroke:#c77951}
+.rejected-selection .active-stroke-outline{stroke:#fff6df}
+@keyframes board-letters-in{from{opacity:0}to{opacity:1}}
+@keyframes board-turn{from{transform:rotate(-180deg)}to{transform:rotate(0)}}
+@keyframes board-counter-turn{from{transform:rotate(180deg)}to{transform:rotate(0)}}
+@keyframes selection-reject{0%{opacity:.8;transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}100%{opacity:0;transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.board-turning,.board-turning .letter-grid span,.board-entering .letter-grid span,.rejected-selection{animation:none!important}.rejected-selection{opacity:.4}}
+html[data-reduce-motion=true] .board-turning,html[data-reduce-motion=true] .board-turning .letter-grid span,html[data-reduce-motion=true] .board-entering .letter-grid span,html[data-reduce-motion=true] .rejected-selection{animation:none!important}

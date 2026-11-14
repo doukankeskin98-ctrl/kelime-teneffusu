@@ -37,7 +37,7 @@ export function openGameDialog(dialog:HTMLDialogElement,onClose:()=>void,view:Vi
  const focusable=()=>Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]),a[href],input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])')).filter(node=>node.getClientRects().length>0);
  const key=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();onClose();}else if(e.key==='Tab'){
   const items=focusable(),first=items[0],last=items[items.length-1];if(!first){e.preventDefault();dialog.focus();return;}
-  if(e.shiftKey&&(doc.activeElement===first||doc.activeElement===dialog)){e.preventDefault();last?.focus();}else if(!e.shiftKey&&(doc.activeElement===last||doc.activeElement===dialog)){e.preventDefault();first.focus();}
+  if(e.shiftKey&&(doc.activeElement===first||!items.includes(doc.activeElement as HTMLElement))){e.preventDefault();last?.focus();}else if(!e.shiftKey&&(doc.activeElement===last||!items.includes(doc.activeElement as HTMLElement))){e.preventDefault();first.focus();}
  }};
  if(!native){dialog.addEventListener('keydown',key);dialog.tabIndex=-1;dialog.focus();}
  const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(fit):null;observer?.observe(dialog);

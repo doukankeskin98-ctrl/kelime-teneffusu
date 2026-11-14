@@ -1,5 +1,5 @@
 /* Shared web/native art and motion. Nothing here participates in input or rewards. */
-:root{--motion-quick:140ms;--motion-soft:300ms;--game-ease:cubic-bezier(.2,.75,.25,1);--paper:#fffdf4;--game-ink:#183f3a;--game-gold:#f4ca69}
+:root{--motion-quick:140ms;--motion-soft:300ms;--motion-turn:280ms;--motion-feedback:240ms;--motion-reward:480ms;--game-ease:cubic-bezier(.2,.75,.25,1);--paper:#fffdf4;--game-ink:#183f3a;--game-gold:#f4ca69}
 .game-app button{transition:transform var(--motion-quick) var(--game-ease),filter var(--motion-quick),background-color var(--motion-quick);-webkit-tap-highlight-color:transparent}
 .game-app button:active:not(:disabled){transform:translateY(1px) scale(.98)}
 .game-app button:focus-visible{outline:3px solid #e1b654;outline-offset:3px}

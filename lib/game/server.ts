@@ -187,9 +187,18 @@ export class GameService {
      if(!requireActive&&row.expires<now&&room.phase==='finished')return this.publicView(room,userId,row.revision);
      if(row.expires<now&&room.phase!=='finished'){room.phase='cancelled';room.reason='Odanın süresi doldu';}
      const before=JSON.stringify(room);fn(room,you);
+     // Re-evaluate after ready votes AND live heartbeats. A departed/stale last
+     // unready member must not strand the remaining ready players. Keep the actor
+     // in the returned view; a leave triggers this on the next live heartbeat.
+     if(room.phase==='ready'&&room.kind==='quick'&&room.mode==='group'&&!you.left){
+      const starters=this.starters(room);
+      if(starters.some(p=>p.id===userId)&&starters.length>=2&&starters.every(p=>p.ready)){
+       room.players=starters;room.phase='active';room.starts=now+5000;room.ends=room.starts+120000;
+      }
+     }
      if(JSON.stringify(room)===row.data)return this.publicView(room,userId,row.revision);
      // Heartbeats write only every five seconds; countdown and results remain authoritative.
-     if(heartbeat&&now-JSON.parse(row.data).players.find((p:DuelPlayer)=>p.id===userId).seen<5000&&before===row.data)return this.publicView(room,userId,row.revision);
+     if(heartbeat&&room.phase===originalPhase&&now-JSON.parse(row.data).players.find((p:DuelPlayer)=>p.id===userId).seen<5000&&before===row.data)return this.publicView(room,userId,row.revision);
      const allocation=originalPhase!=='active'&&room.phase==='active'?await this.allocate(room):undefined;
      if(await this.save(row,room,allocation,requireActive?userId:undefined))return this.publicView(room,userId,row.revision+1);
    }

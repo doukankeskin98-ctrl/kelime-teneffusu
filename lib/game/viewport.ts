@@ -103,7 +103,8 @@ export function attachBoardSize(element:HTMLElement,cells:BoardShape,zoom:boolea
   const parent=element.parentElement;
   if(zoom&&parent){const css=view.getComputedStyle(parent);set(element,'width',Math.max(columns*46,Math.floor(parent.clientWidth-pixels(css.paddingLeft)-pixels(css.paddingRight)))+'px');}
   else set(element,'width','100%');
-  const width=Math.floor(element.getBoundingClientRect().width);if(width<=0)return;
+  // CSS rotation changes the visual bounding box, never the layout width.
+  const width=Math.floor(element.offsetWidth??element.getBoundingClientRect().width);if(width<=0)return;
   set(element,'height',Math.round(width*rows/columns)+'px');set(element,'--board-letter-size',Math.max(zoom?24:13,Math.min(zoom?48:42,Math.floor((width-2)/columns*.57)))+'px');
   const rect=element.getBoundingClientRect();if(previous&&(force||rect.width!==previous.width||rect.height!==previous.height||rect.top!==previous.top||rect.left!==previous.left))onResize(rect,reason);previous=rect;
  };

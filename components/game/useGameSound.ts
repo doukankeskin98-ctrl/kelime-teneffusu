@@ -34,7 +34,8 @@ export function useChime(enabled:boolean,haptics=false){
   if(action==='enable'){settings.current.enabled=true;if(readSoundLevel()===0)setSoundLevel(DEFAULT_SOUND_LEVEL);} // Explicit unmute also recovers from a zero slider.
   const cue:SoundCue=action==='enable'?'start':typeof action==='boolean'?(action?'complete':'word'):action;
   if(document.hidden||!gameIsActive()||!pageActive.current)return;
-  if(cue==='pause')stopHapticSelection();
+  if(cue==='pause'||cue==='miss')stopHapticSelection();
+  if(cue==='miss')playHaptic('menu',settings.current.haptics);
   if(cue==='letter'||cue==='select'||cue==='word'||cue==='complete'||cue==='reveal')playHaptic(cue==='letter'||cue==='select'?'selection':cue==='word'?'word':'complete',settings.current.haptics);
   if(settings.current.enabled){const sound=get();if(action==='enable')sound.unlock();sound.play(cue,step);}
  };

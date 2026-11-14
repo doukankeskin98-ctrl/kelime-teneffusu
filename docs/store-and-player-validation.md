@@ -1,6 +1,6 @@
-# Görünürlük ve ilk oyuncu kabulü — 0.45.0
+# Görünürlük ve ilk oyuncu kabulü — 0.52.0
 
-8 Kasım 2026. Bu dosya uygulanabilir hazırlıktır; mağazada yayımlanmış sayfa, canlı deney veya yapılmış oyuncu görüşmesi değildir. Mevcut mağaza yayın kapıları `app-store-readiness.md` içinde kalır.
+14 Kasım 2026. Bu dosya uygulanabilir hazırlıktır; mağazada yayımlanmış sayfa, canlı deney veya yapılmış oyuncu görüşmesi değildir. Mevcut mağaza yayın kapıları `app-store-readiness.md` içinde kalır.
 
 ## Mağaza metni
 
@@ -13,7 +13,7 @@ Açıklama:
 
 > Bir kelime molası ver. Gökyüzünden sokaklara, doğadan sofraya uzanan konularda saklı kelimeleri bul. Parmağını harfler üzerinde kaydır; her bölümle yolculuğuna devam et.
 >
-> Kendi hızında oynayabileceğin 168 bölüm ve 28 rota seni bekliyor. Bazı bölümlerde kelimelerin bir kısmı saklı, bazılarında cevabı bir bilmece anlatıyor. Zorlanırsan aradığın kelimeyi seçip ipucu alabilirsin. Kaydırmaya alternatif olarak kelimenin iki ucuna dokunmak da mümkün.
+> Kendi hızında oynayabileceğin 312 bölüm ve 52 rota seni bekliyor. Bazı bölümlerde kelimelerin bir kısmı saklı, bazılarında cevabı bir bilmece anlatıyor. Zorlanırsan aradığın kelimeyi seçip ipucu alabilirsin. Kaydırmaya alternatif olarak kelimenin iki ucuna dokunmak da mümkün.
 >
 > Kısa bir ara için bonus turlarını ve 60 saniyelik Hızlı Tur’u dene. Arkadaşlarınla aynı anda oynamak istersen Arena’ya katıl. Meydan okumada aynı bulmacayı farklı saatlerde tamamlayıp sonuçlarını karşılaştırabilirsin. Çevrimiçi modlar internet bağlantısı gerektirir.
 
@@ -33,6 +33,10 @@ Göndermeden önce sayılar final dağıtım kataloğuyla doğrulanır. Rakip oy
 Ekranlar son iOS paketinden, kişisel hesap/bildirim içermeden alınır. Mevcut yerel önizlemeler yalnız yerleşim kanıtıdır, fiziksel iPhone mağaza görseli diye sunulmaz. Gerçek oyunda bulunmayan tahta, ödül veya rakip çizilmez. İlk kısa video, kesintisiz olarak konu → çizim → harf yerleşmesi → bir sonraki bölüm akışını gösterir; yapay hızlandırma yapılmaz.
 
 İlk deney: aynı başlık/açıklama/ikonla yalnız ilk ekranın anlatımını değiştir. A: konu ve okunaklı tahta. B: kelimenin bulunup yerine oturması. Birincil ölçüt mağaza sayfasından indirmeye dönüşüm; uygulama içi ilk bölüm tamamlama da izlenir. Küçük örneklemde erken kazanan ilan edilmez, test bitiş kuralı trafik görüldükten sonra önceden belirlenir. Apple ikon, ekran görüntüsü ve önizleme varyantlarını ürün sayfası optimizasyonuyla karşılaştırmaya izin verir; bu hesap/mağaza aşaması henüz çalıştırılmadı. [Apple ürün sayfası optimizasyonu](https://developer.apple.com/app-store/product-page-optimization/)
+
+## Bu paketin altı görsel taslağı
+
+`../world-review.nosync/release-052/store-01-home.png` ile `store-06-arena.png` arasındaki dosyalar 1290×2796 boyutunda gerçek yerel oyun görüntüleridir. Sıra: ana yolculuk, yakın dünyalar haritası, tahta, bulunan kelime, sonuç, Arena girişi. Canlı oyuncu veya uydurma rakip içermezler. Bunlar tarayıcı emülasyonundan alınmıştır; son imzalı native paketten çekilecek mağaza dosyalarının yerine tamamlanmış sayılmaz. Yukarıdaki ideal çekim planında bonus, ipucu ve iki cihazlı maç çekimleri ayrıca bekler.
 
 ## İlk oyuncu denemesi
 
