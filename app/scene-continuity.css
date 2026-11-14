@@ -64,3 +64,7 @@
 
 .scene-subpage .social-tabs button>span{color:#244b3e;background:#e6eddb;font-size:12px}
 .scene-subpage .social-toolbar .friend-code-form input{font-size:16px!important}
+
+/* Brief first-word help sits below the board: learning never moves its top edge. */
+.solo-control-dock .first-play-guide{margin:4px 0 0;min-height:52px;padding:6px 10px;text-align:left}
+.solo-control-dock .first-play-guide span{font-size:13px;line-height:1.4}
