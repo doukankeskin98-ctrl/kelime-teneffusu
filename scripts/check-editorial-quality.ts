@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
-import {catalogueQuality,capacityProbe} from './content-quality-model.ts';
+import {catalogueQuality,capacityProbe,revisionCatalogueQuality} from './content-quality-model.ts';
 import {JOURNEY_REVISION_TWO,journeyRevision,journeyPresentationKey} from '../lib/game/journey-revisions.ts';
 import {MAIN_JOURNEY} from '../lib/game/main-journey.ts';
-import {reviewNovelty} from '../lib/game/editorial-quality.ts';
+import {reviewNovelty,difficultyIssues} from '../lib/game/editorial-quality.ts';
 import {journeyBoard} from '../lib/game/content.ts';
 import {presentationBoard} from '../lib/game/journey-presentation.ts';
+import {proseSafetyIssues,targetSafetyIssues} from '../lib/game/content-safety.ts';
 import {boardIssues,PRESENTATION_RULES} from '../lib/game/board-quality.ts';
 const baseline=JSON.parse(readFileSync(new URL('../tests/fixtures/journey-0500-quality.json',import.meta.url),'utf8')) as {
  rows:{id:string;number:number;contentHash:string;boardHash:string;displayHash:string}[];
@@ -40,14 +41,27 @@ console.log(`Editorial gate: ${rows.length} immutable published chapters; ${repo
 console.log(`Combined synthetic save: ${capacity.bytes}/${capacity.limit} bytes; ${capacity.headroom} bytes headroom. Content expansion requires the compact-save rollout.`);
 
 // Inactive candidates are held to word novelty/safety independently of the
-// immutable released catalogue. Four pilot chapters are NOT a complete route.
+// immutable released catalogue. A complete route is still NOT player acceptance.
 for(const id of Object.keys(JOURNEY_REVISION_TWO)){
  const chapter=journeyRevision(id,2)!,index=MAIN_JOURNEY.findIndex(c=>c.chapter.id===id);
  const history=MAIN_JOURNEY.slice(0,index).map(c=>journeyRevision(c.chapter.id,JOURNEY_REVISION_TWO[c.chapter.id]?2:1)!);
+ assert.deepEqual(proseSafetyIssues([chapter.title,chapter.note,...Object.values(chapter.clues??{})].join(' ')),[],id+' unsafe revision prose');
+ assert.deepEqual(chapter.words.flatMap(targetSafetyIssues),[],id+' unsafe revision targets');
  const review=reviewNovelty(chapter.words,history);
  assert.equal(review.nearCopies.length,0,id+' revision near-copy');
  assert(review.repeatRatio<=.5,id+' revision repeats more than half its words');
  assert(review.nearestRepeat===null||review.nearestRepeat>12,id+' revision repeat within twelve chapters');
  assert.deepEqual(boardIssues(presentationBoard(journeyBoard(chapter),journeyPresentationKey(chapter)),PRESENTATION_RULES),[],id+' unsafe revision board');
 }
-console.log('4 inactive revision pilots: novelty and safe-board checks passed; full route and device acceptance still required.');
+const revisions=revisionCatalogueQuality();
+assert.deepEqual(revisions.map(r=>r.id),Array.from({length:6},(_,i)=>`ufuk-gok-${i+1}`),'Full six-chapter pilot required');
+assert.deepEqual(difficultyIssues(revisions.map(r=>r.load),rows.slice(0,6).map(r=>r.load)),[],'Revision route difficulty');
+for(const {id,chapter,board} of revisions){
+ if(chapter.clues)assert.deepEqual(Object.keys(chapter.clues).sort(),[...chapter.words].sort(),id+' complete clues');
+ for(const placement of board.placements){
+  const dr=Math.sign(placement.b[0]-placement.a[0]),dc=Math.sign(placement.b[1]-placement.a[1]);
+  const text=Array.from({length:placement.text.length},(_,i)=>board.grid[placement.a[0]+i*dr]?.[placement.a[1]+i*dc]).join('');
+  assert.equal(text,placement.text,id+' stale or misplaced revision target');
+ }
+}
+console.log(`${revisions.length} inactive revision chapters: complete route, novelty, safe targets and difficulty checks passed; player/device acceptance still required.`);

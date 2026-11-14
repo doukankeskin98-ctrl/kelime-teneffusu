@@ -18,7 +18,7 @@ export interface Progress {
  haptics:boolean;contrast:boolean;palette:'classic'|'ocean'|'orchid';tutorialDone:boolean;analytics:boolean;mysteries:string[];
 }
 export const PROGRESS_KEY='kelime-teneffusu-v2';
-export const emptyProgress=():Progress=>({v:2,saves:{},sound:false,zoom:false,days:[],last:null,haptics:false,contrast:false,palette:'classic',tutorialDone:false,analytics:false,mysteries:[]});
+export const emptyProgress=():Progress=>({v:2,saves:{},sound:true,zoom:false,days:[],last:null,haptics:true,contrast:false,palette:'classic',tutorialDone:false,analytics:false,mysteries:[]});
 const knownKeys=new Set([...THEMES.flatMap(t=>Array.from({length:6},(_,l)=>`${t.id}.${l}`)),...PLAYABLE_JOURNEYS.map(j=>'route:'+j.id),...MYSTERIES.map(m=>'mystery:'+m.id)]);
 const boardCache=new Map<string,Puzzle>();
 export function progressBoard(key:string,revision=1):Puzzle|null {

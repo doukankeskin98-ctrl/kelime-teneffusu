@@ -43,3 +43,12 @@ html[data-reduce-motion=true] .draw-guide-path line{stroke-dashoffset:0;stroke-d
 .settings-scenery{position:fixed;inset:0;z-index:80;pointer-events:none}.settings-scenery>.scene-art{width:100%;height:100%;object-fit:cover}
 
 /* The shared pale return action must keep dark text on both web and WKWebView. */
+
+.game-disclosure{border-bottom:1px solid #d9e5db33;padding:4px 0}
+.game-disclosure-trigger{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;padding:12px 0;border:0;background:none;color:inherit;font:inherit;font-weight:650;text-align:left}
+.game-disclosure-trigger>svg{flex-shrink:0;transition:transform var(--motion-quick) var(--game-ease)}
+.game-disclosure-trigger[aria-expanded=true]>svg{transform:rotate(180deg)}
+.support-kinds{border:0;padding:0;margin:14px 0;display:flex;flex-wrap:wrap;gap:8px}
+.support-kinds legend{margin-bottom:10px;font-weight:650}
+.support-kinds button{min-height:44px;padding:10px 12px;border:1px solid #d9e5db66;border-radius:12px;color:inherit;background:#ffffff0a;font:inherit;font-size:13px}
+.support-kinds button[aria-pressed=true]{background:#f3d988;color:#143d42;border-color:#f3d988}

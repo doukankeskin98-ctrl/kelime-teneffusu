@@ -1,0 +1,73 @@
+{
+  "author": "Kenney",
+  "license": "CC0-1.0",
+  "original": "https://kenney.nl/assets/interface-sounds",
+  "mirror": "https://github.com/Calinou/kenney-interface-sounds",
+  "commit": "4596a49eaf5a533948d49a47467f606bcdea70ff",
+  "processing": "mono 22050Hz PCM; short bounded envelopes; limiter ceiling 0.25, no automatic makeup gain",
+  "files": [
+    {
+      "file": "public/audio/interface-v1/letter.wav",
+      "original": "pluck_001.wav",
+      "sha256": "23d65b1cc1b381d6285b7c016e6655957dcd5958ea4de125282ccd2e78942333",
+      "bytes": 4048,
+      "maxSeconds": 0.09
+    },
+    {
+      "file": "public/audio/interface-v1/select.wav",
+      "original": "click_003.wav",
+      "sha256": "5258f4b298fea5c92d914317c106092dec0d028284b59af97be2cd76e5a64aad",
+      "bytes": 910,
+      "maxSeconds": 0.08
+    },
+    {
+      "file": "public/audio/interface-v1/word.wav",
+      "original": "confirmation_002.wav",
+      "sha256": "acbd5ecc6d22db289ec5938b83f26e222e8089a2e706e6245bed15f9b250b8d7",
+      "bytes": 16836,
+      "maxSeconds": 0.38
+    },
+    {
+      "file": "public/audio/interface-v1/miss.wav",
+      "original": "error_004.wav",
+      "sha256": "13a70968f7b95f7ca68ee23d3581933a71428ee65ff8522d4e204684ac338623",
+      "bytes": 4686,
+      "maxSeconds": 0.16
+    },
+    {
+      "file": "public/audio/interface-v1/hint.wav",
+      "original": "maximize_004.wav",
+      "sha256": "41c9e4d35b99269f29a7ee5f08c3e80307c83a594f3f0c309ce58cbc07d44bb2",
+      "bytes": 12426,
+      "maxSeconds": 0.28
+    },
+    {
+      "file": "public/audio/interface-v1/complete.wav",
+      "original": "confirmation_004.wav",
+      "sha256": "e1b37734df5038ee700b9c4fb77120b5b2fd7b8ee135761a12e49974aac75225",
+      "bytes": 22158,
+      "maxSeconds": 0.72
+    },
+    {
+      "file": "public/audio/interface-v1/finish.wav",
+      "original": "confirmation_003.wav",
+      "sha256": "2a13bdca7d0d0a48b46efa397cb3a02fdfeebefec255dac3485caa191146c605",
+      "bytes": 14350,
+      "maxSeconds": 0.65
+    },
+    {
+      "file": "public/audio/interface-v1/ready.wav",
+      "original": "tick_001.wav",
+      "sha256": "d65bdd993f5defe2344c3b1a7267974f25e18bc7622ff575e808e10373e6762a",
+      "bytes": 2062,
+      "maxSeconds": 0.1
+    },
+    {
+      "file": "public/audio/interface-v1/pause.wav",
+      "original": "minimize_004.wav",
+      "sha256": "b537000630603e180f5c8a76d0828e8b83de1ef2da634cc0ec1e7a50be94c761",
+      "bytes": 10222,
+      "maxSeconds": 0.23
+    }
+  ]
+}

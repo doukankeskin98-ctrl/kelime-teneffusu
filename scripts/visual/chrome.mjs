@@ -52,6 +52,13 @@ export async function launch({port = 9333} = {}) {
   await call('Runtime.enable');
   return {
     errors,
+    async touch(points) {
+      for(let i=0;i<points.length;i++) {
+        await call('Input.dispatchTouchEvent',{type:i?'touchMove':'touchStart',touchPoints:[{x:points[i][0],y:points[i][1],id:1,radiusX:4,radiusY:4,force:.7}]});
+        await sleep(24);
+      }
+      await call('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+    },
     async viewport(width, height, scale = 2) {
       await call('Emulation.setDeviceMetricsOverride', {width, height, deviceScaleFactor: scale, mobile: true});
       await call('Emulation.setTouchEmulationEnabled', {enabled: true, maxTouchPoints: 5});

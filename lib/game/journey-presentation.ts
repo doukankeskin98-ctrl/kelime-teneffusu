@@ -5,6 +5,10 @@ import {boardIssues, PRESENTATION_RULES, qualityPuzzle, repairFiller, type Board
 import {SAFE_LAYOUTS} from './safe-layouts.ts';
 
 export function journeyPolicy(id:string,source:Puzzle):BoardPolicy {
+  if(/^ufuk-gok-[1-6]@2$/.test(id)){
+   const step=Number(id.split('-').at(-1)!.replace('@2',''))-1;
+   return {size:step<2?8:9,directions:step===0?'forward':'all',reverseLimit:[0,2,2,2,3,1][step]!};
+  }
   const chapter=mainChapter(id), world=worldChapter(id);
   const longest=Math.max(...source.targets.map(t=>t.text.length));
   if(chapter&&chapter.number<=2) return {size:Math.max(6,longest),directions:'straight',reverseLimit:0};
@@ -16,7 +20,7 @@ export function journeyPolicy(id:string,source:Puzzle):BoardPolicy {
 }
 
 export function preparePresentation(source:Puzzle,key:string):Puzzle {
-  const seed=hash('presentation:'+key), policy=key.startsWith('route:')?journeyPolicy(key.slice(6).replace(/@2$/,''),source):{};
+  const seed=hash('presentation:'+key), policy=key.startsWith('route:')?journeyPolicy(key.slice(6),source):{};
   // The 0.48.0 layout is kept whenever it already passes the wider list, so boards
   // players have seen do not move. Otherwise change filler letters only; a full new
   // layout is the last resort when the hit is formed by target letters themselves.

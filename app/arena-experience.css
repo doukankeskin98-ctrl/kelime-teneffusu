@@ -57,3 +57,11 @@ html[data-reduce-motion=true] .letter-board .hint-ring,html[data-reduce-motion=t
 
 /* The invite control sits on a light surface inside a dark lobby. */
 .arena-room-lobby .arena-room-invite>.button.secondary{background:#fff9e9;color:#213e35;border:1px solid #e0d9bc;min-height:44px;box-shadow:none;font-size:14px;line-height:1.3;white-space:normal}
+
+/* Safety action occupies its own column, including long nicknames. */
+.arena-room-lobby .arena-roster li{position:relative;padding-right:52px;grid-template-columns:24px minmax(0,1fr) auto;gap:4px 8px}
+.arena-room-lobby .arena-roster li.is-you{padding-right:12px}
+.arena-room-lobby .arena-roster .safety-trigger{position:absolute;right:4px;top:50%;transform:translateY(-50%);min-width:44px;min-height:44px}
+.arena-room-lobby .arena-roster li>span:not(.roster-rank){white-space:nowrap}
+
+.duel-controls .arena-rival-name{max-width:24ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.duel-controls>button{min-width:0;max-width:100%}

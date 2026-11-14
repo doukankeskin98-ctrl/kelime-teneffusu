@@ -74,11 +74,18 @@
 .scenic-play .play-controls .turn-board{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:auto;min-width:96px;height:44px;padding:8px 14px;background:#fff6dc;color:#244e43;border:1px solid #dfd6b7;border-radius:24px;font-size:14px;font-weight:750;box-shadow:none}
 .scenic-play .play-controls .turn-board>.turn-board-icon{width:27px;height:27px;flex:none}
 .scenic-play .game-settings-trigger:focus-visible,.scenic-play .turn-board:focus-visible{outline:3px solid #ffe4a3;outline-offset:3px}
-.modal.game-dialog.ordinary-outcome.scene-result{min-height:min(560px,calc(100svh - 80px - env(safe-area-inset-top,0px)))}
-.ordinary-outcome .compact-keepsake .result-keepsake-art{display:none}
+/* Fixed frame, independently scrolling rewards, always reachable actions. */
+.modal.game-dialog.scenic-outcome.scene-result[open]{display:flex;flex-direction:column;height:min(680px,calc(100svh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;min-height:0}
+.modal.game-dialog.scenic-outcome.scene-result>.modal-head{flex:0 0 68px;box-sizing:border-box}
+.modal.game-dialog.scenic-outcome.scene-result>.modal-content{flex:1 1 0;min-height:0;overflow-y:auto;padding-bottom:24px;scroll-padding-bottom:24px}
+.modal.game-dialog.scenic-outcome.scene-result>.modal-actions{position:static;flex:0 0 auto;margin-top:0}
+.modal.game-dialog.scenic-outcome.scene-result .result-next-goal{padding-bottom:8px}
+@media(max-height:650px){.modal.game-dialog.scenic-outcome.scene-result>.modal-head{flex-basis:56px}}
+
+.ordinary-outcome .compact-keepsake .result-keepsake-art{display:block}
 .ordinary-outcome .compact-keepsake p{display:none}
-/* Without its thumbnail the piece name is a centred line like the title and stars above it. */
-.modal.game-dialog.scenic-outcome.scene-result.ordinary-outcome .result-keepsake.compact-keepsake{text-align:center}
+/* Every earned piece retains its artwork; ordinary and milestone results share a frame. */
+.modal.game-dialog.scenic-outcome.scene-result.ordinary-outcome .result-keepsake.compact-keepsake{text-align:left}
 .ordinary-outcome .result-album-progress{padding-top:8px!important}
 .ordinary-outcome .result-star{animation-duration:.42s}
 @media(max-width:380px){.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{font-size:16px!important}.scenic-play .clue-slot>button>.clue-word{font-size:15px}.scenic-play .target-topic h1{font-size:17px}}
@@ -168,3 +175,36 @@ button.native-stars{min-height:44px;border:0;cursor:pointer}
 
 /* The row itself owns the full hit area; adjacent rows never overlap. */
 .game-app .scenic-play .viewport-targets.has-word-rack .target-focus-button,.scenic-play .viewport-targets.has-word-rack .target-focus-button{min-height:44px;height:100%;min-width:0}
+
+/* The map is an optional view of the existing journey, never a new unlock system. */
+.modal.game-dialog.journey-map{width:min(480px,calc(100% - 24px))}
+.journey-map .journey-map-body{padding:0 16px 20px}
+.journey-map-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}
+.journey-map-heading h3{font-size:15px;margin:0;color:inherit}
+.journey-map-heading>span{font-size:12px;color:#d7e4d9;white-space:nowrap}
+.journey-map-worlds{display:grid;gap:12px}
+.journey-map-world{position:relative;display:block;width:100%;min-height:156px;overflow:hidden;border-radius:20px;border:1px solid #9db4af80;background:#17434c;color:#fffbea;text-align:left;padding:0;isolation:isolate}
+.journey-map-world.is-current{min-height:230px;border:2px solid #efcf7e}
+.journey-map-world>.scene-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.journey-map-world::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#123b4500 5%,#123b45e8 100%)}
+.journey-map-world-copy{display:flex;flex-direction:column;justify-content:flex-end;min-height:inherit;padding:48px 40px 18px 18px;gap:5px}
+.journey-map-world-copy>span{font-size:12px;display:flex;gap:8px;align-items:center}
+.journey-map-world-copy>strong{font-size:22px;font-weight:750;line-height:1.14;letter-spacing:-.025em}
+.journey-map-world-copy>small{font-size:13px;color:#fff8e3}
+.journey-map-chevron{position:absolute;right:14px;bottom:24px}
+.journey-map-dots{display:flex;gap:9px;margin-top:10px}
+.journey-map-dots>span{width:30px;height:30px;display:grid;place-items:center;border:1px solid #f3ecd390;border-radius:50%;font-size:12px}
+.journey-map-dots>.now{background:#f3d988;color:#143d42;border-color:#f3d988;font-weight:750}
+.journey-map-all{margin-top:16px}
+.journey-map-back{min-height:44px;margin-bottom:6px}
+.journey-map .chapter-world-cover{height:130px;aspect-ratio:auto}
+.journey-map .chapter-picker-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px 0}
+.journey-map .chapter-picker-grid>button{min-height:108px;padding:14px 12px}
+.journey-map .chapter-picker-grid>button>em{font-size:14px;line-height:1.25;font-style:normal;overflow-wrap:anywhere}
+.journey-map .chapter-picker-grid>button>span>b{font-size:24px}
+.journey-map-play{margin:4px 0 8px}
+/* A programmatically focused reading heading retains accessibility focus without a button ring. */
+.game-dialog .modal-head h2:focus{outline:none}
+
+/* A closed native dialog must never enter the page flow, including its first render. */
+.modal.game-dialog:not([open]){display:none!important}

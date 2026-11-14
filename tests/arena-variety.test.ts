@@ -47,7 +47,7 @@ describe('one lasting content history across rooms and Arena modes',()=>{
    for(const t of active.board!.targets){assert(!seen.has(t.text),`repeat after reentry ${n}: ${t.text}`);seen.add(t.text);shown++;}
    const peer=await new GameService(f.db,f.clock).state('returning-b');assert.deepEqual(peer!.board,active.board);
    // Some rounds are played to a real win, others abandoned after seeing the board.
-   f.advance(4000);if(n%3===0){for(const p of f.puzzle(a.id).placements)await game.claim('returning-a',a.id,p.a,p.b,1);}else f.advance(2000);
+   f.advance(active.starts!-f.clock());if(n%3===0){for(const p of f.puzzle(a.id).placements)await game.claim('returning-a',a.id,p.a,p.b,1);}else f.advance(2000);
    await game.leave('returning-a',a.id,1);await game.leave('returning-b',a.id,1);assert.equal(await game.state('returning-a'),null);f.advance(1000);
   }
   assert.equal(shown,372);assert.equal(seen.size,shown);assert.equal(f.sqlite.prepare('SELECT count(*) n FROM arena_seen WHERE user_id=?').get('returning-a')!['n'],54);
