@@ -149,3 +149,11 @@ describe('dialog safe viewport bounds',()=>{
   assert.equal(doc.body.style.overflow,'auto');assert.equal(restored,1);
  });
 });
+
+it('a mid-turn visual bounding box never expands the physical board or font size',()=>{
+ const b=browser(),board=element(300,0);Object.defineProperty(board,'offsetWidth',{value:300});
+ const clean=attachBoardSize(board,{rows:8,columns:6},false,()=>{},b.view);
+ assert.equal(board.style.getPropertyValue('height'),'400px');
+ board.rect.width=495;b.view.dispatchEvent(new Event('kt-board-layout'));
+ assert.equal(board.style.getPropertyValue('height'),'400px');assert.equal(board.style.getPropertyValue('--board-letter-size'),'28px');clean();
+});

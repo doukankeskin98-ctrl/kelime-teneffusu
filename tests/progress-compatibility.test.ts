@@ -135,3 +135,11 @@ it('word milestones never fall when a better-star result from an older revision 
  const old=progress(1,30),next=progress(2,30);old.saves[key]!.hints=0;old.saves[key]!.stars=3;
  for(const merged of [mergeProgress(old,next),mergeProgress(next,old)]){assert.equal(collectionStats(merged).stars,3);assert.equal(wordTrail(merged).words,5);assert.equal(collectionStats(merged).completed,1);}
 });
+
+it('new players receive sound and haptics while existing explicit or missing preferences remain unchanged',()=>{
+ const fresh=emptyProgress();assert.equal(fresh.sound,true);assert.equal(fresh.haptics,true);
+ for(const prefs of [{sound:false,haptics:false},{sound:true,haptics:false},{sound:false,haptics:true},{}]){
+  const old=readProgress(JSON.stringify({v:2,saves:{},...prefs}));
+  assert.equal(old.sound,'sound' in prefs&&prefs.sound===true);assert.equal(old.haptics,'haptics' in prefs&&prefs.haptics===true);
+ }
+});

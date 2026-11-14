@@ -108,11 +108,11 @@ const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery
 describe('numbered journey home and real result',()=>{
  it('shows one primary action and chapter access without duplicate menu shortcuts',()=>{
   const html=render(numberedHome['JourneyHome'],{progress:emptyProgress(),onPlay(){},onExplore(){}});
-  assert.match(html,/Oyna/);assert.match(html,/Bölüm 1/);assert.doesNotMatch(html,/stage-reward|stage-trail/);assert.match(html,/Bölümler ve albümler/);assert.match(html,/Diğer oyunlar/);assert.doesNotMatch(html,/stage-milestone|stage-wordmark/);assert.equal((html.match(/class="stage-play/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
+  assert.match(html,/Oyna/);assert.match(html,/Bölüm 1/);assert.doesNotMatch(html,/stage-reward|stage-trail/);assert.match(html,/Yolculuğum: bölümler ve albümler/);assert.match(html,/Diğer oyunlar/);assert.doesNotMatch(html,/stage-milestone|stage-wordmark/);assert.equal((html.match(/class="stage-play/g)??[]).length,1);assert.doesNotMatch(html,/theme-grid|play-modes|atlas-adventure/);
  });
  it('continues an existing route and shows a truthful complete-catalogue state',()=>{
   const p=emptyProgress(),b=journeyBoard(journeyById('uzay-2')!);p.saves['route:uzay-2']=cleanSave({strokes:[b.placements[0]!],hints:0,elapsed:10,complete:false,stars:0},b);p.last={themeId:'uzay',level:0,journey:'uzay-2'};
-  let html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Bölüm 2/);assert.match(html,/Devam et/);assert.match(html,/Bölümler/);
+  let html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/Bölüm 2/);assert.match(html,/Devam et/);assert.match(html,/Yolculuğum/);
   for(const item of mainJourney.MAIN_JOURNEY)finish(p,item.chapter.id);
   html=render(numberedHome['JourneyHome'],{progress:p,onPlay(){},onExplore(){}});assert.match(html,/312 bölüm tamamlandı/);assert.doesNotMatch(html,/— Oyna|Devam et/);
  });

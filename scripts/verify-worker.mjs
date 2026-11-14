@@ -43,9 +43,9 @@ try{
  const home=(await (await request('/')).text()).replace(/<!--[\s\S]*?-->/g,'');check(home.includes('Kelime Teneffüsü')&&home.includes('Merakına'),'public page renders');
  check(/<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(home),'production HTML declares a real device viewport and safe areas');
  check(home.includes('id="journey-home-title"')&&home.includes('stage-play')&&home.includes('Bölüm 1')&&!home.includes('theme-grid')&&!home.includes('play-modes'),'home has one numbered main journey without competing mode grids');
- check(['Yolculuk','Arena','Bölümler','Diğer oyunlar'].every(label=>home.includes(label)),'main navigation preserves Journey, Arena and secondary games with on-demand journey details');
+ check(['Yolculuk','Arena','Yolculuğum','Diğer oyunlar'].every(label=>home.includes(label)),'main navigation preserves Journey, Arena and secondary games with on-demand journey details');
  check(home.includes('Yıldız İskelesi')&&!home.includes('stage-trail')&&EXPEDITIONS.length===52,'numbered journey exposes fifty-two independently registered routes');
- check(home.includes('Gökyüzüne bak')&&home.includes('Bölümler ve albümler')&&!home.includes('stage-milestone'),'home preserves the actual next chapter and chapter map without duplicate shortcuts');
+ check(home.includes('Gökyüzüne bak')&&home.includes('Yolculuğum: bölümler ve albümler')&&!home.includes('stage-milestone'),'home preserves the actual next chapter and chapter map without duplicate shortcuts');
  const released=releaseCatalogue();check(home.includes('Diğer oyunlar'),'secondary exploration and archive entry remains visible');
  check(!home.includes('stage-reward')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
@@ -138,6 +138,7 @@ try{
  for(const target of active.board.targets)await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'claim',id:room.id,round:1,...solution(active.board,target)}});
  const result=await json('/api/game?action=room',{cookie:bCookie});check(result.phase==='finished'&&result.winner===a.profile.id,'two-player result persisted');
  check((await json('/api/game',{cookie:aCookie})).stats.wins===1,'a single win is recorded');
+ const peerPreferences=await json('/api/progress',{cookie:bCookie});await json('/api/progress',{cookie:bCookie,method:'PUT',body:{progress:{...peerPreferences.progress,sound:false}}});
  const cloud=await json('/api/progress',{cookie:aCookie});await json('/api/progress',{cookie:aCookie,method:'PUT',body:{progress:{...cloud.progress,sound:true,tutorialDone:true,boardColor:'walnut'}}});check((await json('/api/progress',{cookie:bCookie})).progress.sound===false,'progress stays private');
  const staleRead=await json('/api/progress?expectedOwnerId='+encodeURIComponent(a.profile.id),{cookie:bCookie,expected:409});check(staleRead.code==='PROGRESS_OWNER_CHANGED'&&!('progress' in staleRead),'a stale progress read cannot expose another authenticated account');
  await request('/api/progress?expectedOwnerId=',{cookie:bCookie,expected:409});await request('/api/progress?expectedOwnerId='+encodeURIComponent(a.profile.id),{expected:401});

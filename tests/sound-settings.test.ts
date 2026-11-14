@@ -1,3 +1,4 @@
+import {SoundSamples} from '../lib/game/sound-samples.ts';
 // Actual settings + preference module in a fresh VM, with a controlled device store.
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
@@ -11,11 +12,11 @@ const text=(v:any):string=>Array.isArray(v)?v.map(text).join(''):typeof v==='str
 function settings(values=new Map<string,string>(),enabled=true){
  let fail=false,cursor=0,dirty=true,tree:any;const slots:any[]=[],effects:(()=>void)[]=[],chimes:string[]=[],window=new EventTarget();
  const storage={getItem:(key:string)=>values.get(key)??null,setItem(key:string,value:string){if(fail)throw new Error('blocked');values.set(key,value);}};
- const audio:Record<string,any>={};vm.runInNewContext(audioSource,{exports:audio,window,localStorage:storage,Event});
+ const audio:Record<string,any>={};vm.runInNewContext(audioSource,{exports:audio,require:(name:string)=>{assert.equal(name,'./sound-samples.ts');return {SoundSamples};},window,localStorage:storage,Event});
  const hooks={useState(v:any){const slot=slots[cursor++]??={value:v};return[slot.value,(next:any)=>{slot.value=next;dirty=true;}];},useId(){return 'sound-setting';},useEffect(fn:()=>void,deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((v,i)=>!Object.is(v,slot.deps[i]))){slot.deps=deps;effects.push(()=>{slot.cleanup?.();slot.cleanup=fn();});}}};
  const props={enabled,onChange(next:boolean){props.enabled=next;dirty=true;}},exports:Record<string,any>={};
  const jsx=(type:any,props:any)=>({type,props});
- vm.runInNewContext(settingsSource,{exports,require:(name:string)=>name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='lucide-react'?{Play:'Play',Volume2:'Volume2',VolumeX:'VolumeX'}:name==='@/lib/game/sound'?audio:{useChime:()=>((action:string)=>{chimes.push(action);if(action==='enable'&&audio['readSoundLevel']()===0)audio['setSoundLevel'](audio['DEFAULT_SOUND_LEVEL']);})},window});
+ vm.runInNewContext(settingsSource,{exports,require:(name:string)=>name==='./Disclosure'?{Disclosure:'Disclosure'}:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='lucide-react'?{Play:'Play',Volume2:'Volume2',VolumeX:'VolumeX'}:name==='@/lib/game/sound'?audio:{useChime:()=>((action:string)=>{chimes.push(action);if(action==='enable'&&audio['readSoundLevel']()===0)audio['setSoundLevel'](audio['DEFAULT_SOUND_LEVEL']);})},window});
  const paint=()=>{for(let i=0;(dirty||effects.length)&&i<30;i++){if(dirty){dirty=false;cursor=0;tree=exports['SoundSettings'](props);}while(effects.length)effects.shift()!();}return tree;};paint();
  return{audio,props,values,chimes,paint,fail(v:boolean){fail=v;},get tree(){return tree;},find(predicate:(n:any)=>boolean){const result=nodes(tree).find(predicate);assert(result);return result;},change(percent:number){nodes(tree).find(n=>n.type==='input').props.onChange({currentTarget:{value:String(percent)}});paint();},close(){for(const s of slots)s.cleanup?.();}};
 }
