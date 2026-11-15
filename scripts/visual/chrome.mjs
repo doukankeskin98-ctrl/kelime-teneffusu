@@ -1,7 +1,7 @@
 // Dependency-free driver for a local, headless Google Chrome (DevTools protocol).
 // Optional developer tooling: it is not part of CI and installs nothing.
 import {spawn} from 'node:child_process';
-import {existsSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs';
+import {existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 
@@ -29,13 +29,16 @@ export async function launch({port = 9333} = {}) {
   await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
   let nextId = 0;
   const pending = new Map(), errors = [];
-  let session = '';
+  let session = '', recording=null;
   socket.onmessage = event => {
     const message = JSON.parse(event.data);
     if (message.id && pending.has(message.id)) {
       const {resolve, reject} = pending.get(message.id);
       pending.delete(message.id);
       if (message.error) reject(new Error(message.error.message)); else resolve(message.result);
+    } else if(message.sessionId===session&&message.method==='Page.screencastFrame'){
+      if(recording){const {data,metadata}=message.params,index=recording.frames.length;writeFileSync(path.join(recording.directory,`${String(index).padStart(4,'0')}.jpg`),Buffer.from(data,'base64'));recording.frames.push({index,timestamp:metadata.timestamp});}
+      void send('Page.screencastFrameAck',{sessionId:message.params.sessionId},session).catch(()=>{});
     } else if (message.sessionId === session && message.method === 'Runtime.exceptionThrown') {
       errors.push(String(message.params.exceptionDetails.exception?.description ?? message.params.exceptionDetails.text).slice(0, 300));
     }
@@ -52,6 +55,8 @@ export async function launch({port = 9333} = {}) {
   await call('Runtime.enable');
   return {
     errors,
+    async startRecording(directory){mkdirSync(directory,{recursive:true});recording={directory,frames:[]};await call('Page.startScreencast',{format:'jpeg',quality:85,everyNthFrame:1,maxWidth:430,maxHeight:932});},
+    async stopRecording(){await call('Page.stopScreencast');const result=recording;recording=null;if(result)writeFileSync(path.join(result.directory,'frames.json'),JSON.stringify(result.frames));return result?.frames??[];},
     async key(key,code=key) {
       await call('Input.dispatchKeyEvent',{type:'keyDown',key,code,...(key==='Tab'?{windowsVirtualKeyCode:9,nativeVirtualKeyCode:9}:{})});
       await call('Input.dispatchKeyEvent',{type:'keyUp',key,code});
