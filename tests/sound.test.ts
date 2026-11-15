@@ -87,16 +87,20 @@ describe('stronger adjustable mix and bounded melodic letter channel',()=>{
  });
 });
 
-it('decoded one-shots use immediate finite playback, pitched letters and stop on background',async()=>{
- const previous=Object.getOwnPropertyDescriptor(globalThis,'window');
- Object.defineProperty(globalThis,'window',{configurable:true,value:{fetch:async()=>new Response(new Uint8Array(8))}});
- const f=fixture();Object.assign(f.ctx,{decodeAudioData:async()=>({duration:.12})});
+it('uses the original finite tones for every cue without fetching or decoding replacement samples',async()=>{
+ const previous=Object.getOwnPropertyDescriptor(globalThis,'window');let requests=0,decodes=0;
+ Object.defineProperty(globalThis,'window',{configurable:true,value:{fetch:async()=>{requests++;return new Response(new Uint8Array(8));}}});
+ const f=fixture();Object.assign(f.ctx,{decodeAudioData:async()=>{decodes++;return{duration:.12};}});
  try{
   f.sound.setEnabled(true);f.sound.unlock();for(let n=0;n<30;n++)await Promise.resolve();
-  assert(f.sound.play('word'));assert.equal(f.osc().length,0);
-  const sample=f.nodes.find(n=>n.kind==='buffer')!;assert.deepEqual(sample.started,[10]);
-  assert(f.sound.play('letter',3));assert(f.params.some(p=>p.method==='setValueAtTime'&&p.values[0]===2**(4/12)));
-  f.sound.setVisible(false);assert(sample.stops.includes(10.025));assert(!f.sound.play('word'));
-  for(const n of f.nodes.filter(n=>n.kind==='buffer')){n.onended?.();assert(n.disconnected);}
+  assert.equal(requests,0);assert.equal(decodes,0);
+  for(const cue of Object.keys(SOUND_PHRASES) as (keyof typeof SOUND_PHRASES)[]){
+   f.ctx.currentTime+=2;const before=f.osc().length;assert(f.sound.play(cue,3),cue);
+   assert.equal(f.osc().length-before,SOUND_PHRASES[cue].notes.length*2,cue);
+  }
+  assert.equal(f.nodes.filter(n=>n.kind==='buffer').length,0);
+  assert(f.params.some(p=>p.method==='setValueAtTime'&&p.values[0]===523.25));
+  f.sound.setVisible(false);assert(f.osc().every(n=>n.stops.length>=2));assert(!f.sound.play('word'));
+  for(const n of f.osc()){n.onended?.();assert(n.disconnected);}
  }finally{f.sound.dispose();if(previous)Object.defineProperty(globalThis,'window',previous);else Reflect.deleteProperty(globalThis,'window');}
 });
