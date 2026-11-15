@@ -1,3 +1,5 @@
+16 Kasım 2026 · **0.54.0**: dünya ödülü / bonus sahne akışı. Motion14.10.1 MIT, kayıt/motor/ses değişmez. Gerçek cihaz kabulü açık. Ayrıntı: docs/release-0.54.0.md ve docs/quality-0540.md.
+
 15 Kasım 2026 · 0.53.0: yerel çizim + gerçek kabul üzerinden sınırlı övgü; dünya bitişinde bonus ana eylemi, açık geçme ve gerçek sonraki bölüm. 993 test, 742 Worker; dört mobil ölçüde yerel dokunma akışı. Kayıt/tahta/ses değişmedi; fiziksel cihaz kabulü açık. Ayrıntı: docs/release-0.53.0.md.
 
 15 Kasım 2026 · 0.52.2: kullanıcı geri bildirimiyle yalnız efekt sesleri 0.51.0 ses motoruna birebir döndürüldü. Son arayüz/rehber, animasyon, titreşim, ses tercihleri ve oyuncu kayıtları korundu. Ambiyans yok. Kontroller ve sınırlar: docs/release-0.52.2.md.

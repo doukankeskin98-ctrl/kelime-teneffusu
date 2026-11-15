@@ -1,3 +1,5 @@
+16 Kasım 2026 · **0.54.0**: dünya ödülü / bonus sahne akışı. Motion14.10.1 MIT, kayıt/motor/ses değişmez. Gerçek cihaz kabulü açık. Ayrıntı: docs/release-0.54.0.md ve docs/quality-0540.md.
+
 # Studio sürümü: teslim ve doğrulama
 
 ## 0.53.0 · Başarı geri bildirimi ve yolculuk bonusları

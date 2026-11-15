@@ -5,7 +5,7 @@ import * as activity from '../lib/platform/activity.ts';
 import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {it} from 'node:test';import vm from 'node:vm';import ts from 'typescript';
 import * as bonus from '../lib/game/journey-bonus.ts';import * as flow from '../lib/game/journey-flow.ts';import * as discovery from '../lib/game/discovery.ts';import * as scene from '../lib/game/scene.ts';import * as progress from '../lib/game/progress.ts';import * as content from '../lib/game/content.ts';import * as feedback from '../lib/game/word-feedback.ts';
 const compile=(file:string)=>ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
-type N={type:any;props:Record<string,any>};const nodes=(v:any):N[]=>Array.isArray(v)?v.flatMap(nodes):v&&typeof v==='object'?[v,...['children','aside','footer','headerAction'].flatMap(k=>nodes(v.props?.[k]))]:[];const text=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';
+type N={type:any;props:Record<string,any>};const nodes=(v:any):N[]=>Array.isArray(v)?v.flatMap(nodes):v&&typeof v==='object'?[v,...['children','aside','footer','headerAction','effect'].flatMap(k=>nodes(v.props?.[k]))]:[];const text=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';
 function harness(file:string,name:string,props:Record<string,any>,extra:Record<string,any>={}){
  let tree:any,cursor=0,dirty=true,now=0,id=0;const slots:any[]=[],effects:(()=>void)[]=[],intervals=new Map<number,()=>void>(),timeouts=new Map<number,()=>void>(),exports:Record<string,any>={},doc=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},getElementById:()=>null}),browser=Object.assign(new EventTarget(),{matchMedia:()=>({matches:true})});
  const hooks={useState(initial:any){const s=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return[s.value,(u:any)=>{const next=typeof u==='function'?u(s.value):u;if(!Object.is(next,s.value)){s.value=next;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useMemo(fn:()=>any,deps:any[]){const s=slots[cursor++]??={};if(!s.deps||deps.some((d,i)=>!Object.is(d,s.deps[i]))){s.value=fn();s.deps=deps;}return s.value;},useEffect(fn:()=>any,deps:any[]){const s=slots[cursor++]??={};if(!s.deps||deps.some((d,i)=>!Object.is(d,s.deps[i]))){s.deps=deps;effects.push(()=>{s.cleanup?.();s.cleanup=fn();});}}};
@@ -53,4 +53,15 @@ it('leaving from bonus settings never restarts the saved timer',()=>{
 });
 it('remote bonus completion while settings are open cannot be resumed by closing them',()=>{
  const r=round();try{r.start();r.h.click('Ayarlar');const remote=bonus.cleanBonusSave('uzay',{attempt:1,elapsed:2000,found:bonus.bonusBoard('uzay').targets.map(t=>t.id)})!;r.h.update({progress:{...r.value,bonuses:{uzay:remote}}});r.h.find('GameToolsSheet').props['onClose']();r.h.paint();assert.equal(r.h.find('PlayLayout').props['readOnly'],true);const writes=r.writes.length;r.h.time(5000);r.claim(0);assert.equal(r.writes.length,writes);}finally{r.h.close();}
+});
+
+it('bonus ready board rejects selection and settings/help never start the unstarted clock',()=>{
+ const r=round();try{
+  const layout=r.h.find('PlayLayout');assert.equal(layout.props['inputBlocked'],true);assert(layout.props['effect']);r.claim(0);r.h.time(10000);assert.equal(r.writes.length,0);
+  r.h.click('Ayarlar');r.h.find('GameToolsSheet').props['onClose']();r.h.find('GameToolsSheet').props['onHelp']();r.h.paint();r.h.click('Oyuna dön');r.h.time(10000);assert.equal(r.writes.length,0);assert.equal(r.h.find('PlayLayout').props['inputBlocked'],true);
+  r.start();assert.equal(r.h.find('PlayLayout').props['inputBlocked'],false);assert.equal(r.h.find('PlayLayout').props['effect'],undefined);r.claim(0);assert.equal(r.value.bonuses!['uzay']!.found.length,1);
+ }finally{r.h.close();}
+});
+it('bonus can be skipped from ready board without spending time or writing progress',()=>{
+ const r=round();try{r.h.click('Bonusu geç, yolculuğa devam et');assert.equal(r.next,1);assert.equal(r.writes.length,0);}finally{r.h.close();}
 });
