@@ -1,3 +1,5 @@
+16 Kasım 2026 · **0.54.0**: dünya ödülü / bonus sahne akışı. Motion14.10.1 MIT, kayıt/motor/ses değişmez. Gerçek cihaz kabulü açık. Ayrıntı: docs/release-0.54.0.md ve docs/quality-0540.md.
+
 13 Kasım 2026 · 0.49.0: sıkı hedef rafı, kayıt koordinatlarını koruyan güvenli dikdörtgen sunum. Bölüm 5, 414×736: raf 140→72 px, hücre 36,4→45,1 px. 923 test ve 722 Worker kontrolü geçti. 320/375/414 px tarayıcı çizimi ve devam/sonuç geçişi doğrulandı. Fiziksel iPhone ve çok cihazlı Arena kabulü açık. docs/release-0.49.0.md.
 
 12 Kasım 2026 · 0.48.0: içerik güvenliği ve kademeli başlangıç, çevrimdışı Arena/hesap izolasyonu tamamlandı. 395 sunum tahtası eski kayıt koordinatlarına eşleniyor; 897 test/722 Worker geçti. Kalan lint borcu açık; yeni artış CI ile engelleniyor. Öncelik fiziksel cihaz/5–8 yeni oyuncu kabulü ve yayıncı-destek-TestFlight dış işleri. Ambiyans iptal kararı sürüyor. docs/release-0.48.0.md.

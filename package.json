@@ -1,6 +1,6 @@
 {
   "name": "kelime-teneffusu",
-  "version": "0.53.0",
+  "version": "0.54.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -55,7 +55,8 @@
     "@capacitor/core": "8.5.3",
     "@capacitor/ios": "8.5.3",
     "@capacitor/app": "8.1.2",
-    "@capacitor/haptics": "8.0.2"
+    "@capacitor/haptics": "8.0.2",
+    "motion": "14.10.1"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",

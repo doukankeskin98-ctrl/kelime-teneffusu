@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.53.0** — doğrulanmış ardışık kelimelerde kısa övgüler; dünya tamamlamada ana devam yoluna yerleşen bonus turu. Eski sesler, 312 bölüm ve ilerlemeler korunur. [Teslim ve kanıt sınırları](docs/release-0.53.0.md).
+Güncel geliştirme: **0.54.0** — gerçek dünya görseliyle albüm ödülü, ortak Motion sırası ve aynı tahta üzerinde bonus hazırlığı. Eski sesler, 312 bölüm ve ilerlemeler korunur. [Teslim ve kanıt sınırları](docs/release-0.54.0.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 
