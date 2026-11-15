@@ -70,3 +70,12 @@ html[data-reduce-motion=true] .scenic-play[data-result-phase=exit] *{animation:n
 @keyframes selection-reject{0%{opacity:.8;transform:translateX(0)}25%{transform:translateX(-2px)}50%{transform:translateX(2px)}100%{opacity:0;transform:translateX(0)}}
 @media(prefers-reduced-motion:reduce){.board-turning,.board-turning .letter-grid span,.board-entering .letter-grid span,.rejected-selection{animation:none!important}.rejected-selection{opacity:.4}}
 html[data-reduce-motion=true] .board-turning,html[data-reduce-motion=true] .board-turning .letter-grid span,html[data-reduce-motion=true] .board-entering .letter-grid span,html[data-reduce-motion=true] .rejected-selection{animation:none!important}
+
+/* Brief celebration above the drawing surface; a new gesture dismisses it. */
+.play-praise{position:absolute;top:16%;left:0;right:0;height:34px;z-index:9;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;animation:play-praise 900ms cubic-bezier(.16,1,.3,1) both}
+.play-praise strong{padding:4px 18px;border-radius:16px;background:#fff4c9;color:#244b42;font-size:clamp(16px,4.4vw,21px);font-weight:800;line-height:1.1;box-shadow:0 3px 8px #102e3726;white-space:nowrap}
+@keyframes play-praise{0%{opacity:0;transform:translateY(5px) scale(.94)}18%,78%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-3px) scale(1)}}
+@media(prefers-reduced-motion:reduce){.play-praise{animation:none}}
+:root[data-reduce-motion=true] .play-praise{animation:none}
+
+.play-praise[hidden]{display:none}

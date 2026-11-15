@@ -1,3 +1,4 @@
+import * as playPraise from '../lib/game/play-praise.ts';
 import * as journeyRevisions from '../lib/game/journey-revisions.ts';
 import * as progressStorage from '../lib/game/progress-storage.ts';
 import * as progressCodec from '../lib/game/progress-codec.ts';
@@ -46,7 +47,7 @@ type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
 const walk=(v:any):Node[]=>Array.isArray(v)?v.flatMap(walk):v&&typeof v==='object'?[v,...['children','aside','footer','headerAction'].flatMap(k=>walk(v.props?.[k]))]:[];
 const text=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';
 const visible=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(visible).join(''):v&&typeof v==='object'&&v.props?.['aria-hidden']!==true&&v.props?.['style']?.visibility!=='hidden'?visible(v.props?.['children']):'';
-const jsx=(type:any,props:Record<string,unknown>,key?:unknown):any=>typeof type==='function'&&type.name==='GameToolsSheet'?type(props):({type,props,key}),icons=new Proxy({},{get:(_t,k)=>String(k)});
+const jsx=(type:any,props:Record<string,unknown>,key?:unknown):any=>{if(props?.['className']==='play-praise')(props['ref'] as {current:unknown}).current??={hidden:true,firstElementChild:{textContent:''}};return typeof type==='function'&&type.name==='GameToolsSheet'?type(props):({type,props,key});},icons=new Proxy({},{get:(_t,k)=>String(k)});
 function deferred<T>(){let resolve!:(r:T)=>void;const promise=new Promise<T>(yes=>{resolve=yes;});return{promise,resolve};}
 function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown,storageValues?:Map<string,string>){
  const exports:Record<string,any>={},slots:Slot[]=[],effects:(()=>void)[]=[],intervals=new Map<number,()=>void>(),timeouts=new Map<number,()=>void>(),deadlines=new Map<number,number>(),frames=new Map<number,()=>void>(),document=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},body:{style:{overflow:''}}});
@@ -56,13 +57,40 @@ function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown,s
  class Clock extends Date{static override now(){return now;}}
  const source=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText+(file.endsWith('Sprint.tsx')?'\nexports.__SprintRun=SprintRun;':'');
  const context:vm.Context={exports,require:(name:string)=>name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/board-projection'?projection:name==='@/lib/game/journey-presentation'?safePresentation:name==='@/lib/game/board-quality'?boardQuality:name==='@/lib/game/weekly-reward'?weeklyReward:name==='@/lib/game/horizons-content'?horizons:name==='@/lib/game/discoveries-content'?discoveries:name==='@/lib/game/arena-clock'?arenaClock:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/first-play'?firstPlay:name==='@/lib/game/navigation'?navigation:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/nature-content'?nature:name==='@/lib/game/coast-content'?coast:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddles:name==='@/lib/game/everyday-content'?everydayContent:name==='react'?{...hooks,useLayoutEffect:hooks.useEffect}:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/legacy-ui'?legacyUI:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize,fitGameFrame}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{innerHeight:640,getComputedStyle:()=>({getPropertyValue:()=>"0px"}),matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:(key:string)=>storageValues?.get(key)??null,setItem:(key:string,value:string)=>storageValues?.set(key,value)},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void,ms=0)=>{timeouts.set(++id,fn);deadlines.set(id,now+ms);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)};
- const resultHook:Record<string,unknown>={};vm.runInNewContext(ts.transpileModule(readFileSync('components/game/useResultPresentation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{...context,exports:resultHook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback});modules['./useResultPresentation']=resultHook;vm.runInNewContext(source,context);
+ const resultHook:Record<string,unknown>={};vm.runInNewContext(ts.transpileModule(readFileSync('components/game/useResultPresentation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{...context,exports:resultHook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback});modules['./useResultPresentation']=resultHook;
+ const praiseHook:Record<string,unknown>={};vm.runInNewContext(ts.transpileModule(readFileSync('components/game/usePlayPraise.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText,{...context,exports:praiseHook,require:(n:string)=>n==='react'?{...hooks,useLayoutEffect:hooks.useEffect,useCallback:(fn:unknown,deps:unknown[])=>hooks.useMemo(()=>fn,deps)}:n==='react/jsx-runtime'?{jsx,jsxs:jsx}:n==='@/lib/game/play-praise'?playPraise:n==='@/lib/game/engine'?engine:n==='@/lib/platform/activity'?activity:{gameIsActive:()=>true}});modules['./usePlayPraise']=praiseHook;vm.runInNewContext(source,context);
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<50;i++){if(dirty){dirty=false;cursor=0;tree=render();}if(commit)while(effects.length)effects.shift()!();}return tree;};
  return{exports,document,slots,frames,start(name:string,props:any,commit=true){render=()=>exports[name](props);return paint(commit);},paint,update(name:string,props:any){render=()=>exports[name](props);dirty=true;return paint();},find(type:string){const n=walk(tree).find(n=>n.type===type||typeof n.type==='function'&&n.type.name===type);assert.ok(n,type);return n;},async settle(){for(let i=0;i<30;i++){await Promise.resolve();paint();}},time(value:number,repaint=true){now=value;for(const fn of [...intervals.values()])fn();for(const [id,fn] of [...timeouts])if((deadlines.get(id)??Infinity)<=now){timeouts.delete(id);deadlines.delete(id);fn();}if(repaint)paint();},expire(){const f=[...timeouts.values()];timeouts.clear();for(const fn of f)fn();paint();},frame(){const f=[...frames.values()];frames.clear();for(const fn of f)fn();paint();},get tree(){return tree;},close(){for(const s of slots)s.cleanup?.();frames.clear();intervals.clear();timeouts.clear();}};
 }
 function familiarProgress():progress.Progress{return {...progress.emptyProgress(),mechanicGuides:['riddle','concealed']};}
 const base={title:'Keşif',kicker:'KELİMELER',onBack(){},board:content.TUTORIAL,strokes:[],paused:false,zoom:false,onCommit(){},preview:'',onPreview(){},children:null,aside:null,footer:null};
 function shared(props:any){const h=view('components/game/common.tsx');h.start('PlayLayout',{...base,...props});return h;}
+
+it('shared praise waits for confirmed local gestures, dismisses for the next drag and never moves the board key',()=>{
+ const puzzle=content.TUTORIAL,a=puzzle.placements[0]!,b=puzzle.placements[1]!;
+ let props={...base,wordListKey:'praise-test',wordList:{board:puzzle,strokes:[] as engine.Stroke[]},strokes:[] as engine.Stroke[]};
+ const h=shared(props),praise=()=>walk(h.tree).find(n=>n.props['className']==='play-praise'&&!n.props['ref'].current.hidden);
+ try{
+  const key=h.find('Board').key;h.find('Board').props['onCommit'](a.a,a.b);props={...props,strokes:[a]};h.update('PlayLayout',props);assert(!praise(),'optimistic ink alone is not success');
+  props={...props,wordList:{board:puzzle,strokes:[a]}};h.update('PlayLayout',props);assert(!praise());h.time(11200);
+  h.find('Board').props['onCommit'](b.b,b.a);props={...props,strokes:[a,b],wordList:{board:puzzle,strokes:[a,b]}};h.update('PlayLayout',props);
+  assert.equal(praise()!.props['ref'].current.firstElementChild.textContent,'Çok iyi!');assert.equal(String(praise()!.props['aria-hidden']),'true');assert.equal(h.find('Board').key,key);assert.equal(h.find('Board').props['readOnly'],false);
+  h.find('Board').props['onSelectStart']();h.paint();assert(!praise());h.update('PlayLayout',props);assert(!praise(),'a repeated ACK cannot replay praise');
+ }finally{h.close();}
+});
+it('shared praise discards a pending gesture across backgrounding, scope changes and terminal results',()=>{
+ const puzzle=content.TUTORIAL,a=puzzle.placements[0]!,b=puzzle.placements[1]!;
+ let props={...base,wordListKey:'one',wordList:{board:puzzle,strokes:[] as engine.Stroke[]}};const h=shared(props);
+ const hasPraise=()=>walk(h.tree).some(n=>n.props['className']==='play-praise'&&!n.props['ref'].current.hidden);
+ try{
+  h.find('Board').props['onCommit'](a.a,a.b);props={...props,wordList:{board:puzzle,strokes:[a]}};h.update('PlayLayout',props);
+  h.find('Board').props['onCommit'](b.a,b.b);h.document.hidden=true;h.document.dispatchEvent(new Event('visibilitychange'));h.document.hidden=false;h.document.dispatchEvent(new Event('visibilitychange'));
+  props={...props,wordList:{board:puzzle,strokes:[a,b]}};h.update('PlayLayout',props);assert(!hasPraise());
+  props={...props,wordListKey:'two',wordList:{board:puzzle,strokes:[]}};h.update('PlayLayout',props);
+  h.find('Board').props['onCommit'](a.a,a.b);props={...props,wordList:{board:puzzle,strokes:[a]}};h.update('PlayLayout',props);
+  h.find('Board').props['onCommit'](b.a,b.b);h.update('PlayLayout',{...props,readOnly:true,wordList:{board:puzzle,strokes:[a,b]}});assert(!hasPraise());
+ }finally{h.close();}
+});
 
 describe('rotated live layout keeps the original puzzle authoritative',()=>{
  it('maps displayed ink, hint and selection back to the original board without changing targets',()=>{
@@ -635,8 +663,21 @@ it('finishing the sixth real chapter offers bonus or direct continuation without
  let p=familiarProgress();const world=discovery.EXPEDITIONS[0]!;for(const id of world.chapterIds){const b=progress.progressBoard('route:'+id)!;p.saves['route:'+id]=progress.cleanSave({strokes:b.placements,elapsed:12,hints:0,complete:false,stars:0},b);}
  const calls:any[]=[],offers:any[]=[],h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{
   h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-gozlemevi',campaign:true},progress:p,onProgress:(fn:any)=>{p=fn(p);},onBack(){},onMap(){},onNext:(c:any)=>calls.push(c),onBonus:(...args:any[])=>offers.push(args)});
-  const b=h.find('PlayLayout').props['board'];for(const stroke of b.placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();const modal=h.find('Modal');const start=walk(modal).find(n=>n.type==='button'&&text(n).startsWith('Bonus turu'));assert(start);start.props['onClick']();assert.equal(offers[0][0],'uzay');assert(offers[0][1].journey);const skip=walk(modal).find(n=>n.type==='button'&&text(n).startsWith('Yeni dünyaya geç'));assert(skip);assert(skip.props['className'].includes('primary'));skip.props['onClick']();assert.equal(calls[0].journey,offers[0][1].journey);assert(p.saves['route:uzay-gozlemevi']!.complete);assert.equal(p.bonuses,undefined);assert.equal(h.find('PlayLayout').props['board'],b);
+  const b=h.find('PlayLayout').props['board'];for(const stroke of b.placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();const modal=h.find('Modal');const start=walk(modal).find(n=>n.type==='button'&&text(n).startsWith('Bonus turu'));assert(start);start.props['onClick']();assert.equal(offers[0][0],'uzay');assert(offers[0][1].journey);const skip=walk(modal).find(n=>n.type==='button'&&text(n).startsWith('Bonusu geç'));assert(skip);assert(start.props['className'].includes('primary'));assert(!skip.props['className'].includes('primary'));skip.props['onClick']();assert.equal(calls[0].journey,offers[0][1].journey);assert(p.saves['route:uzay-gozlemevi']!.complete);assert.equal(p.bonuses,undefined);assert.equal(h.find('PlayLayout').props['board'],b);
  }finally{h.close();}
+});
+it('campaign replay does not reoffer a bonus, while the last world bonus has no invented next chapter',async()=>{
+ for(const replay of [true,false]){
+  let p=familiarProgress();const item=replay?mainJourney.MAIN_JOURNEY[5]!:mainJourney.MAIN_JOURNEY.at(-1)!;
+  for(const {chapter} of mainJourney.MAIN_JOURNEY){if(!replay&&chapter.id===item.chapter.id)break;const b=progress.progressBoard('route:'+chapter.id)!;p.saves['route:'+chapter.id]=progress.cleanSave({strokes:b.placements,elapsed:12,hints:0,complete:false,stars:0},b);if(replay&&chapter.id===item.chapter.id)break;}
+  const offers:[string,unknown][]=[],h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
+  try{
+   h.start('Solo',{config:{themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(replay?{practice:true}:{})},progress:p,onProgress:(fn:(p:progress.Progress)=>progress.Progress)=>p=fn(p),onBack(){},onMap(){},onNext(){},onBonus:(...args:[string,unknown])=>offers.push(args)});
+   for(const s of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](s.a,s.b);await h.settle();}h.expire();await h.settle();
+   const modal=h.find('Modal'),start=walk(modal).find(n=>n.type==='button'&&text(n).startsWith('Bonus turuna geç'));
+   if(replay){assert.equal(start,undefined);assert.equal(offers.length,0);}else{assert(start);start.props['onClick']();assert.equal(offers.length,1);assert.equal(offers[0]![1],null);assert(p.saves['route:'+item.chapter.id]!.complete);}
+  }finally{h.close();}
+ }
 });
 it('first riddle guide blocks time and selection until understood',async()=>{
  const chapter=riddles.RIDDLE_CHAPTERS[0]!,h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});let p=progress.emptyProgress();try{

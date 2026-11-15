@@ -1,3 +1,5 @@
+15 Kasım 2026 · 0.53.0: yerel çizim + gerçek kabul üzerinden sınırlı övgü; dünya bitişinde bonus ana eylemi, açık geçme ve gerçek sonraki bölüm. 993 test, 742 Worker; dört mobil ölçüde yerel dokunma akışı. Kayıt/tahta/ses değişmedi; fiziksel cihaz kabulü açık. Ayrıntı: docs/release-0.53.0.md.
+
 15 Kasım 2026 · 0.52.2: kullanıcı geri bildirimiyle yalnız efekt sesleri 0.51.0 ses motoruna birebir döndürüldü. Son arayüz/rehber, animasyon, titreşim, ses tercihleri ve oyuncu kayıtları korundu. Ambiyans yok. Kontroller ve sınırlar: docs/release-0.52.2.md.
 
 15 Kasım 2026 · 0.52.1: ilk kelime rehberi alt alana taşındı ve öğrenme hedefinden sonra ek onaysız kapanıyor. İpucu/yakın ıskalama görünür; geç rehber tercihi eşitlemesi ve sonuç başlığı odak çerçevesi düzeltildi. 312 bölüm/kayıt/dokunma motoru korundu. Doğrulama ve sınırlar: docs/release-0.52.1.md.

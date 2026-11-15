@@ -1,0 +1,37 @@
+// Real local UI + touch input; synthetic progress, no live account or server.
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {createServer} from 'node:http';
+import {createReadStream,existsSync,statSync,mkdirSync,writeFileSync} from 'node:fs';
+import path from 'node:path';
+import {launch,sleep} from './chrome.mjs';
+const before=process.argv.includes('--before'),out=path.resolve('../world-review.nosync/release-0530'),root=path.resolve('dist-mobile');mkdirSync(out,{recursive:true});
+const f=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/rhythm-fixture.ts'],{encoding:'utf8'}));
+const types={'.js':'text/javascript','.css':'text/css','.html':'text/html','.webp':'image/webp','.woff2':'font/woff2','.png':'image/png'};
+const server=createServer((req,res)=>{if(req.url.startsWith('/api/')){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({authenticated:false,available:false}));return;}let file=path.join(root,new URL(req.url,'http://x').pathname);if(!existsSync(file)||statSync(file).isDirectory())file=path.join(root,'index.html');res.writeHead(200,{'Content-Type':types[path.extname(file)]??'application/octet-stream'});createReadStream(file).pipe(res);});
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url=`http://127.0.0.1:${server.address().port}/`,page=await launch({port:9354}),report=[];
+const click=async(label)=>page.evaluate(`(()=>{const b=Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim().startsWith(${JSON.stringify(label)}));if(!b)throw Error('Missing '+${JSON.stringify(label)});b.click()})()`);
+async function seed(progress){await page.goto(url);await page.evaluate(`localStorage.clear();localStorage.setItem('kelime-teneffusu-v2',${JSON.stringify(JSON.stringify(progress))})`);await page.goto(url);await click('Bölüm');await sleep(450);}
+async function draw(chapter,p){const r=await page.evaluate(`(()=>{const b=document.querySelector('.letter-board').getBoundingClientRect();return {x:b.x,y:b.y,w:b.width,h:b.height}})()`);const point=c=>[r.x+(c[1]+.5)*r.w/chapter.shape.columns,r.y+(c[0]+.5)*r.h/chapter.shape.rows],a=point(p.a),b=point(p.b);await page.touch(Array.from({length:12},(_,i)=>[a[0]+(b[0]-a[0])*i/11,a[1]+(b[1]-a[1])*i/11]));}
+async function capture(name,width){await page.screenshot(path.join(out,`${before?'before':'after'}-${width}-${name}.png`));return page.evaluate(`(()=>{const b=document.querySelector('.letter-board')?.getBoundingClientRect(),p=document.querySelector('.play-praise'),primary=document.querySelector('dialog[open] .modal-actions .primary');return {text:document.body.innerText,praise:p&&!p.hidden?p.textContent:null,praiseAnimation:p&&!p.hidden?getComputedStyle(p).animationName:null,praisePointer:p&&!p.hidden?getComputedStyle(p).pointerEvents:null,primary:primary?.textContent,overflow:document.documentElement.scrollWidth>innerWidth,board:b?{top:b.top,bottom:b.bottom,width:b.width,height:b.height}:null};})()`);}
+try{
+ for(const [width,height] of before?[[375,667]]:[[320,568],[375,667],[414,622],[430,932]]){
+  await page.viewport(width,height,1);await seed(f.progress);const start=await capture('start',width);assert(start.board);
+  if(!before&&width===430)await page.evaluate(`document.documentElement.dataset.reduceMotion='true'`);
+  await draw(f.chapters[0],f.chapters[0].placements[0]);await sleep(150);await draw(f.chapters[0],f.chapters[0].placements[1]);const praise=await capture('praise',width);
+  if(!before){assert.equal(praise.praise,'Çok iyi!');assert.equal(praise.praisePointer,'none');assert.deepEqual(praise.board,start.board);if(width===430)assert.equal(praise.praiseAnimation,'none');}
+  await draw(f.chapters[0],f.chapters[0].placements[2]);const continued=await capture('continued',width);if(!before)assert.equal(continued.praise,null);
+  await seed(f.worlds);const sixth=await capture('sixth',width);assert.match(sixth.text,/Bölüm 6/);
+  for(const p of f.chapters[5].placements)await draw(f.chapters[5],p);await sleep(1500);const result=await capture('world-result',width);
+  if(before){report.push({width,start,praise,result});continue;}
+  assert.match(result.primary,/Bonus turuna geç/);await click('Bonus turuna geç');await sleep(350);const intro=await capture('bonus-intro',width);assert.match(intro.text,/Bonusu başlat/);await sleep(400);
+  const notStarted=await page.evaluate(`JSON.parse(localStorage.getItem('kelime-teneffusu-v2')).bonuses??null`);assert.equal(notStarted,null);
+  await click('Bonusu başlat');await sleep(350);const bonus=await capture('bonus',width);assert(bonus.board.bottom<=height);
+  for(const p of f.bonus.placements)await draw(f.bonus,p);await sleep(1500);const bonusResult=await capture('bonus-result',width);assert.match(bonusResult.text,/Hepsini buldun/);
+  await click('Yolculuğa devam et');await sleep(400);const next=await capture('next',width);assert.match(next.text,/Bölüm 7/);
+  for(const state of [start,praise,sixth,result,intro,bonus,bonusResult,next])assert.equal(state.overflow,false);
+  const saved=await page.evaluate(`JSON.parse(localStorage.getItem('kelime-teneffusu-v2'))`);assert(saved.saves['route:uzay-gozlemevi'].complete);assert(saved.bonuses.uzay.finished);
+  report.push({width,height,start,praise,continued,sixth,result,intro,bonus,bonusResult,next});
+ }
+ assert.deepEqual(page.errors,[]);writeFileSync(path.join(out,`${before?'before':'after'}-rhythm.json`),JSON.stringify({report,errors:page.errors},null,2));console.log(JSON.stringify(report.map(r=>({width:r.width,praise:r.praise.praise,result:r.result.primary}))));
+}finally{await page.close();server.close();}

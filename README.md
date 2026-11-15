@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.52.2** — kullanıcının tercih ettiği eski efekt sesleri geri getirildi. 0.52.1 arayüzü, animasyonlar, titreşimler ve 312 bölüm/kayıt uyumluluğu korunur. [Teslim](docs/release-0.52.2.md) · [Mağaza hazırlığı](docs/app-store-readiness.md).
+Güncel geliştirme: **0.53.0** — doğrulanmış ardışık kelimelerde kısa övgüler; dünya tamamlamada ana devam yoluna yerleşen bonus turu. Eski sesler, 312 bölüm ve ilerlemeler korunur. [Teslim ve kanıt sınırları](docs/release-0.53.0.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 
