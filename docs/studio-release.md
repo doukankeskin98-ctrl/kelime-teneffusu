@@ -1,5 +1,9 @@
 # Studio sürümü: teslim ve doğrulama
 
+## 0.53.0 · Başarı geri bildirimi ve yolculuk bonusları
+
+Gerçek kabulden kısa övgü; dünya bitişinde ana bonus geçişi, açık geçme, kayıtlı bonus ve gerçek sonraki bölüm. 312 bölüm ve eski efektler korunur. [Kanıt ve sınırlar](release-0.53.0.md).
+
 ## 0.51.0 · Kayıt ve içerik uyumluluğu
 
 Çift okuyucu/v2 ana yazıcı; sahip ayrımlı doğrulanan kompakt gölge, değişmeyen 312 bölüm ve revizyonlar arası ödül tekilleştirme. Yeni içerik ve v3 yazımı fiziksel kabul öncesinde açılmaz. [Kanıt ve aktivasyon koşulları](release-0.51.0.md).

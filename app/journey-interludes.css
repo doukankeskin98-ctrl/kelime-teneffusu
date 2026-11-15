@@ -7,8 +7,8 @@
 .bonus-intro-copy>svg{color:#f7dc92}.bonus-intro h1{font-size:32px;line-height:1.15;letter-spacing:-.025em;color:#fff6d9;margin:0;text-wrap:balance}
 .bonus-intro p{margin:0;font-size:17px;line-height:1.5;max-width:34ch;color:#edf3e4}.bonus-intro p b{color:#ffdd95;font-weight:800}
 .bonus-intro .stage-play{width:100%;margin-top:6px}.bonus-intro .text-button{color:#fff0c3;min-height:44px;font-size:14px;white-space:normal}
-.bonus-example{display:flex;gap:5px;padding:12px 0;justify-content:center}
-.bonus-example span{display:grid;place-items:center;width:44px;height:52px;border-radius:12px;background:#fffbed;color:#133932;font-size:26px;font-weight:800}
+.bonus-example{display:flex;max-width:100%;gap:5px;padding:12px 0;justify-content:center}
+.bonus-example span{flex:0 1 44px;min-width:0;display:grid;place-items:center;width:44px;height:52px;border-radius:12px;background:#fffbed;color:#133932;font-size:26px;font-weight:800}
 .bonus-intro-rules{display:flex;justify-content:center;gap:24px;font-size:15px}.bonus-intro-rules span{display:flex;align-items:center;gap:7px}
 .bonus-intro p.bonus-fineprint{font-size:14px;color:#dbe6dc}.bonus-resume{padding:10px 0;border-block:1px solid #e9edcf40;width:100%;font-variant-numeric:tabular-nums}
 .bonus-session .play-hud{padding-bottom:6px}.bonus-hud{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#fffbed;color:#133932;border-radius:14px;padding:10px 16px}
