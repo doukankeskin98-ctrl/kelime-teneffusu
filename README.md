@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.52.1** — ilk kelimeden sonra kendiliğinden çekilen rehber, sabit tahta konumu ve temiz sonuç odağı. 312 bölüm ve kayıt uyumluluğu korunur. [Teslim](docs/release-0.52.1.md) · [Mağaza hazırlığı](docs/app-store-readiness.md).
+Güncel geliştirme: **0.52.2** — kullanıcının tercih ettiği eski efekt sesleri geri getirildi. 0.52.1 arayüzü, animasyonlar, titreşimler ve 312 bölüm/kayıt uyumluluğu korunur. [Teslim](docs/release-0.52.2.md) · [Mağaza hazırlığı](docs/app-store-readiness.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 

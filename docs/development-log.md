@@ -1,3 +1,5 @@
+15 Kasım 2026 · 0.52.2: kullanıcı geri bildirimiyle yalnız efekt sesleri 0.51.0 ses motoruna birebir döndürüldü. Son arayüz/rehber, animasyon, titreşim, ses tercihleri ve oyuncu kayıtları korundu. Ambiyans yok. Kontroller ve sınırlar: docs/release-0.52.2.md.
+
 15 Kasım 2026 · 0.52.1: ilk kelime rehberi alt alana taşındı ve öğrenme hedefinden sonra ek onaysız kapanıyor. İpucu/yakın ıskalama görünür; geç rehber tercihi eşitlemesi ve sonuç başlığı odak çerçevesi düzeltildi. 312 bölüm/kayıt/dokunma motoru korundu. Doğrulama ve sınırlar: docs/release-0.52.1.md.
 
 14 Kasım 2026 · 0.52.0: yakın dünyalar haritası ve seçilen tek K ikonu; kontrollü tahta/sonuç hareketi, kısa lisanslı efektler, açık Arena otomatik başlangıcı, iOS açılış/davet ve yerel bildirim/StoreKit köprüsü. 312 manifest korundu, altılı rev2 aday kapalı. 979 test / 742 Worker; gerçek iPhone ve mağaza hesap işleri açık. Ayrıntı: docs/release-0.52.0.md.
