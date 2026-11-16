@@ -84,8 +84,9 @@ export async function launch({port = 9333} = {}) {
     },
     async close() {
       try { await send('Browser.close'); } catch { /* already closed */ }
-      child.kill();
-      rmSync(profile, {recursive: true, force: true});
+      if(child.exitCode===null){const exited=new Promise(resolve=>child.once('exit',resolve));child.kill();await Promise.race([exited,sleep(2000)]);}
+      // Chrome may finish writing preferences just after its main process exits.
+      for(let attempt=0;attempt<4;attempt++){try{rmSync(profile,{recursive:true,force:true});break;}catch(error){if(attempt===3)throw error;await sleep(150);}}
     },
   };
 }

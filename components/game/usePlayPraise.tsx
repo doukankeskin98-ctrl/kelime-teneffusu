@@ -1,4 +1,5 @@
 'use client';
+import {Star} from 'lucide-react';
 import {useEffect,useLayoutEffect,useRef,useCallback} from 'react';
 import {match,type Cell,type Puzzle,type Stroke} from '@/lib/game/engine';
 import {playPraiseLedger,PRAISE_VISIBLE_MS} from '@/lib/game/play-praise';
@@ -30,10 +31,9 @@ export function usePlayPraise({scope,board,confirmed,unavailable,terminal,hint,d
  },[confirmed,scope,unavailable,terminal,board.size,dismiss]);
  return {
   attempt(a:Cell,b:Cell){
-   dismiss();
    if(!unavailable&&!terminal&&active.current&&!document.hidden&&gameIsActive())ledger.current.attempt(a,b,performance.now(),!!match(board,a,b));
   },
   dismiss,interrupt,
-  element:<span ref={node} className="play-praise" aria-hidden="true" hidden><strong/></span>,
+  element:<span ref={node} className="play-praise" aria-hidden="true" hidden><strong/><Star className="praise-star left" aria-hidden="true"/><Star className="praise-star right" aria-hidden="true"/>{Array.from({length:8},(_,i)=><i key={i} style={{'--spark':i} as import('react').CSSProperties}/>)}</span>,
  };
 }

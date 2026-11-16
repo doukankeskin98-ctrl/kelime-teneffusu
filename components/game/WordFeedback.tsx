@@ -44,7 +44,8 @@ export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:
   const flights=[];
   for(const id of fresh.slice(-4)){
    const stroke=confirmed.find(s=>s.id===id)??(preview?.id===id?preview:undefined),target=board.targets.find(t=>t.id===id);if(!stroke||!target)continue;
-   const destination=candidates.find(el=>el.dataset['wordGroup']===String(target.group)&&measure(el).width>0)
+   const bonusSink=screen.querySelector<HTMLElement>('[data-bonus-sink]');
+   const destination=bonusSink??candidates.find(el=>el.dataset['wordGroup']===String(target.group)&&measure(el).width>0)
     ??screen.querySelector<HTMLElement>('.solo-found,.game-status,.duel-scorebar,.play-hud');
    if(!destination)continue;
    const dest=measure(destination);
@@ -61,7 +62,7 @@ export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:
    if(!destinations.length&&label?.textContent?.replace(/\s/g,'')===target.text)for(const letter of label.querySelectorAll<HTMLElement>('[data-target-letter]'))if(letter.textContent?.trim())destinations.push(letter.getBoundingClientRect());
    const fontSize=parseFloat(style?.fontSize??'');
    if(Number.isFinite(fontSize)&&fontSize>0){
-    const targetFontSize=label?parseFloat(getComputedStyle(label).fontSize):fontSize*.65;
+    const targetFontSize=bonusSink?fontSize*.25:label?parseFloat(getComputedStyle(label).fontSize):fontSize*.65;
     plan=wordFlightPlan(board,stroke,target,turned,rect,bounds,dest,{fontSize,targetFontSize:Number.isFinite(targetFontSize)?targetFontSize:fontSize*.65,sources:plan.letters.map(l=>cells[l.viewIndex]?measure(cells[l.viewIndex]!):rect),destinations:destinations.every(r=>r.width>0&&r.height>0)?destinations:[]})!;
    }
    flights.push({...plan,id,destination,style:style?{fontFamily:style.fontFamily,fontWeight:style.fontWeight,color:style.color}:undefined});
@@ -83,7 +84,7 @@ export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:
      if(i===letters.length-1)animation.onfinish=()=>arrive(true);
      animations.push(animation);
     }
-    if(destination.hasAttribute('data-word-group'))animations.push(destination.animate([{transform:'scale(1)'},{transform:'scale(1.07)',offset:.35},{transform:'scale(1)'}],{delay:WORD_FLIGHT_MS+wordLetterDelay(letters.length-1),duration:WORD_LANDING_MS,easing:'ease-out'}));
+    if(destination.hasAttribute('data-word-group')||destination.hasAttribute('data-bonus-sink'))animations.push(destination.animate([{transform:'scale(1)'},{transform:'scale(1.07)',offset:.35},{transform:'scale(1)'}],{delay:WORD_FLIGHT_MS+wordLetterDelay(letters.length-1),duration:WORD_LANDING_MS,easing:'ease-out'}));
     timer=setTimeout(stop,WORD_RESULT_DELAY_MS+60);
    }catch{stop();}
   }

@@ -1,7 +1,7 @@
 /* 0.44: one play action; journey details and earned items stay on demand. */
 .native-shell .mobile-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
 .journey-stage .stage-play{max-width:440px;margin-inline:auto;min-height:78px}
-.journey-stage .stage-play>span{font-size:27px;line-height:1.15}
+.journey-stage .stage-play>span{font-size:28px;line-height:1.15}
 .journey-stage .stage-play small{display:block;font-size:14px;line-height:20px;margin-top:5px}
 .journey-stage .stage-chapter-copy{margin-bottom:16px}
 .journey-stage .stage-chapter-copy h2{font-size:23px;line-height:1.3}
@@ -108,14 +108,14 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 .masked-letter{position:relative}.masked-letter>.mask-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.masked-letter>svg{width:.56em;height:1em;flex:none;display:block}
 
 .scenic-play .sr-only{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important}
-.scenic-play .clue-slots{grid-template-columns:repeat(var(--clue-count),minmax(0,1fr))}
+.scenic-play .clue-slots{display:flex;flex-wrap:wrap}.scenic-play .clue-slot{flex:1 0 auto;min-width:44px}.clue-slots .target-letters{flex-wrap:nowrap;max-width:none}
 
 .arena-entry-sheet .room-entry-sheet p,.arena-entry-sheet .room-entry-sheet label,.arena-entry-sheet .room-entry-sheet small,.arena-entry-sheet .room-entry-sheet .join-divider{color:#dce8d9}
 
 .arena-entry-sheet .or-line{color:#dce8d9}
 .album-detail-sheet .collection-dialog-intro,.album-detail-sheet .collection-piece-list small{color:#dce8d9}.album-detail-sheet .collection-piece-list b{color:#fff6df}.album-detail-sheet .collection-piece-list>li{border-color:#dce8d533}.album-detail-sheet .collection-piece-list>li>span{color:#dce8d9;border-color:#dce8d566}.album-detail-sheet .collection-piece-list>li.earned>span{color:#244e3c;background:#d8e8c7}
 /* Stable, in-flow feedback: never competes with the chapter topic or targets. */
-.scenic-play .play-notice{position:relative;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:0 0 24px;height:24px;min-height:24px;margin:0;padding:0 4px;color:#fff9e9;font-size:12px;line-height:16px;text-align:center}
+.scenic-play .play-notice{position:relative;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:0 0 36px;height:36px;min-height:36px;margin:0;padding:0 4px;color:#fff9e9;font-size:12px;line-height:16px;text-align:center}
 .play-notice>span:not(:empty):not(.sr-only){background:#163e38;padding:2px 8px;border-radius:6px;max-width:100%}
 .game-tools-modal .play-primary-settings{margin:4px 0 16px}
 .play-primary-settings .play-comfort-settings{border:0;margin:0;padding:0}

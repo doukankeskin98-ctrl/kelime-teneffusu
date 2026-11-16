@@ -4,7 +4,7 @@
 // Optional arguments: "320x568,375x667" and a comma-separated chapter list.
 // Browser emulation is not a physical-device or touch-comfort check.
 import {execFileSync} from 'node:child_process';
-import {createReadStream, existsSync, statSync} from 'node:fs';
+import {createReadStream, existsSync, statSync, mkdirSync, writeFileSync} from 'node:fs';
 import {createServer} from 'node:http';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -33,16 +33,18 @@ const url = `http://127.0.0.1:${server.address().port}/`;
 
 const open = chapter => `(async () => {
   const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const picker = [...document.querySelectorAll('button,a')].find(b => /Bölümler ve albümler/.test(b.getAttribute('aria-label') || ''));
+  const picker = document.querySelector('.stage-map-button');
   if (!picker) return 'bölüm seçici yok';
-  picker.click(); await wait(350);
-  const worlds = document.querySelector('select[aria-label="Dünya seç"]');
-  if (!worlds) return 'dünya seçimi yok';
-  Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(worlds, worlds.options[${chapter.world}].value);
-  worlds.dispatchEvent(new Event('change', {bubbles: true})); await wait(250);
+  picker.click(); await wait(120);
+  document.querySelector('.journey-map-all')?.click(); await wait(120);
+  const world = [...document.querySelectorAll('.journey-map-world')][${chapter.world}];
+  if(!world) return 'dünya seçimi yok';
+  world.click(); await wait(120);
   const button = [...document.querySelectorAll('.chapter-picker-grid button')][${chapter.position}];
   if (!button || button.disabled) return 'bölüm açılamadı';
-  button.click(); await wait(1500);
+  button.click(); await wait(450);
+  await document.fonts.ready;
+  let last='',stable=0;for(let i=0;i<20&&stable<3;i++){const b=document.querySelector('.letter-board')?.getBoundingClientRect(),now=JSON.stringify(b?[b.x,b.y,b.width,b.height]:null);stable=now===last?stable+1:0;last=now;await wait(40);}
   return 'ok';
 })()`;
 const measure = '('+capturePlayLayout.toString()+')()';
@@ -56,10 +58,12 @@ try {
     await page.evaluate(`localStorage.clear(); localStorage.setItem(${JSON.stringify(fixture.key)}, ${JSON.stringify(fixture.value)}); 'ok'`);
     const rows = [];
     for (const chapter of only ? fixture.chapters.filter(item => only.includes(item.number)) : fixture.chapters) {
-      await page.goto(url, 700);
+      await page.goto(url, 300);
       const opened = await page.evaluate(open(chapter));
+      if(process.env.EVIDENCE_DIR&&only)await page.screenshot(path.join(process.env.EVIDENCE_DIR,`layout-${width}-${chapter.number}.png`));
       rows.push({number: chapter.number, id: chapter.id, ...(opened === 'ok' ? await page.evaluate(measure) : {error: opened})});
     }
+    if(process.env.EVIDENCE_DIR){mkdirSync(process.env.EVIDENCE_DIR,{recursive:true});writeFileSync(path.join(process.env.EVIDENCE_DIR,`layout-${width}.json`),JSON.stringify(rows,null,2));}
     const bad = rows.map(row => ({number:row.number,id:row.id,issues:layoutProblems(row)})).filter(row => row.issues.length);
     const measured = rows.filter(row => !row.error);
     console.log(`${width}x${height}: ${rows.length} bölüm, ${bad.length} sorun; en küçük hücre ${Math.min(...measured.map(row => row.cell))} px`);

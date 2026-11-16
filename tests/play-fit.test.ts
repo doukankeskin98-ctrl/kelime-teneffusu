@@ -69,7 +69,7 @@ describe('complete board fits measured browser space',()=>{
  it('ignores live preview mutations with ResizeObserver while retaining actual resize and structural fitting',()=>{
   const f=fixture(),mobile=element();let notify!:(records:any[])=>void,resize!:()=>void;
   const word={},letter={};f.preview.contains=(node:unknown)=>node===f.preview||node===word;mobile.contains=(node:unknown)=>node===mobile||node===letter;
-  const original=f.screen.querySelectorAll;f.screen.querySelectorAll=(selector:string)=>selector==='.selection-preview,.mobile-selection'?[f.preview,mobile]:original(selector);
+  const original=f.screen.querySelectorAll;f.screen.querySelectorAll=(selector:string)=>selector==='.selection-preview,.mobile-selection,.play-feedback-rail'?[f.preview,mobile]:original(selector);
   f.view.ResizeObserver=class{constructor(callback:()=>void){resize=callback;}observe(){}disconnect(){}};
   f.view.MutationObserver=class{constructor(callback:(records:any[])=>void){notify=callback;}observe(){}disconnect(){}};
   const stop=attachPlayFit(f.screen,f.stage,12,false,f.view);f.flush();
@@ -156,4 +156,11 @@ it('a mid-turn visual bounding box never expands the physical board or font size
  assert.equal(board.style.getPropertyValue('height'),'400px');
  board.rect.width=495;b.view.dispatchEvent(new Event('kt-board-layout'));
  assert.equal(board.style.getPropertyValue('height'),'400px');assert.equal(board.style.getPropertyValue('--board-letter-size'),'28px');clean();
+});
+
+it('does not shrink the board for a feedback rail sharing the header in a short viewport',()=>{
+ const f=fixture(),before=measurePlayFrame(f.screen,f.stage,8,false,f.view),rail=element(200,32);
+ rail.css.position='absolute';f.panel.children.push(rail);
+ assert.deepEqual(measurePlayFrame(f.screen,f.stage,8,false,f.view),before);
+ rail.css.position='relative';assert.equal(measurePlayFrame(f.screen,f.stage,8,false,f.view).overhead,before.overhead+32);
 });
