@@ -5,11 +5,22 @@ import vm from 'node:vm';
 import ts from 'typescript';
 const code=ts.transpileModule(readFileSync('app/api/live/route.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
 for(const via of ['heartbeat','watch'] as const)it('actual SSE route follows a queued room transfer via '+via+' without sending the retired room',async()=>{
- const oldId='00000000-0000-4000-8000-000000000001',newId='00000000-0000-4000-8000-000000000002';let now=100000,calls=0,moved=false;const watched:string[]=[],exports:any={};
+ const oldId='00000000-0000-4000-8000-000000000001',newId='00000000-0000-4000-8000-000000000002';let now=100000,calls=0,moved=false;const watched:string[]=[],exports:{GET?:(request:Request)=>Promise<Response>}={};
  const view=(id:string)=>({id,revision:1,phase:id===oldId?'waiting':'ready',serverNow:now});
  class Service{async state(){calls++;if(calls>1&&via==='heartbeat')moved=true;return view(moved?newId:oldId);}async watch(_user:string,id:string){watched.push(id);if(via==='watch')moved=true;return {revision:1,view:view(moved?newId:oldId)};}}
  class Clock extends Date{static override now(){return now;}}
  const modules:Record<string,unknown>={'cloudflare:workers':{env:{DB:{}}},'@/lib/auth/server':{gameMember:async()=>({userId:'alice'}),authJson:Response.json},'@/lib/game/server':{GameService:Service,GameError:Error},'@/lib/auth/verify':{IdentityError:Error},'@/lib/game/security':{rateLimit:async()=>{}}};
  vm.runInNewContext(code,{exports,require:(name:string)=>modules[name],Date:Clock,URL,Response,TextEncoder,ReadableStream,setTimeout:(fn:()=>void,ms:number)=>{now+=ms;queueMicrotask(fn);return now;},clearTimeout:()=>{}});
- const response=await exports.GET(new Request('https://game.test/api/live?id='+oldId));assert.equal(response.status,200);const text=await response.text();const ids=[...text.matchAll(/event: room\ndata: (.+)/g)].map(m=>JSON.parse(m[1]!).id);assert.deepEqual(ids,[oldId,newId]);assert(watched.includes(newId));const first=watched.indexOf(newId);assert(watched.slice(first).every(id=>id===newId));
+ const response=await exports.GET!(new Request('https://game.test/api/live?id='+oldId));assert.equal(response.status,200);const text=await response.text();const ids=[...text.matchAll(/event: room\ndata: (.+)/g)].map(m=>JSON.parse(m[1]!).id);assert.deepEqual(ids,[oldId,newId]);assert(watched.includes(newId));const first=watched.indexOf(newId);assert(watched.slice(first).every(id=>id===newId));
+});
+
+it('unchanged SSE watches keep clock events without hydrating or duplicating heartbeat reads',async()=>{
+ let now=100000,states=0,watches=0;const exports:{GET?:(request:Request)=>Promise<Response>}={},id='00000000-0000-4000-8000-000000000001',known:number[]=[];
+ const view=()=>({id,revision:7,phase:'active',serverNow:now});
+ class Service{async state(){states++;return view();}async watch(_user:string,_id:string,revision:number){known.push(revision);watches++;return {revision:7,view:null};}}
+ class Clock extends Date{static override now(){return now;}}
+ const modules:Record<string,unknown>={'cloudflare:workers':{env:{DB:{}}},'@/lib/auth/server':{gameMember:async()=>({userId:'alice'}),authJson:Response.json},'@/lib/game/server':{GameService:Service,GameError:Error},'@/lib/auth/verify':{IdentityError:Error},'@/lib/game/security':{rateLimit:async()=>{}}};
+ vm.runInNewContext(code,{exports,require:(name:string)=>modules[name],Date:Clock,URL,Response,TextEncoder,ReadableStream,setTimeout:(fn:()=>void,ms:number)=>{now+=ms;queueMicrotask(fn);return now;},clearTimeout(){}});
+ const response=await exports.GET!(new Request('https://game.test/api/live?id='+id)),text=await response.text();
+ assert.equal((text.match(/event: room/g)??[]).length,1);assert((text.match(/event: clock/g)??[]).length>=5);assert(known.every(r=>r===7));assert.equal(states,5);assert.equal(watches,30);assert(!text.includes('event: retry'));
 });
