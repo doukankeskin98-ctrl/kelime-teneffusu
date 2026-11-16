@@ -85,7 +85,7 @@ html[data-reduce-motion=true] *,html[data-reduce-motion=true] *:before,html[data
 
 /* Support preparation shares the existing settings surface. */
 .settings-help-actions{display:grid;gap:10px;margin-top:20px}
-.support-report{display:grid;gap:12px;color:var(--ink)}
+.support-report{display:grid;gap:12px;color:inherit}
 .support-report p{font-size:15px;line-height:1.5}
 .support-report .support-back{justify-self:start;padding-left:0}
 .support-report .support-availability{color:var(--ink);font-size:14px}

@@ -37,7 +37,15 @@ try{
  failSupport=false;
  if(!before){await click('Yeniden dene');await sleep(700);}
  const recovered=await capture('support-recovered',430),afterRecovery=await page.evaluate(`({time:performance.timeOrigin,save:localStorage.getItem('kelime-teneffusu-v2')})`);
+ const contrast=before?[]:await page.evaluate(`(()=>{
+  const rgba=s=>{const v=s.match(/[\\d.]+/g)?.map(Number)??[0,0,0,0];return [...v.slice(0,3),v[3]??1];};
+  const over=(fg,bg)=>fg.slice(0,3).map((v,i)=>v*fg[3]+bg[i]*(1-fg[3]));
+  const background=el=>{if(!el)return [255,255,255];return over(rgba(getComputedStyle(el).backgroundColor),background(el.parentElement));};
+  const light=c=>c.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
+  return Array.from(document.querySelectorAll('.support-kinds legend,.support-kinds button')).map(el=>{const bg=background(el),fg=over(rgba(getComputedStyle(el).color),bg),a=light(fg),b=light(bg);return {text:el.textContent,foreground:fg,background:bg,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),height:el.getBoundingClientRect().height};});
+ })()`);
  if(!before){assert.match(recovered.text,/Sorun türü/);assert.equal(await page.evaluate(`!!document.querySelector('#support-detail')`),true);assert.deepEqual(afterRecovery,beforeRecovery);}
- writeFileSync(path.join(out,`${before?'before':'after'}-menus.json`),JSON.stringify({report,failure,recovered,failedRequests,errors:page.errors},null,2));
+ writeFileSync(path.join(out,`${before?'before':'after'}-menus.json`),JSON.stringify({report,failure,recovered,contrast,failedRequests,errors:page.errors},null,2));
+ if(!before)for(const row of contrast)assert(row.ratio>=4.5,`${row.text}: contrast ${row.ratio}`);
  console.log(JSON.stringify({menus:report.map(r=>({width:r.width,settings:r.settings.dialog,more:r.more.dialog})),failure:failure.text,recovered:recovered.text}));
 }finally{await page.close();server.close();}
