@@ -77,6 +77,23 @@ describe('Arena sound follows confirmed events',()=>{
 
 
 describe('Arena next and overlay lifecycle',()=>{
+ for(const overlay of ['leave','rules'])it(`retires ${overlay} from a previous round when another player starts the next match`,async()=>{
+  const initial=room('finished',NOW-121_000,NOW-1);
+  const successor:RoomView={...initial,phase:'ready',round:2,revision:5,board:null,starts:null,ends:null,you:{...initial.you,ready:false,strokes:[],score:0}};
+  const started:RoomView={...successor,phase:'active',revision:6,board:publicBoard,starts:NOW-1,ends:NOW+119_999,you:{...successor.you,ready:true}};
+  const h=harness(initial,async action=>{assert.equal(action,'ready');return started;});
+  try{
+   await h.settle();h.closeModal();await h.settle();
+   if(overlay==='leave')h.layout().props['onBack']();
+   else nodes(h.layout().props['headerAction']).find(n=>n.type==='MatchTools')!.props['onHelp']();
+   await h.settle();assert.equal(h.modalCount(),1);
+   h.push({...initial,revision:4});await h.settle();assert.equal(h.modalCount(),1,'Same-round updates preserve the open dialog');
+   h.push(successor);await h.settle();assert.equal(h.modalCount(),0);
+   h.click(/Hazırım/);await h.settle();assert.equal((h.apiCalls[0]!.data as {round:number}).round,2);
+   assert.equal(h.modalCount(),0);assert.equal(h.layout().props['feedbackPaused'],false);
+   assert.equal(h.layout().props['readOnly'],false);
+  }finally{h.close();}
+ });
  it('dispatches one next mutation for rapid clicks and accepts the successor without leaving the room',async()=>{
   const initial=room('finished',NOW-121_000,NOW-1),gate=deferredRoom(),h=harness(initial,()=>gate.promise);
   try{await h.settle();h.click(/Tekrar oyna/);h.click(/Tekrar oyna/);assert.equal(h.apiCalls.length,1);assert.equal((h.apiCalls[0]!.data as any).round,1);gate.resolve({...initial,phase:'ready',round:2,revision:4,board:null,you:{...initial.you,ready:false,strokes:[],score:0}});await h.settle();assert.equal(h.has('PlayLayout'),false);assert.equal(h.modalCount(),0);h.click(/Hazırım/);await h.settle();assert.equal(h.apiCalls[1]!.action,'ready');assert.equal((h.apiCalls[1]!.data as any).round,2);}finally{h.close();}
