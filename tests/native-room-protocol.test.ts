@@ -1,0 +1,22 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+import type {RoomPoll} from '../lib/game/server.ts';
+const code=ts.transpileModule(readFileSync('components/game/useLiveRoom.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+test('native hook sends the last accepted revision, clock-only polls never replace the board, transfers reset cursor',async()=>{
+ type Options={read:(signal:AbortSignal)=>Promise<RoomPoll>;accept:(room:RoomPoll)=>void};
+ let options:Options;const accepted:unknown[]=[],clocks:number[]=[],paths:string[]=[],responses:unknown[]=[];
+ const exports:{useLiveRoom?:(id:string,onRoom:(room:unknown)=>void,onClock:(time:number)=>void)=>void}={};
+ const modules:Record<string,unknown>={react:{useRef:<T>(v:T)=>({current:v}),useState:()=>['connecting',()=>{}],useEffect:(fn:()=>void)=>fn()},'@/lib/platform/runtime':{isNativeGame:()=>true,gameIsActive:()=>true},'@/lib/platform/room-poll':{startRoomPolling:(o:Options)=>{options=o;return {visibility(){},stop(){}};}},'@/lib/auth/firebase-client':{memberFetch:async(path:string)=>{paths.push(path);return Response.json(responses.shift());}}};
+ vm.runInNewContext(code,{exports,require:(name:string)=>modules[name],document:{hidden:false,addEventListener(){},removeEventListener(){}},encodeURIComponent});
+ exports.useLiveRoom!('old-room',(r:unknown)=>accepted.push(r),(n:number)=>clocks.push(n));
+ const tick=async(value:unknown)=>{responses.push(value);options.accept(await options.read(new AbortController().signal));};
+ await tick({id:'old-room',revision:8,serverNow:10,you:{id:'a'}});
+ await tick({unchanged:true,id:'old-room',revision:8,serverNow:11});
+ await tick({id:'new-room',revision:2,serverNow:12,you:{id:'a'}});
+ await tick({id:'new-room',revision:3,serverNow:13,you:{id:'a'}});
+ assert.deepEqual(paths,['/api/game?action=room&id=old-room','/api/game?action=room&id=old-room&after=8','/api/game?action=room&id=old-room&after=8','/api/game?action=room&id=old-room']);
+ assert.equal(accepted.length,3);assert.deepEqual(clocks,[10,11,12,13]);
+});

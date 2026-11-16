@@ -48,6 +48,18 @@ test('room polling pauses, ignores retired responses and never overlaps ordinary
  active=true;poll.visibility();await tick();assert.equal(calls,2);pending[1]!(2);await tick();assert.deepEqual(accepted,[2]);poll.stop();await new Promise(resolve=>setTimeout(resolve,8));assert.equal(calls,2);
 });
 
+test('failed native polls back off, a successful reply restores ordinary polling',async t=>{
+ t.mock.timers.enable({apis:['setTimeout']});t.mock.method(Math,'random',()=>.5);
+ let calls=0;const accepted:number[]=[];
+ const poll=startRoomPolling({read:async()=>{calls++;if(calls<=2)throw Error('offline');return calls;},accept:v=>accepted.push(v),status:()=>{},active:()=>true});
+ const settle=async()=>{await Promise.resolve();await Promise.resolve();};
+ try{
+  await settle();assert.equal(calls,1);t.mock.timers.tick(1999);await settle();assert.equal(calls,1);
+  t.mock.timers.tick(1);await settle();assert.equal(calls,2);t.mock.timers.tick(3999);await settle();assert.equal(calls,2);
+  t.mock.timers.tick(1);await settle();assert.deepEqual(accepted,[3]);t.mock.timers.tick(1000);await settle();assert.deepEqual(accepted,[3,4]);
+ }finally{poll.stop();}
+});
+
 test('native progress accepts the full save envelope and still bounds other JSON requests',async()=>{
  let calls=0;const transport=nativeApiTransport(async()=>{calls++;return reply();});
  const body=JSON.stringify({progress:{note:'ü'.repeat(90000)}});await transport('/api/progress',{method:'PUT',body});assert.equal(calls,1);

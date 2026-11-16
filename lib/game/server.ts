@@ -18,6 +18,8 @@ export interface ArenaParticipant {id:string;name:string;ready:boolean;count:num
 export interface ArenaResult {round:number;roundKind?:ArenaRoundKind;winner:string|null;reason:string;players:ArenaParticipant[]}
 export interface ArenaSeriesPlayer {id:string;name:string;played:number;wins:number;draws:number;score:number;rank:number;active:boolean}
 export interface ArenaSeries {rounds:number;players:ArenaSeriesPlayer[]}
+export interface RoomUnchanged {unchanged:true;id:string;revision:number;serverNow:number}
+export type RoomPoll=RoomView|RoomUnchanged;
 export interface RoomView {roundPolicy?:ArenaRoundPolicy;roundKind?:ArenaRoundKind;nextRoundKind?:ArenaRoundKind;clues?:Record<string,string>;roundUnavailable?:string;series?:ArenaSeries;lastResult?:ArenaResult;mode?:'group'|'duel';hostId?:string;canStart?:boolean;players?:ArenaParticipant[];contentOrdinal?:number;revision:number;id:string;code:string;kind:string;phase:Room['phase'];themeId:string;starts:number|null;ends:number|null;winner:string|null;reason:string;round:number;serverNow:number;board:Omit<Puzzle,'placements'>|null;golden:string|null;you:{id:string;name:string;ready:boolean;strokes:Stroke[];score:number;rematch:boolean};opponent:{name:string;ready:boolean;count:number;score:number;online:boolean;rematch:boolean}|null}
 interface ArenaAllocation {poolId:string;from:number;next:number}
 export interface DailyView extends Daily {serverNow:number;board:Omit<Puzzle,'placements'>}
@@ -41,9 +43,12 @@ export class GameService {
  private async row(id:string){const row=await this.q('SELECT id,data,revision,expires FROM rooms WHERE id=?',id).first<RoomRow>();if(!row)throw new GameError('Oda bulunamadı.',404);return row;}
  private parse(row:RoomRow){return JSON.parse(row.data) as Room;}
  private async active(userId:string){
-   // Expired leases are released without exposing other players' information.
+   const read=()=>this.q('SELECT r.id,r.data,r.revision,r.expires FROM rooms r JOIN members m ON m.room_id=r.id WHERE m.user_id=? AND m.active=1',userId).first<RoomRow>();
+   const found=await read();
+   // The unique active-membership index makes the common path read-only.
+   if(!found||found.expires>=this.clock())return found;
    await this.q('UPDATE members SET active=0 WHERE user_id=? AND active=1 AND room_id IN (SELECT id FROM rooms WHERE expires<?)',userId,this.clock()).run();
-   const found=await this.q('SELECT r.id,r.data,r.revision,r.expires FROM rooms r JOIN members m ON m.room_id=r.id WHERE m.user_id=? AND m.active=1',userId).first<RoomRow>();return found;
+   return read();
  }
  private async save(row:RoomRow,room:Room,allocation?:ArenaAllocation,actor?:string){
    const now=this.clock(),resultAt=room.ends!==null?Math.min(now,room.ends):now;const next=row.revision+1,token=crypto.randomUUID();room.writeToken=token;
@@ -58,10 +63,11 @@ export class GameService {
     statements[updateIndex]=this.q("UPDATE rooms SET data=?,phase=?,revision=?,updated=?,expires=CASE WHEN expires>=? THEN MAX(expires,?) ELSE expires END WHERE id=? AND revision=? AND EXISTS(SELECT 1 FROM arena_pool WHERE id=? AND claim=?)"+lease,JSON.stringify(room),room.phase,next,now,now,now+30*60000,room.id,row.revision,allocation.poolId,token,...leaseArgs);
     const board=roomPuzzle(room);for(const p of room.players)statements.push(this.q('INSERT INTO arena_seen(user_id,words_key,grid_key,room_id,round,created) SELECT ?,?,?,?,?,? WHERE '+guard,p.id,arenaWordKey(board),arenaGridKey(board),room.id,room.round,now,room.id,next,token));
    }
-   const removed=this.parse(row).players.filter(p=>!room.players.some(current=>current.id===p.id));
+   const previous=this.parse(row),finalizing=room.phase==='finished'&&(previous.phase!=='finished'||previous.round!==room.round);
+   const removed=previous.players.filter(p=>!room.players.some(current=>current.id===p.id));
    for(const p of [...room.players.filter(p=>p.left),...removed])statements.push(this.q('UPDATE members SET active=0 WHERE room_id=? AND user_id=? AND '+guard,room.id,p.id,room.id,next,token));
-   if(room.phase==='finished')for(const p of room.players)statements.push(this.q("INSERT OR IGNORE INTO results(room_id,user_id,nickname,score,win,created) SELECT ?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='finished' AND json_extract(data,'$.writeToken')=?)",room.id+':'+room.round,p.id,p.name,p.score,room.winner===p.id?1:0,resultAt,room.id,next,token));
-   if(room.phase==='finished'&&room.kind==='quick'&&!room.mode&&room.players.length===2){
+   if(finalizing)for(const p of room.players)statements.push(this.q("INSERT OR IGNORE INTO results(room_id,user_id,nickname,score,win,created) SELECT ?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM rooms WHERE id=? AND revision=? AND phase='finished' AND json_extract(data,'$.writeToken')=?)",room.id+':'+room.round,p.id,p.name,p.score,room.winner===p.id?1:0,resultAt,room.id,next,token));
+   if(finalizing&&room.kind==='quick'&&!room.mode&&room.players.length===2){
     const [a,b]=room.players as [DuelPlayer,DuelPlayer],ra=await this.rating(a.id),rb=await this.rating(b.id),result=room.winner===null?0.5:room.winner===a.id?1:0;
     const delta=eloChange(ra.value,rb.value,result),event=room.id+':'+room.round;
     for(const [p,value] of [[a,Math.max(100,ra.value+delta)],[b,Math.max(100,rb.value-delta)]] as [DuelPlayer,number][]){
@@ -93,8 +99,7 @@ export class GameService {
  }
  private fence(room:Room,expectedRound?:unknown){if(expectedRound===undefined&&!room.mode&&!room.protocol)return;if(!Number.isSafeInteger(expectedRound)||expectedRound!==room.round)throw new GameError('Maç değişti. Güncel odayı yeniden kontrol et.',409,'ARENA_ROUND_CHANGED');}
  private async publicView(room:Room,userId:string,revision=0):Promise<RoomView>{
-   const locked=(await this.q('SELECT user_id FROM player_restrictions WHERE name_locked=1 AND user_id IN (SELECT value FROM json_each(?))',JSON.stringify([...room.players.map(p=>p.id),...(room.lastResult?.players.map(p=>p.id)??[])])).all<{user_id:string}>()).results;const hiddenNames=new Set(locked.map(p=>p.user_id));if(hiddenNames.size){room=structuredClone(room);for(const p of room.players)if(hiddenNames.has(p.id))p.name='Oyuncu';for(const p of room.lastResult?.players??[])if(hiddenNames.has(p.id))p.name='Oyuncu';}
-   const view=this.view(room,userId,revision),completed=room.phase==='finished'?room.round:room.round-1,key=room.id+':'+completed+':'+revision;
+   const completed=room.phase==='finished'?room.round:room.round-1,key=room.id+':'+completed+':'+revision;
    let receipt=this.seriesCache.get(key);
    if(!receipt){
     receipt=completed<1?Promise.resolve([]):this.q(`WITH recorded AS (
@@ -106,7 +111,12 @@ export class GameService {
     if(this.seriesCache.size>=8)this.seriesCache.delete(this.seriesCache.keys().next().value!);this.seriesCache.set(key,receipt);
     receipt.catch(()=>this.seriesCache.delete(key));
    }
-   const receipts=await receipt;for(const p of (await this.q('SELECT user_id FROM player_restrictions WHERE name_locked=1 AND user_id IN (SELECT value FROM json_each(?))',JSON.stringify(receipts.map(p=>p.id))).all<{user_id:string}>()).results)hiddenNames.add(p.user_id);const byId=new Map(receipts.map(p=>[p.id,{...p,name:hiddenNames.has(p.id)?'Oyuncu':p.name,active:false}]));
+   const receipts=await receipt;
+   const ids=[...new Set([...room.players.map(p=>p.id),...(room.lastResult?.players.map(p=>p.id)??[]),...receipts.map(p=>p.id)])];
+   const locked=(await this.q('SELECT user_id FROM player_restrictions WHERE name_locked=1 AND user_id IN (SELECT value FROM json_each(?))',JSON.stringify(ids)).all<{user_id:string}>()).results;
+   const hiddenNames=new Set(locked.map(p=>p.user_id));
+   if(hiddenNames.size){room=structuredClone(room);for(const p of room.players)if(hiddenNames.has(p.id))p.name='Oyuncu';for(const p of room.lastResult?.players??[])if(hiddenNames.has(p.id))p.name='Oyuncu';}
+   const view=this.view(room,userId,revision),byId=new Map(receipts.map(p=>[p.id,{...p,name:hiddenNames.has(p.id)?'Oyuncu':p.name,active:false}]));
    for(const p of room.players){const old=byId.get(p.id);byId.set(p.id,{id:p.id,name:p.name,played:old?.played??0,wins:old?.wins??0,draws:old?.draws??0,score:old?.score??0,rounds:old?.rounds??0,active:!p.left});}
    const all=[...byId.values()],players=all.map(({rounds:_rounds,...p})=>({...p,rank:1+all.filter(other=>other.wins>p.wins).length})).sort((a,b)=>a.rank-b.rank||b.score-a.score||a.id.localeCompare(b.id));
    return {...view,series:{rounds:receipts[0]?.rounds??0,players}};
@@ -152,7 +162,11 @@ export class GameService {
     const rating=await this.rating(userId);
     candidates=(await this.q("SELECT r.id,r.data,r.revision,r.expires FROM rooms r LEFT JOIN ratings e ON e.user_id=json_extract(r.data,'$.players[0].id') WHERE r.kind='quick' AND json_extract(r.data,'$.mode') IS NULL AND r.phase='waiting' AND r.expires>? AND r.updated>? AND (ABS(COALESCE(e.value,1000)-?)<=200+MAX(0,?-MIN(COALESCE(json_extract(r.data,'$.queuedAt'),r.updated),?))/50 OR MIN(COALESCE(json_extract(r.data,'$.queuedAt'),r.updated),?)<?) ORDER BY r.id LIMIT 64",now,now-15000,rating.value,now,current.queuedAt??now,current.queuedAt??now,now-60000).all<RoomRow>()).results;
    }
-   const allowed:RoomRow[]=[];for(const candidate of candidates){const ids=[...lone(current),...lone(this.parse(candidate))].map(p=>p.id);if(!await blockedRoom(this.db,ids))allowed.push(candidate);}candidates=allowed;
+   if(!candidates.length)return row.id;
+   // Read the bounded candidate block graph once, not once per candidate.
+   const memberIds=[...new Set([...lone(current),...candidates.flatMap(c=>lone(this.parse(c)))].map(p=>p.id))];
+   const blocks=(await this.q('SELECT user_id,blocked_id FROM player_blocks WHERE user_id IN (SELECT value FROM json_each(?)) AND blocked_id IN (SELECT value FROM json_each(?))',JSON.stringify(memberIds),JSON.stringify(memberIds)).all<{user_id:string;blocked_id:string}>()).results;
+   candidates=candidates.filter(candidate=>{const ids=new Set([...lone(current),...lone(this.parse(candidate))].map(p=>p.id));return !blocks.some(b=>ids.has(b.user_id)&&ids.has(b.blocked_id));});
    // Stable pairing prevents concurrent returning players from all claiming one lobby.
    const position=candidates.findIndex(candidate=>candidate.id===row.id);
    const other=position>=0?candidates[position%2===0?position+1:position-1]:candidates[hash(row.id)%Math.max(1,candidates.length)];
@@ -171,12 +185,37 @@ export class GameService {
  }
  async state(userId:string,id?:string):Promise<RoomView|null> {
    const active=await this.active(userId);
-   let row=active??(id?await this.row(id):null);if(!row)return null;
+   return this.stateFromRow(userId,active,active??(id?await this.row(id):null));
+ }
+ private async stateFromRow(userId:string,active:RoomRow|null,row:RoomRow|null):Promise<RoomView|null>{
+   if(!row)return null;
    if(!this.parse(row).players.some(p=>p.id===userId))throw new GameError('Bu odada değilsin.',403);
    const paired=active?await this.pairWaiting(row,userId):row.id;if(paired!==row.id)row=await this.row(paired);
    return this.mutate(userId,row.id,(_room,p)=>{p.seen=this.clock();},true,false);
  }
- async watch(userId:string,id:string){const row=await this.row(id),room=this.parse(row);if(!room.players.some(p=>p.id===userId))throw new GameError('Bu odada değilsin.',403);if(room.phase==='cancelled'&&room.reason==='Oyuncular eşleştirildi'){const active=await this.active(userId);if(active&&active.id!==id){const view=await this.state(userId,active.id);if(view)return {revision:view.revision,view};}}if(room.phase==='active'&&room.ends!==null&&this.clock()>=room.ends)return {revision:row.revision+1,view:await this.mutate(userId,id,()=>{},false,false)};return {revision:row.revision,view:await this.publicView(room,userId,row.revision)};}
+ /** Optional native protocol; old clients continue receiving full state().
+  * No cross-player cache. Presence/moderation is refreshed at every heartbeat. */
+ async poll(userId:string,id:string,after:number):Promise<RoomPoll|null>{
+   const active=await this.active(userId),row=active??await this.row(id),room=this.parse(row),now=this.clock();
+   const you=room.players.find(p=>p.id===userId);if(!you)throw new GameError('Bu odada değilsin.',403);
+   if(active&&row.id===id&&row.revision===after&&row.expires>=now&&!you.left&&now-you.seen<5000&&
+      (room.phase==='finished'||room.phase==='active'&&room.ends!==null&&now<room.ends)){
+    return {unchanged:true,id:row.id,revision:row.revision,serverNow:now};
+   }
+   return this.stateFromRow(userId,active,row);
+ }
+ async watch(userId:string,id:string):Promise<{revision:number;view:RoomView}>;
+ async watch(userId:string,id:string,after:number):Promise<{revision:number;view:RoomView|null}>;
+ async watch(userId:string,id:string,after?:number):Promise<{revision:number;view:RoomView|null}>{
+   const row=await this.row(id),room=this.parse(row),now=this.clock();
+   if(!room.players.some(p=>p.id===userId))throw new GameError('Bu odada değilsin.',403);
+   if(room.phase==='cancelled'&&room.reason==='Oyuncular eşleştirildi'){
+    const active=await this.active(userId);if(active&&active.id!==id){const view=await this.state(userId,active.id);if(view)return {revision:view.revision,view};}
+   }
+   if(row.expires<now||room.phase==='active'&&room.ends!==null&&now>=room.ends){const view=await this.mutate(userId,id,()=>{},false,false);return {revision:view.revision,view};}
+   if(after===row.revision)return {revision:row.revision,view:null};
+   return {revision:row.revision,view:await this.publicView(room,userId,row.revision)};
+ }
  private async mutate(userId:string,id:string,fn:(room:Room,you:DuelPlayer)=>void,heartbeat=false,requireActive=true):Promise<RoomView>{
    for(let tries=0;tries<64;tries++){
      const row=await this.row(id),room=this.parse(row);const you=room.players.find(p=>p.id===userId);if(!you)throw new GameError('Bu odada değilsin.',403);
