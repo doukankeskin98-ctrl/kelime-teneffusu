@@ -9,7 +9,9 @@ class ScreenBoundary extends Component<{children:ReactNode},{failed:boolean}>{
 }
 /** Keep the first journey in the entry bundle; optional screens load on demand. */
 export function deferredGameScreen<P extends object>(name:string,load:()=>Promise<{default:ComponentType<P>}>){
- const Screen=lazy(load);
+ let loading:ReturnType<typeof load>|undefined;
+ const preload=()=>loading??=(load().catch(error=>{loading=undefined;throw error;}));
+ const Screen=lazy(preload);
  function DeferredScreen(props:P){return <ScreenBoundary><Suspense fallback={<div className="screen-load-state" role="status"><LoaderCircle className="spin" size={22}/><span>Hazırlanıyor…</span></div>}><Screen {...props}/></Suspense></ScreenBoundary>;}
- DeferredScreen.displayName=name;return DeferredScreen;
+ DeferredScreen.displayName=name;return Object.assign(DeferredScreen,{preload});
 }

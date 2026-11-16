@@ -6,7 +6,8 @@ import {deferredGameScreen} from './DeferredScreen';
 import {SettingsHome} from './SettingsHome';
 import {BlockedPlayers} from './PlayerSafety';
 import {gameRoute,gameRouteUrl} from '@/lib/game/navigation';
-import {SceneArt} from './SceneArt';
+import {SceneArt,GameScene} from './SceneArt';
+import {sceneForRoute} from '@/lib/game/scene';
 import {PlayPreferencesProvider} from './PlayPreferences';
 import type {ReactNode} from 'react';
 import {ChapterPicker} from './ChapterPicker';
@@ -109,6 +110,7 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
   }).catch(e=>{if(!c.signal.aborted&&e.name!=='AbortError'&&navigator.onLine)setProfileError('Oyuncu profiline ulaşılamadı. Solo bölümlere devam edebilirsin.');});
   return ()=>c.abort();
  },[membership.ready,membership.revision,nav,online,profileRetry]);
+ useEffect(()=>{if(!ready)return;const timer=setTimeout(()=>{void BonusRound.preload().catch(()=>{});},1200);return()=>clearTimeout(timer);},[ready]);
  const {stars}=collectionStats(progress),dailyStreak=streak(progress.days,istanbulDay());
  const selectArena=(next:ArenaTab)=>{setArenaTab(next);setError('');history.replaceState(null,'',gameRouteUrl(location.href,'arena',next));const route=gameRoute(location.search);setInvites(route.invites);window.scrollTo({top:0});};
  const selectNav=(next:Nav)=>{if(next==='profil')setProfileVisit(v=>v+1);setProfileOpen(false);cancelDailyLaunch();setBrowseReturn(undefined);setNav(next);setError('');setPlaying(false);if(next!=='arena')setInvites({challenge:'',friend:''});history.replaceState(null,'',gameRouteUrl(location.href,next,arenaTab));window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));};
@@ -146,7 +148,7 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  const preferences=(children:ReactNode)=><PlayPreferencesProvider value={{haptics:progress.haptics,onHaptics:()=>setProgress(p=>({...p,haptics:!p.haptics})),comfort,onComfort:changeComfort}}>{children}</PlayPreferencesProvider>;
  const wrap=' '+(progress.contrast?'contrast-mode':'');
 
- if(bonus&&ready&&bonus.owner===account.profile?.id)return preferences(<div className={'game-app journey-session'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<BonusRound key={(bonus.owner??'device')+':'+bonus.worldId} worldId={bonus.worldId} progress={progress} onProgress={update=>{if(liveAccountOwner.current===bonus.owner)setProgress(update);}} onBack={back} onContinue={()=>{const next=bonus.next;setBonus(null);if(next)openSolo(next);else back();}}/></div>);
+ if(bonus&&ready&&bonus.owner===account.profile?.id)return preferences(<div className={'game-app journey-session'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><GameScene scene={sceneForRoute(bonus.worldId,expeditionTheme(EXPEDITIONS.find(w=>w.id===bonus.worldId)!))}/><Platform consent={progress.analytics} playing/>{saveWarning}<BonusRound key={(bonus.owner??'device')+':'+bonus.worldId} worldId={bonus.worldId} progress={progress} onProgress={update=>{if(liveAccountOwner.current===bonus.owner)setProgress(update);}} onBack={back} onContinue={()=>{const next=bonus.next;setBonus(null);if(next)openSolo(next);else back();}}/></div>);
  if(sprint&&ready)return preferences(<div className={'game-app sprint-app'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<Sprint key={account.profile?.id??'device'} owner={account.profile?.id} progress={progress} onProgress={setProgress} onBack={()=>setSprint(false)}/></div>);
  if(extra&&ready)return preferences(<div className={'game-app'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<PublishedPlay key={extra.id} initialPractice={extraPractice} pair={extraPair} onRelated={(chapter,pair)=>openExtra(chapter,false,pair)} chapter={extra} userId={account.profile?.id} progress={progress} onProgress={setProgress} onBack={back}/></div>);
  if(solo&&ready)return preferences(<div className={'game-app'+(solo.campaign||livingStory(solo.journey)?' journey-session':'')+(livingStory(solo.journey)?' story-session':'')+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<Solo key={`${account.profile?.id??'device'}.${solo.run}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} ownerId={account.profile?.id} progress={progress} onProgress={update=>{if(liveAccountOwner.current===account.profile?.id)setProgress(update);}} onBack={solo.campaign||isRiddleChapter(solo.journey)||livingStory(solo.journey)?back:solo.journey?returnToMap:back} onMap={solo.campaign||isRiddleChapter(solo.journey)||livingStory(solo.journey)?back:returnToMap} onNext={openSolo} onBonus={openBonus} daily={daily??undefined}/></div>);

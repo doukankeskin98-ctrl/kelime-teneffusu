@@ -48,7 +48,7 @@ export function measurePlayFrame(screen:HTMLElement,stage:HTMLElement,cells:Boar
  const container=screen.closest<HTMLElement>('.game-app,.main-content'),bottom=container?pixels(view.getComputedStyle(container).paddingBottom):8;
  const height=Math.max(100,Math.floor(visible-top-bottom-2));
  const columnsBox=box(columns,view),panelBox=box(panel,view),screenBox=box(screen,view),children=Array.from(panel.children) as HTMLElement[];
- const shown=children.filter(child=>view.getComputedStyle(child).display!=='none');
+ const shown=children.filter(child=>{const css=view.getComputedStyle(child);return css.display!=='none'&&css.position!=='absolute'&&css.position!=='fixed';});
  const frameChildren=[heading,hud,columns].filter((child):child is HTMLElement=>!!child&&view.getComputedStyle(child).display!=='none');
  const frameChrome=screenBox.chrome+visibleHeight(heading,view)+visibleHeight(hud,view)+columnsBox.margin+pixels(screenBox.css.rowGap)*Math.max(0,frameChildren.length-1);
  const panelChrome=panelBox.chrome+panelBox.margin+shown.filter(child=>child!==stage).reduce((sum,child)=>sum+visibleHeight(child,view),0)+box(stage,view).margin+pixels(panelBox.css.rowGap)*Math.max(0,shown.length-1);
@@ -85,7 +85,7 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:BoardSh
  const mutation=typeof view.MutationObserver==='function'?new view.MutationObserver(records=>{
   // Live letters change on every selected cell, but do not normally resize.
   // ResizeObserver still catches real wrapping; legacy browsers keep the fallback.
-  const previews=observer?Array.from(screen.querySelectorAll<HTMLElement>('.selection-preview,.mobile-selection')):[];
+  const previews=observer?Array.from(screen.querySelectorAll<HTMLElement>('.selection-preview,.mobile-selection,.play-feedback-rail')):[];
   if(records.some(record=>!stage.contains(record.target)&&!previews.some(preview=>preview.contains(record.target))))fit();
  }):null;
  mutation?.observe(screen.parentElement??screen,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['class','hidden']});

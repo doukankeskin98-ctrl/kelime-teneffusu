@@ -1,6 +1,6 @@
 import {exactLine,type Cell,type Stroke} from './engine.ts';
 
-export const PRAISE_WINDOW_MS=8000,PRAISE_COOLDOWN_MS=4000,PRAISE_VISIBLE_MS=900;
+export const PRAISE_WINDOW_MS=8000,PRAISE_COOLDOWN_MS=4000,PRAISE_VISIBLE_MS=1240;
 const key=(a:Cell,b:Cell)=>[a.join(','),b.join(',')].sort().join(':');
 const words=['Çok iyi!','Harika!','Müthiş!'] as const;
 

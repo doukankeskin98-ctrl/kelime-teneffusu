@@ -5,7 +5,7 @@ import {createServer} from 'node:http';
 import {createReadStream,existsSync,statSync,mkdirSync,writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {launch,sleep} from './chrome.mjs';
-const before=process.argv.includes('--before'),out=path.resolve('../world-review.nosync/release-053'),root=path.resolve('dist-mobile');mkdirSync(out,{recursive:true});
+const before=process.argv.includes('--before'),out=path.resolve(process.env.EVIDENCE_DIR??'../world-review.nosync/release-053'),root=path.resolve('dist-mobile');mkdirSync(out,{recursive:true});
 const fixture=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/release-fixture.ts'],{encoding:'utf8'}));
 const progress={...fixture.progress,guideDone:false,tutorialDone:false,mechanicGuides:[]};
 const types={'.js':'text/javascript','.css':'text/css','.html':'text/html','.webp':'image/webp','.woff2':'font/woff2','.png':'image/png'};
@@ -13,7 +13,7 @@ const server=createServer((req,res)=>{if(req.url.startsWith('/api/')){res.writeH
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url=`http://127.0.0.1:${server.address().port}/`,page=await launch({port:9353}),report=[];
 const capture=async(name,width)=>{await page.screenshot(path.join(out,`${before?'before':'after'}-${width}-${name}.png`));return await page.evaluate(`(()=>{const b=document.querySelector('.letter-board'),g=document.querySelector('.first-play-guide'),r=b?.getBoundingClientRect();return {text:document.body.innerText,guide:g?.innerText??null,board:r?{x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom}:null,overflow:document.documentElement.scrollWidth>innerWidth,dockBottom:document.querySelector('.solo-control-dock')?.getBoundingClientRect().bottom,headingOutline:document.querySelector('dialog[open] .modal-head h2')?getComputedStyle(document.querySelector('dialog[open] .modal-head h2')).outlineStyle:null,viewport:innerHeight};})()`);};
 try{
- for(const [width,height] of (before?[[375,667]]:[[320,568],[375,667],[414,622],[430,932]])){
+ for(const [width,height] of (before?[[375,667]]:[[320,568],[375,667],[393,852],[430,932]])){
   await page.viewport(width,height,1);await page.goto(url);await page.evaluate(`localStorage.clear();localStorage.setItem('kelime-teneffusu-v2',${JSON.stringify(JSON.stringify(progress))})`);await page.goto(url);
   const home=await capture('home',width);await page.evaluate(`document.querySelector('.stage-play').click()`);await sleep(500);const start=await capture('start',width);
   const chapter=fixture.chapters[0],first=chapter.placements.find(p=>p.label===start.guide?.split('\n')[0])??chapter.placements[0];

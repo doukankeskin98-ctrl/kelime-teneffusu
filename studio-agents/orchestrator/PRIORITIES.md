@@ -1,3 +1,5 @@
+16 Kasım 2026 · **0.55.0**: canlı mürekkep / çizimi kesmeyen övgü / bonus ön yükleme ve sade devam. 1002 test, 742 Worker; iPhone 48 kuruldu, 10 kayıt değeri eşit, kullanıcı parmak/titreşimi kabul etti. 312 bölüm ve eski sesler korunur. Kanıt ve açık işler: docs/release-0.55.0.md.
+
 16 Kasım 2026 · **0.54.0**: dünya ödülü / bonus sahne akışı. Motion14.10.1 MIT, kayıt/motor/ses değişmez. Gerçek cihaz kabulü açık. Ayrıntı: docs/release-0.54.0.md ve docs/quality-0540.md.
 
 13 Kasım 2026 · 0.49.0: sıkı hedef rafı, kayıt koordinatlarını koruyan güvenli dikdörtgen sunum. Bölüm 5, 414×736: raf 140→72 px, hücre 36,4→45,1 px. 923 test ve 722 Worker kontrolü geçti. 320/375/414 px tarayıcı çizimi ve devam/sonuç geçişi doğrulandı. Fiziksel iPhone ve çok cihazlı Arena kabulü açık. docs/release-0.49.0.md.

@@ -34,7 +34,7 @@ describe('personal board paper and compatible persistence',()=>{
   assert.deepEqual(old.saves,mergeProgress(server,old).saves);assert.equal(paper.boardColor({id:'walnut'}),undefined);
  });
  it('meets numeric text contrast on every paper and collectible fill; custom-paper outlines stand out',()=>{
-  const css=readFileSync('app/studio.css','utf8'),fills=[...css.matchAll(/--word-\d+:(#[a-f0-9]{6})/g)].map(m=>m[1]!);
+  const css=readFileSync('app/game-ink.css','utf8'),fills=[...css.matchAll(/--word-\d+:(#[a-f0-9]{6})/g)].map(m=>m[1]!);
   assert(fills.length>=24);for(const fill of fills)assert(ratio('#17382c',fill)>=4.5,fill);
   for(const c of paper.BOARD_COLORS){assert(ratio('#17382c',c.paper)>=4.5,c.id);if(c.id!=='white')assert(ratio('#244c3e',c.paper)>=3,c.id);}
  });

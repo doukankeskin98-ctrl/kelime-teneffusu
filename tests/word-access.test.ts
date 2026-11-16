@@ -66,7 +66,7 @@ function familiarProgress():progress.Progress{return {...progress.emptyProgress(
 const base={title:'Keşif',kicker:'KELİMELER',onBack(){},board:content.TUTORIAL,strokes:[],paused:false,zoom:false,onCommit(){},preview:'',onPreview(){},children:null,aside:null,footer:null};
 function shared(props:any){const h=view('components/game/common.tsx');h.start('PlayLayout',{...base,...props});return h;}
 
-it('shared praise waits for confirmed local gestures, dismisses for the next drag and never moves the board key',()=>{
+it('shared praise waits for confirmed local gestures, remains readable during the next drag and never moves the board key',()=>{
  const puzzle=content.TUTORIAL,a=puzzle.placements[0]!,b=puzzle.placements[1]!;
  let props={...base,wordListKey:'praise-test',wordList:{board:puzzle,strokes:[] as engine.Stroke[]},strokes:[] as engine.Stroke[]};
  const h=shared(props),praise=()=>walk(h.tree).find(n=>n.props['className']==='play-praise'&&!n.props['ref'].current.hidden);
@@ -75,7 +75,7 @@ it('shared praise waits for confirmed local gestures, dismisses for the next dra
   props={...props,wordList:{board:puzzle,strokes:[a]}};h.update('PlayLayout',props);assert(!praise());h.time(11200);
   h.find('Board').props['onCommit'](b.b,b.a);props={...props,strokes:[a,b],wordList:{board:puzzle,strokes:[a,b]}};h.update('PlayLayout',props);
   assert.equal(praise()!.props['ref'].current.firstElementChild.textContent,'Çok iyi!');assert.equal(String(praise()!.props['aria-hidden']),'true');assert.equal(h.find('Board').key,key);assert.equal(h.find('Board').props['readOnly'],false);
-  h.find('Board').props['onSelectStart']();h.paint();assert(!praise());h.update('PlayLayout',props);assert(!praise(),'a repeated ACK cannot replay praise');
+  h.find('Board').props['onSelectStart']();h.paint();assert(praise(),'a new drag must not erase the earned feedback');h.time(12100);assert(praise(),'readable interval survives fast play');h.time(12441);assert(!praise());h.update('PlayLayout',props);assert(!praise(),'a repeated ACK cannot replay praise');
  }finally{h.close();}
 });
 it('shared praise discards a pending gesture across backgrounding, scope changes and terminal results',()=>{

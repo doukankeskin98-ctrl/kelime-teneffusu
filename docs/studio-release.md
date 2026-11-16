@@ -1,3 +1,5 @@
+16 Kasım 2026 · **0.55.0**: canlı mürekkep / çizimi kesmeyen övgü / bonus ön yükleme ve sade devam. 1002 test, 742 Worker; iPhone 48 kuruldu, 10 kayıt değeri eşit, kullanıcı parmak/titreşimi kabul etti. 312 bölüm ve eski sesler korunur. Kanıt ve açık işler: docs/release-0.55.0.md.
+
 16 Kasım 2026 · **0.54.0**: dünya ödülü / bonus sahne akışı. Motion14.10.1 MIT, kayıt/motor/ses değişmez. Gerçek cihaz kabulü açık. Ayrıntı: docs/release-0.54.0.md ve docs/quality-0540.md.
 
 # Studio sürümü: teslim ve doğrulama

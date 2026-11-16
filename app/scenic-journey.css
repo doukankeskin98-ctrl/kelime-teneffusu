@@ -18,8 +18,7 @@
 .scenic-play .letter-board,.game-app .scenic-play .letter-board{border:2px solid #fffdf3;border-radius:16px;box-shadow:0 2px 0 #143e4f30;overflow:hidden}
 .scenic-play .letter-grid span,.game-app .scenic-play .letter-grid span{color:var(--board-ink,#193c3a);font-family:Arial,Helvetica,sans-serif;font-size:var(--board-letter-size,24px);font-weight:750;letter-spacing:0;text-shadow:none;transition:color .12s}
 .scenic-play .letter-grid span::before,.scenic-play .letter-grid span::after{display:none!important}
-.scenic-play .letter-grid span.letter-selected{transform:none;color:#173c3b}
-.scenic-play .board-ink .found-stroke{opacity:.72;stroke-width:.82}.scenic-play .board-ink .stroke-outline{stroke:var(--board-paper,#fffdf4);stroke-width:.89;opacity:.25}.scenic-play .board-ink .active-stroke-outline{stroke:#144b4c;opacity:.65;stroke-width:.9}
+.scenic-play .letter-grid span.letter-selected{transform:none;color:#173c3b}.scenic-play .board-ink .stroke-outline{stroke:var(--board-paper,#fffdf4);stroke-width:.89;opacity:.25}.scenic-play .board-ink .active-stroke-outline{stroke:#144b4c;opacity:.65;stroke-width:.9}
 .scenic-play .selection-preview,.game-app .scenic-play .selection-preview,.journey-session .scenic-play .selection-preview{background:#123b48c9;color:#fff8dc;border-radius:9px;min-height:26px;font-size:12px;line-height:1.5;padding:3px 9px;margin:0 0 6px!important}
 .scenic-play .selection-preview.selecting{background:#ffe49b!important;color:#244544!important}
 .scenic-play .mobile-selection{color:#fff7d7}.scenic-play .play-title .mobile-selection b{color:inherit}
