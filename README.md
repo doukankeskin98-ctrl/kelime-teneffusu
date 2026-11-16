@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.54.0** — gerçek dünya görseliyle albüm ödülü, ortak Motion sırası ve aynı tahta üzerinde bonus hazırlığı. Eski sesler, 312 bölüm ve ilerlemeler korunur. [Teslim ve kanıt sınırları](docs/release-0.54.0.md).
+Güncel geliştirme: **0.55.0** — canlı kelime şeritleri, okunur ve çizimi kesmeyen övgü, ayrı bonus toplama hedefi, sade devam akışı. Eski sesler, 312 bölüm ve ilerlemeler korunur. iPhone kurulumunda kayıt eşitliği ve kullanıcı tarafından parmak/titreşim kabulü doğrulandı. [Teslim ve kanıt sınırları](docs/release-0.55.0.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 

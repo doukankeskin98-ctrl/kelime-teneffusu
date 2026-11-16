@@ -25,8 +25,6 @@
 .scenic-play .letter-grid>span{font-weight:700;text-shadow:none;font-family:var(--sans)}
 .scenic-play .letter-selected{color:#153d32!important;text-shadow:none!important}
 .scenic-play .active-stroke-outline{opacity:.32}.scenic-play .active-selection{filter:none}
-.scenic-play .found-stroke.is-new{animation:ink-settle 360ms var(--game-ease) both;transform-box:fill-box;transform-origin:center}
-.scenic-play .word-end-flash{animation:end-bloom 360ms ease-out both;transform-box:fill-box;transform-origin:center}
 .word-flight{position:absolute;left:-5px;top:-5px;width:10px;height:10px;z-index:15;border-radius:50%;background:#fff6cb;box-shadow:0 0 0 4px #f6d78360,0 0 18px 8px #f6d78380;pointer-events:none;will-change:transform,opacity}
 .word-flight:after{content:'';position:absolute;inset:2px;background:#fff;border-radius:50%}
 .scenic-play .viewport-targets.has-word-rack>.word-list,.game-app .scenic-play .viewport-targets.has-word-rack>.word-list{border-radius:14px;padding:5px 8px;background:#fffdf4f5;box-shadow:0 3px 0 #143f3826;gap:0 8px}
@@ -62,8 +60,8 @@
 .arena-result .arena-victory-mark{animation:reward-star 600ms cubic-bezier(.2,1.25,.4,1) both}.arena-result .arena-roster li{border-radius:14px}.scenic-play .countdown-overlay b{animation:countdown-arrive 650ms ease-out both}.scenic-play .countdown-overlay small{letter-spacing:.06em;font-size:13px}
 .collection-heading{margin:8px 0 28px}.collection-heading>span{font-size:12px;color:#7e8e7c}.collection-heading h1{font-size:36px;margin:7px 0}.collection-heading p{font-size:13px;color:#5f7869}.collection-player{border-top:1px solid #cbd7c6;border-bottom:1px solid #cbd7c6;margin:20px 0}.collection-player>summary{min-height:54px;display:flex;align-items:center;justify-content:space-between;font-size:13px;cursor:pointer;color:#476657}.collection-player .collection-stats{margin-bottom:0;border:0}.native-shell .profile-page .section-title h2{font-size:23px}.native-shell .profile-page .section-title p{font-size:12px}
 .scenery-observatory .scenery-motes i{animation-duration:8s}.scenery-harbor .scenery-motes i,.scenery-bosphorus .scenery-motes i{width:26px;height:2px;box-shadow:0 0 12px #f6df9a66;animation:water-glimmer 7s ease-in-out infinite}.scenery-garden .scenery-motes i,.scenery-valley .scenery-motes i{border-radius:70% 0 70% 0;animation:leaf-drift 12s ease-in-out infinite}
-@keyframes ink-settle{0%{opacity:.6;transform:scale(.97)}55%{opacity:1;transform:scale(1.015)}100%{opacity:1;transform:scale(1)}}
-@keyframes end-bloom{from{opacity:.85;transform:scale(.75)}to{opacity:0;transform:scale(1.9)}}
+
+
 @keyframes target-settle{from{opacity:.65}to{opacity:1}}
 @keyframes reward-star{0%{opacity:0;transform:translateY(22px) scale(.25) rotate(-12deg)}65%{opacity:1;transform:translateY(-3px) scale(1.12) rotate(3deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
 @keyframes reward-reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -75,7 +73,7 @@
 @keyframes leaf-drift{0%,100%{opacity:.1;transform:translate(0,0) rotate(-20deg)}50%{opacity:.3;transform:translate(16px,10px) rotate(25deg)}}
 @media(max-height:700px){.modal.celebration-outcome .modal-head{min-height:52px;padding-top:9px}.modal.celebration-outcome .modal-head h2{font-size:28px}.result-star-stage{height:102px;margin:2px 0}.result-star{width:52px;height:52px}.result-star:nth-child(2){width:67px;height:67px;margin-top:-16px}.result-mastery{margin:-4px 0 12px!important}.result-keepsake{padding:11px;gap:12px}.result-keepsake-art{flex-basis:51px;height:58px}.result-keepsake h3{font-size:20px!important}.result-album-progress{padding:11px 4px}.modal.celebration-outcome .modal-content{padding:4px 20px 8px}.modal.celebration-outcome .modal-actions{padding:10px 20px 16px}.modal.celebration-outcome .modal-actions .button.primary{min-height:52px}.celebration-outcome .world-next-card{margin-top:3px;padding:6px 0}.celebration-particles{top:130px}}
 @media(max-width:380px){.scenic-play .viewport-targets.has-word-rack .word-tag,.game-app .scenic-play .viewport-targets.has-word-rack .word-tag{font-size:13px}.journey-stage,.arena-stage{padding-inline:18px}.stage-chapter-copy h2{font-size:21px}.scenic-play .play-controls .hint-button{font-size:13px}.modal.celebration-outcome .modal-head h2{font-size:26px}}
-@media(prefers-reduced-motion:reduce){.word-flight,.celebration-particles{display:none}.game-app button{transition:none}.game-app .result-star,.game-app .result-keepsake,.game-app .result-album-progress i,.game-app .found-stroke,.game-app .word-end-flash,.game-app .word-tag,.game-app .scenery-motes i{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.word-flight,.celebration-particles{display:none}.game-app button{transition:none}.game-app .result-star,.game-app .result-keepsake,.game-app .result-album-progress i,.game-app .word-tag,.game-app .scenery-motes i{animation:none!important}}
 html[data-reduce-motion=true] .word-flight,html[data-reduce-motion=true] .celebration-particles{display:none}
 
 .native-shell .arena-scenic-lobby .arena-lobby-scene{position:relative;inset:auto;width:100%;height:86px;margin-bottom:16px}.native-shell .arena-scenic-lobby .group-lobby-settings,.native-shell .arena-scenic-lobby .lobby-settings{color:#284f43}

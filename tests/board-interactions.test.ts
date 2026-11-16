@@ -53,7 +53,7 @@ function harness(options:{legacy?:boolean;zoom?:boolean;pan?:boolean;paused?:boo
  const paint=(commit=true)=>{for(let i=0;(dirty||(commit&&effects.length))&&i<25;i++){if(dirty){dirty=false;cursor=0;tree=exports['Board'](props);renders++;for(const node of nodes(tree))mount(node);}if(commit)while(effects.length)effects.shift()!();}return tree;};
  const send=(name:string,cell:Cell,extra:Record<string,unknown>={})=>{const e={pointerId:1,isPrimary:true,pointerType:'touch',button:0,clientX:left+(cell[1]+.5)*width/props.board.grid[0]!.length,clientY:top+(cell[0]+.5)*height/props.board.grid.length,preventDefault(){},...extra};boardNode().props[name](e);paint();};
  paint();
- return {get rejected(){return clones.size;},letters,commits,previews,accepted,props,paint,boardNode,send,attributes:element.attributes,get pathBuilds(){return pathBuilds;},
+ return {strokeColor:exports['strokeColor'],get rejected(){return clones.size;},letters,commits,previews,accepted,props,paint,boardNode,send,attributes:element.attributes,get pathBuilds(){return pathBuilds;},
   native(type:string,cells:Cell[],changed=cells){const touch=(cell:Cell)=>({identifier:1,clientX:left+(cell[1]+.5)*width/props.board.grid[0]!.length,clientY:top+(cell[0]+.5)*height/props.board.grid.length});element.dispatchEvent(Object.assign(new Event(type,{cancelable:true}),{touches:cells.map(touch),changedTouches:changed.map(touch)}));paint();},
   reflow(dx=2,dy=2,dw=0){left+=dx;top+=dy;width+=dw;height+=dw;windowTarget.dispatchEvent(new Event('kt-board-layout'));paint();},
   toolbar(){(windowTarget as any).innerHeight-=44;top+=8;windowTarget.dispatchEvent(new Event('resize'));paint();},
@@ -530,4 +530,14 @@ it('invalid ink is transient, never commits twice and cannot survive a new conta
  h.send('onPointerDown',[2,2]);assert.equal(h.rejected,0);h.send('onPointerCancel',[2,2]);
  drag(h,a,b);h.send('onPointerUp',b);assert.equal(h.rejected,1);assert.equal(h.commits.length,2);
  h.unmount();assert.equal(h.rejected,0);
+});
+
+it('retains existing word colors while repeated-word discoveries receive distinct stable colors',()=>{
+ const h=harness();try{
+  for(let i=0;i<24;i++){assert.equal(h.strokeColor(String(i)),`var(--word-${i%8})`);assert.equal(h.strokeColor(`${i}.1`,7),`var(--word-${i%8})`);}
+  const ids=['0,1:3,4','5,2:2,2','1,6:1,3'];
+  assert.deepEqual(ids.map((id,i)=>h.strokeColor(id,i)),['var(--word-0)','var(--word-1)','var(--word-2)']);
+  assert.equal(h.strokeColor(ids[0],0),h.strokeColor(ids[0],0));
+  assert.equal(h.strokeColor(ids[0]),h.strokeColor(ids[0]));
+ }finally{h.unmount();}
 });
