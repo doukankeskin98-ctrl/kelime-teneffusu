@@ -22,9 +22,12 @@ export async function GET(request:Request){
      while(!stopped&&Date.now()-start<22000){
       await new Promise<void>(resolve=>{const timer=setTimeout(resolve,650);wake=()=>{clearTimeout(timer);resolve();};});
       if(stopped)break;
-      if(Date.now()-lastHeartbeat>5000){const heartbeat=await game.state(member.userId,watchId);if(heartbeat&&heartbeat.id!==watchId){watchId=heartbeat.id;revision=-1;}lastHeartbeat=Date.now();}
-      const next=await game.watch(member.userId,watchId);
-      if(next.view.id!==watchId||next.revision!==revision){watchId=next.view.id;revision=next.revision;send('room',next.view);lastClock=Date.now();}
+      let next;
+      if(Date.now()-lastHeartbeat>5000){
+       const heartbeat=await game.state(member.userId,watchId);if(!heartbeat)throw new Error('room');
+       next={revision:heartbeat.revision,view:heartbeat};lastHeartbeat=Date.now();
+      }else next=await game.watch(member.userId,watchId,revision);
+      if(next.view&&(next.view.id!==watchId||next.revision!==revision)){watchId=next.view.id;revision=next.revision;send('room',next.view);lastClock=Date.now();}
       else if(Date.now()-lastClock>3000){send('clock',{serverNow:Date.now()});lastClock=Date.now();}
      }
     }catch{send('retry',{message:'Bağlantı yenileniyor.'});}

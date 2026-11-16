@@ -132,6 +132,11 @@ try{
  await json('/api/game',{cookie:bCookie,method:'POST',body:{action:'enter',kind:'friend',code:room.code}});
  await json('/api/game',{cookie:aCookie,method:'POST',body:{action:'ready',id:room.id,round:1}});
  const active=await json('/api/game',{cookie:bCookie,method:'POST',body:{action:'ready',id:room.id,round:1}});
+ const pollBase=await json('/api/game?action=room&id='+room.id,{cookie:aCookie});
+ const unchanged=await json('/api/game?action=room&id='+room.id+'&after='+pollBase.revision,{cookie:aCookie});
+ check(unchanged.unchanged===true&&unchanged.id===room.id&&unchanged.revision===pollBase.revision&&!('board' in unchanged)&&!('you' in unchanged),'optional native poll returns only a clock for an unchanged authorized room');
+ const legacyPoll=await json('/api/game?action=room&id='+room.id,{cookie:aCookie});check(legacyPoll.you.id===a.profile.id&&legacyPoll.board,'legacy full room response remains compatible');
+ const anonymousPoll=await json('/api/game?action=room&id='+room.id+'&after='+pollBase.revision);check(anonymousPoll.authenticated===false&&!('id' in anonymousPoll),'conditional poll never bypasses authentication');
  await request('/api/game',{cookie:aCookie,method:'POST',body:{action:'claim',id:room.id,round:1,...solution(active.board,active.board.targets[0])},expected:409});
  const live=await request('/api/live?id='+room.id,{cookie:aCookie});check(live.headers.get('Content-Type')?.startsWith('text/event-stream'),'live event transport');const reader=live.body.getReader();const chunk=await reader.read();check(new TextDecoder().decode(chunk.value).includes('event: room'),'initial live state');await reader.cancel();
  await new Promise(resolve=>setTimeout(resolve,4200));

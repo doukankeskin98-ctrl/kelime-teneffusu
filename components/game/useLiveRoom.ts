@@ -3,18 +3,18 @@ import {useEffect,useRef,useState} from 'react';
 import {isNativeGame,gameIsActive} from '@/lib/platform/runtime';
 import {startRoomPolling} from '@/lib/platform/room-poll';
 import {memberFetch} from '@/lib/auth/firebase-client';
-import type {RoomView} from '@/lib/game/server';
+import type {RoomPoll,RoomView} from '@/lib/game/server';
 export function useLiveRoom(id:string|undefined,onRoom:(room:RoomView,sourceId:string)=>void,onClock:(time:number)=>void){
  const callbacks=useRef({onRoom,onClock});callbacks.current={onRoom,onClock};
  const [connection,setConnection]=useState<'connecting'|'connected'|'reconnecting'>('connecting');
  useEffect(()=>{
   if(!id)return;
   if(isNativeGame()){
-   let connected=false;
-   const poll=startRoomPolling<RoomView>({
+   let connected=false,revision:number|undefined;
+   const poll=startRoomPolling<RoomPoll>({
     active:()=>!document.hidden&&gameIsActive(),
-    read:async signal=>{const r=await memberFetch('/api/game?action=room&id='+encodeURIComponent(id),{signal});if(!r.ok)throw new Error('room');const room=await r.json() as RoomView;if(!room||typeof room.id!=='string')throw new Error('room');return room;},
-    accept:room=>{callbacks.current.onRoom(room,id);callbacks.current.onClock(room.serverNow);},
+    read:async signal=>{const r=await memberFetch('/api/game?action=room&id='+encodeURIComponent(id)+(revision===undefined?'':'&after='+revision),{signal});if(!r.ok)throw new Error('room');const room=await r.json() as RoomPoll;if(!room||typeof room.id!=='string')throw new Error('room');return room;},
+    accept:room=>{if(!('unchanged' in room)){revision=room.id===id?room.revision:undefined;callbacks.current.onRoom(room,id);}callbacks.current.onClock(room.serverNow);},
     status:ok=>{if(ok)connected=true;setConnection(ok?'connected':connected?'reconnecting':'connecting');},
    });
    document.addEventListener('visibilitychange',poll.visibility);
@@ -39,7 +39,7 @@ export function useLiveRoom(id:string|undefined,onRoom:(room:RoomView,sourceId:s
      }
     }
    }catch{if(!stopped&&serial===generation&&!document.hidden){failures++;setConnection('reconnecting');}}
-   finally{if(!stopped&&serial===generation&&!document.hidden)timer=setTimeout(()=>void connect(),Math.min(6000,500+failures*900));}
+   finally{if(!stopped&&serial===generation&&!document.hidden)timer=setTimeout(()=>void connect(),Math.min(6000,(500+failures*900)*(.8+Math.random()*.4)));}
   };
   const visibility=()=>{clearTimeout(timer);serial++;abort?.abort();if(!document.hidden)void connect();};
   void connect();document.addEventListener('visibilitychange',visibility);

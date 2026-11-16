@@ -22,7 +22,11 @@ export async function GET(request:Request){try{
  if(principal&&!principal.verified)return json({authenticated:false,needsVerification:true});
  if(principal&&!await accountStore().find(principal))return json({authenticated:false,needsUsername:true});
  const member=await gameMember(request);if(!member)return json({authenticated:false});
- if(action==='room')return json(await game.state(member.userId,url.searchParams.get('id')??undefined));
+ if(action==='room'){
+  const id=url.searchParams.get('id'),after=url.searchParams.get('after');
+  if(id&&after!==null&&/^(0|[1-9]\d{0,14})$/.test(after))return json(await game.poll(member.userId,id,Number(after)));
+  return json(await game.state(member.userId,id??undefined));
+ }
  const response=json({authenticated:true,nativeSession:!!request.headers.get('oai-authenticated-user-id'),kind:member.kind,username:member.username,email:member.email,profile:await game.profile(member.userId),stats:await game.stats(member.userId),rating:await game.rating(member.userId)});if(member.kind==='guest'){const cookie=await renewGuest(env.DB!,request,member.userId);if(cookie)response.headers.set('Set-Cookie',cookie);}return response;
 }catch(e){return failure(e);}}
 export async function POST(request:Request){try{
