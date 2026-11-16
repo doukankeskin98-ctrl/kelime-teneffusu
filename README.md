@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.55.0** — canlı kelime şeritleri, okunur ve çizimi kesmeyen övgü, ayrı bonus toplama hedefi, sade devam akışı. Eski sesler, 312 bölüm ve ilerlemeler korunur. iPhone kurulumunda kayıt eşitliği ve kullanıcı tarafından parmak/titreşim kabulü doğrulandı. [Teslim ve kanıt sınırları](docs/release-0.55.0.md).
+Güncel geliştirme: **0.56.0** — Arena oda sorguları, heartbeat ve eşleştirme yükü azaltıldı; 10.000 sentetik oturumla izole yerel test yapıldı. **10.000 eşzamanlı Arena kapasitesi doğrulanmadı.** Mevcut 312 bölüm, ilerleme ve oyun hissi korunur. iOS49 paketlendi; telefona kurulmadı. [Ölçümler ve açık kapasite kapısı](docs/release-0.56.0.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 
