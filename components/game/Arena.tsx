@@ -72,7 +72,7 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   return ()=>{clock.stop();document.removeEventListener('visibilitychange',clock.refresh);window.removeEventListener('pagehide',hide);window.removeEventListener('pageshow',show);};
  },[clockStart,waitingUntil]);
  useEffect(()=>{if(room?.phase==='active'&&tracked.current!==room.id+':'+room.round){tracked.current=room.id+':'+room.round;track('arena_start');setReview(false);}if(room?.phase==='finished')track('arena_complete');},[room?.phase,room?.round]);
- useEffect(()=>{setPending(null);setPreview('');setReview(false);setRanking(false);setPreviousResult(false);setSeriesOpen(false);},[room?.id,room?.round]);
+ useEffect(()=>{setPending(null);setPreview('');setReview(false);setRanking(false);setPreviousResult(false);setSeriesOpen(false);setLeaving(false);setRules(false);},[room?.id,room?.round]);
  const run=async(action:string,data:Record<string,unknown>={})=>{
   if(!online){setError('Arena için internet bağlantısı gerekiyor.');return;}
   if(actionLock.current)return;actionLock.current=true;epoch.current++;const stamp=context();setBusy(true);setError('');

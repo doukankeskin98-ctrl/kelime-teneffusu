@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.56.0** — Arena oda sorguları, heartbeat ve eşleştirme yükü azaltıldı; 10.000 sentetik oturumla izole yerel test yapıldı. **10.000 eşzamanlı Arena kapasitesi doğrulanmadı.** Mevcut 312 bölüm, ilerleme ve oyun hissi korunur. iOS49 paketlendi; telefona kurulmadı. [Ölçümler ve açık kapasite kapısı](docs/release-0.56.0.md).
+Güncel geliştirme: **0.56.1** — Arena tur geçişindeki eski pencereler ve ekran yükleme hatasından sonra yerinde yeniden deneme düzeltildi. 312 bölüm, ilerleme ve oyun hissi korunur. iOS50 paketlendi; telefona kurulmadı. [Kontroller ve sınırlar](docs/release-0.56.1.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 
