@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-Güncel geliştirme: **0.56.1** — Arena tur geçişindeki eski pencereler ve ekran yükleme hatasından sonra yerinde yeniden deneme düzeltildi. 312 bölüm, ilerleme ve oyun hissi korunur. iOS50 paketlendi; telefona kurulmadı. [Kontroller ve sınırlar](docs/release-0.56.1.md).
+0.56.2 · Küçük telefonlarda ilk kelimeden sonra tahta yerinde kalır. Yeni çizimin ilk harfi hemen görünür. Bölümün sonunda kelime çizgileri sonuç açılmadan önce kısa süre manzarada kalır.
 
 ## 0.49.0 · Tahtaya daha fazla alan
 

@@ -66,7 +66,7 @@ function familiarProgress():progress.Progress{return {...progress.emptyProgress(
 const base={title:'Keşif',kicker:'KELİMELER',onBack(){},board:content.TUTORIAL,strokes:[],paused:false,zoom:false,onCommit(){},preview:'',onPreview(){},children:null,aside:null,footer:null};
 function shared(props:any){const h=view('components/game/common.tsx');h.start('PlayLayout',{...base,...props});return h;}
 
-it('shared praise waits for confirmed local gestures, remains readable during the next drag and never moves the board key',()=>{
+it('shared praise waits for confirmed local gestures and yields immediately to the next selection',()=>{
  const puzzle=content.TUTORIAL,a=puzzle.placements[0]!,b=puzzle.placements[1]!;
  let props={...base,wordListKey:'praise-test',wordList:{board:puzzle,strokes:[] as engine.Stroke[]},strokes:[] as engine.Stroke[]};
  const h=shared(props),praise=()=>walk(h.tree).find(n=>n.props['className']==='play-praise'&&!n.props['ref'].current.hidden);
@@ -75,7 +75,9 @@ it('shared praise waits for confirmed local gestures, remains readable during th
   props={...props,wordList:{board:puzzle,strokes:[a]}};h.update('PlayLayout',props);assert(!praise());h.time(11200);
   h.find('Board').props['onCommit'](b.b,b.a);props={...props,strokes:[a,b],wordList:{board:puzzle,strokes:[a,b]}};h.update('PlayLayout',props);
   assert.equal(praise()!.props['ref'].current.firstElementChild.textContent,'Çok iyi!');assert.equal(String(praise()!.props['aria-hidden']),'true');assert.equal(h.find('Board').key,key);assert.equal(h.find('Board').props['readOnly'],false);
-  h.find('Board').props['onSelectStart']();h.paint();assert(praise(),'a new drag must not erase the earned feedback');h.time(12100);assert(praise(),'readable interval survives fast play');h.time(12441);assert(!praise());h.update('PlayLayout',props);assert(!praise(),'a repeated ACK cannot replay praise');
+  h.time(11500);assert(praise(),'praise stays visible while the next selection has not started');
+  h.find('Board').props['onSelectStart']();assert(!praise(),'the next real selection immediately owns the feedback rail');
+  h.time(12441);h.update('PlayLayout',props);assert(!praise(),'the previous timer and repeated ACK cannot replay praise');
  }finally{h.close();}
 });
 it('shared praise discards a pending gesture across backgrounding, scope changes and terminal results',()=>{
@@ -89,6 +91,25 @@ it('shared praise discards a pending gesture across backgrounding, scope changes
   props={...props,wordListKey:'two',wordList:{board:puzzle,strokes:[]}};h.update('PlayLayout',props);
   h.find('Board').props['onCommit'](a.a,a.b);props={...props,wordList:{board:puzzle,strokes:[a]}};h.update('PlayLayout',props);
   h.find('Board').props['onCommit'](b.a,b.b);h.update('PlayLayout',{...props,readOnly:true,wordList:{board:puzzle,strokes:[a,b]}});assert(!hasPraise());
+ }finally{h.close();}
+});
+
+it('a late confirmation never covers a newer selection, and subsequent earned praise keeps its normal lifetime',()=>{
+ const puzzle=content.journeyBoard(content.journeyById('uzay-1')!);
+ let props={...base,board:puzzle,wordList:{board:puzzle,strokes:[] as engine.Stroke[]}};
+ const h=shared(props),board=()=>h.find('Board').props;
+ const praise=()=>walk(h.tree).find(node=>node.props['className']==='play-praise')!.props['ref'].current;
+ const commit=(index:number)=>{const word=puzzle.placements[index]!;board()['onCommit'](word.a,word.b);};
+ const confirm=(index:number)=>{props={...props,wordList:{board:puzzle,strokes:puzzle.placements.slice(0,index+1)}};h.update('PlayLayout',props);};
+ try{
+  board()['onSelectStart']();commit(0);confirm(0);
+  h.time(11000);board()['onSelectStart']();commit(1);
+  board()['onSelectStart']();confirm(1);assert(praise().hidden,'the late ACK belongs to an older gesture');
+  h.time(13400);commit(2);confirm(2);
+  h.time(15100);board()['onSelectStart']();commit(3);confirm(3);
+  assert.equal(praise().hidden,false);assert.equal(praise().firstElementChild.textContent,'Harika!');
+  h.time(15100+playPraise.PRAISE_VISIBLE_MS-1);assert.equal(praise().hidden,false);
+  h.time(15100+playPraise.PRAISE_VISIBLE_MS);assert(praise().hidden);
  }finally{h.close();}
 });
 

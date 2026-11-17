@@ -10,8 +10,8 @@ import {gameIsActive} from '@/lib/platform/runtime';
 export function usePlayPraise({scope,board,confirmed,unavailable,terminal,hint,demonstration}:{scope:string;board:Pick<Puzzle,'size'|'grid'|'targets'>;confirmed:Stroke[];unavailable:boolean;terminal:boolean;hint?:Cell|null;demonstration?:{a:Cell;b:Cell}|null}){
  const ledger=useRef(playPraiseLedger(confirmed)),currentScope=useRef(scope);
  const node=useRef<HTMLSpanElement>(null),timer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);
- const active=useRef(true);
- const dismiss=useCallback(()=>{clearTimeout(timer.current);timer.current=undefined;if(node.current)node.current.hidden=true;},[]);
+ const active=useRef(true),selectionSinceAttempt=useRef(false);
+ const dismiss=useCallback(()=>{clearTimeout(timer.current);timer.current=undefined;if(node.current&&!node.current.hidden)node.current.hidden=true;},[]);
  const interrupt=useCallback(()=>{ledger.current.interrupt();dismiss();},[dismiss]);
  useEffect(()=>{
   const stop=observeGameActivity(document,window,gameIsActive,value=>{active.current=value;if(!value)interrupt();});
@@ -26,14 +26,17 @@ export function usePlayPraise({scope,board,confirmed,unavailable,terminal,hint,d
  useLayoutEffect(()=>{if(helpRow!==undefined&&helpColumn!==undefined){ledger.current.assist([helpRow,helpColumn]);dismiss();}},[scope,helpRow,helpColumn,dismiss]);
  useLayoutEffect(()=>{
   const text=ledger.current.confirm(confirmed,performance.now(),board.size,active.current&&!document.hidden&&gameIsActive()&&!unavailable,terminal);
-  if(!text||!node.current?.firstElementChild)return;
+  // An older acknowledgement still counts toward the streak while the player draws again.
+  if(!text||selectionSinceAttempt.current||!node.current?.firstElementChild)return;
   dismiss();node.current.firstElementChild.textContent=text;node.current.hidden=false;timer.current=setTimeout(dismiss,PRAISE_VISIBLE_MS);
  },[confirmed,scope,unavailable,terminal,board.size,dismiss]);
  return {
+  beginSelection(){selectionSinceAttempt.current=true;dismiss();},
   attempt(a:Cell,b:Cell){
+   selectionSinceAttempt.current=false;
    if(!unavailable&&!terminal&&active.current&&!document.hidden&&gameIsActive())ledger.current.attempt(a,b,performance.now(),!!match(board,a,b));
   },
-  dismiss,interrupt,
+  interrupt,
   element:<span ref={node} className="play-praise" aria-hidden="true" hidden><strong/><Star className="praise-star left" aria-hidden="true"/><Star className="praise-star right" aria-hidden="true"/>{Array.from({length:8},(_,i)=><i key={i} style={{'--spark':i} as import('react').CSSProperties}/>)}</span>,
  };
 }

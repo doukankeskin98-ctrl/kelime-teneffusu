@@ -61,9 +61,10 @@ export async function launch({port = 9333} = {}) {
       await call('Input.dispatchKeyEvent',{type:'keyDown',key,code,...(key==='Tab'?{windowsVirtualKeyCode:9,nativeVirtualKeyCode:9}:{})});
       await call('Input.dispatchKeyEvent',{type:'keyUp',key,code});
     },
-    async touch(points) {
+    async touch(points, afterPoint) {
       for(let i=0;i<points.length;i++) {
         await call('Input.dispatchTouchEvent',{type:i?'touchMove':'touchStart',touchPoints:[{x:points[i][0],y:points[i][1],id:1,radiusX:4,radiusY:4,force:.7}]});
+        if(afterPoint)await afterPoint(i);
         await sleep(24);
       }
       await call('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});

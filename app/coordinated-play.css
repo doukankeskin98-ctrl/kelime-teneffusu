@@ -5,6 +5,31 @@
 .scenic-play[data-result-phase=exit] .board-stage{animation:play-board-exit calc(var(--result-exit-ms) - 60ms) 60ms ease-in both;pointer-events:none}
 .scenic-play[data-result-phase=exit] .play-controls,
 .scenic-play[data-result-phase=exit] .duel-controls{animation:play-tools-exit 100ms ease-in both;pointer-events:none}
+
+/* During a solo exit the existing ink stays on its original cells. The paper
+   and letters disappear first, all within the existing result transition. */
+.quiet-play[data-result-phase=exit] .board-stage{animation:none}
+.quiet-play[data-result-phase=exit] .board-scroll{box-shadow:none}
+.game-app .quiet-play[data-result-phase=exit] .letter-board{
+ background:transparent!important; /* the normal board sets its paper inline */
+ border-color:transparent;box-shadow:none;outline:none
+}
+.quiet-play[data-result-phase=exit] .letter-board::after{
+ content:'';position:absolute;inset:0;z-index:0;background:var(--board-paper,#fffdf4);
+ border-radius:inherit;pointer-events:none
+}
+.quiet-play[data-result-phase=exit] .letter-board::after,
+.quiet-play[data-result-phase=exit] .letter-grid,
+.quiet-play[data-result-phase=exit] .viewport-targets,
+.quiet-play[data-result-phase=exit] .solo-control-dock,
+.quiet-play[data-result-phase=exit] .board-input-tools,
+.quiet-play[data-result-phase=exit] .play-feedback-rail{
+ animation:play-layer-fade 70ms ease-out both
+}
+.quiet-play[data-result-phase=exit] .board-ink{animation:play-ink-exit var(--result-exit-ms) linear both}
+.quiet-play[data-result-phase=exit] .board-ink :is(.active-selection,.is-pending,.word-end-flash,.hint-guide,.hint-ring,rect){visibility:hidden}
+@keyframes play-layer-fade{from{opacity:1}to{opacity:0}}
+@keyframes play-ink-exit{0%,70%{opacity:1}100%{opacity:0}}
 @keyframes play-header-exit{to{opacity:0;transform:translateY(-12px)}}
 @keyframes play-board-exit{to{opacity:0;transform:scale(.985)}}
 @keyframes play-tools-exit{to{opacity:0;transform:translateY(12px)}}
