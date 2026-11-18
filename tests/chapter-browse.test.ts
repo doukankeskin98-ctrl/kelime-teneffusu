@@ -2,6 +2,7 @@ import * as journeyRevisions from '../lib/game/journey-revisions.ts';
 import * as progressStorage from '../lib/game/progress-storage.ts';
 import * as progressCodec from '../lib/game/progress-codec.ts';
 import * as weeklyReward from '../lib/game/weekly-reward.ts';
+import * as discovery from '../lib/game/discovery.ts';
 import * as discoveries from '../lib/game/discoveries-content.ts';
 import * as journeyFlow from '../lib/game/journey-flow.ts';
 import * as originalContent from '../lib/game/original-content.ts';
@@ -48,7 +49,7 @@ function harness(file:string,modules:Record<string,unknown>={},globals:Record<st
   useId:()=> 'catalogue-test-id',useMemo:(fn:()=>any)=>fn()};
  const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
  const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
- vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/weekly-reward'?weeklyReward:name==='@/lib/game/discoveries-content'?discoveries:name==='./DeferredScreen'?{deferredGameScreen:(name:string)=>name==='BonusRound'?Object.assign(()=>null,{preload:()=>Promise.resolve()}):name}:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/menu-feedback'?{attachMenuFeedback:()=>()=>{}}:name==='@/lib/platform/runtime'?{appFetch:globals['fetch']}:name==='./GameSettings'?{useComfort:()=>({comfort:{leftHanded:false,reduceMotion:false},change(){}}),GameSettings:'GameSettings'}:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddleContent:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:modules[name]??new Proxy({},{get:(_t,key)=>String(key)}),URL,URLSearchParams,AbortController,Event,setTimeout,clearTimeout,document:new EventTarget(),console,...globals});
+ vm.runInNewContext(code,{exports,require:(name:string)=>name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/weekly-reward'?weeklyReward:name==='@/lib/game/discovery'?discovery:name==='@/lib/game/discoveries-content'?discoveries:name==='./DeferredScreen'?{deferredGameScreen:(name:string)=>name==='BonusRound'?Object.assign(()=>null,{preload:()=>Promise.resolve()}):name}:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/menu-feedback'?{attachMenuFeedback:()=>()=>{}}:name==='@/lib/platform/runtime'?{appFetch:globals['fetch']}:name==='./GameSettings'?{useComfort:()=>({comfort:{leftHanded:false,reduceMotion:false},change(){}}),GameSettings:'GameSettings'}:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddleContent:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:modules[name]??new Proxy({},{get:(_t,key)=>String(key)}),URL,URLSearchParams,AbortController,Event,setTimeout,clearTimeout,document:new EventTarget(),console,...globals});
  const paint=()=>{for(let i=0;dirty&&i<30;i++){dirty=false;cursor=0;tree=render();while(effects.length)effects.shift()!();}return tree;};
  return {exports,start(fn:()=>any){render=fn;return paint();},paint,async settle(){for(let i=0;i<12;i++){await Promise.resolve();paint();}return tree;},unmount(){mounted=false;for(const slot of slots)slot.cleanup?.();},get afterUnmount(){return afterUnmount;}};
 }
@@ -71,6 +72,17 @@ describe('catalogue return and interrupted pagination',()=>{
   const value=snapshot({chapters:fixture.slice(0,2),hasPage:false}),h=catalogue({restore:value});
   assert.equal(h.paint().chapters.length,2);assert.equal(h.flights.length,1);
   const loaded=await h.respond(0,fixture.slice(0,24),24);assert.equal(loaded.next,24);assert.equal(loaded.chapters.length,24);
+ });
+ it('keeps the archive usable after a malformed successful response and recovers on retry',async()=>{
+  for(const payload of [{available:false},{chapters:[null],nextOffset:null},{chapters:[{...first,spec:null}],nextOffset:null},{chapters:[],companions:false,nextOffset:null},{chapters:[],nextOffset:'24'}]){
+   const storage=new Map([['kt-published-catalogue-v1:releases',JSON.stringify(chapters)]]),h=catalogue({storage});
+   h.flights[0]!.reply.resolve({ok:true,json:async()=>payload} as Response);
+   const failed=await h.settle();
+   assert.equal(failed.chapters.length,chapters.length);assert.match(failed.error,/yüklenemedi/);
+   assert.equal(storage.get('kt-published-catalogue-v1:releases'),JSON.stringify(chapters));
+   failed.retry();const retried=await h.respond(1,chapters,24);
+   assert.equal(retried.next,24);assert.equal(retried.error,'');assert.equal(retried.chapters[0].id,first.id);h.unmount();
+  }
  });
  it('retries the failed second page and keeps the first page and offset',async()=>{
   const h=catalogue();await h.respond(0,fixture.slice(0,24),24);h.paint().more();

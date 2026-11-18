@@ -15,7 +15,7 @@
  border-color:transparent;box-shadow:none;outline:none
 }
 .quiet-play[data-result-phase=exit] .letter-board::after{
- content:'';position:absolute;inset:0;z-index:0;background:var(--board-paper,#fffdf4);
+ content:'';position:absolute;inset:0;z-index:0;background:var(--board-paper,var(--berrak-surface,#fff));
  border-radius:inherit;pointer-events:none
 }
 .quiet-play[data-result-phase=exit] .letter-board::after,
@@ -95,47 +95,6 @@ html[data-reduce-motion=true] .scenic-play[data-result-phase=exit] *{animation:n
 @media(prefers-reduced-motion:reduce){.board-turning,.board-turning .letter-grid span,.board-entering .letter-grid span,.rejected-selection{animation:none!important}.rejected-selection{opacity:.4}}
 html[data-reduce-motion=true] .board-turning,html[data-reduce-motion=true] .board-turning .letter-grid span,html[data-reduce-motion=true] .board-entering .letter-grid span,html[data-reduce-motion=true] .rejected-selection{animation:none!important}
 
-/* One actual world, one earned segment. Motion owns only the finite entrance. */
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star{animation:none;opacity:1}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star-stage{height:58px;margin:6px 0 10px;gap:10px}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star{width:44px;height:44px;transform:none}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star:nth-child(2){width:55px;height:55px;transform:none}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star svg{width:100%;height:100%}
-.result-world{margin:0;text-align:center;color:#fff7dd}
-.result-world-medallion{position:relative;width:190px;height:190px;margin:0 auto 14px}
-.result-world-art{position:absolute;inset:17px;border-radius:50%;overflow:hidden;background:#204956}
-.result-world-art .scene-art{width:100%;height:100%;object-fit:cover;object-position:50% 22%}
-.result-world-pieces{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.world-piece{fill:none;stroke:#53747a;stroke-width:9;stroke-linecap:round}
-.world-piece.earned{stroke:#f5d689}
-.result-world-count{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:5px;min-width:76px;min-height:36px;padding:4px 12px;border-radius:20px;background:#f5d689;color:#203d35;font-size:22px;line-height:1;font-weight:800;box-shadow:0 3px 7px #102d383d;font-variant-numeric:tabular-nums}
-.result-world-count small{font-size:14px;color:inherit}
-.result-world-caption h3{font-size:23px!important;line-height:1.2;margin:0 0 5px;color:#fff1bd}
-.result-world-caption p{font-size:14px;line-height:1.35;margin:0;color:#e1ece0}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .journey-result-details{margin:10px 0 0}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .journey-result-details[open]{text-align:left}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .result-next-goal{display:none}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .journey-replay-note{margin:8px 0 0;font-size:12px;color:#deebde}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-result-heading{margin-bottom:0}
-@media(max-height:740px){
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star-stage{height:44px;margin:2px 0 5px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star{width:33px;height:33px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star:nth-child(2){width:42px;height:42px}
- .result-world-medallion{width:148px;height:148px;margin-bottom:10px}
- .result-world-art{inset:14px}
- .result-world-count{font-size:19px;min-height:30px;min-width:68px}
- .result-world-caption h3{font-size:20px!important}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .journey-result-details{margin-top:2px}
-}
-@media(max-height:650px){
- .result-world-medallion{width:116px;height:116px}
- .result-world-art{inset:11px}
- .result-world-count{min-height:26px;font-size:17px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star-stage{height:35px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star{width:28px;height:28px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .world-reward .result-star:nth-child(2){width:34px;height:34px}
-}
-
 /* Bonus is the same playable scene, before and after the first tap. */
 .bonus-dashboard{background:#fffdf4;color:#193e37;border-radius:16px;display:grid;grid-template-columns:minmax(0,1fr) 42px 62px;grid-template-rows:auto 18px;column-gap:12px;row-gap:6px;padding:10px 14px}
 .bonus-target{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0}
@@ -170,20 +129,3 @@ html[data-reduce-motion=true] .board-turning,html[data-reduce-motion=true] .boar
 @media(max-height:650px){.bonus-ready{padding:12px}.bonus-ready h2{font-size:21px;margin-bottom:8px}.bonus-ready p{font-size:14px}.bonus-ready .bonus-ready-rule{margin-bottom:14px}.bonus-ready .text-button{margin-top:6px}.bonus-discovery-medal{width:150px;height:150px;margin:12px auto}.bonus-discovery-medal b{font-size:48px}}
 @media(prefers-reduced-motion:reduce){.bonus-discoveries i{transition:none}}
 :root[data-reduce-motion=true] .bonus-discoveries i{transition:none}
-
-@media(max-height:650px){
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome>.modal-head{min-height:56px;padding-top:8px;padding-bottom:4px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome>.modal-head h2{font-size:26px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome>.modal-content{padding-bottom:4px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome>.modal-actions{padding-top:6px;padding-bottom:4px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .modal-actions .primary{padding:10px 14px;min-height:54px;font-size:18px}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .achievement-secondary{margin-top:0}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .result-world-medallion{width:clamp(100px,calc(100svh - 500px),126px);height:clamp(100px,calc(100svh - 500px),126px)}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .result-world-caption h3{font-size:18px!important}
- .modal.game-dialog.scenic-outcome.scene-result.journey-outcome .result-world-caption p{font-size:12px}
-}
-
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .result-unlock-notice{margin:10px 0 0;text-align:center;font-size:12px;line-height:1.4;color:#e3ece0}
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome .result-unlock-notice b{font-size:16px;color:#ffe5a3}
-
-.modal.game-dialog.scenic-outcome.scene-result.journey-outcome[open]{height:min(780px,calc(100svh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important}

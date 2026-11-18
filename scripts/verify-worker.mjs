@@ -50,7 +50,7 @@ try{
  check(!home.includes('stage-reward')&&!home.includes('YENİ ALBÜM PARÇASI'),'home does not award an unauthenticated visitor a collection piece');
  const archive=await json('/api/chapters?collection=releases');check(archive.total===released.total&&archive.chapters.every(c=>!('board' in c)),'permanent release archive exposes summaries without board payloads');
  check(archive.chapters.every(c=>typeof c.releaseDate==='string'&&(c.slot===1||c.slot===2)),'archive preserves dated pair metadata for permanent stamp goals');
- check(home.includes('journey-stage')&&home.includes('/art/scenes/observatory-v1.webp'),'main journey presents the illustrated scene for its actual world');
+ check(home.includes('berrak-landscape')&&home.includes('/art/scenes/observatory-v1.webp'),'main journey presents the illustrated scene for its actual world');
  const offlineWorker=await readFile('dist/client/sw.js','utf8');
  for(const scene of ['observatory','harbor','garden','bakery','courtyard','bosphorus','school','valley','workshop','cassette','stadium','court','cinema','neighborhood','square','temple']){const asset='/art/scenes/'+scene+'-v1.webp';const image=await request(asset);check(image.headers.get('Content-Type')?.includes('image/webp'),'scene is served as WebP');check(offlineWorker.includes(asset),'illustrated scene is included in the offline installation');}
  for(const asset of ['/fonts/manrope-latin.woff2','/fonts/manrope-latin-ext.woff2']){const font=await request(asset);check(font.headers.get('Content-Type')?.includes('font/woff2'),'bundled font served as woff2');check(offlineWorker.includes(asset),'bundled font available offline');}

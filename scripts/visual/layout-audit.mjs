@@ -12,7 +12,7 @@ import {launch} from './chrome.mjs';
 import {capturePlayLayout,layoutProblems} from './layout-measure.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const site = path.join(root, 'dist-mobile');
+const site = process.env.KT_LAYOUT_BUILD ?? path.join(root, 'dist-mobile');
 if (!existsSync(path.join(site, 'index.html'))) throw new Error('Önce mobil paketi derle: pnpm mobile:build');
 const sizes = (process.argv[2] ?? '320x568,375x667').split(',').map(size => size.split('x').map(Number));
 const only = process.argv[3]?.split(',').map(Number);
@@ -33,16 +33,20 @@ const url = `http://127.0.0.1:${server.address().port}/`;
 
 const open = chapter => `(async () => {
   const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const picker = document.querySelector('.stage-map-button');
+  const until = async find => { for(let i=0;i<100;i++){const value=find();if(value)return value;await wait(20);} };
+  const picker = await until(()=>document.querySelector('button[aria-label="Yolculuğum: bölümler ve albümler"]'));
   if (!picker) return 'bölüm seçici yok';
-  picker.click(); await wait(120);
-  document.querySelector('.journey-map-all')?.click(); await wait(120);
-  const world = [...document.querySelectorAll('.journey-map-world')][${chapter.world}];
+  picker.click();
+  const all=await until(()=>document.querySelector('.journey-map-all'));
+  if(!all)return 'dünya listesi yok';
+  all.click();
+  const world=await until(()=>document.querySelectorAll('.journey-map-world').length===${fixture.chapters.length/6} && document.querySelectorAll('.journey-map-world')[${chapter.world}]);
   if(!world) return 'dünya seçimi yok';
-  world.click(); await wait(120);
-  const button = [...document.querySelectorAll('.chapter-picker-grid button')][${chapter.position}];
+  world.click();
+  const button = await until(()=>document.querySelectorAll('.chapter-picker-grid button')[${chapter.position}]);
   if (!button || button.disabled) return 'bölüm açılamadı';
-  button.click(); await wait(450);
+  button.click();
+  if(!await until(()=>document.querySelector('.letter-board') && document.querySelector('.play-chapter-number')?.textContent.match(/\\d+/)?.[0]===String(${chapter.number})))return 'açılan bölüm doğrulanamadı';
   await document.fonts.ready;
   let last='',stable=0;for(let i=0;i<20&&stable<3;i++){const b=document.querySelector('.letter-board')?.getBoundingClientRect(),now=JSON.stringify(b?[b.x,b.y,b.width,b.height]:null);stable=now===last?stable+1:0;last=now;await wait(40);}
   return 'ok';
@@ -50,7 +54,7 @@ const open = chapter => `(async () => {
 const measure = '('+capturePlayLayout.toString()+')()';
 
 let failures = 0;
-const page = await launch();
+const page = await launch({port:Number(process.env.KT_LAYOUT_PORT ?? 9333)});
 try {
   for (const [width, height] of sizes) {
     await page.viewport(width, height);
@@ -58,7 +62,7 @@ try {
     await page.evaluate(`localStorage.clear(); localStorage.setItem(${JSON.stringify(fixture.key)}, ${JSON.stringify(fixture.value)}); 'ok'`);
     const rows = [];
     for (const chapter of only ? fixture.chapters.filter(item => only.includes(item.number)) : fixture.chapters) {
-      await page.goto(url, 300);
+      await page.goto(url, 120);
       const opened = await page.evaluate(open(chapter));
       if(process.env.EVIDENCE_DIR&&only)await page.screenshot(path.join(process.env.EVIDENCE_DIR,`layout-${width}-${chapter.number}.png`));
       rows.push({number: chapter.number, id: chapter.id, ...(opened === 'ok' ? await page.evaluate(measure) : {error: opened})});

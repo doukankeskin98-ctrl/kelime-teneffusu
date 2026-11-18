@@ -2,11 +2,7 @@
 .app-shell{background:#f3f5ef}
 .studio-home{max-width:1100px;margin-inline:auto}
 .welcome-row{margin-bottom:18px}.welcome-row h1{font-size:clamp(27px,3vw,38px);letter-spacing:-1.3px}.welcome-row .eyebrow{font-size:10px;letter-spacing:1.6px}
-.discovery-passport{display:flex;align-items:center;gap:22px;margin:0 0 18px;color:#567269;font-size:12px}.discovery-passport>span{display:flex;align-items:center;gap:7px}.discovery-passport b{font-size:16px;color:#234b40}.discovery-passport svg{color:#a37b2d}
-.island-start{min-height:350px;border-radius:30px;border:0;padding:28px;box-shadow:0 12px 35px #20463415;gap:14px}
-.island-start .start-intro{min-height:100px}.island-start .start-intro h2{font-size:42px}.island-start .start-intro p{display:none}
-.island-start .start-route{background:#fffff2f2;border:1px solid #ffffffb0;border-radius:20px;box-shadow:0 8px 20px #254d3820;padding:16px 20px}
-.island-start .start-route .eyebrow{font-size:11px}.island-start .start-route>small{font-size:11px}.island-start .start-shortcuts :is(a,button){font-size:13px;min-height:46px;background:#fffff0e8}
+.discovery-passport{display:flex;align-items:center;gap:22px;margin:0 0 18px;color:#567269;font-size:12px}.discovery-passport>span{display:flex;align-items:center;gap:7px}.discovery-passport b{font-size:16px;color:#234b40}.discovery-passport svg{color:#a37b2d}.island-start .start-shortcuts :is(a,button){font-size:13px;min-height:46px;background:#fffff0e8}
 .journey-atlas{box-shadow:0 12px 32px #214b3710;border-color:#d8e4d6}.atlas-heading .eyebrow{font-size:10px}.atlas-heading p{font-size:13px}.atlas-region-nav small{font-size:13px}
 .theme-grid{gap:18px}.theme-card{box-shadow:0 5px 18px #233e2f0b}.theme-info h3{letter-spacing:-.5px}.theme-card:active{transform:scale(.985)}
 .game-app:not(.sprint-app){background:radial-gradient(ellipse at 15% 0,#386755 0,transparent 55%),radial-gradient(ellipse at 100% 100%,#28574d,transparent 60%),#173e35;min-height:100dvh;color:#fff9e8}
@@ -24,13 +20,11 @@
 .game-app .modal{color:#243d39}.game-app .board-paused{z-index:3;color:#244c3a}
 @keyframes discovery-toast{0%{opacity:0;transform:translateY(8px) scale(.96)}18%,72%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
 @media(max-width:780px){
- .welcome-row{margin-bottom:14px}.welcome-row h1{font-size:27px}.welcome-row .eyebrow{font-size:10px}.collection-count{display:none}.discovery-passport{justify-content:space-between;gap:8px;margin-bottom:16px;font-size:11px}.discovery-passport b{font-size:15px}
- .island-start{min-height:0;padding:19px;gap:12px;border-radius:25px}.island-start .start-intro{min-height:82px;max-width:65%}.island-start .start-intro h2{font-size:32px;line-height:1.02;margin:8px 0}.island-start .start-intro .eyebrow{font-size:9px;line-height:1.4}.island-start .island-scene img{object-position:64% 35%}.island-start .island-scene:after{background:linear-gradient(90deg,#e9f4e9f2,#e9f4e98c 45%,transparent 85%)}
- .island-start .start-route{width:100%;max-width:none;padding:13px 15px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center}.island-start .start-route>.eyebrow,.island-start .start-route>h3,.island-start .start-route>p{grid-column:1}.island-start .start-route h3{font-size:21px;line-height:1.15;margin:3px 0}.island-start .start-route p{font-size:12px;margin:0}.island-start .start-route>.button{grid-column:2;grid-row:1/4;width:auto;min-height:51px;max-width:125px;font-size:13px;padding:12px;gap:6px}.island-start .start-route>small{grid-column:1/-1;margin-top:6px;font-size:11px;line-height:1.4}.island-start .start-shortcuts{gap:7px;padding:0}.island-start .start-shortcuts :is(a,button){font-size:11px;min-height:44px;flex-direction:row;padding:8px 5px;gap:4px}.island-start .start-shortcuts svg{width:16px}
+ .welcome-row{margin-bottom:14px}.welcome-row h1{font-size:27px}.welcome-row .eyebrow{font-size:10px}.collection-count{display:none}.discovery-passport{justify-content:space-between;gap:8px;margin-bottom:16px;font-size:11px}.discovery-passport b{font-size:15px}.island-start .start-shortcuts :is(a,button){font-size:11px;min-height:44px;flex-direction:row;padding:8px 5px;gap:4px}
  .atlas-heading{padding:18px}.atlas-heading h2{font-size:25px}.atlas-heading p{font-size:12px}.atlas-heading .eyebrow{font-size:9px}.atlas-adventure{height:360px}.atlas-region-nav small{font-size:12px}.node-stars small{font-size:9px}.atlas-play-dock small{font-size:9px}.atlas-play-dock p,.atlas-play-dock>div>span{font-size:12px}.atlas-scene-caption>span{font-size:8px}
  .game-app .board-panel{padding:9px;border-radius:22px}.game-app:not(.sprint-app) .targets-panel{background:transparent;border:0}.game-app .word-tag{font-size:12px;min-height:30px}.game-app:not(.sprint-app) .panel-heading .eyebrow{font-size:10px!important}.game-app .game-message{font-size:12px}.game-app .play-heading h1{font-size:24px}.game-app .play-heading .eyebrow{font-size:10px}.game-app .clue-list .clue-tag>div{font-size:12px}.game-app .clue-list .clue-tag small{font-size:10px}
 }
-@media(max-width:360px){.island-start .start-route{grid-template-columns:1fr}.island-start .start-route>.button{grid-column:1;grid-row:auto;width:100%;max-width:none}.island-start .start-shortcuts :is(a,button){flex-direction:column}}
+@media(max-width:360px){.island-start .start-shortcuts :is(a,button){flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.letter-grid span{transition:none}.letter-grid span.letter-selected{transform:none}.theme-card:active{transform:none}}
 
 .word-tag.found>div{text-decoration:line-through;text-decoration-thickness:1px}

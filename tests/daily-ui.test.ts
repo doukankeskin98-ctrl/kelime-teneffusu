@@ -118,7 +118,7 @@ describe('daily startup binds its initial attempt to the intended profile',()=>{
   const h=await app();try{h.start();await h.settle();h.switchOwner('bob',false);h.switchOwner('alice',false);h.gates[0]!.resolve(h.daily);await h.settle(false);assert.equal(nodes(h.tree).some(n=>n.type==='Solo'),false);assert.equal(h.find('DailyPage').props['busy'],false);}finally{h.close();}
  });
  it('cancels startup when navigating away and ignores a later result',async()=>{
-  const h=await app();try{h.start();await h.settle();const button=nodes(h.tree).find(n=>n.type==='button'&&text(n)==='Yolculuk')!;assert.ok(button);button.props['onClick']();await h.settle();assert.equal(h.calls[0].signal.aborted,true);h.gates[0]!.resolve(h.daily);await h.settle();assert.equal(nodes(h.tree).some(n=>n.type==='Solo'),false);assert.ok(h.find('Explore'));}finally{h.close();}
+  const h=await app();try{h.start();await h.settle();const button=nodes(h.tree).find(n=>n.type==='button'&&n.props?.['aria-label']==='Yolculuğa dön')!;assert.ok(button);button.props['onClick']();await h.settle();assert.equal(h.calls[0].signal.aborted,true);h.gates[0]!.resolve(h.daily);await h.settle();assert.equal(nodes(h.tree).some(n=>n.type==='Solo'),false);assert.ok(h.find('Explore'));}finally{h.close();}
  });
  it('refreshes the profile on daily back before a new launch uses the updated owner',async()=>{
   const h=await app();try{h.start();h.gates[0]!.resolve(h.daily);await h.settle();const reads=h.profileReads;h.setServerOwner('bob');h.find('Solo').props['onBack']();await h.settle();assert.equal(h.revision,1);assert.equal(h.profileReads,reads+1);assert.ok(h.find('DailyPage'));h.start();await h.settle();assert.equal(h.calls[1].data.expectedOwnerId,'bob');}finally{h.close();}

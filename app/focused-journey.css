@@ -1,16 +1,4 @@
 /* 0.44: one play action; journey details and earned items stay on demand. */
-.native-shell .mobile-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
-.journey-stage .stage-play{max-width:440px;margin-inline:auto;min-height:78px}
-.journey-stage .stage-play>span{font-size:28px;line-height:1.15}
-.journey-stage .stage-play small{display:block;font-size:14px;line-height:20px;margin-top:5px}
-.journey-stage .stage-chapter-copy{margin-bottom:16px}
-.journey-stage .stage-chapter-copy h2{font-size:23px;line-height:1.3}
-.journey-stage .stage-chapter-copy p{display:none}
-.journey-stage .journey-stage-dock{padding-bottom:16px}
-.journey-stage .stage-shortcuts{margin-top:20px}
-.journey-stage .journey-stage-space{flex:0 1 clamp(16px,3svh,28px);min-height:16px}
-.journey-stage .journey-stage-dock{margin-block:auto}
-.journey-stage .stage-map-button{background:#173e49;color:#fff6df;backdrop-filter:none}
 .journey-albums-link{margin:12px 0}
 .journey-albums .section-title{margin-top:10px}
 .journey-albums .discovery-albums{max-width:100%}
@@ -33,7 +21,7 @@
 .scenic-play .target-topic>span{font-size:12px;line-height:20px;font-weight:700;font-variant-numeric:tabular-nums;color:#e3eadb}
 .scenic-play .viewport-targets:has(.target-topic){border-radius:14px;background:#fffdf4;overflow:hidden}
 .scenic-play .target-rack,.game-app .scenic-play .target-rack{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 6px!important;padding:0 4px!important;border-radius:0 0 13px 13px}
-.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:auto;min-width:44px;max-width:100%;min-height:44px!important;height:auto;padding:0!important;font-size:18px!important;line-height:24px}
+.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{flex:0 0 auto;width:auto;min-width:44px;max-width:100%;min-height:44px!important;height:auto;padding:0!important;font-size:16px!important;line-height:21px}
 /* A veiled word keeps its slot width, so revealing it never reflows the rack. */
 .scenic-play .target-rack .word-tag.veiled-target,.game-app .scenic-play .target-rack .word-tag.veiled-target{min-width:max(44px,calc(var(--word-chars)*.64em + 4px))}
 .scenic-play .target-rack .word-tag>div{width:auto;max-width:100%}
@@ -54,11 +42,11 @@
 .target-letters>[data-target-letter]{position:relative}
 .target-letters>[data-target-letter]::after{content:'';position:absolute;left:0;right:0;top:55%;height:2px;background:currentColor;opacity:0;pointer-events:none}
 .word-tag.found:has(.target-letters),.word-tag.found:has(.target-letters)>div,.word-tag .part-found:has(.target-letters),.clue-slot.found>button{text-decoration:none!important}
-.word-tag.found [data-word-label],.word-tag .part-found{color:#617568!important}
+.word-tag.found [data-word-label],.word-tag .part-found{color:var(--berrak-ink-done,#68717e)!important}
 .word-tag.found [data-target-letter]::after,.part-found [data-target-letter]::after{opacity:1}
 .word-tag[data-word-arriving=true] [data-target-letter]::after{opacity:0}
-.word-tag[data-word-arriving=true] [data-word-label]{color:#183a31!important}
-.scenic-play .target-rack [data-word-label]{line-height:24px}
+.word-tag[data-word-arriving=true] [data-word-label]{color:var(--berrak-ink,#14233a)!important}
+.scenic-play .target-rack [data-word-label]{line-height:21px}
 .scenic-play .clue-targets{padding:4px 8px 0}
 .scenic-play .clue-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 5px}
 .scenic-play .clue-slot>button{min-height:44px;padding:3px 1px}
@@ -75,7 +63,8 @@
 .scenic-play .play-controls .turn-board>.turn-board-icon{width:27px;height:27px;flex:none}
 .scenic-play .game-settings-trigger:focus-visible,.scenic-play .turn-board:focus-visible{outline:3px solid #ffe4a3;outline-offset:3px}
 /* Fixed frame, independently scrolling rewards, always reachable actions. */
-.modal.game-dialog.scenic-outcome.scene-result[open]{display:flex;flex-direction:column;height:min(680px,calc(100svh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;min-height:0}
+.modal.game-dialog.arena-scoreboard{--outcome-max-height:780px}
+.modal.game-dialog.scenic-outcome.scene-result[open]{display:flex;flex-direction:column;height:min(var(--outcome-max-height,680px),calc(100svh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)))!important;min-height:0}
 .modal.game-dialog.scenic-outcome.scene-result>.modal-head{flex:0 0 68px;box-sizing:border-box}
 .modal.game-dialog.scenic-outcome.scene-result>.modal-content{flex:1 1 0;min-height:0;overflow-y:auto;padding-bottom:24px;scroll-padding-bottom:24px}
 .modal.game-dialog.scenic-outcome.scene-result>.modal-actions{position:static;flex:0 0 auto;margin-top:0}
@@ -135,7 +124,6 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 .arena-wait-alternative{width:100%;max-width:440px;margin:8px auto 16px;padding-top:12px;border-top:1px solid #d8e4d540}
 .arena-wait-alternative p{font-size:14px;line-height:1.5;color:#e2ebdf;margin-bottom:10px}
 .arena-room-actions .arena-wait-alternative>.button.secondary{color:#193e37;background:#fff6df;border-color:#b8c7ac;font-weight:750}
-button.native-stars{min-height:44px;border:0;cursor:pointer}
 .reward-total{display:flex;align-items:center;justify-content:center;gap:12px;color:#ffe0a0;font-size:38px;margin:8px 0 18px}
 .reward-info p,.reward-info dd{font-size:15px;line-height:1.6;color:#e3ebdf}
 .reward-info dl{margin:20px 0}.reward-info dl>div{margin-bottom:16px}.reward-info dt{font-weight:750;color:#fff6de;margin-bottom:4px}.reward-info dd{margin:0}
@@ -159,17 +147,11 @@ button.native-stars{min-height:44px;border:0;cursor:pointer}
 @media(max-height:600px) and (orientation:portrait){
  .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 6px!important;padding:0 4px!important}
  .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:44px!important;font-size:15px!important;line-height:20px}
- .quiet-play[data-dense-board] .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){margin-top:0!important}
- .quiet-play[data-dense-board] .play-columns{margin-top:2px!important}
- .quiet-play[data-dense-board] .targets-panel{margin-bottom:4px!important}
+ .quiet-play[data-dense-board] .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){margin-top:var(--hud-gap,0)!important}
+ .quiet-play[data-dense-board] .play-columns{margin-top:var(--play-gap,2px)!important}
+ .quiet-play[data-dense-board] .targets-panel{margin-bottom:var(--rack-gap,4px)!important}
  .quiet-play[data-dense-board] .target-topic{padding-block:2px}
- /* Short legacy boards share one header: number above topic, settings alongside.
-    This returns the former 28px topic band to the board without shrinking hits. */
- .quiet-play[data-dense-board] .play-title{align-self:flex-start;padding-left:0;text-align:left}
- .quiet-play[data-dense-board] .play-heading{animation-name:quiet-heading-enter}
- .quiet-play[data-dense-board] .play-chapter-number{display:block;font-size:12px;line-height:16px;text-align:left}
- .quiet-play[data-dense-board] .target-topic{position:absolute;top:19px;left:8px;right:64px;height:24px;padding:0;background:transparent;border-radius:0}
- .quiet-play[data-dense-board] .target-topic h1{font-size:17px;line-height:22px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 }
 @keyframes quiet-heading-enter{from{opacity:0}to{opacity:1}}
 

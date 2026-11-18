@@ -238,7 +238,7 @@ describe('achievement loop uses real Solo results and compact target access',()=
   const before=JSON.stringify(p),calls:any[]=[],h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{
    h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-3'},progress:p,onProgress(){},onBack(){},onMap(){},onNext:(c:any)=>calls.push(c)});assert.equal(h.find('PlayLayout').props['chapterNumber'],3);const layout=h.find('PlayLayout');assert.equal(layout.props['inlineTargets'],true);assert.equal(walk(layout.props['aside']).some(n=>n.type==='WordList'),false);
    for(const stroke of layout.props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();const result=h.find('VictorySummary').props;assert.equal(result['goal'].chapter.id,'uzay-3');assert.equal(result['goal'].state.pieces,3);assert.equal(result['rewards'].filter((r:any)=>r.kind==='piece').length,1);assert.equal(result['rewards'].filter((r:any)=>r.kind==='world').length,1);
-   const next=h.find('NextJourneyPreview').props['goal'];walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Sonraki bölüm')!.props['onClick']();assert.equal(calls[0].journey,next.chapter.id);walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).includes('Bir daha oyna'))!.props['onClick']();assert.equal(calls[1].journey,'uzay-3');assert.equal(calls[1].practice,true);assert.equal(JSON.stringify(p),before);
+   const next=h.find('NextJourneyPreview').props['goal'];walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Sonraki bölüm')!.props['onClick']();assert.equal(calls[0].journey,next.chapter.id);walk(h.find('Modal')).find(n=>n.type==='button'&&n.props['aria-label']==='Bir daha oyna')!.props['onClick']();assert.equal(calls[1].journey,'uzay-3');assert.equal(calls[1].practice,true);assert.equal(JSON.stringify(p),before);
   }finally{h.close();}
  });
  it('never shows a standard Hababam best on a completed classic board',async()=>{
@@ -316,8 +316,8 @@ describe('actual numbered Solo completes, advances and replays without new award
    for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}
    h.expire();await h.settle();assert.equal(p.saves['route:uzay-1']?.complete,true);assert.equal(p.saves['route:uzay-2'],undefined);
    assert.equal(h.find('JourneyResult').props['before'].state.pieces,0);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
-   const next=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).startsWith('Sonraki bölüm'))!;assert.ok(next);assert.match(text(next),/Gezegen komşuları/);next.props['onClick']();assert.equal(calls[0].journey,'uzay-2');assert.equal(calls[0].campaign,true);
-   const replay=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n).includes('Bir daha oyna'))!;replay.props['onClick']();assert.equal(calls[1].journey,'uzay-1');assert.equal(calls[1].practice,true);
+   const next=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Bölüm 2')!;assert.ok(next);assert.match(next.props['aria-label'],/Gezegen komşuları/);next.props['onClick']();assert.equal(calls[0].journey,'uzay-2');assert.equal(calls[0].campaign,true);
+   const replay=walk(h.find('Modal')).find(n=>n.type==='button'&&n.props['aria-label']==='Bir daha oyna')!;replay.props['onClick']();assert.equal(calls[1].journey,'uzay-1');assert.equal(calls[1].practice,true);
   }finally{h.close();}
  });
  it('uses saved cells on resume and does not award an existing piece on replay',async()=>{
@@ -447,7 +447,7 @@ describe('living story sequential interaction, hints, replay and navigation',()=
   let details=0;const calls:any[]=[],props={progress:p,onPlay:(c:any)=>calls.push(c),onDetails(){details++;},onExplore(){},onViewChange:(value:'stories'|'journey')=>selected=value},h=view('components/game/JourneyHome.tsx',modules);
   try{h.start('JourneyHome',{...props,initialView:'stories'});assert.equal(walk(h.tree).some(n=>n.type==='Modal'),false);walk(h.tree).find(n=>n.props?.['className']==='stage-play')!.props['onClick']();assert.equal(calls[0].journey,story.id);
    walk(h.tree).find(n=>n.props?.['aria-label']==='Yolculuğum: bölümler ve albümler')!.props['onClick']();assert.equal(details,1);h.paint();assert.equal(selected,'stories');
-   walk(h.tree).find(n=>n.props?.['className']==='stage-milestone')!.props['onClick']();assert.equal(selected,'journey');
+   walk(h.tree).find(n=>n.type==='button'&&text(n)==='Bölüm yolculuğuna dön')!.props['onClick']();assert.equal(selected,'journey');
   }finally{h.close();}
  });
 });
@@ -506,7 +506,7 @@ describe('clear phone targets and persisted fast play',()=>{
  });
  it('applies an asynchronously restored home preference without losing progress or opening a game',()=>{
   const p=familiarProgress(),h=view('components/game/JourneyHome.tsx',modules);let plays=0;const props={progress:p,onPlay(){plays++;},onExplore(){},initialView:'journey'};
-  try{h.start('JourneyHome',props);h.update('JourneyHome',{...props,initialView:'stories'});assert.equal(walk(h.tree).some(n=>n.type==='Modal'),false);assert.match(text(h.tree),/HİKÂYELER/);assert.equal(plays,0);assert.equal(p.tutorialDone,false);}finally{h.close();}
+  try{h.start('JourneyHome',props);h.update('JourneyHome',{...props,initialView:'stories'});assert.equal(walk(h.tree).some(n=>n.type==='Modal'),false);assert.match(text(h.tree),/Hikâyeler/);assert.equal(plays,0);assert.equal(p.tutorialDone,false);}finally{h.close();}
  });
 });
 
@@ -695,7 +695,7 @@ it('campaign replay does not reoffer a bonus, while the last world bonus has no 
   try{
    h.start('Solo',{config:{themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(replay?{practice:true}:{})},progress:p,onProgress:(fn:(p:progress.Progress)=>progress.Progress)=>p=fn(p),onBack(){},onMap(){},onNext(){},onBonus:(...args:[string,unknown])=>offers.push(args)});
    for(const s of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](s.a,s.b);await h.settle();}h.expire();await h.settle();
-   const modal=h.find('Modal'),start=walk(modal).find(n=>n.type==='button'&&text(n).startsWith('Bonus turuna geç'));
+   const modal=h.find('Modal'),start=walk(modal).find(n=>n.type==='button'&&text(n)==='Bonus turu');
    if(replay){assert.equal(start,undefined);assert.equal(offers.length,0);}else{assert(start);start.props['onClick']();assert.equal(offers.length,1);assert.equal(offers[0]![1],null);assert(p.saves['route:'+item.chapter.id]!.complete);}
   }finally{h.close();}
  }
