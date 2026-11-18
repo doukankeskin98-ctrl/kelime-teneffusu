@@ -75,8 +75,8 @@ try{
    const focus=await page.evaluate(`({tag:document.activeElement.tagName,label:document.activeElement.getAttribute('aria-label'),outline:getComputedStyle(document.activeElement).outlineStyle})`);
    assert.equal(focus.tag,'BUTTON');assert.notEqual(focus.outline,'none','Keyboard controls keep their visible focus');
   }
-  await page.evaluate(`Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('Sonraki bölüm')).click()`);await sleep(500);const next=await capture('next',width);
-  if(!before){assert.equal(next.guide,null);assert.match(next.text,/Bölüm 2/);}
+  await page.evaluate(`document.querySelector('dialog[open] .modal-actions .primary').click()`);await sleep(500);const next=await capture('next',width);
+  if(!before){assert.equal(next.guide,null);assert.match(next.text,/Bölüm\s+2\b/iu);}
   report.push({width,height,home,start,hint,miss,accepted,firstWord,finish,next});
  }
  writeFileSync(path.join(out,`${before?'before':'after'}-first-session.json`),JSON.stringify({report,errors:page.errors},null,2));console.log(JSON.stringify(report.map(r=>({width:r.width,startGuide:r.start.guide,afterFirst:r.firstWord.guide,board:r.firstWord.board,nextGuide:r.next.guide,overflow:r.start.overflow}))));
