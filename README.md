@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-0.57.0 · Berrak. Yolculuk, tahta, bölüm sonu ve Arena aynı görsel düzeni kullanır. [Sürüm notu](docs/release-0.57.0.md).
+0.57.1 · Berrak. Parça adı bölüm sonunda görünür kalır. Uzun tahtalar dar telefonlarda daha geniştir. Bonus turu, ayarlar ve albüm aynı temayı kullanır. [Sürüm notu](docs/release-0.57.1.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 

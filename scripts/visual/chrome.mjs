@@ -69,8 +69,12 @@ export async function launch({port = 9333} = {}) {
       }
       await call('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
     },
-    async viewport(width, height, scale = 2) {
+    async reducedMotion(enabled) {
+      await call('Emulation.setEmulatedMedia', {features: enabled ? [{name: 'prefers-reduced-motion', value: 'reduce'}] : []});
+    },
+    async viewport(width, height, scale = 2, insets) {
       await call('Emulation.setDeviceMetricsOverride', {width, height, deviceScaleFactor: scale, mobile: true});
+      if (insets) await call('Emulation.setSafeAreaInsetsOverride', {insets});
       await call('Emulation.setTouchEmulationEnabled', {enabled: true, maxTouchPoints: 5});
     },
     async goto(url, wait = 1000) { await call('Page.navigate', {url}); await sleep(wait); },
