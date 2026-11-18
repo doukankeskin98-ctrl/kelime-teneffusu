@@ -171,6 +171,9 @@ dialog.modal.game-dialog.game-tools-modal .play-tools-sheet>button,dialog.modal.
  color:var(--berrak-ink);background:var(--berrak-wash);border:1px solid var(--berrak-line);border-radius:14px
 }
 dialog.modal.game-dialog :is(.support-kinds,.chapter-source-switch,.palette-options) button[aria-pressed=true],dialog.modal.game-dialog.game-tools-modal .play-tools-sheet>button[aria-pressed=true]{background:var(--berrak-ui);color:white}
+dialog.modal.game-dialog :is(.support-report .button.primary,.account-danger .button.danger):disabled{
+ color:var(--berrak-muted);background:var(--berrak-wash);opacity:1;box-shadow:none;
+}
 dialog.modal.game-dialog .modal-actions{border-color:var(--berrak-line)}
 dialog.modal.game-dialog.game-tools-modal :is(.muted,.tools-context,.support-availability,.support-technical,.support-status,.guide-reassurance,.reward-info dd,.bonus-unlock-note){color:var(--berrak-muted)}
 dialog.modal.game-dialog.game-tools-modal :is(.text-button,.game-disclosure-trigger svg,.free-theme-list svg,.support-back,.support-preview-toggle,.journey-map-back){color:var(--berrak-ui-dark)}

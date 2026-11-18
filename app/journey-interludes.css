@@ -22,7 +22,7 @@
 .world-welcome-dock{margin:48px auto 0;width:min(100%,440px)}.world-welcome-dock h2{font-size:23px;line-height:1.25;color:#fff9e8;margin:0 0 8px}.world-welcome-dock p{color:#e0ecdf;margin:0 0 22px;font-size:15px}.world-welcome-dock .stage-play{width:100%;justify-content:center}.world-welcome-dock .stage-play>span{flex:1}.world-welcome-dock>.text-button{color:#fff0c3;min-height:48px;margin-top:10px}
 @keyframes world-arrive{from{transform:scale(1.035)}to{transform:scale(1)}}
 @keyframes world-copy-arrive{from{transform:translateY(14px)}to{transform:translateY(0)}}
-.mechanic-guide .modal-content>p{font-size:16px;line-height:1.55;color:#f1f4e9;margin:18px 0}.mechanic-example{margin:22px 0 8px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;border-block:1px solid #d7e9d33d;color:#fff6df}.mechanic-example>svg{color:#f7d893}.mechanic-example span{font-size:16px;line-height:1.4}.mechanic-example b{font-size:23px;color:#ffe2a0}.mechanic-guide .guide-reassurance{color:#dae7db;font-size:14px}
+.mechanic-guide .modal-content>p{font-size:16px;line-height:1.55;color:var(--berrak-ink);margin:18px 0}.mechanic-example{margin:22px 0 8px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;border-block:1px solid var(--berrak-line);color:var(--berrak-ink)}.mechanic-example>svg{color:var(--berrak-ui-dark)}.mechanic-example span{font-size:16px;line-height:1.4}.mechanic-example b{font-size:23px;color:var(--berrak-ui-dark)}.mechanic-guide .guide-reassurance{color:var(--berrak-muted);font-size:14px}
 .journey-side-sheet[open]{display:flex;flex-direction:column;overflow:hidden}.journey-side-sheet>.modal-content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}.journey-side-sheet>.modal-actions{flex:none}.journey-side-sheet .word-trail>header{display:none}
 .word-trail{color:#fff6df}.word-trail>header h2{font-size:24px;line-height:1.2;letter-spacing:-.02em;color:inherit;margin:0 0 8px}.word-trail>header p{font-size:14px;line-height:1.5;color:#d8e6db;margin:0 0 24px}
 .word-trail-summary{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}.word-trail-summary b{font-size:19px;color:#fbe0a3;font-variant-numeric:tabular-nums}.word-trail-summary span{font-size:14px;color:#e0e9db}
@@ -70,13 +70,13 @@ html[data-reduce-motion=true] .world-welcome-art>.scene-art,html[data-reduce-mot
 .settings-sheet .sound-options>small,.settings-sheet .sound-slider-row{color:#d3e4db}.settings-sheet .sound-slider{accent-color:#f2d999}.settings-sheet .sound-slider:focus-visible{outline-color:#fff0bc}
 .settings-sheet .settings-help-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}
 .settings-sheet .settings-help-actions .button{font-size:14px;min-height:48px;padding:10px 8px}
-.settings-sheet :is(p,small,label,.muted,.privacy-copy h3,.support-back,.support-technical,.support-availability){color:#e1ece2}
-.settings-sheet .privacy-copy h3{font-size:18px;color:#ffe2a2;margin-top:22px}
+.settings-sheet :is(p,small,label,.muted,.privacy-copy h3,.support-back,.support-technical,.support-availability){color:var(--berrak-ink)}
+.settings-sheet .privacy-copy h3{font-size:18px;color:var(--berrak-ink);margin-top:22px}
 .settings-sheet :is(input:not([type=range]):not([type=checkbox]),select,textarea){background:#f8f7ee;color:#193c35;border-color:#b3c6bc;font-size:16px}
 .settings-sheet :is(input,textarea)::placeholder{color:#556b62}
 .settings-sheet .palette-options button{background:#254b52;border-color:#afc8bd60;color:#fff5df}.settings-sheet .palette-options button.selected{border-color:#f2d999;background:#355b59}.settings-sheet .palette-options button:disabled{opacity:.7}
-.settings-sheet .text-button,.help-sheet .text-button{color:#ffe2a2}.settings-sheet button:focus-visible,.settings-sheet summary:focus-visible,.help-sheet summary:focus-visible{outline:2px solid #fff0bc;outline-offset:3px}
-.help-sheet :is(p,li){font-size:15px;line-height:1.6;color:#e1ece2}.help-sheet .settings-group{border-block:1px solid #b6d2ca40;padding-bottom:8px}
+.settings-sheet .text-button,.help-sheet .text-button{color:var(--berrak-ui-dark)}.settings-sheet button:focus-visible,.settings-sheet summary:focus-visible,.help-sheet summary:focus-visible{outline:2px solid var(--berrak-ui-dark);outline-offset:3px}
+.help-sheet :is(p,li){font-size:15px;line-height:1.6;color:var(--berrak-ink)}.help-sheet .settings-group{border-block:1px solid #b6d2ca40;padding-bottom:8px}
 .scene-result .modal-actions>.result-bonus{display:flex;justify-content:center;width:100%;font-size:14px;opacity:1;color:#ffe2a2;min-height:44px;margin-top:6px}
 
 .native-shell .settings-sheet .setting-row small{color:#d3e4db;font-size:13px;line-height:1.45}

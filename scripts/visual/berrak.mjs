@@ -1,4 +1,5 @@
 // Render the four reference states using the production client and an isolated synthetic save.
+import {measureDialogText} from './dialog-contrast.mjs';
 import {verifyResultLayout} from './result-layout.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
@@ -9,6 +10,8 @@ import {launch,sleep} from './chrome.mjs';
 
 const out=path.resolve(process.env.EVIDENCE_DIR??'../world-review.nosync/release-0570/screens');
 const surfaceCheck=process.argv.includes('--surfaces');
+const readabilityOnly=process.argv.includes('--readability-only');
+let signedInFixture=false;
 const baseline=process.argv.includes('--baseline');
 const root=path.resolve(process.env.BUILD_DIR??'dist-mobile'),types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.woff2':'font/woff2','.svg':'image/svg+xml'};
 mkdirSync(out,{recursive:true});
@@ -17,6 +20,9 @@ const server=createServer((req,res)=>{
  const url=new URL(req.url,'http://localhost');
  if(url.pathname==='/__test_seed'){res.writeHead(200,{'Content-Type':'text/html'});res.end('<!doctype html><title>Test save</title><main id="seed"></main>');return;}
  if(url.pathname==='/api/chapters'&&url.searchParams.get('collection')==='releases'){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(fixture.catalogue));return;}
+ if(signedInFixture&&url.pathname==='/api/game'&&!url.searchParams.has('action')){
+  res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(fixture.guestAccount));return;
+ }
  if(url.pathname.startsWith('/api/')){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({authenticated:false,available:false,entries:[],rankings:[]}));return;}
  let f=path.resolve(root,'.'+url.pathname);
  if(!f.startsWith(root+path.sep)||!existsSync(f)||statSync(f).isDirectory())f=path.join(root,'index.html');
@@ -32,7 +38,7 @@ async function waitFor(expression){
  for(let i=0;i<75;i++){if(await page.evaluate(expression))return;await sleep(80);}
  throw new Error(expression+' '+await page.evaluate('document.body.innerText.slice(0,180)'));
 }
-async function home(progress=fixture.progress){await page.goto(url+'/__test_seed',100);await waitFor("!!document.getElementById('seed')");await page.evaluate(`localStorage.setItem('kelime-teneffusu-v2',${JSON.stringify(JSON.stringify(progress))})`);await page.goto(url,350);await waitFor("!!document.querySelector('.berrak-landing')&&!document.getElementById('native-boot')");}
+async function home(progress=fixture.progress){await page.goto(url+'/__test_seed',100);await waitFor("!!document.getElementById('seed')");await page.evaluate(`localStorage.clear();sessionStorage.clear();localStorage.setItem('kelime-teneffusu-v2',${JSON.stringify(JSON.stringify(progress))})`);await page.goto(url,350);await waitFor("!!document.querySelector('.berrak-landing')&&!document.getElementById('native-boot')");}
 async function shot(width,name){
  if(name==='support')await waitFor("!!document.querySelector('.support-kinds')");
  assert.equal(await page.evaluate("!!document.querySelector('#native-boot')"),false,name+' game boot overlay');
@@ -55,6 +61,70 @@ async function draw(word,hold,shape=fixture.shape){
  const xy=([row,col])=>[box.x+(col+.5)*box.width/shape.columns,box.y+(row+.5)*box.height/shape.rows];
  const a=xy(word.a),b=xy(word.b);
  await page.touch(Array.from({length:12},(_,i)=>[a[0]+(b[0]-a[0])*i/11,a[1]+(b[1]-a[1])*i/11]),hold);
+}
+async function verifyReadableDialogs(width){
+ async function inspect(name,title){
+  await waitFor("document.querySelector('dialog[open] h2')?.textContent==="+JSON.stringify(title));
+  if(name.startsWith('privacy'))await waitFor("!!document.querySelector('dialog[open] .privacy-copy p')");
+  if(name.startsWith('support'))await waitFor("!!document.querySelector('dialog[open] #support-detail')");
+  await waitFor("!document.querySelector('dialog[open] .screen-load-state')");
+  await page.evaluate('document.fonts.ready');await sleep(240);
+  await shot(width,name);
+  const rows=await measureDialogText(page);
+  assert(rows.length>=4,name+' missing dialog text');
+  writeFileSync(path.join(out,width+'-'+name+'-contrast.json'),JSON.stringify(rows,null,2));
+  return rows.filter(row=>!row.pass).map(row=>name+': '+row.text+' ('+row.ratio+')');
+ }
+ const failures=[];
+ for(const [name,title] of [['privacy','Gizlilik ve hesap'],['support','Destek']]){
+  await home();await click('[aria-label="Ayarları aç"]');await textButton(title);
+  failures.push(...await inspect(name,title));
+  if(name==='support'){
+   await page.evaluate(`(()=>{const field=document.querySelector('#support-detail');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(field,'Deneme sırasında ipucu düğmesine dokundum.');field.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+   await click('.support-preview-toggle');
+   await waitFor("!document.querySelector('.support-report .primary').disabled");
+   failures.push(...await inspect('support-preview',title));
+  }
+ }
+ for(const [name,button,title] of [['riddle','İpucu Avı','Tanımı çöz, kelimeyi bul'],['mystery','Gizli Tema','Ortak bağlantıyı bul']]){
+  await home();await click('[aria-label="Diğer oyunlar"]');await click('.extra-games-details summary');await textButton(button);
+  if(name==='riddle')await click('.riddle-shelf .button');
+  failures.push(...await inspect(name,title));
+ }
+ await home(fixture.concealedProgress);await click('.stage-play');
+ failures.push(...await inspect('concealed','Saklı kelimeyi keşfet'));
+ await home();signedInFixture=true;
+ try{await click('[aria-label="Günlük bulmaca"]');
+  await waitFor("document.querySelector('.daily-studio-copy button')?.textContent.includes('Günün keşfine başla')");
+  await textButton('Günün keşfine başla');
+  failures.push(...await inspect('daily-guide','Bugünün ortak tahtası'));
+  await home();await click('[aria-label="Ayarları aç"]');await textButton('Gizlilik ve hesap');
+  await waitFor("!!document.querySelector('.account-danger button[aria-expanded]')");
+  await click('.account-danger button[aria-expanded]');
+  failures.push(...await inspect('privacy-account','Gizlilik ve hesap'));
+ }finally{signedInFixture=false;}
+ if(!baseline)assert.deepEqual(failures,[],'Dialog text contrast');
+}
+async function verifyChapterTransitions(width){
+ for(const {number,seed,shape,word} of fixture.finishes){
+  await home(seed);await click('.stage-play');
+  await waitFor("!!document.querySelector('.letter-board')");await sleep(400);
+  await draw(word,undefined,shape);
+  await waitFor("!!document.querySelector('dialog[open] .result-continue')");await sleep(950);
+  await shot(width,'chapter-'+number+'-result');
+  if(number===6){
+   assert.match(await page.evaluate("document.querySelector('.result-continue').textContent"),/Bonus turu/i);
+   assert.equal(await page.evaluate("document.querySelector('dialog[open] h2').textContent"),'Dünya tamam!');
+   await click('.result-bonus');await waitFor("!!document.querySelector('.world-arrival')");
+   const welcome=await page.evaluate("document.querySelector('.world-arrival').innerText");
+   assert.match(welcome,/Anadolu Patikası/i);if(!baseline)assert.match(welcome,/Yeni dünya!/iu);
+   await shot(width,'chapter-7-arrival');
+  }else{
+   if(!baseline)assert.equal(await page.evaluate("document.querySelector('dialog[open] h2').textContent"),'Tebrikler!');
+   assert.match(await page.evaluate("document.querySelector('.result-unlock-notice').textContent"),/açıldı/);
+   assert.equal(await page.evaluate("document.querySelector('.result-continue').textContent"),'Bölüm '+(number+1));
+  }
+ }
 }
 async function verifySideScreens(width){
  const bonus=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/rhythm-fixture.ts'],{encoding:'utf8'})).bonus;
@@ -112,7 +182,9 @@ try{
  for(const [w,h] of sizes){
   if(surfaceCheck){
    await page.viewport(w,h,2,{top:w===320?20:59,bottom:w===320?0:34,left:0,right:0});
-   await verifySideScreens(w);continue;
+   await verifyReadableDialogs(w);
+   if(!readabilityOnly){await verifyChapterTransitions(w);await verifySideScreens(w);}
+   continue;
   }
   await page.viewport(w,h,1);await home();await shot(w,'home');
   if(w===393){

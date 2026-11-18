@@ -26,6 +26,12 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm mobile:build
+      - name: Check mobile sheet contrast, chapter transitions and first touch
+        run: |
+          node scripts/visual/berrak.mjs --surfaces
+          node scripts/visual/first-session.mjs
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/dialog-contrast
       - run: pnpm exec cap copy ios
       - run: pnpm mobile:check
       - run: pnpm build
