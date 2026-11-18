@@ -7,7 +7,7 @@
 .scenic-play .game-message{position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;max-height:none!important;clip-path:inset(50%);overflow:hidden!important;white-space:nowrap}
 .scenic-play .play-hud{position:relative}
 .scenic-play .game-message.has-notice,.scenic-play .game-message.is-guidance{position:absolute!important;z-index:3;left:0;right:0;top:0;bottom:auto;width:100%!important;height:100%!important;min-height:28px!important;display:flex;align-items:center;justify-content:center;margin:0!important;padding:2px 8px!important;transform:none;clip-path:none!important;overflow:visible!important;white-space:normal;background:#163e38;color:#fffdf2;border-radius:9px;font-size:11px;line-height:14px;text-align:center;pointer-events:none}
-.scenic-play .target-rack,.game-app .scenic-play .target-rack{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-content:start!important;gap:0 6px!important;background:#fffdf4!important;padding:4px 8px!important;border:0!important;border-radius:14px;box-shadow:none!important}
+.scenic-play .target-rack,.game-app .scenic-play .target-rack{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-content:start!important;gap:0 6px!important;background:var(--berrak-surface,#fff)!important;padding:4px 8px!important;border:0!important;border-radius:14px;box-shadow:none!important}
 .scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px!important;height:44px;padding:2px!important;margin:0;border:0;background:transparent!important;box-shadow:none!important;border-radius:8px!important;color:#183a31;font-size:17px!important;line-height:20px;font-weight:800;letter-spacing:0;white-space:normal;text-align:center;gap:0}
 .scenic-play .target-rack .word-tag>div{width:100%;min-width:0;font-size:inherit;line-height:inherit;overflow-wrap:anywhere}
 .scenic-play .target-rack .word-state,.scenic-play .target-rack .word-tag>div>small{display:none}
@@ -38,13 +38,13 @@
 @media(max-width:1100px) and (orientation:portrait){
  .scenic-play .play-heading{height:58px;flex:0 0 58px;min-height:58px;overflow:visible}
  .scenic-play .play-heading h1{display:block!important;-webkit-line-clamp:unset;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
- .scenic-play .play-hud{margin-top:4px!important}
+ .scenic-play .play-hud{margin-top:var(--hud-gap,4px)!important}
  .scenic-play .play-hud .solo-hud,.game-app .scenic-play .play-hud .solo-hud{height:28px;min-height:28px;padding:2px 6px;background:#123b39db;border-radius:9px}
  .scenic-play .solo-found>b,.game-app .scenic-play .solo-found>b{font-size:18px;line-height:22px}
  .scenic-play .solo-found>span{font-size:10px;line-height:12px;white-space:nowrap}
  .scenic-play .solo-star-goal{font-size:13px;padding:0 2px}
- .scenic-play .play-columns{margin-top:6px!important}
- .scenic-play .targets-panel,.game-app .scenic-play .targets-panel{margin-bottom:6px!important}
+ .scenic-play .play-columns{margin-top:var(--play-gap,6px)!important}
+ .scenic-play .targets-panel,.game-app .scenic-play .targets-panel{margin-bottom:var(--rack-gap,6px)!important}
  .scenic-play .board-panel,.game-app .scenic-play .board-panel{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
  .scenic-play .board-scroll{padding:0!important}
  .scenic-play .board-stage{align-items:start!important;align-content:start!important;margin-top:0!important}

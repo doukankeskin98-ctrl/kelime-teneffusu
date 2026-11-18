@@ -23,7 +23,7 @@
 .scenic-play .word-tag.found{animation:none!important}
 .scenic-play .play-controls .journey-skip-reward{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;height:44px;padding:0 12px;white-space:nowrap;background:#f6d778;border-radius:24px;box-shadow:0 2px 0 #70582040}
 .play-comfort-settings{border-top:1px solid #dce4d5;margin-top:12px;padding-top:4px}
-.stage-trail-caption{display:block;text-align:center;font-size:11px;line-height:16px;color:#e0e5d5;margin-top:14px}.stage-trail-caption+.stage-trail{margin-top:7px}
+.stage-trail-caption{display:block;text-align:center;font-size:11px;line-height:16px;color:#e0e5d5;margin-top:14px}
 
 @media(max-width:1100px) and (orientation:portrait){
  .scenic-play .play-heading{height:52px;flex:0 0 52px;overflow:hidden}
@@ -67,11 +67,8 @@ html[data-reduce-motion=true] .app-shell button,html[data-reduce-motion=true] .g
 }
 .native-scene .main-content>.game-notices:not(:empty){position:fixed;top:max(58px,env(safe-area-inset-top));left:12px;right:12px;z-index:90;max-height:25svh;overflow:auto;background:#fff9e9;border-radius:12px;box-shadow:0 6px 20px #102e3b30}
 @media(max-width:759px) and (max-height:700px){
- .journey-stage,.arena-stage{min-height:calc(100svh - 150px - env(safe-area-inset-bottom,0px))}
- .journey-stage-title h1{font-size:28px}.journey-stage-title{padding-top:0}.journey-stage-space{min-height:10px}
- .stage-chapter-copy{margin-bottom:8px}.stage-chapter-copy h2{font-size:22px;margin-top:4px}
- .stage-play{min-height:60px;padding-top:10px;padding-bottom:10px}.stage-trail{margin:14px 2px 5px}
- .stage-shortcuts{margin-top:4px}.stage-milestone{min-height:32px}
+ .arena-stage{min-height:calc(100svh - 150px - env(safe-area-inset-bottom,0px))}
+ .stage-play{min-height:60px;padding-top:10px;padding-bottom:10px}.stage-milestone{min-height:32px}
 }
 
 .dismissible-notice{display:flex;align-items:center;gap:8px;margin:0!important}.dismissible-notice>span{flex:1}.dismissible-notice .text-button{flex-shrink:0;padding:4px;min-width:44px}

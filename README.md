@@ -1,6 +1,6 @@
 # Kelime Teneffüsü
 
-0.56.2 · Küçük telefonlarda ilk kelimeden sonra tahta yerinde kalır. Yeni çizimin ilk harfi hemen görünür. Bölümün sonunda kelime çizgileri sonuç açılmadan önce kısa süre manzarada kalır.
+0.57.0 · Berrak. Yolculuk, tahta, bölüm sonu ve Arena aynı görsel düzeni kullanır. [Sürüm notu](docs/release-0.57.0.md).
 
 ## 0.49.0 · Tahtaya daha fazla alan
 

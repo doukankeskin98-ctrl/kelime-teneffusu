@@ -1,10 +1,10 @@
 'use client';
 import {useEffect,useMemo,useRef,useState,type Dispatch,type SetStateAction} from 'react';
-import {ArrowRight,Play,RefreshCw,Settings,Sparkles} from 'lucide-react';
+import {Grid3X3,Play,RefreshCw,Settings,Sparkles} from 'lucide-react';
 import {presentationBoard} from '@/lib/game/journey-presentation';
 import {BONUS_DURATION,BONUS_WORDS,advanceBonus,bonusBoard,cleanBonusSave,freshBonus,mergeBonusSave,selectBonus,type BonusSave} from '@/lib/game/journey-bonus';
 import {EXPEDITIONS,expeditionTheme} from '@/lib/game/discovery';
-import type {Progress} from '@/lib/game/progress';
+import {collectionStats,type Progress} from '@/lib/game/progress';
 import type {Cell} from '@/lib/game/engine';
 import {sceneForRoute} from '@/lib/game/scene';
 import {gameIsActive} from '@/lib/platform/runtime';
@@ -12,7 +12,7 @@ import {observeGameActivity} from '@/lib/platform/activity';
 import {GameToolsSheet,Modal,PlayLayout,useChime} from './common';
 import {useResultPresentation} from './useResultPresentation';
 
-export function BonusRound({worldId,progress,onProgress,onBack,onContinue}:{worldId:string;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void;onContinue:()=>void}){
+export function BonusRound({worldId,progress,onProgress,onBack,onHome,onContinue}:{worldId:string;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void;onHome?:()=>void;onContinue:()=>void}){
  const world=EXPEDITIONS.find(w=>w.id===worldId)!,word=BONUS_WORDS[worldId]!,scene=sceneForRoute(worldId,expeditionTheme(world));
  const {canonicalBoard,board}=useMemo(()=>{const canonicalBoard=bonusBoard(worldId);return {canonicalBoard,board:presentationBoard(canonicalBoard,'bonus:'+worldId)};},[worldId]);
  const [save,setSave]=useState(()=>{const old=cleanBonusSave(worldId,progress.bonuses?.[worldId]);return old&&!old.finished?old:freshBonus((old?.attempt??0)+1,old?.best??0);});
@@ -44,6 +44,23 @@ export function BonusRound({worldId,progress,onProgress,onBack,onContinue}:{worl
  return <><div className={"bonus-session"+(ready?" is-ready":"")}><PlayLayout headerAction={<button className="icon-button game-settings-trigger" aria-label="Ayarlar" aria-haspopup="dialog" onClick={openTools}><Settings aria-hidden="true"/></button>} scene={scene} focused effect={ready?readiness:undefined} inputBlocked={ready} inputStatus="Başlamaya hazır" title="Bonus turu" kicker={world.title} onBack={back} board={board} strokes={strokes} wordListKey={'bonus:'+worldId+':'+save.attempt} paused={paused||help||tools} readOnly={save.finished} reviewStatus="Bonus tamamlandı" zoom={false} onCommit={commit} preview={preview} onPreview={setPreview} onSelectLetter={depth=>chime('letter',depth)} onResume={!help&&!tools?resume:undefined} departing={result.departing&&!review} celebrating={save.finished&&result.ready&&!review&&!help&&!tools} aside={<></>} footer={<div className="play-controls bonus-controls">{save.finished&&<button className="button primary" onClick={()=>{result.skip();setReview(false);}}>Sonucu göster</button>}</div>}><div className="bonus-dashboard"><div className="bonus-target"><small>Her yerde bu kelimeyi bul</small><b data-word-label>{word}</b></div><span className="bonus-landing" data-bonus-sink aria-hidden="true"><Sparkles/></span><div className={seconds<=10?'bonus-dial urgent':'bonus-dial'} role="timer" aria-label={`${seconds} saniye kaldı`}><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle className="bonus-time-remaining" cx="32" cy="32" r="27" pathLength="100" strokeDasharray={`${Math.max(0,Math.min(100,seconds/60*100))} 100`}/></svg><b>{seconds}</b><small>sn</small></div><div className="bonus-discoveries" role="progressbar" aria-label="Bulunan keşifler" aria-valuenow={save.found.length} aria-valuemin={0} aria-valuemax={board.targets.length}><i style={{transform:`scaleX(${save.found.length/board.targets.length})`}}/><span>{save.found.length} / {board.targets.length}</span></div></div><p className="bonus-notice" role="status">{message||'Aynı kelime, farklı yerlerde.'}</p></PlayLayout></div>
  {tools&&<GameToolsSheet finished={save.finished} onClose={closeTools} onHome={back} sound={progress.sound} onSound={()=>{chime(progress.sound?'mute':'enable');onProgress(p=>({...p,sound:!p.sound}));}} onHelp={()=>{if(started)pause();setHelp(true);}}/>}
  {help&&<Modal className="game-tools-modal mechanic-guide" title="Bonus turu" onClose={()=>{setHelp(false);if(started)resume();}} footer={<button className="button primary full" onClick={()=>{setHelp(false);if(started)resume();}}>Oyuna dön</button>}><p>Tahtadaki {word} kelimelerini yatay, dikey, çapraz veya tersten bul. Her farklı çizgi yalnız bir kez sayılır.</p><p>Süre dolunca buldukların kaydedilir. Ara verdiğinde süre durur. İpucu veya puan cezası yok.</p></Modal>}
- {save.finished&&result.ready&&!review&&!help&&!tools&&<Modal scene={scene} className="scene-result celebration-outcome bonus-outcome" title={save.found.length===board.targets.length?'Hepsini buldun!':'Bonus tamamlandı'} onClose={()=>setReview(true)} footer={<><button className="button primary full" onClick={onContinue}>Yolculuğa devam et<ArrowRight size={18}/></button><div className="achievement-secondary"><button className="text-button" onClick={replay}><RefreshCw size={16}/>Tekrar dene</button><button className="text-button" onClick={()=>setReview(true)}>Tahtayı incele</button></div></>}><div className="bonus-discovery-medal" aria-label={`${save.found.length} / ${board.targets.length} keşif`}><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="89"/><circle className="bonus-medal-fill" cx="100" cy="100" r="89" pathLength="100" strokeDasharray={`${save.found.length/board.targets.length*100} 100`}/></svg><b>{save.found.length}<small>/{board.targets.length}</small></b><span>keşif</span></div><p className="bonus-result-word">{word}</p><p className="center">{save.found.length===0?'İlk ve son harfe dokunarak da deneyebilirsin.':save.found.length===board.targets.length?'Hiçbiri gözünden kaçmadı.':'Her keşif bir adım daha.'}</p><p className="center muted">En iyi turun: {save.best} keşif</p></Modal>}
+ {save.finished&&result.ready&&!review&&!help&&!tools&&<Modal scene={scene}
+  className="scene-result celebration-outcome bonus-outcome berrak-result"
+  title={save.found.length===board.targets.length?'Hepsini buldun!':'Bonus tamamlandı'}
+  resultStars={collectionStats(progress).stars} onClose={onHome??onBack}
+  footer={<>
+   <button className="button primary full result-continue" onClick={onContinue}>Yolculuğa devam et</button>
+   <div className="result-shortcuts">
+    <button type="button" aria-label="Tekrar dene" onClick={replay}><RefreshCw aria-hidden="true"/></button>
+    <button type="button" aria-label="Tahtayı incele" onClick={()=>setReview(true)}><Grid3X3 aria-hidden="true"/></button>
+   </div>
+  </>}>
+  <p className="result-subtitle">{save.found.length===0?'İlk ve son harfe dokunarak da deneyebilirsin.':word}</p>
+  <div className="bonus-discovery-medal" aria-label={`${save.found.length} / ${board.targets.length} keşif`}>
+   <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="89"/><circle className="bonus-medal-fill" cx="100" cy="100" r="89" pathLength="100" strokeDasharray={`${save.found.length/board.targets.length*100} 100`}/></svg>
+   <b>{save.found.length}<small>/{board.targets.length}</small></b><span>keşif</span>
+  </div>
+  <p className="bonus-personal-best">En iyi turun · {save.best} keşif</p>
+ </Modal>}
  </>;
 }

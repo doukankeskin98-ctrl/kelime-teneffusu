@@ -15,9 +15,22 @@ function refreshedOffset(previous:PublishedChapter[],next:number|null,page:Page)
  // New releases shift numeric offsets. With no overlap, fill the new gap first.
  return shift>=0?(next===null?null:next+shift):page.nextOffset;
 }
+function readChapters(value:unknown):PublishedChapter[]{
+ if(!Array.isArray(value))throw new Error('Invalid chapter list');
+ return value.map(chapter=>{
+  if(!chapter||!validChapterId(chapter.id)||typeof chapter.contentHash!=='string'||typeof chapter.publishedAt!=='number'||!Number.isFinite(new Date(chapter.publishedAt).getTime()))throw new Error('Invalid chapter');
+  return {...chapter,spec:parseChapterSpec(chapter.spec)};
+ });
+}
+function readPage(value:unknown):Page{
+ if(!value||typeof value!=='object')throw new Error('Invalid chapter catalogue');
+ const page=value as Record<string,unknown>,next=page['nextOffset'];
+ if(next!==null&&(typeof next!=='number'||!Number.isSafeInteger(next)||next<0))throw new Error('Invalid catalogue offset');
+ return {chapters:readChapters(page['chapters']),companions:page['companions']===undefined?[]:readChapters(page['companions']),nextOffset:next};
+}
 function cached(key:string){
  const raw:unknown=JSON.parse(localStorage.getItem(key)??'null');
- return Array.isArray(raw)?raw.slice(0,24).filter((c:PublishedChapter)=>validChapterId(c?.id)).map((c:PublishedChapter)=>({...c,spec:parseChapterSpec(c.spec)})):undefined;
+ return Array.isArray(raw)?readChapters(raw.slice(0,24).filter(c=>validChapterId(c?.id))):undefined;
 }
 
 export function useChapterCatalogue({initial,initialCompanions,collection,themeId,restore}:{initial:PublishedChapter[];initialCompanions:PublishedChapter[];collection:'studio'|'releases';themeId?:string;restore?:ChapterBrowseReturn}){
@@ -34,7 +47,8 @@ export function useChapterCatalogue({initial,initialCompanions,collection,themeI
    if(collection==='releases'){query.set('collection','releases');if(themeId)query.set('theme',themeId);}
    const response=await appFetch('/api/chapters?'+query,{cache:'no-store',signal:controller.signal});
    if(!response.ok)throw new Error('Catalogue unavailable');
-   const data=await response.json() as Page;if(!current())return;
+   const payload:unknown=await response.json();if(!current())return;
+   const data=readPage(payload);
    request.current.failedOffset=undefined;
    setState(s=>({...s,chapters:offset?merge(s.chapters,data.chapters,collection==='releases'):s.hasPage?merge(data.chapters,s.chapters,collection==='releases'):data.chapters,
     companions:offset?merge(s.companions,data.companions??[],collection==='releases'):s.hasPage?merge(data.companions??[],s.companions,collection==='releases'):data.companions??[],
