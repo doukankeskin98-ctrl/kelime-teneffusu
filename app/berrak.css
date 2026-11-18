@@ -240,3 +240,6 @@ dialog.modal.game-dialog.settings-home>.modal-head{position:relative;display:fle
 dialog.modal.game-dialog.settings-home>.modal-head h2{font-size:24px;text-align:start}
 dialog.modal.game-dialog.settings-home>.modal-head .icon-button{right:8px;top:50%;transform:translateY(-50%)}
 dialog.modal.game-dialog.settings-home>.modal-content{padding:16px;overflow:auto}
+
+.install-setting{margin-top:12px}
+.install-setting p{color:var(--berrak-muted);margin:8px 0 0;line-height:1.45}
