@@ -16,11 +16,12 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 const site = process.env.KT_LAYOUT_BUILD ?? path.join(root, 'dist-mobile');
 if (!existsSync(path.join(site, 'index.html'))) throw new Error('Önce mobil paketi derle: pnpm mobile:build');
 const sizes = (process.argv[2] ?? '320x568,375x667').split(',').map(size => size.split('x').map(Number));
-const only = process.argv[3]?.split(',').map(Number);
+const only = process.argv[3]&&process.argv[3]!=='all'?process.argv[3].split(',').map(Number):undefined;
+const fixed=process.argv.includes('--fixed-frame');
 // Add --first-visit to exercise help, finger input and safe-area geometry on
 // 320x568 and 393x852. The default run still checks all veteran replays.
 const firstVisit = process.argv[4] === '--first-visit';
-const insets = {'320x568':{top:20,bottom:0},'393x852':{top:59,bottom:34}};
+const insets = {'320x568':{top:20,bottom:0},'375x667':{top:20,bottom:0},'393x852':{top:59,bottom:34},'430x932':{top:59,bottom:34}};
 if(firstVisit && sizes.some(([w,h])=>!insets[w+'x'+h])) throw new Error('First-visit profiles: 320x568,393x852');
 if(process.env.EVIDENCE_DIR) mkdirSync(process.env.EVIDENCE_DIR,{recursive:true});
 const fixture = JSON.parse(execFileSync(process.execPath, ['--experimental-strip-types', '--experimental-transform-types', '--no-warnings',
@@ -30,6 +31,7 @@ const types = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css
   '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json', '.webmanifest': 'application/manifest+json'};
 const server = createServer((request, response) => {
   const name = decodeURIComponent(new URL(request.url, 'http://x').pathname);
+  if(name==='/__layout_seed'){response.writeHead(200,{'Content-Type':'text/html'});response.end('<!doctype html><title>Layout fixture</title>');return;}
   let file = path.join(site, path.normalize(name));
   if (!file.startsWith(site) || !existsSync(file) || statSync(file).isDirectory()) file = path.join(site, 'index.html');
   response.writeHead(200, {'Content-Type': types[path.extname(file)] ?? 'application/octet-stream'});
@@ -50,7 +52,7 @@ const open = chapter => `(async () => {
   const world=await until(()=>document.querySelectorAll('.journey-map-world').length===${fixture.chapters.length/6} && document.querySelectorAll('.journey-map-world')[${chapter.world}]);
   if(!world) return 'dünya seçimi yok';
   world.click();
-  const button = await until(()=>document.querySelectorAll('.chapter-picker-grid button')[${chapter.position}]);
+  const button = await until(()=>document.querySelector('.chapter-picker-grid button[aria-label^="Bölüm ${chapter.number}:"]'));
   if (!button || button.disabled) return 'bölüm açılamadı';
   button.click();
   if(!await until(()=>document.querySelector('.letter-board') && document.querySelector('.play-chapter-number')?.textContent.match(/\\d+/)?.[0]===String(${chapter.number})))return 'açılan bölüm doğrulanamadı';
@@ -64,13 +66,14 @@ let failures = 0;
 const page = await launch({port:Number(process.env.KT_LAYOUT_PORT ?? 9333)});
 try {
   for (const [width, height] of sizes) {
-    const safe = firstVisit ? {...insets[width+'x'+height],left:0,right:0} : undefined;
+    const safe = firstVisit||fixed ? {...insets[width+'x'+height],left:0,right:0} : undefined;
     await page.viewport(width,height,2,safe);
-    await page.goto(url);
+    await page.goto(url+'__layout_seed',100);
     await page.evaluate(`localStorage.clear(); localStorage.setItem(${JSON.stringify(fixture.key)}, ${JSON.stringify(fixture.value)}); 'ok'`);
     const rows = [];
     for (const chapter of only ? fixture.chapters.filter(item => only.includes(item.number)) : fixture.chapters) {
       if(firstVisit){
+        await page.goto(url+'__layout_seed',80);
         const progress=JSON.parse(fixture.value);
         for(const item of fixture.chapters.slice(chapter.number-1)) delete progress.saves['route:'+item.id];
         await page.evaluate('localStorage.setItem('+JSON.stringify(fixture.key)+','+JSON.stringify(JSON.stringify(progress))+')');
@@ -83,6 +86,17 @@ try {
         row.touch=await checkTallBoard(page,row,process.env.EVIDENCE_DIR);
       }
       rows.push(row);
+    }
+    if(fixed){
+      const first=rows.find(row=>row.stage);
+      for(const row of rows.filter(row=>row.stage)){
+        const dock=row.controls.find(control=>control.name.startsWith('İpucu'));
+        const firstDock=first.controls.find(control=>control.name.startsWith('İpucu'));
+        if(!dock||!firstDock||Math.abs(row.stage.top-first.stage.top)>1||Math.abs(row.topic.top-first.topic.top)>1||Math.abs(dock.top-firstDock.top)>1||dock.top<row.board.bottom-1) {
+          failures++;console.log('Sabit düzen ihlali',width,row.number,JSON.stringify([row.topic.top,row.stage.top,dock?.top,row.board.bottom]));
+        }
+        if(row.number===10&&width===320&&(row.board.width<272||row.letterPx<21)){failures++;console.log('Uzun tahta sınırı',row.board.width,row.letterPx);}
+      }
     }
     if(process.env.EVIDENCE_DIR){mkdirSync(process.env.EVIDENCE_DIR,{recursive:true});writeFileSync(path.join(process.env.EVIDENCE_DIR,`layout-${width}.json`),JSON.stringify(rows,null,2));}
     const bad = rows.map(row => ({number:row.number,id:row.id,issues:layoutProblems(row)})).filter(row => row.issues.length);

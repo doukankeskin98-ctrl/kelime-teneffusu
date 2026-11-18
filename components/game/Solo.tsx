@@ -33,7 +33,7 @@ import {worldChapter,chapterVeils,veilInstruction} from '@/lib/game/world-presen
 import {SceneArt} from './SceneArt';
 import {JourneyResult} from './JourneyResult';
 import {journeyGoal} from '@/lib/game/achievement-view';
-import {nearMissMessage,soloHintGuide,hintTarget,focusedWordGroup,wordListProgress} from '@/lib/game/word-card';
+import {nearMissMessage,soloHintGuide,hintTarget,wordCardCopy,focusedWordGroup,wordListProgress} from '@/lib/game/word-card';
 import {JourneyObjective,VictorySummary,NextJourneyPreview} from './AchievementLoop';
 import * as legacy from '@/lib/game/legacy';
 import type {DailyView} from '@/lib/game/server';
@@ -54,7 +54,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
  const [journey]=useState(()=>playableJourney(config.journey??'',progress));
  const story=livingStory(config.journey),main=config.campaign?mainChapter(config.journey):null,progressAtStart=useRef(progress),weeklyFinish=useRef<string|null>(null);
  const legacyState=useMemo(()=>{if(!config.classic)return null;try{return legacy.validateSave(JSON.parse(localStorage.getItem(legacy.SAVE_KEY)??'null'))??legacy.freshState(hash('classic-first-game'));}catch{return legacy.freshState(hash('classic-first-game'));}},[config.classic]);
- const [daily,setDaily]=useState(initialDaily),[dailyNow,setDailyNow]=useState(Date.now()),dailyOffset=useRef(initialDaily?initialDaily.serverNow-Date.now():0);
+ const [daily,setDaily]=useState(initialDaily),[dailyNow,setDailyNow]=useState(Date.now),dailyOffset=useRef(initialDaily?initialDaily.serverNow-dailyNow:0);
  const canonicalBoard=useMemo(()=>external?.board??daily?.board??(config.tutorial?TUTORIAL:journey?journeyBoard(journey):config.classic?classicBoard(config.level,legacyState!.seed):makePuzzle(config.themeId,config.level,hash(`campaign-v2:${config.themeId}:${config.level}`))),[config.themeId,config.level,config.classic,config.tutorial,journey?.id,legacyState,daily?.id,external?.board]);
  const presentationKey=external?.presentationKey??(config.tutorial?'tutorial':journey?journeyPresentationKey(journey):`${config.themeId}.${config.level}`);
  const keepCanonical=!!daily||!!(external&&!external.presentationKey)||!!config.classic;
@@ -76,14 +76,17 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
  const [hintEnd,setHintEnd]=useState<Cell|null>(null);
  const hintCount=useRef(save.hints);hintCount.current=save.hints;
  const [turned,setTurned]=useState(false);
+ const [hintPicker,setHintPicker]=useState(false);
+ const choosingHint=useRef(false);
  const [preferredGroup,setPreferredGroup]=useState<number|null>(()=>guide?.target?.group??null);
  useEffect(()=>{if(guide?.target)setPreferredGroup(guide.target.group);},[guide?.target?.id]);
  const [toolsPaused,setPaused]=useState(false),[foreground,setForeground]=useState(true),[hint,setHint]=useState<Cell|null>(null),[preview,setPreview]=useState(''),[message,setMessage]=useState(''),[help,setHelp]=useState(false),[review,setReview]=useState(false),[exit,setExit]=useState(false);
  const guideFeedback=message&&!/ bulundu|tamamlandı|^Tekrar dene\.$/.test(message)?message:undefined;
  const paused=toolsPaused||!foreground;
  const clock=useRef({at:0,tick:0,active:true});
- useEffect(()=>observeGameActivity(document,window,gameIsActive,active=>{clock.current={at:performance.now(),tick:0,active};setForeground(active);}),[]);
- const chime=useChime(progress.sound,progress.haptics),foundRef=useRef(save.strokes),started=useRef(performance.now()),completionTracked=useRef(false);foundRef.current=save.strokes;
+ useEffect(()=>observeGameActivity(document,window,gameIsActive,active=>{clock.current={at:performance.now(),tick:0,active};setForeground(active);if(!active){choosingHint.current=false;setHintPicker(false);}}),[]);
+ const chime=useChime(progress.sound,progress.haptics),foundRef=useRef(save.strokes),started=useRef(0),completionTracked=useRef(false);foundRef.current=save.strokes;
+ useEffect(()=>{started.current=performance.now();},[]);
  const [dailyAction,setDailyAction]=useState<DailyActionState>({phase:'idle',intent:null}),dailySession=useRef<DailyActionSession|null>(null),dailyOwner=useRef(ownerId),liveOwner=useRef(ownerId),dailyRetired=useRef(false);liveOwner.current=ownerId;if(daily&&ownerId!==dailyOwner.current)dailyRetired.current=true;
  const ownerChanged=!!daily&&(!dailyOwner.current||dailyRetired.current),displayAction:DailyActionState=ownerChanged?{phase:'account-changed',intent:null}:dailyAction;
  const busy=displayAction.phase==='sending'||displayAction.phase==='checking',dailyLocked=!!daily&&(ownerChanged||!dailySession.current||displayAction.phase!=='idle');
@@ -158,12 +161,26 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
   else{if(story){track('story_step');if(finish)track('story_complete');}const strokes=[...foundRef.current,stroke];foundRef.current=strokes;setSave(s=>{const latest=[...s.strokes,...(s.strokes.some(found=>found.id===stroke.id)?[]:[stroke])],complete=latest.length===board.targets.length;return {...s,strokes:latest,complete,stars:complete?3-Math.min(2,s.hints):0};});setMessage(story?story.steps.find(step=>step.word===target.text)!.reveal:finish?(main?'Bölüm tamamlandı!':'Keşif tamamlandı!'):config.tutorial?'Kelime bulundu. Sıradakini bul.':foundLabel+' bulundu · '+wordListProgress(board,strokes).remaining+' kelime kaldı');}
   setHint(null);setHintEnd(null);
  };
- const requestHint=async()=>{
+ const requestHint=async(group=preferredGroup)=>{
   if(paused||completed||help||exit||mechanic||hintCount.current>=3||dailyLocked)return;
   if(firstStoryHint){setHint(firstStoryHint);setMessage('İlk harf işaretli. Başlangıç ipucun ücretsiz.');return;}
-  const target=story?storyStage(story,board,foundRef.current).target:hintTarget(board,foundRef.current,preferredGroup);if(!target)return;
+  const target=story?storyStage(story,board,foundRef.current).target:hintTarget(board,foundRef.current,group);if(!target)return;
   if(daily){setHint(null);setHintEnd(null);void dailySession.current?.act({kind:'hint',requestId:crypto.randomUUID(),targetId:target.id});return;}
   const remaining=(board as Puzzle).placements.find(p=>p.id===target.id);if(remaining){hintCount.current++;chime('hint');const guide=soloHintGuide(remaining,hintCount.current);setHint(guide.start);setHintEnd(guide.end);setSave(s=>({...s,hints:Math.min(3,s.hints+1)}));setMessage(guide.message);}
+ };
+ const remainingHints=new Map<number,(typeof board.targets)[number]>();
+ if(main&&hintPicker){
+  const found=new Set(save.strokes.map(stroke=>stroke.id));
+  for(const target of board.targets)if(!found.has(target.id)&&!remainingHints.has(target.group))remainingHints.set(target.group,target);
+ }
+ const openHint=()=>{
+  if(!main||guide||wordListProgress(board,foundRef.current).remaining<=1){void requestHint();return;}
+  choosingHint.current=true;setHintPicker(true);
+ };
+ const closeHint=()=>{choosingHint.current=false;setHintPicker(false);};
+ const chooseHint=(group:number)=>{
+  if(!choosingHint.current||!remainingHints.has(group))return;
+  closeHint();setPreferredGroup(group);void requestHint(group);
  };
  const seconds=daily?(daily.finished!==null?daily.duration/1000:Math.max(0,(dailyNow+dailyOffset.current-daily.starts)/1000)):save.elapsed;
  const resume=()=>{if(!daily&&paused&&!completed&&!help&&!exit&&!mechanic&&!dailyLocked&&!document.hidden&&gameIsActive()){chime('start');setHint(null);setHintEnd(null);setPreview('');setPaused(false);}};
@@ -174,7 +191,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
   onSkipResult={completed&&!resultReady?result.skip:undefined}
   zoom={progress.zoom} onZoom={()=>onProgress(p=>({...p,zoom:!p.zoom}))}
   sound={progress.sound} onSound={()=>{chime(progress.sound?'mute':'enable');onProgress(p=>({...p,sound:!p.sound}));}}
-  hints={Math.max(0,3-save.hints)} onHint={()=>void requestHint()} onHelp={()=>setHelp(true)} canPause={!daily}/>;
+  hints={Math.max(0,3-save.hints)} onHint={openHint} onHelp={()=>setHelp(true)} canPause={!daily}/>;
  const tutorialHint=config.tutorial&&!guideSkipped&&!save.strokes.some(s=>s.id===TUTORIAL.targets[0]!.id)?(board as Puzzle).placements.find(p=>p.id===TUTORIAL.targets[0]!.id)!.a:null;
  const improved=(!external||external.personalBestKnown===true)&&completed&&!daily&&!config.classic&&!config.tutorial&&previousBest.current?.complete&&(save.stars>previousBest.current.stars||(save.stars===previousBest.current.stars&&save.elapsed<previousBest.current.elapsed));
  const resultProgress=useMemo(()=>journey&&completed?mergeProgress(progress,{...progress,...(progress.revisionSaves?{revisionSaves:{}}:{}),saves:{[key]:{...save,...(journey.revision===2?{revision:2 as const}:{})}}}):progress,[completed,progress,key,save,journey]);
@@ -201,13 +218,19 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
  const goal=journeyGoal(progressAtStart.current,journey?.id),resultGoal=journeyGoal(resultProgress,journey?.id),nextGoal=journeyGoal(resultProgress,nextJourney?.id);
  const quietNotice=/ bulundu|tamamlandı|^Tekrar dene\.$/.test(message);
  const visibleGuide=guide&&!paused&&!help&&!exit?guide:null;
- return <>{arrival&&<div className="world-arrival" role="status"><span>Yeni dünya!</span><strong>{arrival}</strong></div>}<PlayLayout boardNotice={main&&!guide&&!quietNotice?message:undefined} starCount={starCount} quietHeader={!daily} headerAction={controls(true)} chapterNumber={mainChapter(journey?.id)?.number} departing={result.departing&&!review&&!help&&!exit} earlyTargets={story?(stage?.target?[stage.target]:[]):undefined} onResume={!daily&&paused&&!completed&&!help&&!exit&&!mechanic&&!dailyLocked?resume:undefined} celebrating={completed&&resultReady&&!review&&!help&&!exit} scene={story?.scene??sceneForJourney(journey?.id,config.themeId)} nextScene={nextJourney?sceneForJourney(nextJourney.id,nextJourney.themeId):undefined} sceneStage={story&&stage ? .76+.24*stage.index/story.steps.length : 1} turned={turned} onSelectLetter={depth=>{if(arrival)setArrival('');chime('letter',depth);}} focused={!daily} inlineTargets={inlineTargets} wordList={wordList} wordListUnavailable={help||exit||!!mechanic} kicker={story?`HİKÂYELER · ${String(LIVING_STORIES.indexOf(story)+1).padStart(2,'0')} / 05`:external?'Yeni keşifler':daily?'Günlük bulmaca · '+daily.day.split('-').reverse().join('.'):config.tutorial?'ALIŞTIRMA':world?world.world.title:config.classic?'Hababam • Fotoğraftaki 20 isim':`${theme.title} • ${journey?'Keşif rotası':'Bölüm '+(config.level+1)}`} title={title} onBack={()=>daily&&!completed?setExit(true):onBack()} board={board} strokes={pending&&!save.strokes.some(s=>s.id===pending.id)?[...displayStrokes,pending]:displayStrokes} paused={(!completed&&paused)||(!daily&&(help||exit||!!mechanic))} readOnly={completed} inputBlocked={dailyLocked} inputStatus={inputStatus} busy={busy} zoom={progress.zoom} demonstration={!hint?guide?.target:null} hint={hint??(guide?.target?null:tutorialHint??firstStoryHint)} hintEnd={hint?hintEnd:null} onCommit={(a,b)=>void commit(a,b)} preview={preview} onPreview={setPreview} footer={<div className={visibleGuide?'solo-control-dock has-first-play-guide':'solo-control-dock'}>{controls()}{visibleGuide&&<FirstPlayGuide guide={visibleGuide} feedback={guideFeedback} onSkip={skipGuide}/>}{!story&&<p className={guide?'sr-only':'play-notice'} role="status" aria-live={guide&&guideFeedback?'off':'polite'} aria-atomic="true"><span className={quietNotice?'sr-only':undefined}>{message||(!guide&&!completed&&!save.strokes.length&&!previousBest.current&&main?FIRST_TEN_LESSONS[journey!.id]:'')}</span></p>}</div>} aside={<><div className="game-note"><Flag size={18}/><p>{completed?'Bölüm tamamlandı. Tahtayı inceleyebilirsin.':config.tutorial?'KELİME’nin ilk harfini işaretledik. Son harfine kaydır veya iki ucuna dokun. Sonra MERAK ve KEŞİF’i bul.':daily?'Süre ara verdiğinde de devam eder. İpuçları sürene 15 saniye ekler.':external?.note??journey?.note??'Acele yok. Yanlış seçim ceza getirmez. Çaprazlara da bak.'}</p></div>{completed&&resultReady&&<button className="button primary full" onClick={()=>setReview(false)}>Sonucu göster <Trophy size={18}/></button>}</>}>
+ return <>{arrival&&<div className="world-arrival" role="status"><span>Yeni dünya!</span><strong>{arrival}</strong></div>}<PlayLayout boardNotice={main&&!guide&&!quietNotice?message:undefined} starCount={starCount} quietHeader={!daily} headerAction={controls(true)} chapterNumber={mainChapter(journey?.id)?.number} departing={result.departing&&!review&&!help&&!exit} earlyTargets={story?(stage?.target?[stage.target]:[]):undefined} onResume={!daily&&paused&&!completed&&!help&&!exit&&!mechanic&&!dailyLocked?resume:undefined} celebrating={completed&&resultReady&&!review&&!help&&!exit} scene={story?.scene??sceneForJourney(journey?.id,config.themeId)} nextScene={nextJourney?sceneForJourney(nextJourney.id,nextJourney.themeId):undefined} sceneStage={story&&stage ? .76+.24*stage.index/story.steps.length : 1} turned={turned} onSelectLetter={depth=>{if(arrival)setArrival('');chime('letter',depth);}} focused={!daily} inlineTargets={inlineTargets} wordList={wordList} wordListUnavailable={help||exit||!!mechanic||hintPicker} kicker={story?`HİKÂYELER · ${String(LIVING_STORIES.indexOf(story)+1).padStart(2,'0')} / 05`:external?'Yeni keşifler':daily?'Günlük bulmaca · '+daily.day.split('-').reverse().join('.'):config.tutorial?'ALIŞTIRMA':world?world.world.title:config.classic?'Hababam • Fotoğraftaki 20 isim':`${theme.title} • ${journey?'Keşif rotası':'Bölüm '+(config.level+1)}`} title={title} onBack={()=>daily&&!completed?setExit(true):onBack()} board={board} strokes={pending&&!save.strokes.some(s=>s.id===pending.id)?[...displayStrokes,pending]:displayStrokes} paused={(!completed&&paused)||(!daily&&(help||exit||!!mechanic))} readOnly={completed} inputBlocked={dailyLocked} inputStatus={inputStatus} busy={busy} zoom={progress.zoom} demonstration={!hint?guide?.target:null} hint={hint??(guide?.target?null:tutorialHint??firstStoryHint)} hintEnd={hint?hintEnd:null} onCommit={(a,b)=>void commit(a,b)} preview={preview} onPreview={setPreview} footer={<div className={visibleGuide?'solo-control-dock has-first-play-guide':'solo-control-dock'}>{controls()}{visibleGuide&&<FirstPlayGuide guide={visibleGuide} feedback={guideFeedback} onSkip={skipGuide}/>}{!story&&<p className={guide?'sr-only':'play-notice'} role="status" aria-live={guide&&guideFeedback?'off':'polite'} aria-atomic="true"><span className={quietNotice?'sr-only':undefined}>{message||(!guide&&!completed&&!save.strokes.length&&!previousBest.current&&main?FIRST_TEN_LESSONS[journey!.id]:'')}</span></p>}</div>} aside={<><div className="game-note"><Flag size={18}/><p>{completed?'Bölüm tamamlandı. Tahtayı inceleyebilirsin.':config.tutorial?'KELİME’nin ilk harfini işaretledik. Son harfine kaydır veya iki ucuna dokun. Sonra MERAK ve KEŞİF’i bul.':daily?'Süre ara verdiğinde de devam eder. İpuçları sürene 15 saniye ekler.':external?.note??journey?.note??'Acele yok. Yanlış seçim ceza getirmez. Çaprazlara da bak.'}</p></div>{completed&&resultReady&&<button className="button primary full" onClick={()=>setReview(false)}>Sonucu göster <Trophy size={18}/></button>}</>}>
   {story&&stage?<StoryHud story={story} stage={stage.index} hints={save.hints} notice={message}/>:daily?<div className="game-status"><span><Clock size={17}/><b>{timeLabel(seconds)}</b>{save.hints>0&&<small>+{save.hints*15} sn</small>}</span><div className="progress-track" role="progressbar" aria-label="Bulunan kelimeler" aria-valuenow={targets.complete} aria-valuemin={0} aria-valuemax={targets.total}><i style={{width:`${targets.total?targets.complete/targets.total*100:0}%`}}/></div><span><Star size={17}/>{3-Math.min(2,save.hints)}</span></div>:<>
 
    <span className="sr-only" role="status">{targets.complete}/{targets.total} kelime bulundu</span>
   </>}
  {daily&&<DailyActionNotice state={displayAction} onRetry={()=>void dailySession.current?.retry()} onBack={onBack}/>}
  </PlayLayout>
+ {hintPicker&&main&&!completed&&!paused&&<Modal className="game-library-sheet hint-picker" title="Hangi kelime?" onClose={closeHint}>
+  <div className="hint-choices">{Array.from(remainingHints,([group,target])=>{
+   const copy=wordCardCopy(target,false,journey?.clues,veils[group]);
+   return <button key={group} type="button" aria-label={copy.spoken??copy.text} onClick={()=>chooseHint(group)}>{copy.text}</button>;
+  })}</div>
+ </Modal>}
  {mechanic&&<MechanicGuide kind={mechanic} onClose={closeMechanic}/>}
  {help&&(story?<Modal className="game-library-sheet game-tools-modal help-sheet" title="Kelimelerle bir hikâye" onClose={()=>setHelp(false)}><p>Her adımda tek bir kelime arıyorsun. İpucunu çöz, cevabın ilk harfinden son harfine kaydır veya iki ucuna dokun. Yatay, dikey, çapraz ve ters yönleri dene.</p><p>Bulduğun kelime sahneyi değiştirir ve sıradaki ipucunu açar. Yanlış seçim ceza getirmez. İpucu ilk harfi gösterir; en fazla üç kez kullanabilirsin. İlerlemen kaydedilir, dilediğinde ara verebilirsin.</p><p>İpuçsuz 3, bir ipucuyla 2, iki veya üç ipucuyla 1 yıldız kazanırsın. Süre yıldızları etkilemez.</p><button className="button primary full" onClick={()=>setHelp(false)}>Hikâyeye dön</button></Modal>:journey?.clues?<Modal className="game-library-sheet game-tools-modal help-sheet" title="İpucu Avı" onClose={()=>setHelp(false)}><p>Her kısa tanım bir kelimeyi anlatır. Yanındaki sayı harf sayısını gösterir. Cevabı tahtada yatay, dikey, çapraz veya tersten bul.</p><p>Bulduğunda tanımın yerinde kelimen görünür. Zorlanırsan İpucu düğmesi ilk harfi gösterir. Süre baskısı yok.</p><button className="button primary full" onClick={()=>setHelp(false)}>Oyuna dön</button></Modal>:<><Help daily={!!daily} onClose={()=>setHelp(false)}/></>)}
  {exit&&<Modal className="game-library-sheet game-tools-modal help-sheet" title="Oyundan çıkılsın mı?" onClose={()=>setExit(false)}><p>Günlük yarış süren ara verdiğinde de devam eder. Bu sekmede bekleyen bir işlemin varsa yeniden açılışta önce kontrol edilir.</p><div className="button-row"><button className="button secondary" onClick={()=>setExit(false)}>Oyuna dön</button><button className="button primary" onClick={onBack}>Ana sayfaya dön</button></div></Modal>}

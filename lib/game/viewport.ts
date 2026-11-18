@@ -70,7 +70,24 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:BoardSh
   if(disposed)return;
   const board=stage.querySelector<HTMLElement>('.letter-board');
   if(board&&drawingBoards.has(board)){deferred=true;return;}
-  deferred=false;const result=measurePlayFrame(screen,stage,cells,zoom,view);
+  deferred=false;
+  if(!zoom&&screen.dataset?.['journeyFrame']&&view.getComputedStyle(screen).getPropertyValue('--fixed-journey-frame').trim()==='1'&&(!view.visualViewport||view.visualViewport.scale===1)){
+   const client=view.visualViewport;
+   const offset=Math.max(0,screen.getBoundingClientRect().top-(client?.offsetTop??0));
+   const container=screen.closest<HTMLElement>('.game-app,.main-content');
+   const bottom=container?pixels(view.getComputedStyle(container).paddingBottom):8;
+   const available=Math.floor((client?.height??view.innerHeight)-offset-bottom-2);
+   let changed=set(screen,'--play-height',available+'px');
+   screen.style.removeProperty('min-height');stage.style.removeProperty('height');stage.style.removeProperty('flex');
+   const width=fittedBoardSize(stage.clientWidth,stage.clientHeight,cells);
+   const {rows,columns}=dimensions(cells);
+   changed=set(stage,'--journey-paper-height',Math.round(width*rows/columns)+'px')||changed;
+   changed=set(screen,'--fitted-board',width+'px')||changed;
+   screen.setAttribute('data-fit','contained');
+   if(changed)view.dispatchEvent(new view.Event('kt-board-layout'));
+   return;
+  }
+  const result=measurePlayFrame(screen,stage,cells,zoom,view);
   let changed=set(screen,'--play-height',result.height+'px');
   // Pinch zoom is a reader preference. Leave natural overflow available.
   if(view.visualViewport&&view.visualViewport.scale!==1){screen.style.removeProperty('min-height');stage.style.removeProperty('height');screen.style.removeProperty('--fitted-board');return;}
@@ -105,7 +122,7 @@ export function attachBoardSize(element:HTMLElement,cells:BoardShape,zoom:boolea
   else set(element,'width','100%');
   // CSS rotation changes the visual bounding box, never the layout width.
   const width=Math.floor(element.offsetWidth??element.getBoundingClientRect().width);if(width<=0)return;
-  set(element,'height',Math.round(width*rows/columns)+'px');set(element,'--board-letter-size',Math.max(zoom?24:13,Math.min(zoom?48:42,Math.floor((width-2)/columns*.57)))+'px');
+  set(element,'height',Math.round(width*rows/columns)+'px');set(element,'--board-letter-size',Math.max(zoom?24:13,Math.min(zoom?48:42,Math.floor((width-2)/columns*(element.closest?.('[data-journey-frame]') ? .63 : .57))))+'px');
   const rect=element.getBoundingClientRect();if(previous&&(force||rect.width!==previous.width||rect.height!==previous.height||rect.top!==previous.top||rect.left!==previous.left))onResize(rect,reason);previous=rect;
  };
  const layout=()=>update('layout'),viewport=(event:Event)=>{

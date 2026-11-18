@@ -565,7 +565,12 @@ describe('hint target follows visible selection, not placement ordering',()=>{
   const j=content.journeyById('uzay-5')!,p=familiarProgress(),h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});
   try{h.start('Solo',{config:{themeId:j.themeId,level:0,journey:j.id,campaign:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});await h.settle();
    const layout=h.find('PlayLayout').props,board=layout['board'],last=board.targets.at(-1),target=board.placements.find((t:any)=>t.id===last.id);
-   layout['wordList'].onFocusGroup(last.group);await h.settle();h.find('PlayControls').props['onHint']();await h.settle();assert.deepEqual(h.find('PlayLayout').props['hint'],target.a);assert.equal(h.find('PlayControls').props['hints'],2);assert.equal(h.find('PlayLayout').props['board'],board);
+   h.find('PlayControls').props['onHint']();await h.settle();
+   assert.equal(h.find('PlayControls').props['hints'],3);
+   h.find('Modal').props['onClose']();await h.settle();assert.equal(h.find('PlayControls').props['hints'],3);
+   h.find('PlayControls').props['onHint']();await h.settle();
+   const option=walk(h.find('Modal')).filter(n=>n.type==='button').at(-1)!;
+   option.props['onClick']();option.props['onClick']();await h.settle();assert.deepEqual(h.find('PlayLayout').props['hint'],target.a);assert.equal(h.find('PlayControls').props['hints'],2);assert.equal(h.find('PlayLayout').props['board'],board);
   }finally{h.close();}
  });
  it('PlayLayout exposes only the caller unlocked targets for automatic acceptance',()=>{
@@ -723,7 +728,7 @@ it('keeps solo notices in the footer before, during and after a hint without cha
   const layout=h.find('PlayLayout'),board=layout.props['board'];const notice=()=>walk(h.find('PlayLayout').props['footer']).find(n=>n.props['className']==='play-notice')!;
   assert(notice());assert.equal(notice().props['role'],'status');assert.match(text(notice()),/soldan sağa/);
   assert(!walk(layout.props['children']).some(n=>n.props['className']?.includes('game-message')));
-  walk(layout.props['footer']).find(n=>n.type==='PlayControls')!.props['onHint']();h.paint();assert.match(text(notice()),/ilk harfi/);assert.equal(h.find('PlayLayout').props['board'],board);
+  walk(layout.props['footer']).find(n=>n.type==='PlayControls')!.props['onHint']();h.paint();walk(h.find('Modal')).find(n=>n.type==='button')!.props['onClick']();h.paint();assert.match(text(notice()),/ilk harfi/);assert.equal(h.find('PlayLayout').props['board'],board);
   h.expire();assert(notice());assert.equal(h.find('PlayLayout').props['board'],board);assert.equal(p.saves['route:uzay-2']!.hints,1);
  }finally{h.close();}
 });
