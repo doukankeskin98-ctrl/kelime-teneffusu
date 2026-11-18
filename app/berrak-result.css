@@ -106,3 +106,34 @@
 }
 @media(prefers-reduced-motion:reduce){.modal.game-dialog.scenic-outcome.berrak-result.scene-result>.modal-head h2{animation:none}}
 html[data-reduce-motion=true] .modal.game-dialog.scenic-outcome.berrak-result.scene-result>.modal-head h2{animation:none}
+
+/* Size the reward from the space between the header and the actual action row.
+   The same geometry works when the world finale adds an extra action. */
+.modal.game-dialog.scenic-outcome.berrak-result:is(.journey-outcome,.bonus-outcome) {
+  --result-inset: clamp(2px, calc(7svh - 36px), 26px);
+}
+.modal.game-dialog.scenic-outcome.berrak-result:is(.journey-outcome,.bonus-outcome) > .modal-content {
+  container-type: size;
+  padding-bottom: 16px;
+  scroll-padding-block: 8px 16px;
+}
+/* Older WebViews can scroll the content and use a viewport-sized medal. */
+.berrak-result.journey-outcome .result-world-medallion { --medal-size: clamp(80px, 20vh, 180px); }
+.berrak-result.journey-outcome .result-world-caption { margin-top: 19px; }
+.modal.game-dialog.scenic-outcome.berrak-result.bonus-outcome > .modal-head h2 {
+  font-size: clamp(24px, 7.7vw, 36px);
+}
+@supports (height: 1cqh) {
+ .modal.game-dialog.scenic-outcome.berrak-result .world-reward .result-star-stage {
+   margin-block: clamp(6px, 3cqh, 18px);
+ }
+ .berrak-result.journey-outcome .result-world-medallion {
+   --medal-size: clamp(80px, calc(100cqh - clamp(120px, 23svh, 170px)), 220px);
+ }
+ .berrak-result.bonus-outcome .bonus-discovery-medal {
+   width: clamp(88px, calc(100cqh - 104px), 220px);
+   height: auto;
+   aspect-ratio: 1;
+   margin-block: clamp(8px, 4cqh, 20px);
+ }
+}

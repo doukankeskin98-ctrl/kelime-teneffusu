@@ -82,7 +82,7 @@
 html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:none}
 
 .quiet-play .play-hud>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-.quiet-play .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){min-height:0;height:0;margin:0;padding:0}
+.quiet-play .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud,.bonus-dashboard)){min-height:0;height:0;margin:0;padding:0}
 .game-tools-modal .journey-albums .section-title p{color:#dce8d9}
 .game-tools-modal .journey-albums .discovery-album-card{background:#214b52;color:#fff6df;border-color:#cfe1cc45}
 .game-tools-modal .journey-albums .discovery-album-card h3{color:#fff6df}
@@ -147,7 +147,7 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 @media(max-height:600px) and (orientation:portrait){
  .scenic-play[data-dense-board] .target-rack,.game-app .scenic-play[data-dense-board] .target-rack{gap:0 6px!important;padding:0 4px!important}
  .scenic-play[data-dense-board] .target-rack .word-tag,.game-app .scenic-play[data-dense-board] .target-rack .word-tag{min-height:44px!important;font-size:15px!important;line-height:20px}
- .quiet-play[data-dense-board] .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud)){margin-top:var(--hud-gap,0)!important}
+ .quiet-play[data-dense-board] .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud,.bonus-dashboard)){margin-top:var(--hud-gap,0)!important}
  .quiet-play[data-dense-board] .play-columns{margin-top:var(--play-gap,2px)!important}
  .quiet-play[data-dense-board] .targets-panel{margin-bottom:var(--rack-gap,4px)!important}
  .quiet-play[data-dense-board] .target-topic{padding-block:2px}

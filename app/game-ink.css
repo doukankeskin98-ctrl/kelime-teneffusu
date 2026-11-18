@@ -19,7 +19,7 @@
 .selection-bubble{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:100%;width:max-content;z-index:0;padding:3px 12px;background:var(--feedback-paper);color:#fff;border-radius:14px;text-align:center;font:800 20px/27px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
 .scenic-play.has-selection .selection-bubble{display:block}
 .play-praise:not([hidden])+.selection-bubble{visibility:hidden}
-.bonus-landing{grid-column:2;grid-row:1;width:42px;height:34px;display:grid;place-items:center;align-self:center;color:#24544c;background:#e3edd7;border-radius:12px;flex:none}
+.bonus-landing{grid-column:2;grid-row:2;width:36px;height:32px;display:grid;place-items:center;align-self:center;color:var(--berrak-ui-dark);background:var(--berrak-wash);border-radius:12px;flex:none}
 .bonus-landing>svg{width:21px;height:21px}.bonus-landing[data-word-arriving]>svg{visibility:hidden}
 .bonus-dashboard .bonus-target{min-width:0;flex:1}
 .bonus-session .screen-load-state{color:#fffbed;background:transparent}

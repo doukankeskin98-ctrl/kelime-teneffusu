@@ -40,8 +40,53 @@ export function BonusRound({worldId,progress,onProgress,onBack,onHome,onContinue
  const closeTools=(shouldResume=true)=>{toolsOpen.current=false;setTools(false);const owned=resumeAfterTools.current;resumeAfterTools.current=false;if(owned&&shouldResume)resume();else if(!started)setPaused(false);};
  const strokes=board.placements.filter(p=>save.found.includes(p.id)),seconds=Math.ceil((BONUS_DURATION-save.elapsed)/1000);
  const ready=!started&&!save.finished;
- const readiness=<div className="bonus-ready" role="group" aria-label="Bonusa hazırlan"><div><h2>{save.elapsed>0?'Kaldığın yerden':'Kısa bir kelime molası'}</h2><p>Tahtadaki bütün <b>{word}</b> kelimelerini bul.</p><p className="bonus-ready-rule">{save.elapsed>0?`${save.found.length} bulundu · ${seconds} saniyen kaldı`:`${board.targets.length} keşif · 60 saniye`}</p><button className="stage-play" onClick={resume}><Play size={20}/><span>{save.elapsed>0?'Bonusa devam et':'Bonusu başlat'}</span></button><button className="text-button" onClick={onContinue}>Bonusu geç, yolculuğa devam et</button></div></div>;
- return <><div className={"bonus-session"+(ready?" is-ready":"")}><PlayLayout headerAction={<button className="icon-button game-settings-trigger" aria-label="Ayarlar" aria-haspopup="dialog" onClick={openTools}><Settings aria-hidden="true"/></button>} scene={scene} focused effect={ready?readiness:undefined} inputBlocked={ready} inputStatus="Başlamaya hazır" title="Bonus turu" kicker={world.title} onBack={back} board={board} strokes={strokes} wordListKey={'bonus:'+worldId+':'+save.attempt} paused={paused||help||tools} readOnly={save.finished} reviewStatus="Bonus tamamlandı" zoom={false} onCommit={commit} preview={preview} onPreview={setPreview} onSelectLetter={depth=>chime('letter',depth)} onResume={!help&&!tools?resume:undefined} departing={result.departing&&!review} celebrating={save.finished&&result.ready&&!review&&!help&&!tools} aside={<></>} footer={<div className="play-controls bonus-controls">{save.finished&&<button className="button primary" onClick={()=>{result.skip();setReview(false);}}>Sonucu göster</button>}</div>}><div className="bonus-dashboard"><div className="bonus-target"><small>Her yerde bu kelimeyi bul</small><b data-word-label>{word}</b></div><span className="bonus-landing" data-bonus-sink aria-hidden="true"><Sparkles/></span><div className={seconds<=10?'bonus-dial urgent':'bonus-dial'} role="timer" aria-label={`${seconds} saniye kaldı`}><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle className="bonus-time-remaining" cx="32" cy="32" r="27" pathLength="100" strokeDasharray={`${Math.max(0,Math.min(100,seconds/60*100))} 100`}/></svg><b>{seconds}</b><small>sn</small></div><div className="bonus-discoveries" role="progressbar" aria-label="Bulunan keşifler" aria-valuenow={save.found.length} aria-valuemin={0} aria-valuemax={board.targets.length}><i style={{transform:`scaleX(${save.found.length/board.targets.length})`}}/><span>{save.found.length} / {board.targets.length}</span></div></div><p className="bonus-notice" role="status">{message||'Aynı kelime, farklı yerlerde.'}</p></PlayLayout></div>
+ const readiness=(
+  <div className="bonus-ready" role="group" aria-label="Bonusa hazırlan">
+   <div>
+    <h2>{save.elapsed>0?'Kaldığın yerden':'Kelime avı'}</h2>
+    <p>Tahtadaki bütün <b>{word}</b> kelimelerini bul.</p>
+    <p className="bonus-ready-rule">
+     {save.elapsed>0?`${save.found.length} bulundu · ${seconds} saniyen kaldı`:`${board.targets.length} keşif · ${seconds} saniye`}
+    </p>
+    <button className="button primary stage-play" onClick={resume}>
+     <Play aria-hidden="true" size={20}/>{save.elapsed>0?'Bonusa devam et':'Bonusu başlat'}
+    </button>
+    <button className="text-button" onClick={onContinue}>Bonusu geç, yolculuğa devam et</button>
+   </div>
+  </div>
+ );
+ return <><div className={'bonus-session'+(ready?' is-ready':'')}>
+  <PlayLayout
+   quietHeader starCount={collectionStats(progress).stars} focused scene={scene}
+   headerAction={<button className="icon-button game-settings-trigger" aria-label="Ayarlar" aria-haspopup="dialog" onClick={openTools}><Settings aria-hidden="true"/></button>}
+   title={world.title} kicker="Bonus turu" onBack={back}
+   board={board} strokes={strokes} wordListKey={'bonus:'+worldId+':'+save.attempt}
+   effect={ready?readiness:undefined} inputBlocked={ready} inputStatus="Başlamaya hazır"
+   paused={paused||help||tools} readOnly={save.finished} reviewStatus="Bonus tamamlandı" zoom={false}
+   onCommit={commit} preview={preview} onPreview={setPreview} onSelectLetter={depth=>chime('letter',depth)}
+   onResume={!help&&!tools?resume:undefined} departing={result.departing&&!review}
+   celebrating={save.finished&&result.ready&&!review&&!help&&!tools} aside={<></>}
+   footer={<div className="play-controls bonus-controls">{save.finished&&<button className="button primary" onClick={()=>{result.skip();setReview(false);}}>Sonucu göster</button>}</div>}
+  >
+   <div className="bonus-dashboard">
+    <div className="bonus-target"><h1 aria-label={`Hedef kelime: ${word}`} data-word-label>{word}</h1></div>
+    <span className="bonus-landing" data-bonus-sink aria-hidden="true"><Sparkles/></span>
+    <div className={seconds<=10?'bonus-dial urgent':'bonus-dial'} role="timer" aria-label={`${seconds} saniye kaldı`}>
+     <svg viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="32" r="27"/>
+      <circle className="bonus-time-remaining" cx="32" cy="32" r="27" pathLength="100" strokeDasharray={`${Math.max(0,Math.min(100,seconds/(BONUS_DURATION/1000)*100))} 100`}/>
+     </svg>
+     <b>{seconds}</b><small>sn</small>
+    </div>
+    <div className="bonus-discoveries" role="progressbar" aria-label="Bulunan keşifler"
+     aria-valuenow={save.found.length} aria-valuemin={0} aria-valuemax={board.targets.length}>
+     <i style={{transform:`scaleX(${save.found.length/board.targets.length})`}}/>
+     <span>{save.found.length} / {board.targets.length}</span>
+    </div>
+   </div>
+   <p className="bonus-notice" role="status">{message}</p>
+  </PlayLayout>
+ </div>
  {tools&&<GameToolsSheet finished={save.finished} onClose={closeTools} onHome={back} sound={progress.sound} onSound={()=>{chime(progress.sound?'mute':'enable');onProgress(p=>({...p,sound:!p.sound}));}} onHelp={()=>{if(started)pause();setHelp(true);}}/>}
  {help&&<Modal className="game-tools-modal mechanic-guide" title="Bonus turu" onClose={()=>{setHelp(false);if(started)resume();}} footer={<button className="button primary full" onClick={()=>{setHelp(false);if(started)resume();}}>Oyuna dön</button>}><p>Tahtadaki {word} kelimelerini yatay, dikey, çapraz veya tersten bul. Her farklı çizgi yalnız bir kez sayılır.</p><p>Süre dolunca buldukların kaydedilir. Ara verdiğinde süre durur. İpucu veya puan cezası yok.</p></Modal>}
  {save.finished&&result.ready&&!review&&!help&&!tools&&<Modal scene={scene}
@@ -49,7 +94,7 @@ export function BonusRound({worldId,progress,onProgress,onBack,onHome,onContinue
   title={save.found.length===board.targets.length?'Hepsini buldun!':'Bonus tamamlandı'}
   resultStars={collectionStats(progress).stars} onClose={onHome??onBack}
   footer={<>
-   <button className="button primary full result-continue" onClick={onContinue}>Yolculuğa devam et</button>
+   <button className="button primary full result-continue" onClick={onContinue}>Devam et</button>
    <div className="result-shortcuts">
     <button type="button" aria-label="Tekrar dene" onClick={replay}><RefreshCw aria-hidden="true"/></button>
     <button type="button" aria-label="Tahtayı incele" onClick={()=>setReview(true)}><Grid3X3 aria-hidden="true"/></button>
