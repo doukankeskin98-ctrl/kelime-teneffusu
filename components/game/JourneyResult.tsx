@@ -9,9 +9,9 @@ import {timeLabel} from '@/lib/game/engine';
 import {SceneArt} from './SceneArt';
 import {playResultSequence} from '@/lib/game/result-motion';
 
-export function JourneyResult({before,after,rewards,save,best,reward}:{reward?:ReactNode;before:ReturnType<typeof journeyGoal>;after:ReturnType<typeof journeyGoal>;rewards:DiscoveryReward[];save:SavedLevel;best?:SavedLevel}){
+export function JourneyResult({before,after,rewards,save,best,reward,animateReward=true}:{animateReward?:boolean;reward?:ReactNode;before:ReturnType<typeof journeyGoal>;after:ReturnType<typeof journeyGoal>;rewards:DiscoveryReward[];save:SavedLevel;best?:SavedLevel}){
  const root=useRef<HTMLDivElement>(null);
- useLayoutEffect(()=>root.current?playResultSequence(root.current):undefined,[after?.chapter.id]);
+ useLayoutEffect(()=>root.current&&animateReward?playResultSequence(root.current,true):undefined,[after?.chapter.id,animateReward]);
  if(!after)return null;
  const newPiece=rewards.some(r=>r.id===`piece:${after.state.expedition.id}:${after.position}`);
  const unlocks=rewards.filter(r=>r.kind!=='piece'),openedWorld=unlocks.find(r=>r.kind==='world');

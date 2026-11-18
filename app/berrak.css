@@ -246,3 +246,36 @@ dialog.modal.game-dialog.settings-home>.modal-content{padding:16px;overflow:auto
 
 .install-setting{margin-top:12px}
 .install-setting p{color:var(--berrak-muted);margin:8px 0 0;line-height:1.45}
+
+/* Keep the action reachable at first presentation, including larger system text. */
+dialog.modal.game-dialog.mechanic-guide[open] {
+  display:flex;flex-direction:column;overflow:hidden;
+}
+dialog.modal.game-dialog.mechanic-guide > :is(.modal-head,.modal-actions) {flex:none}
+dialog.modal.game-dialog.mechanic-guide > .modal-content {
+  flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+}
+@media(max-height:620px) {
+  .modal.game-dialog.mechanic-guide .mechanic-example {padding:10px;gap:4px;margin-block:4px}
+  .modal.game-dialog.mechanic-guide .modal-content p {margin-block:8px}
+}
+dialog.modal.game-dialog .game-settings :is(.sound-slider-row output,.board-color-settings legend,.game-disclosure-trigger,.sound-options small),
+dialog.modal.game-dialog.game-tools-modal .play-settings-details summary {color:var(--berrak-ink)}
+dialog.modal.game-dialog .game-settings .sound-slider {accent-color:var(--berrak-ui-dark)}
+dialog.modal.game-dialog .game-settings .comfort-setting i:not(.switch) {
+  background:var(--berrak-wash);color:var(--berrak-ui-dark);
+}
+dialog.modal.game-dialog .game-settings .comfort-setting[aria-checked=true] i {background:var(--berrak-ui-dark);color:white}
+dialog.modal.game-dialog .game-settings .board-color-options button {
+  color:var(--berrak-ink);background:var(--berrak-surface);border-color:var(--berrak-line);
+}
+dialog.modal.game-dialog .game-settings .board-color-options button[aria-pressed=true] {
+  border-color:var(--berrak-ui-dark);background:var(--berrak-wash);
+}
+dialog.modal.game-dialog .game-settings .palette-options button[aria-pressed=true] {
+  color:white;background:var(--berrak-ui-dark);border-color:var(--berrak-ui-dark);
+}
+dialog.modal.game-dialog .game-settings .palette-options button[aria-pressed=true] :is(small,b) {color:white}
+dialog.modal.game-dialog .game-settings :is(.palette-options button,.sound-preview):disabled {
+  opacity:1;color:var(--berrak-muted);background:var(--berrak-wash);
+}

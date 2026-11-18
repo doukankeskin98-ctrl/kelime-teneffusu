@@ -26,6 +26,7 @@ import {collectionStats,mergeProgress,cleanSave,type Progress,type SavedLevel} f
 import {mergeChapterSave} from '@/lib/studio/chapter-progress';
 import {track} from '@/lib/game/telemetry';
 import {discoveryRewards,nextJourneyAfter} from '@/lib/game/discovery';
+import {chapterCredit} from '@/lib/game/original-content';
 import {mainChapter,nextMainChapter,FIRST_TEN_LESSONS,nextChapterLabel} from '@/lib/game/main-journey';
 import {sceneForJourney} from '@/lib/game/scene';
 import {worldChapter,chapterVeils,veilInstruction} from '@/lib/game/world-presentation';
@@ -96,7 +97,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
   if(resume.strokes.some(stroke=>!save.strokes.some(found=>found.id===stroke.id)))
    setMessage('Hesabındaki keşifler bu tahtaya eklendi.');
  },[external?.resume,config.practice,board]);
- const result=useResultPresentation(completed,key+':'+(config.run??0)),resultReady=result.ready;
+ const result=useResultPresentation(completed,key+':'+(config.run??0),!!main),resultReady=result.ready;
  useEffect(()=>{if(completed&&guideAtStart&&!config.tutorial)onProgress(p=>({...p,guideDone:true}));},[completed]);
  useEffect(()=>{track('level_start');if(story&&!save.complete)track('story_start');},[]);
  useEffect(()=>{if(!hint&&!message)return;const timeout=setTimeout(()=>{setHint(null);setHintEnd(null);setMessage('');},3000);return ()=>clearTimeout(timeout);},[hint,message]);
@@ -177,6 +178,8 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
  const tutorialHint=config.tutorial&&!guideSkipped&&!save.strokes.some(s=>s.id===TUTORIAL.targets[0]!.id)?(board as Puzzle).placements.find(p=>p.id===TUTORIAL.targets[0]!.id)!.a:null;
  const improved=(!external||external.personalBestKnown===true)&&completed&&!daily&&!config.classic&&!config.tutorial&&previousBest.current?.complete&&(save.stars>previousBest.current.stars||(save.stars===previousBest.current.stars&&save.elapsed<previousBest.current.elapsed));
  const resultProgress=useMemo(()=>journey&&completed?mergeProgress(progress,{...progress,...(progress.revisionSaves?{revisionSaves:{}}:{}),saves:{[key]:{...save,...(journey.revision===2?{revision:2 as const}:{})}}}):progress,[completed,progress,key,save,journey]);
+ const [creditedBefore]=useState(()=>config.campaign&&config.journey?chapterCredit(progress,config.journey):undefined);
+ const starsEarned=Math.max(0,save.stars-(creditedBefore?.complete?creditedBefore.stars:0));
  const rewards=journey&&completed?discoveryRewards(progressAtStart.current,resultProgress):[];
  const riddle=isRiddleChapter(journey?.id);
  const nextJourney=journey?(story?LIVING_STORIES.find(c=>!resultProgress.saves['route:'+c.id]?.complete)??null:riddle?RIDDLE_CHAPTERS.find(c=>!resultProgress.saves['route:'+c.id]?.complete)??null:nextJourneyAfter(resultProgress,journey.id)):null;
@@ -210,9 +213,9 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
  {exit&&<Modal className="game-library-sheet game-tools-modal help-sheet" title="Oyundan çıkılsın mı?" onClose={()=>setExit(false)}><p>Günlük yarış süren ara verdiğinde de devam eder. Bu sekmede bekleyen bir işlemin varsa yeniden açılışta önce kontrol edilir.</p><div className="button-row"><button className="button secondary" onClick={()=>setExit(false)}>Oyuna dön</button><button className="button primary" onClick={onBack}>Ana sayfaya dön</button></div></Modal>}
  {completed&&resultReady&&!review&&!help&&!exit&&<Modal
   scene={story?.scene??sceneForJourney(journey?.id,config.themeId)}
-  className={'achievement-modal celebration-outcome scene-result berrak-result'+(rewards.some(r=>r.kind==='world'||r.kind==='album')?' milestone-outcome':' ordinary-outcome')+(main?' journey-outcome':story?' story-outcome':'')+(bonusWorld?' has-bonus-choice':'')}
+  className={'achievement-modal celebration-outcome scene-result berrak-result'+(reviewMilestone&&result.animateReward?' milestone-outcome':' ordinary-outcome')+(main?' journey-outcome':story?' story-outcome':'')+(bonusWorld?' has-bonus-choice':'')}
   title={resultTitle}
-  resultStars={onHome||main?collectionStats(resultProgress).stars:undefined}
+  resultStars={main?starsEarned:onHome?collectionStats(resultProgress).stars:undefined}
   onClose={onHome??(main?onBack:()=>setReview(true))}
   footer={<>
    <button className="button primary full result-continue" aria-label={!bonusWorld&&nextNumber&&nextJourney?`${continueLabel} · ${worldChapter(nextJourney.id,nextJourney.revision)?.topic??nextJourney.title}`:undefined} onClick={bonusWorld?startBonus:daily?onBack:next}>{continueLabel}</button>
@@ -222,7 +225,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
     <button type="button" aria-label="Tahtayı incele" onClick={()=>setReview(true)}><Grid3X3 aria-hidden="true"/></button>
    </div>
   </>}>
-  {story?<StoryResult story={story} save={save} best={previousBest.current}/>:main?<JourneyResult reward={<TrailResult before={progressAtStart.current} after={resultProgress}/>} before={goal} after={resultGoal} rewards={rewards} save={save} best={previousBest.current}/>:<VictorySummary goal={resultGoal} rewards={rewards} stars={3-Math.min(2,save.hints)} hints={save.hints} seconds={seconds} total={targets.total} improved={!!improved} best={!config.classic&&(!external||external.personalBestKnown===true)?previousBest.current:undefined} tutorial={!!config.tutorial} daily={!!daily}/>}
+  {story?<StoryResult story={story} save={save} best={previousBest.current}/>:main?<JourneyResult animateReward={!!result.animateReward} reward={<TrailResult before={progressAtStart.current} after={resultProgress}/>} before={goal} after={resultGoal} rewards={rewards} save={save} best={previousBest.current}/>:<VictorySummary goal={resultGoal} rewards={rewards} stars={3-Math.min(2,save.hints)} hints={save.hints} seconds={seconds} total={targets.total} improved={!!improved} best={!config.classic&&(!external||external.personalBestKnown===true)?previousBest.current:undefined} tutorial={!!config.tutorial} daily={!!daily}/>}
   {external?.result?.(save)}
   {daily&&<><p className="center muted">Sonucun günlük sıralamaya kaydedildi.</p><DailyReminder offer/></>}
 

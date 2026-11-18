@@ -56,7 +56,6 @@
 .scenic-play .letter-grid span,.game-app .scenic-play .letter-grid span{
   color:var(--berrak-ink,#14233a);font-family:var(--sans);font-weight:800;
 }
-.scenic-play .board-ink .active-selection[data-active=true] line:last-child{stroke:var(--selection);stroke-opacity:.48}
 .scenic-play .board-ink .active-stroke-outline{stroke:var(--selection);opacity:.2}
 .scenic-play .board-stage .letter-board{border:0;border-radius:18px}
 .scenic-play .board-scroll:not(.zoomed){border-radius:18px;box-shadow:0 4px 0 #14233a44}
@@ -180,4 +179,44 @@
     position:absolute;right:54px;top:0;transform:none;
   }
   .scenic-play[data-tall-targets]:has(.play-controls.is-review) .play-title{opacity:0}
+}
+
+/* The old paper and line each dimmed the entire live selection. Keep the
+   established opacity of settled ink while compositing active ink at full strength. */
+.game-app .scenic-play .letter-board .board-ink {opacity:1}
+.game-app .scenic-play .letter-board .board-ink>g:not(.active-selection) {opacity:.73}
+[data-board-color]:not([data-board-color=white]) .game-app .scenic-play .letter-board .board-ink>g:not(.active-selection),
+.game-app[data-board-color]:not([data-board-color=white]) .scenic-play .letter-board .board-ink>g:not(.active-selection) {opacity:1}
+
+.game-app .scenic-play .active-selection[data-active=true] line:last-child {
+  stroke:#6c3bcf;stroke-opacity:.94;opacity:1;
+}
+.game-app .scenic-play .letter-grid span.letter-selected {
+  color:#fff!important;text-shadow:none;transform:scale(1.08);
+}
+.game-app .scenic-play .letter-grid span.letter-selected::before {opacity:0}
+@media(prefers-reduced-motion:reduce) {
+  .game-app .scenic-play .letter-grid span.letter-selected {transform:none}
+}
+html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-selected {transform:none}
+
+@media(prefers-reduced-motion:no-preference) {
+  html:not([data-reduce-motion=true]) .word-tag[data-word-landing=true] [data-target-letter]::after {
+    animation:word-line-settle 190ms ease-out both;
+  }
+  @keyframes word-line-settle {
+    from {background:#7445ee;transform:scaleY(1.65)}
+    to {background:currentColor;transform:scaleY(1)}
+  }
+}
+
+/* Carry the final letter landing into the scene transition using the existing ink layer. */
+@media(prefers-reduced-motion:no-preference) {
+  html:not([data-reduce-motion=true]) .chapter-play:has(.journey-skip-reward):not([data-result-phase=exit]) .board-ink {
+    animation:chapter-ink-settle 360ms 710ms ease-in-out both;
+  }
+  @keyframes chapter-ink-settle {
+    0%,100% {opacity:1}
+    52% {opacity:.78}
+  }
 }

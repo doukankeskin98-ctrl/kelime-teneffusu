@@ -9,6 +9,8 @@ import path from 'node:path';
 import {launch,sleep} from './chrome.mjs';
 
 const out=path.resolve(process.env.EVIDENCE_DIR??'../world-review.nosync/release-0570/screens');
+const moments=process.argv.includes('--moments');
+const polish=process.argv.includes('--polish');
 const surfaceCheck=process.argv.includes('--surfaces');
 const readabilityOnly=process.argv.includes('--readability-only');
 let signedInFixture=false;
@@ -69,14 +71,27 @@ async function verifyReadableDialogs(width){
   if(name.startsWith('support'))await waitFor("!!document.querySelector('dialog[open] #support-detail')");
   await waitFor("!document.querySelector('dialog[open] .screen-load-state')");
   await page.evaluate('document.fonts.ready');await sleep(240);
+  const guideCTA=await page.evaluate(`(()=>{
+   const dialog=document.querySelector('dialog.mechanic-guide[open]');if(!dialog)return null;
+   const button=dialog.querySelector('footer button'),b=button.getBoundingClientRect(),d=dialog.getBoundingClientRect();
+   const visible=b.top>=d.top && b.bottom<=d.bottom+1 && b.left>=d.left && b.right<=d.right+1 &&
+    [b.top+5,b.bottom-5].every(y=>button.contains(document.elementFromPoint(b.x+b.width/2,y)));
+   return {title:dialog.querySelector('h2').innerText,top:b.top,bottom:b.bottom,visible};
+  })()`);
+  if(guideCTA){records.push({width,guideCTA});if(!baseline)assert(guideCTA.visible,JSON.stringify(guideCTA));}
   await shot(width,name);
+  if(guideCTA&&polish){
+   await page.touch([[width/2, (guideCTA.top+guideCTA.bottom)/2]]);
+   if(!baseline)await waitFor("!document.querySelector('dialog.mechanic-guide[open]')");
+   return [];
+  }
   const rows=await measureDialogText(page);
   assert(rows.length>=4,name+' missing dialog text');
   writeFileSync(path.join(out,width+'-'+name+'-contrast.json'),JSON.stringify(rows,null,2));
   return rows.filter(row=>!row.pass).map(row=>name+': '+row.text+' ('+row.ratio+')');
  }
  const failures=[];
- for(const [name,title] of [['privacy','Gizlilik ve hesap'],['support','Destek']]){
+ for(const [name,title] of polish?[]:[['privacy','Gizlilik ve hesap'],['support','Destek']]){
   await home();await click('[aria-label="Ayarları aç"]');await textButton(title);
   failures.push(...await inspect(name,title));
   if(name==='support'){
@@ -98,12 +113,98 @@ async function verifyReadableDialogs(width){
   await waitFor("document.querySelector('.daily-studio-copy button')?.textContent.includes('Günün keşfine başla')");
   await textButton('Günün keşfine başla');
   failures.push(...await inspect('daily-guide','Bugünün ortak tahtası'));
+  if(polish)return;
   await home();await click('[aria-label="Ayarları aç"]');await textButton('Gizlilik ve hesap');
   await waitFor("!!document.querySelector('.account-danger button[aria-expanded]')");
   await click('.account-danger button[aria-expanded]');
   failures.push(...await inspect('privacy-account','Gizlilik ve hesap'));
  }finally{signedInFixture=false;}
  if(!baseline)assert.deepEqual(failures,[],'Dialog text contrast');
+}
+async function recordPlayMoments(width){
+ const record=async(name,action)=>{
+  const dir=path.join(out,width+'-'+name);await page.startRecording(dir);
+  try{await action();}finally{await page.stopRecording();}
+ };
+ await home(fixture.concealedProgress);await click('.stage-play');await waitFor("!!document.querySelector('dialog.mechanic-guide[open]')");
+ await record('01-rehber',async()=>{
+  await sleep(300);const center=await page.evaluate("(()=>{const b=document.querySelector('.mechanic-guide footer button').getBoundingClientRect();return [b.x+b.width/2,b.y+b.height/2]})()");
+  await page.touch([center]);await sleep(350);
+ });
+ await home();await click('.stage-play');await waitFor("!!document.querySelector('.letter-board')");await sleep(350);
+ await record('02-iki-kelime',async()=>{
+  for(let i=1;i<=2;i++){
+   await draw(fixture.words[i],async step=>{
+    if(step===0&&i===2&&!baseline)assert(await page.evaluate("!!document.querySelector('.word-flight-glyph')"),'previous flight still visible');
+    if(step===5){
+     const colors=await page.evaluate(`(()=>{
+      const cell=document.querySelector('.letter-selected'),line=document.querySelector('.active-selection line:last-child');
+      const css=getComputedStyle(line),rgb=s=>s.match(/[0-9.]+/g).slice(0,3).map(Number);
+      const lum=values=>values.map(c=>c/255).map(n=>n<=.04045?n/12.92:((n+.055)/1.055)**2.4).reduce((a,v,k)=>a+v*[.2126,.7152,.0722][k],0);
+      const foreground=lum(rgb(getComputedStyle(cell).color)),ink=rgb(css.stroke);
+      let alpha=Number(css.strokeOpacity);
+      for(let layer=line;layer&&!layer.classList.contains('letter-board');layer=layer.parentElement)alpha*=Number(getComputedStyle(layer).opacity);
+      const paper=rgb(getComputedStyle(document.querySelector('.letter-board')).backgroundColor);
+      const bg=lum(ink.map((c,j)=>alpha*c+(1-alpha)*paper[j]));
+      return {text:cell.textContent,alpha,ratio:(Math.max(foreground,bg)+.05)/(Math.min(foreground,bg)+.05)};
+     })()`);records.push({width,selection:colors});if(!baseline)assert(colors.ratio>=4.5,JSON.stringify(colors));
+    }
+   });
+  }
+  await sleep(1150);
+ });
+ for(const [number,reduced] of [[3,false],[6,false],[3,true]]){
+  const f=fixture.finishes.find(item=>item.number===number);await page.reducedMotion(reduced);
+  await home(f.seed);await click('.stage-play');await waitFor("!!document.querySelector('.letter-board')");await sleep(350);
+  await record((number===3?'03-sonraki-bolum':'04-dunya-finali')+(reduced?'-az-hareket':''),async()=>{
+   await page.evaluate(`(()=>{
+    window.__lightCount=0;
+    const times=window.__finishTimes={},initial=document.querySelectorAll('.board-ink .found-stroke').length;
+    const watch=new MutationObserver(()=>{
+     window.__lightCount=Math.max(window.__lightCount,document.querySelectorAll('.reward-light').length);
+     if(!times.word&&document.querySelectorAll('.board-ink .found-stroke').length>initial)times.word=performance.now();
+     if(!times.dialog&&document.querySelector('dialog[open] .result-continue'))times.dialog=performance.now();
+    });
+    watch.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});setTimeout(()=>watch.disconnect(),2900);
+   })()`);
+   await draw(f.word,undefined,f.shape);await waitFor("!!document.querySelector('dialog[open] .result-continue')");await sleep(820);
+   const result=await page.evaluate("({dialogMs:Math.round(window.__finishTimes.dialog-window.__finishTimes.word),lights:window.__lightCount,confetti:!!document.querySelector('dialog .celebration-particles'),stars:document.querySelector('.result-stars-total')?.innerText})");
+   records.push({width,number,reduced,...result});
+   if(!baseline){
+    assert.equal(result.lights>0,!reduced,'light reaches a newly earned piece');
+    assert.equal(result.confetti,number===6&&!reduced,'special celebration for world finale');
+    assert.equal(result.stars,'+3');
+    assert(result.dialogMs>=0&&result.dialogMs<=2600,JSON.stringify(result));
+   }
+   if(number===3){
+    const center=await page.evaluate("(()=>{const b=document.querySelector('.result-continue').getBoundingClientRect();return [b.x+b.width/2,b.y+b.height/2]})()");
+    await page.touch([center]);await waitFor("document.querySelector('.play-chapter-number')?.innerText.includes('4')");
+    await sleep(300);
+   }
+  });
+ }
+ await page.reducedMotion(false);
+ if(!baseline){
+  const last=fixture.finishes.find(item=>item.number===3);
+  await home(last.seed);await click('.stage-play');await waitFor("!!document.querySelector('.letter-board')");
+  await draw(last.word,undefined,last.shape);
+  await waitFor("!!document.querySelector('.journey-skip-reward')");
+  await sleep(320);
+  const point=await page.evaluate("(()=>{const r=document.querySelector('.letter-board').getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()");
+  await page.touch([point]);
+  assert(await page.evaluate("!!document.querySelector('dialog[open] .result-continue')&&!document.querySelector('.reward-light')"),'tap settles the final result immediately');
+ }
+}
+async function settingsContrast(width){
+ await home();await click('[aria-label="Ayarları aç"]');await textButton('Diğer ayarlar');
+ await waitFor("!!document.querySelector('.settings-sheet .game-disclosure-trigger')");
+ for(const title of ['Ses düzeyi','Erişilebilirlik','Tahta ve çizgi renkleri','Kullanım verileri'])await textButton(title);
+ await shot(width,'more-settings-open');
+ const settings=await measureDialogText(page);
+ await home();await click('[aria-label="Oyuncu profilini aç"]');await click('#collection-tab-achievements');
+ await shot(width,'achievements');const achievements=await measureDialogText(page,'#collection-panel-achievements');
+ const rows=[...settings,...achievements];writeFileSync(path.join(out,width+'-settings-achievements.json'),JSON.stringify(rows,null,2));
+ if(!baseline)assert.deepEqual(rows.filter(r=>!r.pass).map(r=>[r.text,r.ratio]),[],'Settings and achievements');
 }
 async function verifyChapterTransitions(width){
  for(const {number,seed,shape,word} of fixture.finishes){
@@ -178,8 +279,13 @@ async function verifySideScreens(width){
  await sleep(1000);await shot(width,'earned-piece');
 }
 try{
- const sizes=surfaceCheck?[[320,568],[393,852]]:process.env.MENUS_ONLY?[[393,852]]:[[320,568],[375,667],[393,852],[430,932]];
- for(const [w,h] of sizes){
+ const sizes=moments?[[320,568],[393,852]]:polish?[[320,568],[375,667],[393,852],[430,932]]:surfaceCheck?[[320,568],[393,852]]:process.env.MENUS_ONLY?[[393,852]]:[[320,568],[375,667],[393,852],[430,932]];
+ for(const [w,h] of sizes.filter(([w])=>!process.env.VIEWPORT||w===Number(process.env.VIEWPORT))){
+  if(moments){await page.viewport(w,h,1,{top:w===320?20:59,bottom:w===320?0:34,left:0,right:0});await recordPlayMoments(w);continue;}
+  if(polish){
+   await page.viewport(w,h,1,{top:w<=375?20:59,bottom:w<=375?0:34,left:0,right:0});
+   await verifyReadableDialogs(w);if(w===320||w===393)await settingsContrast(w);continue;
+  }
   if(surfaceCheck){
    await page.viewport(w,h,2,{top:w===320?20:59,bottom:w===320?0:34,left:0,right:0});
    await verifyReadableDialogs(w);

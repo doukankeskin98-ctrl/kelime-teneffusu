@@ -1,8 +1,8 @@
 // Inspect the actual white sheets, including text inside their scrollable content.
 // Raster sampling preserves gradient backgrounds, translucent layers and native field fills.
-export async function measureDialogText(page) {
+export async function measureDialogText(page,selector='dialog[open]') {
  const count = await page.evaluate(`(() => {
-  const dialog = [...document.querySelectorAll('dialog[open]')].at(-1);
+  const dialog = [...document.querySelectorAll(${JSON.stringify(selector)})].at(-1);
   const items = [];
   function add(element, range, text, pseudo) {
    if (!text || element.closest('.sr-only,[hidden],svg') || !element.checkVisibility({visibilityProperty:true,opacityProperty:true})) return;
@@ -20,12 +20,12 @@ export async function measureDialogText(page) {
    range.selectNodeContents(node);
    if(range.getBoundingClientRect().width>1)add(element,range,node.textContent.trim());
   }
-  for(const field of dialog.querySelectorAll('textarea,input:not([type=checkbox]):not([type=radio])')) {
+  for(const field of dialog.querySelectorAll('textarea,input:not([type=checkbox]):not([type=radio]):not([type=range])')) {
    add(field,null,field.value||field.placeholder,field.value?null:'::placeholder');
   }
   window.__contrastItems=items;
   const mask=document.createElement('style');mask.id='contrast-mask';
-  mask.textContent='dialog[open],dialog[open] *,dialog[open] ::placeholder{-webkit-text-fill-color:transparent!important;text-shadow:none!important;caret-color:transparent!important}';
+  mask.textContent=${JSON.stringify(selector + ',' + selector + ' *,' + selector + ' ::placeholder')}+'{-webkit-text-fill-color:transparent!important;text-shadow:none!important;caret-color:transparent!important}';
   document.head.append(mask);
   return items.length;
  })()`);

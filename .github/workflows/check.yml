@@ -29,6 +29,7 @@ jobs:
       - name: Check mobile sheet contrast, chapter transitions and first touch
         run: |
           node scripts/visual/berrak.mjs --surfaces
+          node scripts/visual/berrak.mjs --polish
           node scripts/visual/first-session.mjs
         env:
           EVIDENCE_DIR: ${{ runner.temp }}/dialog-contrast

@@ -134,7 +134,7 @@ describe('rotated live layout keeps the original puzzle authoritative',()=>{
 });
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
 const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',MatchTools:'MatchTools',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
-const modules={'@/lib/game/challenge-state':challengeState,'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
+const modules={'@/lib/game/original-content':await import('../lib/game/original-content.ts'),'@/lib/game/challenge-state':challengeState,'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
  it('defaults an enlarged board to drawing and offers explicit reversible panning outside the board',()=>{
@@ -315,7 +315,7 @@ describe('actual numbered Solo completes, advances and replays without new award
    assert.equal(h.find('PlayLayout').props['title'],'Gökyüzüne bak');assert.equal(h.find('FirstPlayGuide').props['guide'].step,1);
    for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}
    h.expire();await h.settle();assert.equal(p.saves['route:uzay-1']?.complete,true);assert.equal(p.saves['route:uzay-2'],undefined);
-   assert.equal(h.find('JourneyResult').props['before'].state.pieces,0);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
+   assert.equal(h.find('Modal').props['resultStars'],3);assert.equal(h.find('JourneyResult').props['before'].state.pieces,0);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
    const next=walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Bölüm 2')!;assert.ok(next);assert.match(next.props['aria-label'],/Gezegen komşuları/);next.props['onClick']();assert.equal(calls[0].journey,'uzay-2');assert.equal(calls[0].campaign,true);
    const replay=walk(h.find('Modal')).find(n=>n.type==='button'&&n.props['aria-label']==='Bir daha oyna')!;replay.props['onClick']();assert.equal(calls[1].journey,'uzay-1');assert.equal(calls[1].practice,true);
   }finally{h.close();}
@@ -324,7 +324,7 @@ describe('actual numbered Solo completes, advances and replays without new award
   const b=content.journeyBoard(content.journeyById('uzay-1')!),p=familiarProgress();p.saves['route:uzay-1']=progress.cleanSave({strokes:b.placements,hints:0,elapsed:10,complete:false,stars:0},b);
   const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{
    h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true,practice:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});assert.equal(h.find('PlayLayout').props['strokes'].length,0);
-   for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();assert.deepEqual(h.find('JourneyResult').props['rewards'],[]);assert.equal(h.find('JourneyResult').props['before'].state.pieces,1);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
+   for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();assert.equal(h.find('Modal').props['resultStars'],0);assert.deepEqual(h.find('JourneyResult').props['rewards'],[]);assert.equal(h.find('JourneyResult').props['before'].state.pieces,1);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
   }finally{h.close();}
   const resumed={...p,saves:{'route:uzay-1':progress.cleanSave({strokes:[b.placements[0]!],hints:1,elapsed:12,complete:false,stars:0},b)}};
   const r=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{r.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:resumed,onProgress(){},onBack(){},onMap(){},onNext(){}});assert.equal(r.find('PlayLayout').props['strokes'].length,1);assert.equal(r.find('PlayControls').props['hints'],2);}finally{r.close();}
