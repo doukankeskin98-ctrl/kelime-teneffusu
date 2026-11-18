@@ -17,3 +17,5 @@ Mobil derlemeden sonra şu kontroller ayrı, sentetik kayıtlarla çalışır.
 - `node scripts/visual/berrak.mjs` ve `node scripts/visual/journey-rhythm.mjs` sonuç türlerinde ödül metninin gerçek sınırını, düğmeye dokunulabilmesini ve genişletilen ayrıntıların son satırına erişimi ölçer. Altı telefon ölçüsünde, 375×667 için de iki ayrı güvenli alanla, yedi profil kullanılır.
 
 Kayıt şeması, 312 bölümün sırası ve koordinatları, ödül kimlikleri, eşitleme ve Arena kuralları aynıdır. Geri dönüş noktası 0.57.0 / Sites v115 (`8c0c650`). Günlük bulmacanın giriş koşulları bu paketin kapsamı dışındadır. Tarayıcı dokunma testleri fiziksel cihaz titreşimini ölçmez.
+
+Canlı tarayıcı kontrolünde 320×568 ekranda kurulum önerisinin “Bölüm 1” düğmesini örttüğü görüldü. Tarayıcı kurulum seçeneği Ayarlar → Diğer ayarlar içine taşındı.
