@@ -1,3 +1,5 @@
+18 Kasım 2026 · 0.57.1: Kazanılan parçanın okunması, uzun tahtada ilk çizim ve bonusun temaya geçişi. İlk ziyaret ile tekrar oynama ayrı ölçülür. [Sürüm ve kabul ölçütleri](../../docs/release-0.57.1.md).
+
 16 Kasım 2026 · **0.56.1**: ECC seçici beceri kurulumu; Arena eski tur penceresi ve sonradan yüklenen ekranların yerinde yeniden denenmesi. Kayıt/312 bölüm/çizim ve animasyon zamanlamaları aynı. Rapor: docs/release-0.56.1.md. iOS50 paketlendi; telefona kurulmadı.
 
 16 Kasım 2026 · **0.56.0**: izole Arena yük testi ve koşullu oda sorgusu; gereksiz sorgu/yazı ve eşleştirme fan-out azaltıldı. Kayıt/312 tahta değişmez. 10.000 eşzamanlı Arena kabulü VERİLMEDİ; yerel sonuç ve açık altyapı kapısı docs/release-0.56.0.md içinde. iOS49 paketlendi; telefona kurulmadı.

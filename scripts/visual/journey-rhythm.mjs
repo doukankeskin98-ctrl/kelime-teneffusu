@@ -1,4 +1,5 @@
 // Real local UI + touch input; synthetic progress, no live account or server.
+import {verifyResultLayout} from './result-layout.mjs';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createServer} from 'node:http';
@@ -75,6 +76,7 @@ try{
   for(const p of f.chapters[5].placements)await draw(f.chapters[5],p);
   await sleep(2300);if(!before&&width===375)await page.stopRecording();
   const result=await capture('world-result',width);
+  if(!before&&width===393)await verifyResultLayout(page,'world-complete',out);
   if(before){report.push({width,start,praise,result});continue;}
   if(width===375||width===430){
    const frames=await page.evaluate('window.exitInkFrames');
@@ -93,8 +95,10 @@ try{
   await click('Bonusu başlat');await sleep(350);const bonus=await capture('bonus',width);assert(bonus.board.bottom<=height);
   for(const p of f.bonus.placements.slice(0,3))await draw(f.bonus,p);await sleep(600);await capture('bonus-colors',width);
   const bonusColors=await page.evaluate(`Array.from(document.querySelectorAll('.board-ink .found-stroke')).map(e=>getComputedStyle(e).stroke)`);assert.equal(new Set(bonusColors).size,3,'bonus discoveries keep distinct colors');
-  for(const p of f.bonus.placements.slice(3))await draw(f.bonus,p);await sleep(1500);const bonusResult=await capture('bonus-result',width);assert.match(bonusResult.text.toLocaleLowerCase('tr'),/hepsini buldun/);
-  await click('Yolculuğa devam et');await sleep(400);const next=await capture('next',width);assert.match(next.text,/Bölüm\s+7\b/iu);
+  for(const p of f.bonus.placements.slice(3))await draw(f.bonus,p);await sleep(1500);const bonusResult=await capture('bonus-result',width);
+  if(width===393)await verifyResultLayout(page,'bonus',out);
+  assert.match(bonusResult.text.toLocaleLowerCase('tr'),/hepsini buldun/);
+  await click('Devam et');await sleep(400);const next=await capture('next',width);assert.match(next.text,/Bölüm\s+7\b/iu);
   writeFileSync(path.join(out,'latest-check.json'),JSON.stringify({width,start,praise,sixth,result,intro,bonus,bonusResult,next},null,2));for(const [name,state] of Object.entries({start,praise,sixth,result,intro,bonus,bonusResult,next}))assert.equal(state.overflow,false,name+' overflow');
   const saved=await page.evaluate(`JSON.parse(localStorage.getItem('kelime-teneffusu-v2'))`);assert(saved.saves['route:uzay-gozlemevi'].complete);assert(saved.bonuses.uzay.finished);
   report.push({width,height,start,praise,heldSelection,continued,sixth,result,intro,bonus,bonusResult,next});
