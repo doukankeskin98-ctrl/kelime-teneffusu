@@ -520,7 +520,9 @@ describe('world word veils survive every target surface and resume',()=>{
    const tree=h.exports['WordList']({board,strokes,veils,onFocusGroup(){}}),card=walk(tree).find(n=>n.props?.['role']==='listitem'&&String(n.props['aria-label']).startsWith('Saklı kelime'));
    assert(card);assert(!visible(tree).includes(parts[1]!.text));assert(!JSON.stringify(tree).includes(split.label));
    const complete=h.exports['WordList']({board,strokes:board.placements,veils});assert(visible(complete).includes(split.label));
-   h.start('MobileTargets',{words:{board:{targets:parts},strokes,veils}});assert(!visible(h.tree).includes(parts[1]!.text));assert(!JSON.stringify(h.tree).includes(split.label));
+   // MobileTargets is a separate React mount and must have its own hook state.
+   const mobile=view('components/game/common.tsx');
+   try{mobile.start('MobileTargets',{words:{board:{targets:parts},strokes,veils}});assert(!visible(mobile.tree).includes(parts[1]!.text));assert(!JSON.stringify(mobile.tree).includes(split.label));}finally{mobile.close();}
   }finally{h.close();}
  });
  it('resumes the same concealed profile and reveals only confirmed words after a reload',async()=>{

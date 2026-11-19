@@ -37,13 +37,14 @@ export function playResultSequence(root:HTMLElement,traceBoard=false){
    const start=new DOMPoint(line.x2.baseVal.value,line.y2.baseVal.value).matrixTransform(matrix);
    const trail=document.createElement('i');
    trail.className='reward-light';trail.setAttribute('aria-hidden','true');
+   trail.style.setProperty('--flight-angle',Math.atan2(y-start.y,x-start.x)+'rad');
    trail.style.left=start.x-box.left+'px';trail.style.top=start.y-box.top+'px';
    dialog.appendChild(trail);traces.push(trail);
    const flight=trail.animate([
     {transform:'translate(-50%,-50%) scale(.65)',opacity:0},
     {opacity:1,offset:.16},
     {transform:`translate(calc(-50% + ${x-start.x}px),calc(-50% + ${y-start.y}px)) scale(.35)`,opacity:0}
-   ],{duration:410,delay:i*18,easing:'cubic-bezier(.35,.05,.65,1)',fill:'both'});
+   ],{duration:620,delay:i*14,easing:'cubic-bezier(.35,.05,.65,1)',fill:'both'});
    flight.onfinish=()=>trail.remove();
   }
  });

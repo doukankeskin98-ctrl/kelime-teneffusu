@@ -1,3 +1,4 @@
+import {pilotMetric} from '../lib/game/telemetry.ts';
 import * as journeyRevisions from '../lib/game/journey-revisions.ts';
 import * as progressStorage from '../lib/game/progress-storage.ts';
 import * as progressCodec from '../lib/game/progress-codec.ts';
@@ -76,7 +77,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true,jour
   react:hooks,'react/jsx-runtime':{jsx:(type:unknown,props:Record<string,unknown>)=>({type,props}),jsxs:(type:unknown,props:Record<string,unknown>)=>({type,props}),Fragment:'Fragment'},
   '@/lib/game/story-content':stories,'./StoryExperience':{StoryHud:'StoryHud',StoryResult:'StoryResult'},'@/lib/game/riddle-content':riddleContent,'@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
   '@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,
-  '@/lib/studio/chapter-progress':chapterProgress,'@/lib/game/telemetry':{track(){}},
+  '@/lib/studio/chapter-progress':chapterProgress,'@/lib/game/telemetry':{track(){},pilotMetric},
   '@/lib/game/main-journey':mainJourney,'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},
   './common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}},
   './AchievementLoop':{JourneyObjective:'JourneyObjective',VictorySummary:'VictorySummary',NextJourneyPreview:'NextJourneyPreview'}

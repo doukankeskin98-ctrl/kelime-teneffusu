@@ -8,14 +8,14 @@ export function surfaceLine(a:Cell,b:Cell,shape:BoardShape){
  const {rows,columns}=dimensions(shape);
  return snapLine(a,b,Math.max(rows,columns)).filter(([r,c])=>r<rows&&c<columns);
 }
-type Surface=Pick<Puzzle,'grid'|'size'|'targets'>;
+type Surface=Pick<Puzzle,'grid'|'size'|'targets'|'authored'>;
 
 /** Remove only lines unused by EVERY accepted answer. Canonical puzzle, saves and
  * network coordinates never change. The choice depends on content, not viewport. */
 export function projectBoard(source:Surface){
  const all=Array.from({length:source.size},(_,i)=>i);
  const identity={board:source,shape:gridShape(source.grid),toView:(p:Cell):Cell=>[...p],fromView:(p:Cell):Cell=>[...p],compacted:false};
- if(!source.targets.length)return identity;
+ if(source.authored||!source.targets.length)return identity;
  const paths=source.targets.flatMap(t=>wordSegments(source.grid,t.text).map(path=>({...t,...path})));
  if(source.targets.some(t=>!paths.some(p=>p.id===t.id)))return identity;
  const usedRows=new Set<number>(),usedCols=new Set<number>();

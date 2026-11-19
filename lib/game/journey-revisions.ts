@@ -1,5 +1,6 @@
 import {journeyById,type Journey} from './content.ts';
-import {CONTENT_REVISION_TWO} from './progress-rollout.ts';
+import {AUTHORED_JOURNEY} from './authored-journey.ts';
+import {CONTENT_REVISION_TWO,localJourneyPreview} from './progress-rollout.ts';
 import type {Progress,SavedLevel} from './progress.ts';
 
 /** Pilot catalogue, never substituted for released revision 1. These are not live
@@ -15,6 +16,8 @@ export const JOURNEY_REVISION_TWO:Record<string,RevisionDraft>={
 };
 export function journeyRevision(id:string,revision:number=1):Journey|undefined{
  const legacy=journeyById(id);if(revision===1)return legacy;
+ const authored=AUTHORED_JOURNEY[id];
+ if(legacy&&revision===2&&authored)return {...legacy,title:authored.band,words:authored.placements.map(p=>p[0]),size:Math.max(authored.grid.length,authored.grid[0]!.length),revision:2,clues:undefined,difficulty:authored.tier==='kolay'?'Rahat':authored.tier==='orta'?'Dengeli':'Ustalık'};
  const next=JOURNEY_REVISION_TWO[id];return legacy&&revision===2&&next?{...legacy,clues:undefined,...next,subtitle:'Gökyüzü Defteri',revision:2}:undefined;
 }
 export const savedRevision=(save:SavedLevel|undefined)=>save?.revision??1;
@@ -22,8 +25,10 @@ export function revisionSave(progress:Pick<Progress,'saves'|'revisionSaves'>,key
  const primary=progress.saves[key];return primary&&savedRevision(primary)===revision?primary:progress.revisionSaves?.[key]?.[revision];
 }
 /** A run captures this once. A later cloud response cannot replace its board. */
-export function playableJourney(id:string,progress:Pick<Progress,'saves'>,enableRevisionTwo=CONTENT_REVISION_TWO){
+export function playableJourney(id:string,progress:Pick<Progress,'saves'>,enableRevisionTwo?:boolean){
  const saved=progress.saves['route:'+id];
- return journeyRevision(id,saved?savedRevision(saved):enableRevisionTwo&&JOURNEY_REVISION_TWO[id]?2:1);
+ if(saved)return journeyRevision(id,savedRevision(saved));
+ const eligible=enableRevisionTwo??(AUTHORED_JOURNEY[id]?localJourneyPreview():CONTENT_REVISION_TWO);
+ return journeyRevision(id,eligible&&(AUTHORED_JOURNEY[id]||JOURNEY_REVISION_TWO[id])?2:1);
 }
 export const journeyPresentationKey=(journey:Journey)=>'route:'+journey.id+(journey.revision===2?'@2':'');

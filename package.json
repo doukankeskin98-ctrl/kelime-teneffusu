@@ -1,6 +1,6 @@
 {
   "name": "kelime-teneffusu",
-  "version": "0.57.4",
+  "version": "0.57.5",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -14,7 +14,7 @@
     "db:generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --experimental-transform-types --test tests/*.test.ts",
-    "content:check": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts --check && node --experimental-strip-types --experimental-transform-types scripts/check-content.ts && pnpm content:quality",
+    "content:check": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts --check && node --experimental-strip-types --experimental-transform-types scripts/check-content.ts && pnpm content:quality && pnpm journey:check",
     "mobile:build": "vite build --config mobile/vite.config.ts",
     "mobile:sync": "pnpm mobile:build && cap sync ios",
     "mobile:open": "cap open ios",
@@ -23,7 +23,10 @@
     "content:prepare": "node --experimental-strip-types --experimental-transform-types scripts/prepare-safe-layouts.ts",
     "lint:guard": "node scripts/lint-guard.mjs",
     "layout:audit": "pnpm mobile:build && node scripts/visual/layout-audit.mjs",
-    "content:quality": "node --experimental-strip-types --experimental-transform-types scripts/check-editorial-quality.ts"
+    "content:quality": "node --experimental-strip-types --experimental-transform-types scripts/check-editorial-quality.ts",
+    "journey:local": "vite --config mobile/vite.config.ts --mode journey-pilot --host 127.0.0.1 --port 5175 --strictPort",
+    "journey:pilot:build": "vite build --config mobile/vite.config.ts --mode journey-pilot",
+    "journey:check": "node scripts/journey-content/check.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

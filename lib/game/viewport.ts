@@ -79,6 +79,15 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:BoardSh
    const available=Math.floor((client?.height??view.innerHeight)-offset-bottom-2);
    let changed=set(screen,'--play-height',available+'px');
    screen.style.removeProperty('min-height');stage.style.removeProperty('height');stage.style.removeProperty('flex');
+   // Budget against the tallest released board so the header and tools keep one
+   // position throughout a session. Reclaim only pixels left below that board.
+   const fullStage = stage.clientHeight + pixels(screen.style.getPropertyValue('--list-extra'));
+   const maxRatio = screen.hasAttribute('data-authored-board') ? 8/7 : 11/8;
+   const spare = Math.max(0, Math.floor(fullStage - stage.clientWidth * maxRatio));
+   const targetRack = view.innerWidth <= 340 ? 63 : view.innerWidth <= 380 ? 70 : view.innerWidth <= 410 ? 80 : 86;
+   const baseRack = Math.max(45, Math.min(78, view.innerHeight * .082));
+   const extra = Math.min(spare, Math.max(0, targetRack - baseRack));
+   changed=set(screen,'--list-extra',extra+'px')||changed;
    const width=fittedBoardSize(stage.clientWidth,stage.clientHeight,cells);
    const {rows,columns}=dimensions(cells);
    changed=set(stage,'--journey-paper-height',Math.round(width*rows/columns)+'px')||changed;

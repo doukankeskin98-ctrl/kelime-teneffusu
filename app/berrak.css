@@ -279,3 +279,48 @@ dialog.modal.game-dialog .game-settings .palette-options button[aria-pressed=tru
 dialog.modal.game-dialog .game-settings :is(.palette-options button,.sound-preview):disabled {
   opacity:1;color:var(--berrak-muted);background:var(--berrak-wash);
 }
+
+.native-shell .section-heading:is(.subpage-heading,.collection-heading,.arena-stage-heading) {
+  position:relative;inset:auto;padding:12px 16px 16px;margin:0;text-align:center;
+}
+.native-shell .section-heading h1 {margin:0;color:white;font:800 clamp(26px,7vw,34px)/1.12 var(--berrak-font)}
+.native-shell .section-heading p {margin:5px 0 0;color:#fff;font-size:15px;line-height:1.35;text-shadow:0 1px 4px #191228}
+.native-shell .arena-stage-dock .arena-round-preference,.game-dialog .room-entry-sheet .arena-round-preference {
+  padding:10px 14px;min-height:48px;border:1px solid var(--berrak-line);border-radius:var(--berrak-radius);
+  background:var(--berrak-surface);box-shadow:0 3px 0 #201d4818;text-shadow:none;
+}
+:is(.arena-stage-dock,.room-entry-sheet) .arena-round-preference b {color:var(--berrak-ink)}
+:is(.arena-stage-dock,.room-entry-sheet) .arena-round-preference small {color:var(--berrak-muted)}
+.native-shell .progress-cloud-status .cloud-status {background:var(--berrak-surface);color:var(--berrak-muted);border-radius:12px;padding:8px 12px;opacity:1}
+dialog.modal.game-dialog .settings-links button>span {flex:1}
+dialog.modal.game-dialog.settings-home .settings-main-actions {margin-top:12px}
+dialog.modal.game-dialog:is(.settings-home,.game-tools-modal) .button.primary {
+  background:var(--berrak-ui-dark);color:white;border:0;box-shadow:0 3px 0 #382278;
+}
+dialog.modal.game-dialog.arena-rankings-sheet :is(.arena-result-next,.ranking-empty,p,small) {color:var(--berrak-muted)}
+dialog.modal.game-dialog.arena-rankings-sheet .rankings {background:var(--berrak-surface);color:var(--berrak-ink);box-shadow:none}
+dialog.modal.game-dialog.arena-rankings-sheet .rankings .section-title {display:none}
+
+.native-shell.native-profil.native-scene .main-content,
+.native-shell .main-content > .arena-stage:has(> .section-heading) {padding-top:12px;padding-inline:20px}
+@media(max-width:380px){
+ .native-shell.native-profil.native-scene .main-content,
+ .native-shell .main-content > .arena-stage:has(> .section-heading) {padding-inline:14px}
+}
+@media(min-width:760px){
+ .native-shell.native-profil.native-scene .main-content,
+ .native-shell .main-content > .arena-stage:has(> .section-heading) {padding-top:24px}
+}
+.native-shell :is(.friends-page,.profile-page,.daily-studio-copy) .button.primary:not([data-start-play]) {
+ background:var(--berrak-ui-dark);color:white;box-shadow:0 3px 0 #382278;
+}
+dialog.modal.game-dialog.game-tools-modal .button.primary[data-start-play] {
+ background:var(--berrak-cta);color:white;box-shadow:0 3px 0 #095529;
+}
+dialog.modal.game-dialog.game-tools-modal .button.secondary,
+dialog.modal.game-dialog.game-tools-modal .modal-content :is(.support-report .button.primary,.account-danger .button.danger),
+dialog.modal.game-dialog.game-tools-modal.help-sheet .button.primary:not(:last-child) {
+ background:var(--berrak-surface);color:var(--berrak-ui-dark);border:1px solid var(--berrak-line);box-shadow:none;
+}
+
+.berrak-world {justify-self:center;padding:8px 18px;border-radius:18px;background:rgba(20,16,40,.62)}

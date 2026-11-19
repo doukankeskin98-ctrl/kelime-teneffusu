@@ -20,11 +20,12 @@ import {RIDDLE_CHAPTERS,isRiddleChapter} from '@/lib/game/riddle-content';
 import {useEffect,useMemo,useRef,useState,type Dispatch,type SetStateAction,type ReactNode} from 'react';
 import {Clock,Compass,Flag,Grid3X3,RefreshCw,Star,Trophy} from 'lucide-react';
 import {findTheme,LEVEL_NAMES} from '@/lib/game/catalog';
+import {authoredLesson} from '@/lib/game/authored-journey';
 import {JOURNEYS,journeyBoard,TUTORIAL} from '@/lib/game/content';
 import {hash,makePuzzle,match,timeLabel,type Cell,type Puzzle,type Stroke} from '@/lib/game/engine';
 import {collectionStats,mergeProgress,cleanSave,type Progress,type SavedLevel} from '@/lib/game/progress';
 import {mergeChapterSave} from '@/lib/studio/chapter-progress';
-import {track} from '@/lib/game/telemetry';
+import {track,pilotMetric} from '@/lib/game/telemetry';
 import {discoveryRewards,nextJourneyAfter} from '@/lib/game/discovery';
 import {chapterCredit} from '@/lib/game/original-content';
 import {mainChapter,nextMainChapter,FIRST_TEN_LESSONS,nextChapterLabel} from '@/lib/game/main-journey';
@@ -52,6 +53,8 @@ function classicBoard(round:number,seed:number):Puzzle {
 export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBonus,external,daily:initialDaily,ownerId}:{ownerId?:string;config:SoloConfig;progress:Progress;onProgress:Dispatch<SetStateAction<Progress>>;onBack:()=>void;onHome?:()=>void;onMap:()=>void;onNext:(config:SoloConfig)=>void;onBonus?:(worldId:string,next:SoloConfig|null)=>void;daily?:DailyView;external?:SoloExternal}){
  const [starCount]=useState(()=>collectionStats(progress).stars);
  const [journey]=useState(()=>playableJourney(config.journey??'',progress));
+ const [creditedBefore]=useState(()=>config.campaign&&config.journey?chapterCredit(progress,config.journey):undefined);
+ const pilotChapter=journey?.revision===2&&!config.practice?journey.id:undefined;
  const story=livingStory(config.journey),main=config.campaign?mainChapter(config.journey):null,progressAtStart=useRef(progress),weeklyFinish=useRef<string|null>(null);
  const legacyState=useMemo(()=>{if(!config.classic)return null;try{return legacy.validateSave(JSON.parse(localStorage.getItem(legacy.SAVE_KEY)??'null'))??legacy.freshState(hash('classic-first-game'));}catch{return legacy.freshState(hash('classic-first-game'));}},[config.classic]);
  const [daily,setDaily]=useState(initialDaily),[dailyNow,setDailyNow]=useState(Date.now),dailyOffset=useRef(initialDaily?initialDaily.serverNow-dailyNow:0);
@@ -102,7 +105,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
  },[external?.resume,config.practice,board]);
  const result=useResultPresentation(completed,key+':'+(config.run??0),!!main),resultReady=result.ready;
  useEffect(()=>{if(completed&&guideAtStart&&!config.tutorial)onProgress(p=>({...p,guideDone:true}));},[completed]);
- useEffect(()=>{track('level_start');if(story&&!save.complete)track('story_start');},[]);
+ useEffect(()=>{if(pilotChapter&&!save.complete)pilotMetric(pilotChapter,'starts');track('level_start');if(story&&!save.complete)track('story_start');},[]);
  useEffect(()=>{if(!hint&&!message)return;const timeout=setTimeout(()=>{setHint(null);setHintEnd(null);setMessage('');},3000);return ()=>clearTimeout(timeout);},[hint,message]);
  useEffect(()=>{
   if(daily){const timer=setInterval(()=>setDailyNow(Date.now()),250);return ()=>clearInterval(timer);}
@@ -123,7 +126,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
    return {...merged,...(weekly?{weekly}:{}),last:story?p.last:{themeId:config.themeId,level:config.level,...(journey?{journey:journey.id}:{})}};
   });
  },[save,daily?.finished]);
- useEffect(()=>{if(completed&&!completionTracked.current){completionTracked.current=true;track('level_complete',save.elapsed*1000);window.dispatchEvent(new Event('kt-sync-now'));}},[completed]);
+ useEffect(()=>{if(completed&&!completionTracked.current){completionTracked.current=true;if(pilotChapter&&!creditedBefore?.complete)pilotMetric(pilotChapter,'finishes',save.elapsed);track('level_complete',save.elapsed*1000);window.dispatchEvent(new Event('kt-sync-now'));}},[completed]);
  const acceptDaily=(result:DailyView)=>{foundRef.current=result.strokes;setDaily(result);dailyOffset.current=result.serverNow-Date.now();setSave(s=>({...s,strokes:result.strokes,hints:result.hints,complete:result.finished!==null,stars:result.finished!==null?3-Math.min(2,result.hints):0}));};
  const dailyCallbacks=useRef({receive:acceptDaily,confirmed:(_intent:DailyIntent,_reply:DailyReply)=>{}});
  dailyCallbacks.current={receive:acceptDaily,confirmed:(intent,reply)=>{
@@ -147,7 +150,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
     (veils[t.group]??'open')==='open'&&!foundRef.current.some(s=>s.id===t.id));
    chime('miss');
    setMessage(nearMissMessage(board,a,b,visible));
-   track('selection_miss');
+   track('selection_miss');if(pilotChapter)pilotMetric(pilotChapter,'misses');
    return;
   }
   if(foundRef.current.some(s=>s.id===target.id)){setMessage('Bu kelimeyi zaten buldun.');return;}
@@ -166,7 +169,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
   if(firstStoryHint){setHint(firstStoryHint);setMessage('İlk harf işaretli. Başlangıç ipucun ücretsiz.');return;}
   const target=story?storyStage(story,board,foundRef.current).target:hintTarget(board,foundRef.current,group);if(!target)return;
   if(daily){setHint(null);setHintEnd(null);void dailySession.current?.act({kind:'hint',requestId:crypto.randomUUID(),targetId:target.id});return;}
-  const remaining=(board as Puzzle).placements.find(p=>p.id===target.id);if(remaining){hintCount.current++;chime('hint');const guide=soloHintGuide(remaining,hintCount.current);setHint(guide.start);setHintEnd(guide.end);setSave(s=>({...s,hints:Math.min(3,s.hints+1)}));setMessage(guide.message);}
+  const remaining=(board as Puzzle).placements.find(p=>p.id===target.id);if(remaining){if(pilotChapter)pilotMetric(pilotChapter,'hints');hintCount.current++;chime('hint');const guide=soloHintGuide(remaining,hintCount.current);setHint(guide.start);setHintEnd(guide.end);setSave(s=>({...s,hints:Math.min(3,s.hints+1)}));setMessage(guide.message);}
  };
  const remainingHints=new Map<number,(typeof board.targets)[number]>();
  if(main&&hintPicker){
@@ -195,7 +198,6 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
  const tutorialHint=config.tutorial&&!guideSkipped&&!save.strokes.some(s=>s.id===TUTORIAL.targets[0]!.id)?(board as Puzzle).placements.find(p=>p.id===TUTORIAL.targets[0]!.id)!.a:null;
  const improved=(!external||external.personalBestKnown===true)&&completed&&!daily&&!config.classic&&!config.tutorial&&previousBest.current?.complete&&(save.stars>previousBest.current.stars||(save.stars===previousBest.current.stars&&save.elapsed<previousBest.current.elapsed));
  const resultProgress=useMemo(()=>journey&&completed?mergeProgress(progress,{...progress,...(progress.revisionSaves?{revisionSaves:{}}:{}),saves:{[key]:{...save,...(journey.revision===2?{revision:2 as const}:{})}}}):progress,[completed,progress,key,save,journey]);
- const [creditedBefore]=useState(()=>config.campaign&&config.journey?chapterCredit(progress,config.journey):undefined);
  const starsEarned=Math.max(0,save.stars-(creditedBefore?.complete?creditedBefore.stars:0));
  const rewards=journey&&completed?discoveryRewards(progressAtStart.current,resultProgress):[];
  const riddle=isRiddleChapter(journey?.id);
@@ -218,7 +220,7 @@ export function Solo({config,progress,onProgress,onBack,onHome,onMap,onNext,onBo
  const goal=journeyGoal(progressAtStart.current,journey?.id),resultGoal=journeyGoal(resultProgress,journey?.id),nextGoal=journeyGoal(resultProgress,nextJourney?.id);
  const quietNotice=/ bulundu|tamamlandı|^Tekrar dene\.$/.test(message);
  const visibleGuide=guide&&!paused&&!help&&!exit?guide:null;
- return <>{arrival&&<div className="world-arrival" role="status"><span>Yeni dünya!</span><strong>{arrival}</strong></div>}<PlayLayout boardNotice={main&&!guide&&!quietNotice?message:undefined} starCount={starCount} quietHeader={!daily} headerAction={controls(true)} chapterNumber={mainChapter(journey?.id)?.number} departing={result.departing&&!review&&!help&&!exit} earlyTargets={story?(stage?.target?[stage.target]:[]):undefined} onResume={!daily&&paused&&!completed&&!help&&!exit&&!mechanic&&!dailyLocked?resume:undefined} celebrating={completed&&resultReady&&!review&&!help&&!exit} scene={story?.scene??sceneForJourney(journey?.id,config.themeId)} nextScene={nextJourney?sceneForJourney(nextJourney.id,nextJourney.themeId):undefined} sceneStage={story&&stage ? .76+.24*stage.index/story.steps.length : 1} turned={turned} onSelectLetter={depth=>{if(arrival)setArrival('');chime('letter',depth);}} focused={!daily} inlineTargets={inlineTargets} wordList={wordList} wordListUnavailable={help||exit||!!mechanic||hintPicker} kicker={story?`HİKÂYELER · ${String(LIVING_STORIES.indexOf(story)+1).padStart(2,'0')} / 05`:external?'Yeni keşifler':daily?'Günlük bulmaca · '+daily.day.split('-').reverse().join('.'):config.tutorial?'ALIŞTIRMA':world?world.world.title:config.classic?'Hababam • Fotoğraftaki 20 isim':`${theme.title} • ${journey?'Keşif rotası':'Bölüm '+(config.level+1)}`} title={title} onBack={()=>daily&&!completed?setExit(true):onBack()} board={board} strokes={pending&&!save.strokes.some(s=>s.id===pending.id)?[...displayStrokes,pending]:displayStrokes} paused={(!completed&&paused)||(!daily&&(help||exit||!!mechanic))} readOnly={completed} inputBlocked={dailyLocked} inputStatus={inputStatus} busy={busy} zoom={progress.zoom} demonstration={!hint?guide?.target:null} hint={hint??(guide?.target?null:tutorialHint??firstStoryHint)} hintEnd={hint?hintEnd:null} onCommit={(a,b)=>void commit(a,b)} preview={preview} onPreview={setPreview} footer={<div className={visibleGuide?'solo-control-dock has-first-play-guide':'solo-control-dock'}>{controls()}{visibleGuide&&<FirstPlayGuide guide={visibleGuide} feedback={guideFeedback} onSkip={skipGuide}/>}{!story&&<p className={guide?'sr-only':'play-notice'} role="status" aria-live={guide&&guideFeedback?'off':'polite'} aria-atomic="true"><span className={quietNotice?'sr-only':undefined}>{message||(!guide&&!completed&&!save.strokes.length&&!previousBest.current&&main?FIRST_TEN_LESSONS[journey!.id]:'')}</span></p>}</div>} aside={<><div className="game-note"><Flag size={18}/><p>{completed?'Bölüm tamamlandı. Tahtayı inceleyebilirsin.':config.tutorial?'KELİME’nin ilk harfini işaretledik. Son harfine kaydır veya iki ucuna dokun. Sonra MERAK ve KEŞİF’i bul.':daily?'Süre ara verdiğinde de devam eder. İpuçları sürene 15 saniye ekler.':external?.note??journey?.note??'Acele yok. Yanlış seçim ceza getirmez. Çaprazlara da bak.'}</p></div>{completed&&resultReady&&<button className="button primary full" onClick={()=>setReview(false)}>Sonucu göster <Trophy size={18}/></button>}</>}>
+ return <>{arrival&&<div className="world-arrival" role="status"><span>Yeni dünya!</span><strong>{arrival}</strong></div>}<PlayLayout finishing={!!main&&completed&&!resultReady&&!review} boardNotice={main&&!guide&&!quietNotice?(message||(!save.strokes.length && journey?.revision===2?authoredLesson[journey.id]:undefined)):undefined} starCount={starCount} quietHeader={!daily} headerAction={controls(true)} chapterNumber={mainChapter(journey?.id)?.number} departing={result.departing&&!review&&!help&&!exit} earlyTargets={story?(stage?.target?[stage.target]:[]):undefined} onResume={!daily&&paused&&!completed&&!help&&!exit&&!mechanic&&!dailyLocked?resume:undefined} celebrating={completed&&resultReady&&!review&&!help&&!exit} scene={story?.scene??sceneForJourney(journey?.id,config.themeId)} nextScene={nextJourney?sceneForJourney(nextJourney.id,nextJourney.themeId):undefined} sceneStage={story&&stage ? .76+.24*stage.index/story.steps.length : 1} turned={turned} onSelectLetter={depth=>{if(arrival)setArrival('');chime('letter',depth);}} focused={!daily} inlineTargets={inlineTargets} wordList={wordList} wordListUnavailable={help||exit||!!mechanic||hintPicker} kicker={story?`HİKÂYELER · ${String(LIVING_STORIES.indexOf(story)+1).padStart(2,'0')} / 05`:external?'Yeni keşifler':daily?'Günlük bulmaca · '+daily.day.split('-').reverse().join('.'):config.tutorial?'ALIŞTIRMA':world?world.world.title:config.classic?'Hababam • Fotoğraftaki 20 isim':`${theme.title} • ${journey?'Keşif rotası':'Bölüm '+(config.level+1)}`} title={title} onBack={()=>daily&&!completed?setExit(true):onBack()} board={board} strokes={pending&&!save.strokes.some(s=>s.id===pending.id)?[...displayStrokes,pending]:displayStrokes} paused={(!completed&&paused)||(!daily&&(help||exit||!!mechanic))} readOnly={completed} inputBlocked={dailyLocked} inputStatus={inputStatus} busy={busy} zoom={progress.zoom} demonstration={!hint?guide?.target:null} hint={hint??(guide?.target?null:tutorialHint??firstStoryHint)} hintEnd={hint?hintEnd:null} onCommit={(a,b)=>void commit(a,b)} preview={preview} onPreview={setPreview} footer={<div className={visibleGuide?'solo-control-dock has-first-play-guide':'solo-control-dock'}>{controls()}{visibleGuide&&<FirstPlayGuide guide={visibleGuide} feedback={guideFeedback} onSkip={skipGuide}/>}{!story&&<p className={guide?'sr-only':'play-notice'} role="status" aria-live={guide&&guideFeedback?'off':'polite'} aria-atomic="true"><span className={quietNotice?'sr-only':undefined}>{message||(!guide&&!completed&&!save.strokes.length&&!previousBest.current&&main?FIRST_TEN_LESSONS[journey!.id]:'')}</span></p>}</div>} aside={<><div className="game-note"><Flag size={18}/><p>{completed?'Bölüm tamamlandı. Tahtayı inceleyebilirsin.':config.tutorial?'KELİME’nin ilk harfini işaretledik. Son harfine kaydır veya iki ucuna dokun. Sonra MERAK ve KEŞİF’i bul.':daily?'Süre ara verdiğinde de devam eder. İpuçları sürene 15 saniye ekler.':external?.note??journey?.note??'Acele yok. Yanlış seçim ceza getirmez. Çaprazlara da bak.'}</p></div>{completed&&resultReady&&<button className="button primary full" onClick={()=>setReview(false)}>Sonucu göster <Trophy size={18}/></button>}</>}>
   {story&&stage?<StoryHud story={story} stage={stage.index} hints={save.hints} notice={message}/>:daily?<div className="game-status"><span><Clock size={17}/><b>{timeLabel(seconds)}</b>{save.hints>0&&<small>+{save.hints*15} sn</small>}</span><div className="progress-track" role="progressbar" aria-label="Bulunan kelimeler" aria-valuenow={targets.complete} aria-valuemin={0} aria-valuemax={targets.total}><i style={{width:`${targets.total?targets.complete/targets.total*100:0}%`}}/></div><span><Star size={17}/>{3-Math.min(2,save.hints)}</span></div>:<>
 
    <span className="sr-only" role="status">{targets.complete}/{targets.total} kelime bulundu</span>

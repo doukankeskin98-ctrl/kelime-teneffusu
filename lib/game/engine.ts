@@ -2,7 +2,7 @@ import { findTheme, normalize, splitWord } from './catalog.ts';
 export type Cell = [number, number];
 export interface Target { id: string; label: string; text: string; group: number }
 export interface Placement extends Target { a: Cell; b: Cell }
-export interface Puzzle { version: 2; size: number; grid: string[][]; targets: Target[]; placements: Placement[] }
+export interface Puzzle { authored?:true; version: 2; size: number; grid: string[][]; targets: Target[]; placements: Placement[] }
 export interface Stroke { id: string; a: Cell; b: Cell }
 export const DIRECTIONS: Cell[] = [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]];
 const ALPHABET = [...'ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ'];
@@ -83,6 +83,7 @@ export function snapLine(a:Cell,b:Cell,size:number):Cell[] {
 }
 export function match(puzzle: Pick<Puzzle,'grid'|'size'|'targets'>, a:unknown,b:unknown):Target|null {
   const cells=exactLine(a,b,puzzle.size);if(!cells)return null;
+  if(cells.some(([r,c])=>!puzzle.grid[r]?.[c]))return null;
   const text=cells.map(([r,c])=>puzzle.grid[r]![c]).join('');
   const reversed=[...text].reverse().join('');
   return puzzle.targets.find(t=>t.text===text||t.text===reversed)??null;

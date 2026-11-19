@@ -1,0 +1,48 @@
+name: Journey board layout
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'components/game/**'
+      - 'lib/game/**'
+      - 'mobile/**'
+      - 'scripts/journey-content/**'
+      - 'scripts/visual/**'
+      - '.github/workflows/journey-layout.yml'
+permissions:
+  contents: read
+jobs:
+  journey-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      matrix:
+        sizes: ['320x568,393x852', '375x667,430x932']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm mobile:build
+      - name: Check every published chapter
+        run: node scripts/visual/layout-audit.mjs "$SIZES" all --first-visit --fixed-frame
+        env:
+          SIZES: ${{ matrix.sizes }}
+          EVIDENCE_DIR: ${{ runner.temp }}/journey/released
+      - run: pnpm journey:pilot:build
+      - name: Check the authored pilot on a separate localhost origin
+        run: node scripts/visual/layout-audit.mjs "$SIZES" 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 --first-visit --fixed-frame --pilot
+        env:
+          SIZES: ${{ matrix.sizes }}
+          KT_LAYOUT_BUILD: dist-pilot
+          EVIDENCE_DIR: ${{ runner.temp }}/journey/pilot
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: journey-layout-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/journey/
+          retention-days: 7

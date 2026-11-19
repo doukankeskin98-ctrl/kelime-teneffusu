@@ -186,15 +186,24 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
   }
 }
 
-/* Carry the final letter landing into the scene transition using the existing ink layer. */
-@media(prefers-reduced-motion:no-preference) {
-  html:not([data-reduce-motion=true]) .chapter-play:has(.journey-skip-reward):not([data-result-phase=exit]) .board-ink {
-    animation:chapter-ink-settle 360ms 710ms ease-in-out both;
+/* The last word responds where the player is looking, before the score sheet. */
+.finish-praise {display:none}
+@media (prefers-reduced-motion:no-preference) {
+  html:not([data-reduce-motion=true]) .chapter-play[data-finishing] .finish-letter {
+    animation:finish-letter-wave 240ms var(--wave-delay,0ms) ease-out both;
   }
-  @keyframes chapter-ink-settle {
-    0%,100% {opacity:1}
-    52% {opacity:.78}
+  html:not([data-reduce-motion=true]) .chapter-play[data-finishing] .board-ink>g[data-last-stroke] .found-stroke {
+    animation:finish-ink 265ms ease-out both;
   }
+  html:not([data-reduce-motion=true]) .chapter-play[data-finishing] .target-topic h1 {opacity:0}
+  html:not([data-reduce-motion=true]) .chapter-play[data-finishing] .finish-praise {
+    position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+    color:white;background:var(--berrak-ui-dark);font:800 18px/1 var(--sans);
+    text-transform:uppercase;animation:finish-praise 730ms 240ms ease-in-out both;
+  }
+  @keyframes finish-letter-wave {0%,100%{transform:translateY(0)}45%{transform:translateY(-3px) scale(1.09)}}
+  @keyframes finish-ink {0%,100%{stroke-width:.84}40%{stroke-width:1}}
+  @keyframes finish-praise {0%,100%{opacity:0;transform:scale(.98)}30%,65%{opacity:1;transform:scale(1)}}
 }
 
 .hint-picker .hint-choices {display:grid;gap:8px}
@@ -205,7 +214,7 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
 @media (orientation:portrait) and (max-width:759px) {
   .game-app .scenic-play.quiet-play[data-journey-frame] {
     --fixed-journey-frame:1;--tool-size:clamp(44px,7svh,56px);
-    --frame-topic:clamp(24px,3.5svh,32px);--frame-list:clamp(45px,8.2svh,78px);
+    --frame-topic:clamp(24px,3.5svh,32px);--base-list:clamp(45px,8.2svh,78px);--frame-list:calc(var(--base-list) + var(--list-extra,0px));
     height:var(--play-height,95svh);min-height:0;display:grid!important;
     grid-template-rows:44px calc(var(--frame-topic) + var(--frame-list)) minmax(0,1fr) var(--tool-size);
     align-content:stretch;gap:0!important;padding:0!important;
@@ -224,12 +233,12 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
   .scenic-play[data-journey-frame].has-selection .target-topic h1,
   .scenic-play[data-journey-frame] .target-topic:has(.board-action-notice,.play-praise:not([hidden])) h1 {opacity:0}
   .game-app .scenic-play[data-journey-frame] .target-rack {
-    min-height:0;height:var(--frame-list);padding:0 4px!important;gap:0 8px!important;
+    min-height:0;height:var(--frame-list);padding:0 10px!important;gap:0 14px!important;
     align-content:center;align-items:center;
   }
   .game-app .scenic-play[data-journey-frame] .viewport-targets.has-word-rack .target-rack .word-tag {
     flex:0 0 auto;min-width:0;min-height:0!important;margin:0!important;
-    font-size:clamp(14px,3.9vw,17px)!important;line-height:1.06;
+    font-size:var(--rack-type,14px)!important;line-height:1.05;
   }
   .game-app .scenic-play[data-journey-frame] .board-stage {
     grid-row:3;display:grid;align-content:start;justify-items:center;
@@ -255,11 +264,11 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
 }
 @media (max-width:340px) and (orientation:portrait) {
   .game-app .scenic-play[data-journey-frame] .viewport-targets[data-many] .target-rack {
-    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;justify-items:center;gap:0 3px!important;
+    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;justify-items:center;gap:0 14px!important;
   }
 }
 @media (orientation:portrait) and (max-width:759px) {
-  .game-app .scenic-play[data-journey-frame] .target-rack {align-content:center!important}
+  .game-app .scenic-play[data-journey-frame] .target-rack {align-content:space-evenly!important}
   .game-app .scenic-play[data-journey-frame] .target-rack .word-tag :is([data-word-label],.target-letters,[data-target-letter]) {
     min-height:0;line-height:1.05;vertical-align:top;
   }
@@ -302,4 +311,44 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
   .scenic-play[data-journey-frame].has-selection .target-topic h1,
   .scenic-play[data-journey-frame] .target-topic:has(.board-action-notice,.play-praise:not([hidden])) h1 {opacity:0}
   .scenic-play[data-journey-frame] .clue-slot>span {display:block;width:auto;height:auto;background:none;color:var(--berrak-ink)}
+}
+
+@media (min-width:341px) { .scenic-play { --rack-type:15px } }
+@media (min-width:381px) { .scenic-play { --rack-type:17px } }
+@media (min-width:411px) { .scenic-play { --rack-type:18px } }
+@media (orientation:portrait) and (max-width:759px) {
+  .game-app .scenic-play.chapter-play[data-journey-frame] .viewport-targets.has-word-rack .target-rack {
+    column-gap:14px!important;align-content:space-evenly!important;
+  }
+}
+
+@media (orientation:portrait) and (max-width:759px){
+ .game-app .scenic-play[data-authored-board] .viewport-targets.has-word-rack .target-rack[data-authored-rack] {
+  display:flex!important;flex-flow:column nowrap!important;justify-content:space-evenly!important;align-items:stretch!important;gap:0!important;
+ }
+ .target-rack[data-authored-rack] .word-rack-row {display:flex;justify-content:center;align-items:center;column-gap:16px;min-width:0}
+ .game-app .scenic-play[data-authored-board] .viewport-targets.has-word-rack .word-rack-row .word-tag {
+  flex:0 0 auto!important;min-width:0!important;width:max-content!important;max-width:none!important;padding:0!important;
+ }
+}
+@media(min-width:760px),(orientation:landscape){.word-rack-row{display:contents}}
+
+@media (orientation:portrait) and (max-width:759px){
+ /* Reclaim eight pixels of outer decoration; the safe areas and board size are preserved. */
+ .game-app.journey-session:has([data-journey-frame]) {
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(4px + env(safe-area-inset-bottom,0px));
+ }
+ .game-app .scenic-play.quiet-play[data-journey-frame] {
+  grid-template-rows:44px calc(var(--frame-topic) + var(--frame-list) + 8px) minmax(0,1fr) var(--tool-size);
+ }
+ .game-app .scenic-play[data-journey-frame] .viewport-targets.has-word-rack>.target-rack,
+ .game-app .scenic-play[data-journey-frame] .viewport-targets.has-clue-slots>.clue-slots {margin-top:4px!important}
+ .game-app .scenic-play[data-journey-frame] .target-rack:not([data-authored-rack]) .word-tag{
+  min-width:calc((100% - 56px)/5 + 1px)!important;
+ }
+}
+
+@media (orientation:portrait) and (max-width:759px) {
+ .game-app .scenic-play[data-authored-board] .target-rack[data-authored-rack] .word-rack-row {column-gap:14px}
+ .game-app .scenic-play[data-authored-board] .target-rack[data-authored-rack] .word-tag [data-target-letter] {padding-inline:0;letter-spacing:0}
 }

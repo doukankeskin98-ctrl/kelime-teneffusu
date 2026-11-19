@@ -14,7 +14,7 @@ const compiled=ts.transpileModule(readFileSync('components/game/common.tsx','utf
 const exports:Record<string,unknown>={};
 const jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
 vm.runInNewContext(compiled,{exports,require:(name:string)=>{
- if(name==='react')return {useRef:(value:unknown)=>({current:value})};
+ if(name==='react')return {useRef:(value:unknown)=>({current:value}),useState:(initial:unknown)=>[typeof initial==='function'?initial():initial,()=>{throw new Error('Static layout fixture received a state update');}]};
  if(name==='react/jsx-runtime')return {jsx,jsxs:jsx,Fragment:'Fragment'};
  if(name==='@/lib/game/word-card')return {wordCardCopy,veiledText};
  if(name==='./Board')return {strokeColor:()=> '#9ab37d'};

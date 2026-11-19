@@ -1,3 +1,4 @@
+import {AUTHORED_JOURNEY} from './authored-journey.ts';
 import {journeyRevision} from './journey-revisions.ts';
 import {horizonRouteForChapter} from './horizons-content.ts';
 import {discoveriesRouteForChapter} from './discoveries-content.ts';
@@ -44,6 +45,8 @@ export function worldChapter(id?:string,revision=1){
 export function chapterVeils(id:string|undefined,targets:Target[],revision=1):Record<number,WordVeil>{
  const info=worldChapter(id,revision),veils:Record<number,WordVeil>={};
  if(!info||info.chapter.clues)return veils;
+ const authored=revision===2&&id?AUTHORED_JOURNEY[id]:undefined;
+ if(authored)return Object.fromEntries(targets.map(t=>[t.group,authored.hiddenIds.includes(t.id)?'initial':'open']));
  // Teach directions before introducing concealed answers. Old saves/gates are untouched.
  if(info.world.id==='uzay')return Object.fromEntries(targets.map(t=>[t.group,'open' as const]));
  if(info.world.id==='turkiye'){

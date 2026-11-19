@@ -1,0 +1,32 @@
+# Kaynaklarda (Zemberek sözlüğü, yer ve özel ad listeleri) bulunmayan ama doğru ve tanınır kelimeler.
+# Her satır: KELİME | gerekçe (Claude'un editör kararı). Gerekçesiz kelime eklenmez.
+FIRLATMA | TDK: fırlatma (fırlatmak); roket fırlatma
+GALAKSİ | TDK: galaksi (gökada)
+BULUTSU | TDK: bulutsu (nebula)
+ANDROMEDA | En yakın büyük gökada; Andromeda Gökadası
+ORİON | Avcı takımyıldızı; okul kitaplarında geçer
+GÖKADA | TDK: gökada (galaksi)
+BÜYÜKAYI | TDK: büyükayı (takımyıldız, bitişik yazılır)
+KÜÇÜKAYI | TDK: küçükayı (takımyıldız, bitişik yazılır)
+BESLENME | TDK: beslenme; okulda "beslenme çantası"
+ALAÇATI | İzmir, Çeşme ilçesine bağlı kasaba
+ULUDAĞ | Bursa'daki dağ ve kayak merkezi
+ABANT | Bolu, Abant Gölü
+KAÇKAR | Rize-Artvin, Kaçkar Dağları
+TROYA | Çanakkale, antik kent (UNESCO)
+EFES | İzmir Selçuk, antik kent (UNESCO)
+SÜMELA | Trabzon Maçka, Sümela Manastırı
+ASPENDOS | Antalya Serik, antik tiyatro
+HATTUŞA | Çorum Boğazkale, Hitit başkenti (UNESCO)
+ZEUGMA | Gaziantep, mozaik müzesiyle bilinen antik kent
+TOPKAPI | İstanbul, Topkapı Sarayı
+GALATA | İstanbul, Galata Kulesi
+OLİMPOS | Antalya Kumluca, antik kent ve sahil
+ASSOS | Çanakkale Ayvacık, antik kent
+AYDER | Rize Çamlıhemşin, Ayder Yaylası
+UZUNGÖL | Trabzon Çaykara, göl ve yayla
+ÖLÜDENİZ | Muğla Fethiye, lagün
+KAPADOKYA | Nevşehir çevresi, peribacaları (UNESCO)
+PAMUKKALE | Denizli, travertenler (UNESCO)
+KEKOVA | Antalya Demre, batık şehir ve koy
+SALDA | Burdur Yeşilova, Salda Gölü

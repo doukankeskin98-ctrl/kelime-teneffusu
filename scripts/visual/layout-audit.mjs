@@ -9,6 +9,7 @@ import {createServer} from 'node:http';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {launch} from './chrome.mjs';
+import {checkAuthoredChapter} from './authored-chapter.mjs';
 import {checkTallBoard} from './tall-board-check.mjs';
 import {capturePlayLayout,layoutProblems} from './layout-measure.mjs';
 
@@ -18,6 +19,7 @@ if (!existsSync(path.join(site, 'index.html'))) throw new Error('Önce mobil pak
 const sizes = (process.argv[2] ?? '320x568,375x667').split(',').map(size => size.split('x').map(Number));
 const only = process.argv[3]&&process.argv[3]!=='all'?process.argv[3].split(',').map(Number):undefined;
 const fixed=process.argv.includes('--fixed-frame');
+const pilot=process.argv.includes('--pilot');
 // Add --first-visit to exercise help, finger input and safe-area geometry on
 // 320x568 and 393x852. The default run still checks all veteran replays.
 const firstVisit = process.argv[4] === '--first-visit';
@@ -82,7 +84,14 @@ try {
       const opened = await page.evaluate(open(chapter));
       if(process.env.EVIDENCE_DIR&&only)await page.screenshot(path.join(process.env.EVIDENCE_DIR,`layout-${width}-${chapter.number}.png`));
       const row={number:chapter.number,id:chapter.id,...(opened==='ok'?await page.evaluate(measure):{error:opened})};
-      if(firstVisit && opened==='ok' && chapter.number===10){
+      if(pilot&&opened==='ok'){
+        try{
+         if(row.rack.top-row.topic.bottom<3.9||row.board.top-row.rack.bottom<3.9)throw new Error('Bant/liste/tahta aralığı 4 pikselden az: '+JSON.stringify([row.rack.top-row.topic.bottom,row.board.top-row.rack.bottom]));
+         await checkAuthoredChapter(page,chapter.number,width,process.env.EVIDENCE_DIR);
+        }
+        catch(error){failures++;console.error('Pilot kontrolü',width,chapter.number,error.message);}
+      }
+      if(!pilot && firstVisit && opened==='ok' && chapter.number===10){
         row.touch=await checkTallBoard(page,row,process.env.EVIDENCE_DIR);
       }
       rows.push(row);

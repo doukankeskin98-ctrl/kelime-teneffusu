@@ -10,7 +10,7 @@
 @keyframes game-panel-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
 /* A frame is reserved before input so text changes cannot move the board. */
 .scenic-play .active-selection,.scenic-play .active-selection line{transition:none!important;animation:none!important}
-.scenic-play .letter-grid>span{transition:color 100ms,background-color 100ms;transform:none!important}
+.scenic-play .letter-grid>span{transition:color 100ms,background-color 100ms}
 .scenic-play .arena-scorebar b{font-family:var(--sans);font-weight:750}.scenic-play[data-scene=stadium] .opponent-progress{background:#103b50d9;border-radius:6px;padding:3px 8px;line-height:1.3}.scenic-play[data-scene=stadium] .duel-controls>.text-button{background:#103b50d9;border-radius:22px;padding:6px 12px;min-height:44px;flex:0 1 auto;margin-right:auto}
 .scenic-play .play-heading{min-height:48px}.scenic-play .play-title{position:relative;min-width:0}
 .scenic-play .mobile-selection>b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
