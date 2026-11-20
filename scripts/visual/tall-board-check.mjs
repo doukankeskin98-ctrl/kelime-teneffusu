@@ -61,7 +61,17 @@ export async function checkTallBoard(page, sample, evidenceDir) {
     if(evidenceDir) await page.screenshot(path.join(evidenceDir,'tall-'+name+'-'+sample.width+'.png'));
   };
   await page.touch(points,async step=>{
-    if(step===0) assert.equal(await page.evaluate("document.querySelector('.selection-bubble').innerText"),'T');
+    if(step===0){
+      assert.equal(await page.evaluate("document.querySelector('.selection-bubble').innerText"),'T');
+      const ink=await page.evaluate(`(() => {
+        const cell=document.querySelector('.letter-selected');
+        if(!cell) return null;
+        const style=getComputedStyle(cell);
+        const fading=cell.getAnimations().some(animation=>animation.transitionProperty==='color');
+        return {color:style.color,fading};
+      })()`);
+      assert.deepEqual(ink,{color:'rgb(255, 255, 255)',fading:false},'First selected letter must be legible as soon as the stroke starts');
+    }
     if(step===2){stationary(await page.evaluate(box));await shot('drawing');}
   });
   assert(await page.evaluate("[...document.querySelectorAll('.target-rack .found')].some(e=>e.textContent.includes('TROYA'))"),'TROYA accepted');
