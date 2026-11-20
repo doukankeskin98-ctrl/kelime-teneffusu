@@ -14,6 +14,15 @@ Profil bağlantısı kurulamadığında yeniden deneme seçeneği çevrimiçi ö
 - ZIP'teki ilk araç kaydırma alanının dışında veya kapalı panelin içinde duran yazıyı zaman zaman arkadaki manzaraya karşı ölçüyor. Karşılaştırma galerisinde özgün aracın ham sayıları ve gerçek görünür metin denetimi ayrı gösterilir.
 - Beş bölümde (1, 5, 10, 121 ve 312) iki ekran boyutunda tahta ve alt araç yerleşimi kontrol edildi. Sentetik hesapta onaylama, vazgeçme, Escape ve yeniden açma denendi. Tarayıcı ve yerel servis silme isteği kaydetmedi.
 
+## Son ölçüm
+
+| Ekran | 0.57.5 paket taraması, kontrast / küçük yazı | 0.57.6 aynı tarama | 0.57.6 görünür metin denetimi |
+| --- | --- | --- | --- |
+| 320 × 568 | 17 / 50 | 0 / 0 | 0 / 0 |
+| 393 × 852 | 39 / 95 | 12 / 0 | 0 / 0 |
+
+393 pikseldeki 12 ham uyarı, kapalı panelin içindeki veya kaydırma alanının dışında kalan metinlerden geliyor. Sayılar galeride özgün halleriyle bulunuyor. İpucu düğmesindeki sayaç iki ölçüde de 13 px ve 800 yazı ağırlığında. Profil, Başarımlar, Arena, Günlük ve Diğer oyunlar başlıklarının konum ve genişlik karşılaştırmaları iki boyutta da geçti.
+
 ## Sürüm kapsamı
 
 Oyuncu kayıt biçimi, bölüm verisi, Arena puanlaması, çizim ve titreşim kodu bu değişikliğin dışında. 1.018 otomatik test, içerik, tip ve derleme denetimleri ile 749 yerel Worker HTTP kontrolü geçti. Lint denetimi mevcut borçta artış bulmadı.
