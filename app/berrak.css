@@ -190,7 +190,7 @@ dialog.modal.game-dialog .journey-map-dots i.earned,dialog.modal.game-dialog .al
 dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) .modal-head{background:var(--berrak-ui);border-bottom:0}
 dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) .modal-head h2{color:white}
 dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) .modal-head .icon-button{background:white;color:var(--berrak-ui-dark)}
-dialog.modal.game-dialog.game-tools-modal .journey-map-world .journey-map-world-copy{background:linear-gradient(transparent,#211833e8 75%);color:white}
+dialog.modal.game-dialog.game-tools-modal .journey-map-world .journey-map-world-copy{background:linear-gradient(#21183355,#211833e8 64%);color:white}
 dialog.modal.game-dialog.game-tools-modal .journey-map-world-copy :is(strong,span,small){color:white}
 dialog.modal.game-dialog.arena-entry-sheet .room-entry-sheet :is(p,label,small,.join-divider){color:var(--berrak-muted)}
 dialog.modal.game-dialog.arena-entry-sheet .arena-round-preference{background:var(--berrak-wash);color:var(--berrak-ink);padding:10px 12px}
@@ -324,3 +324,73 @@ dialog.modal.game-dialog.game-tools-modal.help-sheet .button.primary:not(:last-c
 }
 
 .berrak-world {justify-self:center;padding:8px 18px;border-radius:18px;background:rgba(20,16,40,.62)}
+
+/* Readability on scenic backgrounds and light sheets. */
+:root {
+ --berrak-plate:rgba(18,14,44,.82);
+ --berrak-gold-ink:#7a4e00;
+ --berrak-danger:#ad2034;
+}
+.native-shell .berrak-shortcut > b {
+ padding:3px 8px; border-radius:12px; color:white;
+ background:var(--berrak-plate); text-shadow:none;
+}
+.native-shell .subpage-heading {
+ max-width:100%; padding:8px 12px;
+ background:var(--berrak-plate); border-radius:14px;
+}
+.native-shell .arena-back.text-button {
+ padding-inline:12px; color:white; background:var(--berrak-plate); border-radius:18px;
+}
+.native-shell .challenge-create-card .button.primary:disabled {
+ background:#e1e3ec; color:#454d60; border-color:#a3a8b7; box-shadow:none; opacity:1;
+}
+dialog.modal.game-dialog.reward-info .modal-content > p,
+dialog.modal.game-dialog.album-detail-sheet p.collection-dialog-intro {
+ color:var(--berrak-muted);
+}
+dialog.modal.game-dialog.reward-info .modal-content dt {color:var(--berrak-ink)}
+dialog.modal.game-dialog .journey-map-dots > span {font-size:13px}
+dialog.modal.game-dialog.game-tools-modal .journey-map-world-copy .journey-map-dots .now {
+ color:var(--berrak-gold-ink); background:var(--berrak-gold);
+}
+.native-shell .daily-week .week-dots > span {font-size:13px;color:var(--berrak-muted)}
+.native-shell .daily-week .week-dots > span.done {color:var(--berrak-ink)}
+dialog.modal.game-dialog .story-card-copy > p {color:var(--berrak-muted)}
+dialog.modal.game-dialog .story-card-copy > strong {color:var(--berrak-ink)}
+dialog.modal.game-dialog .game-settings .setting-row .switch {
+ box-sizing:border-box; display:inline-flex; align-items:center; flex:0 0 44px;
+ min-width:44px; width:44px; height:26px; padding:3px; border:1px solid;
+}
+dialog.modal.game-dialog .game-settings .setting-row .switch::after {
+ position:static; inset:auto; width:18px; height:18px; margin:0; transform:none;
+}
+dialog.modal.game-dialog .game-settings .setting-row[aria-checked=true] .switch::after {transform:translateX(18px)}
+dialog.modal.game-dialog .game-settings .board-color-options button small {color:var(--berrak-muted)}
+dialog.modal.game-dialog .game-settings .board-color-options button[aria-pressed=true] small {color:var(--berrak-ui-dark)}
+
+/* Secondary labels share a 13px floor. Numbers inside compact earned badges keep their own metrics. */
+dialog.modal.game-dialog.game-tools-modal :is(
+ .journey-map-heading > span,.journey-map-world-copy > span,.journey-map-world-copy > small,
+ .collection-ribbon,.discovery-album-card .eyebrow,.discovery-album-card > div > small,.discovery-album-card > div > small > span, .collection-piece-list small,.story-card-copy p,.story-card-number,
+ .sound-slider-row label,.comfort-setting > i:not(.switch),.board-color-options b,.palette-options b,.room-entry-sheet label
+) {font-size:13px}
+.native-shell :is(.daily-studio-copy .pill,.daily-rules > span,.daily-studio-copy .block-note,.daily-week small,
+ .profile-rank,.stat-cards span,.word-trail li p,.weekly-keepsakes > small,.achievement-row small,
+ .arena-stage-dock .stage-play small,.arena-friend-action small,.arena-secondary-actions button,
+ .arena-social-actions button,.arena-social-actions span,.arena-social-actions small,.game-notices .dismissible-notice > span,
+ .challenge-create-copy label > small,.social-mode-grid small,.social-empty > small) {font-size:13px}
+.native-shell :is(input,textarea):not([type=checkbox]):not([type=range]),
+dialog.modal.game-dialog :is(input,textarea):not([type=checkbox]):not([type=range]) {font-size:16px}
+dialog.modal.game-dialog.game-tools-modal .account-danger .button.danger,
+dialog.modal.game-dialog.account-erasure .button.danger {
+ background:white; color:var(--berrak-danger); border:1px solid var(--berrak-danger);
+}
+dialog.modal.game-dialog.account-erasure .button.danger:not(:disabled) {background:var(--berrak-danger);color:white}
+dialog.modal.game-dialog.account-erasure .button.danger:disabled {
+ background:#e1e3ec; color:#454d60; border-color:#a3a8b7; opacity:1;
+}
+
+.berrak-orbit {background:radial-gradient(rgba(38,32,60,.82),rgba(22,18,42,.85))}
+.berrak-orbit svg {pointer-events:none}
+dialog.modal.game-dialog.album-detail-sheet .collection-piece-list small {color:var(--berrak-muted)}

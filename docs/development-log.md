@@ -1,3 +1,5 @@
+20 Kasım 2026 · **0.57.6 yerel aday** · Ana ekran, Yolculuğum ve bölüm başlığında okunurluk, hesap silme onayı ve 34 ekranlık görsel kontrol. [Değişiklikler ve ölçüm yöntemi](okunurluk-0576.md).
+
 19 Kasım 2026 · **0.57.4 yerel aday** · Küçük ekranda sabit tahta ve alt araçlar, İpucu düğmesinden hedef seçimi ve kalabalık kelime listesinde dört sütun. [Ölçümler ve cihaz kontrolünün kapsamı](sabit-tahta-0574.md).
 
 18 Kasım 2026 · **0.57.3 yerel aday** · Okunaklı seçim çizgisi, arka arkaya çizim, erişilebilir rehber ve tahtadan albüm parçasına bölüm sonu geçişi. [Oyun hissi ve doğrulama](oyun-hissi-0573.md).

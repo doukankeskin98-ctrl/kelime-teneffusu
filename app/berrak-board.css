@@ -16,7 +16,11 @@
   grid-column:2;display:grid;place-items:center;padding-left:0;text-align:center;
 }
 .scenic-play.quiet-play .play-chapter-number{
-  color:#fff;font-size:27px;line-height:1.03;text-shadow:0 2px 4px #182039;
+  position:relative;isolation:isolate;color:#fff;font-size:27px;line-height:1.03;
+}
+.scenic-play.quiet-play .play-chapter-number::before{
+  content:'';position:absolute;z-index:-1;inset:-2px -10px;border-radius:12px;
+  background:var(--berrak-plate);pointer-events:none;
 }
 .play-chapter-number small{
   display:block;margin-bottom:2px;font:800 13px/1 var(--sans);

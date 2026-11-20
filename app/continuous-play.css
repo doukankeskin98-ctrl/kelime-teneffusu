@@ -65,7 +65,7 @@ html[data-reduce-motion=true] .app-shell button,html[data-reduce-motion=true] .g
  .scenic-play[data-dense-board] .mobile-targets{height:72px;min-height:72px}
  .scenic-play[data-dense-board] .duel-controls{height:46px;min-height:46px;padding-top:2px;padding-bottom:0}
 }
-.native-scene .main-content>.game-notices:not(:empty){position:fixed;top:max(58px,env(safe-area-inset-top));left:12px;right:12px;z-index:90;max-height:25svh;overflow:auto;background:#fff9e9;border-radius:12px;box-shadow:0 6px 20px #102e3b30}
+.native-scene .main-content>.game-notices:not(:empty){position:relative;z-index:1;margin:8px 12px;background:#fff9e9;border-radius:12px;box-shadow:0 6px 20px #102e3b30}
 @media(max-width:759px) and (max-height:700px){
  .arena-stage{min-height:calc(100svh - 150px - env(safe-area-inset-bottom,0px))}
  .stage-play{min-height:60px;padding-top:10px;padding-bottom:10px}.stage-milestone{min-height:32px}

@@ -35,7 +35,8 @@ export function openGameDialog(dialog:HTMLDialogElement,onClose:()=>void,view:Vi
   dialog.style.top=((viewport?.offsetTop||0)+top+Math.max(12,(safeHeight-outer)/2))+'px';
  };
  const focusable=()=>Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]),a[href],input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])')).filter(node=>node.getClientRects().length>0);
- const key=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();onClose();}else if(e.key==='Tab'){
+ const key=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();onClose();}else if(e.key==='Tab'){
+  e.stopPropagation();
   const items=focusable(),first=items[0],last=items[items.length-1];if(!first){e.preventDefault();dialog.focus();return;}
   if(e.shiftKey&&(doc.activeElement===first||!items.includes(doc.activeElement as HTMLElement))){e.preventDefault();last?.focus();}else if(!e.shiftKey&&(doc.activeElement===last||!items.includes(doc.activeElement as HTMLElement))){e.preventDefault();first.focus();}
  }};

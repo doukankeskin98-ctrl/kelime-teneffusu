@@ -1,5 +1,5 @@
 'use client';
-import {useState} from 'react';
+import {useLayoutEffect,useRef,useState} from 'react';
 import {chapterPace} from '@/lib/game/journey-flow';
 import {Check,ChevronLeft,ChevronRight,Lock,Play,Star} from 'lucide-react';
 import type {Progress} from '@/lib/game/progress';
@@ -15,6 +15,17 @@ export function ChapterPicker({progress,onPlay,onClose,worldId,onAlbums}:{progre
  const currentWorld=chapters.find(c=>c.chapter.id===state.current?.chapter.id)?.world.expedition.id??EXPEDITIONS.at(-1)!.id;
  const currentIndex=EXPEDITIONS.findIndex(w=>w.id===currentWorld);
  const [selected,setSelected]=useState<string|null>(worldId??null),[showAll,setShowAll]=useState(false);
+ const listHeading=useRef<HTMLHeadingElement>(null);
+ const previousScope=useRef(showAll);
+ useLayoutEffect(()=>{
+  if(previousScope.current===showAll)return;
+  previousScope.current=showAll;
+  const heading=listHeading.current;
+  if(!heading)return;
+  heading.focus({preventScroll:true});
+  const dialog=heading.closest('dialog');
+  if(dialog)dialog.scrollTop=0;
+ },[showAll]);
  const world=selected?EXPEDITIONS.find(w=>w.id===selected):undefined;
  const items=world?chapters.filter(c=>c.world.expedition.id===world.id):[];
  const status=items[0]?.world;
@@ -34,7 +45,7 @@ export function ChapterPicker({progress,onPlay,onClose,worldId,onAlbums}:{progre
     {next&&<button className="button primary full journey-map-play" onClick={()=>play(next)}><Play size={18}/>Bölüm {next.number} · {next.continuing?'Devam et':'Oyna'}<ChevronRight size={20}/></button>}
    </section>
   </>:<>
-   <div className="journey-map-heading"><h3>{showAll?'Bütün dünyalar':'Yakın dünyalar'}</h3><span>{state.completed}/{state.total} bölüm</span></div>
+   <div className="journey-map-heading"><h3 ref={listHeading} tabIndex={-1}>{showAll?'Bütün dünyalar':'Yakın dünyalar'}</h3><span>{state.completed}/{state.total} bölüm</span></div>
    <div className="journey-map-worlds">{worlds.map(w=>{
     const group=chapters.filter(c=>c.world.expedition.id===w.id),s=group[0]!.world,current=w.id===currentWorld;
     return <button key={w.id} className={'journey-map-world'+(current?' is-current':'')+(!s.unlocked?' is-locked':'')} onClick={()=>setSelected(w.id)} aria-label={`Dünya ${EXPEDITIONS.indexOf(w)+1}: ${w.title} · ${s.complete?'Tamamlandı':s.unlocked?`${s.pieces}/6 bölüm`:'Kilitli'}`}>

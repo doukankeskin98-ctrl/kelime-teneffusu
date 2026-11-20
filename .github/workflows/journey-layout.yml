@@ -46,3 +46,33 @@ jobs:
           name: journey-layout-${{ strategy.job-index }}
           path: ${{ runner.temp }}/journey/
           retention-days: 7
+
+  menu-readability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        width: [320, 393]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow==11.3.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm mobile:build
+      - run: pnpm menu:readability "$WIDTH"
+        env:
+          WIDTH: ${{ matrix.width }}
+          EVIDENCE_DIR: ${{ runner.temp }}/menus
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: menu-readability-${{ matrix.width }}
+          path: ${{ runner.temp }}/menus/
+          retention-days: 7
