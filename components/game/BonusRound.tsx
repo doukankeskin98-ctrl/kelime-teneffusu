@@ -43,10 +43,10 @@ export function BonusRound({worldId,progress,onProgress,onBack,onHome,onContinue
  const readiness=(
   <div className="bonus-ready" role="group" aria-label="Bonusa hazırlan">
    <div>
-    <h2>{save.elapsed>0?'Kaldığın yerden':'Kelime avı'}</h2>
+    <h2>{save.elapsed>0?'Kaldığın yerden':'Bonus turu'}</h2>
     <p>Tahtadaki bütün <b>{word}</b> kelimelerini bul.</p>
     <p className="bonus-ready-rule">
-     {save.elapsed>0?`${save.found.length} bulundu · ${seconds} saniyen kaldı`:`${board.targets.length} keşif · ${seconds} saniye`}
+     {save.elapsed>0?`${save.found.length} bulundu · ${seconds} saniyen kaldı`:`${board.targets.length} kelime · ${seconds} saniye`}
     </p>
     <button className="button primary stage-play" onClick={resume}>
      <Play aria-hidden="true" size={20}/>{save.elapsed>0?'Bonusa devam et':'Bonusu başlat'}
@@ -78,7 +78,7 @@ export function BonusRound({worldId,progress,onProgress,onBack,onHome,onContinue
      </svg>
      <b>{seconds}</b><small>sn</small>
     </div>
-    <div className="bonus-discoveries" role="progressbar" aria-label="Bulunan keşifler"
+    <div className="bonus-discoveries" role="progressbar" aria-label="Bulunan kelimeler"
      aria-valuenow={save.found.length} aria-valuemin={0} aria-valuemax={board.targets.length}>
      <i style={{transform:`scaleX(${save.found.length/board.targets.length})`}}/>
      <span>{save.found.length} / {board.targets.length}</span>
@@ -101,11 +101,11 @@ export function BonusRound({worldId,progress,onProgress,onBack,onHome,onContinue
    </div>
   </>}>
   <p className="result-subtitle">{save.found.length===0?'İlk ve son harfe dokunarak da deneyebilirsin.':word}</p>
-  <div className="bonus-discovery-medal" aria-label={`${save.found.length} / ${board.targets.length} keşif`}>
+  <div className="bonus-discovery-medal" aria-label={`${save.found.length} / ${board.targets.length} kelime`}>
    <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="89"/><circle className="bonus-medal-fill" cx="100" cy="100" r="89" pathLength="100" strokeDasharray={`${save.found.length/board.targets.length*100} 100`}/></svg>
-   <b>{save.found.length}<small>/{board.targets.length}</small></b><span>keşif</span>
+   <b>{save.found.length}<small>/{board.targets.length}</small></b><span>kelime</span>
   </div>
-  <p className="bonus-personal-best">En iyi turun · {save.best} keşif</p>
+  <p className="bonus-personal-best">En iyi turun · {save.best} kelime</p>
  </Modal>}
  </>;
 }

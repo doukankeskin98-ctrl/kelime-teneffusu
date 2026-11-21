@@ -216,7 +216,7 @@ describe('caller wiring keeps timers, hidden targets and pending claims separate
  });
  it('keeps Sprint time running and removes access at round transition and timed completion',()=>{
   const h=view('components/game/Sprint.tsx',{...modules,'./common':commonStubs});try{
-   h.start('__SprintRun',{seed:914,progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});const start=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'))!;start.props['onClick']();h.paint();h.time(14000);let layout=h.find('PlayLayout');assert.equal(layout.props['wordListUnavailable'],false);assert.equal(layout.props['wordList'].board,layout.props['board']);const sheet=openWords(layout.props['wordList']),before=text(h.tree);h.time(16000);assert.notEqual(text(h.tree),before);sheet.find('Modal').props['onClose']();sheet.paint();sheet.close();
+   h.start('__SprintRun',{seed:914,progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});const start=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı turu başlat'))!;start.props['onClick']();h.paint();h.time(14000);let layout=h.find('PlayLayout');assert.equal(layout.props['wordListUnavailable'],false);assert.equal(layout.props['wordList'].board,layout.props['board']);const sheet=openWords(layout.props['wordList']),before=text(h.tree);h.time(16000);assert.notEqual(text(h.tree),before);sheet.find('Modal').props['onClose']();sheet.paint();sheet.close();
    const board=layout.props['board'];for(let i=0;i<board.placements.length;i++){const p=board.placements[i];h.time(16100+i*100);h.find('PlayLayout').props['onCommit'](p.a,p.b);h.paint();}assert.equal(h.find('PlayLayout').props['wordListUnavailable'],true);h.time(20000);layout=h.find('PlayLayout');assert.equal(layout.props['wordListUnavailable'],false);assert.notEqual(layout.props['board'],board);h.time(90000);assert.equal(h.find('PlayLayout').props['wordListUnavailable'],true);assert.equal(h.find('Modal').props['title'],'Güzel bir turdu!');
   }finally{h.close();}
  });
@@ -266,7 +266,7 @@ describe('confirmed Challenge and phase-based Sprint sound',()=>{
  });
  it('Sprint has one start and neutral time-up cue without per-second alarm or repeated result',()=>{
   const sounds:unknown[]=[],h=view('components/game/Sprint.tsx',{...modules,'./common':{...commonStubs,useChime:()=>((v:unknown=false)=>sounds.push(v))}});
-  try{h.start('__SprintRun',{seed:42,owner:'test',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});const start=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'));assert.ok(start);start.props['onClick']();h.paint();assert.deepEqual(sounds,[]);h.time(14000);assert.deepEqual(sounds,['start']);h.time(30000);assert.deepEqual(sounds,['start']);h.time(80000);assert.deepEqual(sounds,['start','finish']);h.paint();assert.deepEqual(sounds,['start','finish']);}finally{h.close();}
+  try{h.start('__SprintRun',{seed:42,owner:'test',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});const start=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı turu başlat'));assert.ok(start);start.props['onClick']();h.paint();assert.deepEqual(sounds,[]);h.time(14000);assert.deepEqual(sounds,['start']);h.time(30000);assert.deepEqual(sounds,['start']);h.time(80000);assert.deepEqual(sounds,['start','finish']);h.paint();assert.deepEqual(sounds,['start','finish']);}finally{h.close();}
  });
 });
 
@@ -326,7 +326,7 @@ describe('actual numbered Solo completes, advances and replays without new award
   const b=content.journeyBoard(content.journeyById('uzay-1')!),p=familiarProgress();p.saves['route:uzay-1']=progress.cleanSave({strokes:b.placements,hints:0,elapsed:10,complete:false,stars:0},b);
   const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{
    h.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true,practice:true},progress:p,onProgress(){},onBack(){},onMap(){},onNext(){}});assert.equal(h.find('PlayLayout').props['strokes'].length,0);
-   for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();assert.equal(h.find('Modal').props['resultStars'],0);assert.deepEqual(h.find('JourneyResult').props['rewards'],[]);assert.equal(h.find('JourneyResult').props['before'].state.pieces,1);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
+   for(const stroke of h.find('PlayLayout').props['board'].placements){h.find('PlayLayout').props['onCommit'](stroke.a,stroke.b);await h.settle();}h.expire();await h.settle();assert.equal(h.find('Modal').props['resultStars'],3);assert.equal(h.find('Modal').props['resultStarGain'],0);assert.deepEqual(h.find('JourneyResult').props['rewards'],[]);assert.equal(h.find('JourneyResult').props['before'].state.pieces,1);assert.equal(h.find('JourneyResult').props['after'].state.pieces,1);
   }finally{h.close();}
   const resumed={...p,saves:{'route:uzay-1':progress.cleanSave({strokes:[b.placements[0]!],hints:1,elapsed:12,complete:false,stars:0},b)}};
   const r=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});try{r.start('Solo',{config:{themeId:'uzay',level:0,journey:'uzay-1',campaign:true},progress:resumed,onProgress(){},onBack(){},onMap(){},onNext(){}});assert.equal(r.find('PlayLayout').props['strokes'].length,1);assert.equal(r.find('PlayControls').props['hints'],2);}finally{r.close();}
@@ -481,14 +481,14 @@ describe('mobile target navigation keeps the puzzle authoritative',()=>{
 describe('clear phone targets and persisted fast play',()=>{
  it('records one visible transition when interval and visibility ticks arrive before repaint',()=>{
   const values=new Map<string,string>(),h=view('components/game/Sprint.tsx',{'./common':commonStubs,...modules},undefined,values);
-  try{h.start('__SprintRun',{seed:914,owner:'alice',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'))!.props['onClick']();h.paint();h.time(14000);const seen=new Set<string>();
+  try{h.start('__SprintRun',{seed:914,owner:'alice',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı turu başlat'))!.props['onClick']();h.paint();h.time(14000);const seen=new Set<string>();
    for(let round=0;round<2;round++){const board=h.find('PlayLayout').props['board'];board.targets.forEach((t:any)=>seen.add(t.text));for(const p of board.placements){h.find('PlayLayout').props['onCommit'](p.a,p.b);h.paint();}const before=sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!).sequence;h.time(15000+round*1000,false);h.document.dispatchEvent(new Event('visibilitychange'));h.paint();const next=h.find('PlayLayout').props['board'];next.targets.forEach((t:any)=>seen.add(t.text));const saved=sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!);assert.equal(saved.sequence,before+1);assert.equal(saved.sets.length,round+2);assert.deepEqual(Object.keys(saved.words).sort(),[...seen].sort());}
   }finally{h.close();}
  });
 
  it('records only the displayed board when the same start callback is invoked rapidly before repaint',()=>{
   const values=new Map<string,string>(),h=view('components/game/Sprint.tsx',{'./common':commonStubs,...modules},undefined,values);
-  try{h.start('__SprintRun',{seed:914,owner:'alice',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});const click=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'))!.props['onClick'];click();click();click();h.paint();const board=h.find('PlayLayout').props['board'],history=sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!);assert.equal(history.sequence,1);assert.equal(history.sets.length,1);assert.deepEqual(Object.keys(history.words).sort(),board.targets.map((t:any)=>t.text).sort());assert.equal(Object.keys(history.words).length,4);assert.equal(h.find('PlayLayout').props['paused'],true);}finally{h.close();}
+  try{h.start('__SprintRun',{seed:914,owner:'alice',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});const click=walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı turu başlat'))!.props['onClick'];click();click();click();h.paint();const board=h.find('PlayLayout').props['board'],history=sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!);assert.equal(history.sequence,1);assert.equal(history.sets.length,1);assert.deepEqual(Object.keys(history.words).sort(),board.targets.map((t:any)=>t.text).sort());assert.equal(Object.keys(history.words).length,4);assert.equal(h.find('PlayLayout').props['paused'],true);}finally{h.close();}
  });
 
  it('keeps long and split normal words together without changing the authoritative board',()=>{
@@ -498,12 +498,12 @@ describe('clear phone targets and persisted fast play',()=>{
  });
  it('persists an abandoned actual Sprint before another mount chooses targets, keeping the old record',()=>{
   const values=new Map([['kt-sprint-best-v1:alice','987']]),runs:string[][]=[];
-  for(let i=0;i<3;i++){const h=view('components/game/Sprint.tsx',{'./common':commonStubs,...modules},undefined,values);try{h.start('__SprintRun',{seed:914,owner:'alice',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'))!.props['onClick']();h.paint();runs.push(h.find('PlayLayout').props['board'].targets.map((t:any)=>t.text));assert.equal(sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!).sequence,i+1);assert.equal(values.get('kt-sprint-best-v1:alice'),'987');}finally{h.close();}}
+  for(let i=0;i<3;i++){const h=view('components/game/Sprint.tsx',{'./common':commonStubs,...modules},undefined,values);try{h.start('__SprintRun',{seed:914,owner:'alice',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı turu başlat'))!.props['onClick']();h.paint();runs.push(h.find('PlayLayout').props['board'].targets.map((t:any)=>t.text));assert.equal(sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!).sequence,i+1);assert.equal(values.get('kt-sprint-best-v1:alice'),'987');}finally{h.close();}}
   assert.equal(new Set(runs.flat()).size,12);assert.equal(values.has(sprint.sprintHistoryKey('bob')),false);
  });
  it('merges another open tab before choosing a transition board instead of erasing its targets',()=>{
   const values=new Map<string,string>(),a=view('components/game/Sprint.tsx',{'./common':commonStubs,...modules},undefined,values),b=view('components/game/Sprint.tsx',{'./common':commonStubs,...modules},undefined,values);
-  const start=(h:ReturnType<typeof view>,seed:number)=>{h.start('__SprintRun',{seed,owner:'alice',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı Turu başlat'))!.props['onClick']();h.paint();h.time(14000);return h.find('PlayLayout').props['board'];};
+  const start=(h:ReturnType<typeof view>,seed:number)=>{h.start('__SprintRun',{seed,owner:'alice',progress:familiarProgress(),onProgress(){},onBack(){},onReplay(){}});walk(h.tree).find(n=>n.type==='button'&&text(n).includes('Hızlı turu başlat'))!.props['onClick']();h.paint();h.time(14000);return h.find('PlayLayout').props['board'];};
   try{const first=start(a,11),other=start(b,22);for(const p of first.placements){a.find('PlayLayout').props['onCommit'](p.a,p.b);a.paint();}a.time(15000);const next=a.find('PlayLayout').props['board'];assert.equal(new Set([...first.targets,...other.targets,...next.targets].map((t:any)=>t.text)).size,12);const history=sprint.parseSprintHistory(values.get(sprint.sprintHistoryKey('alice'))!);assert.equal(history.sequence,3);assert.equal(Object.keys(history.words).length,12);}finally{a.close();b.close();}
  });
  it('applies an asynchronously restored home preference without losing progress or opening a game',()=>{
@@ -549,7 +549,7 @@ describe('world word veils survive every target surface and resume',()=>{
    let paused=initial,toggles=0,zoom=0,sound=0,help=0;
    const h=view('components/game/common.tsx'),props=()=>({paused,canPause,zoom:false,sound:false,hints:3,onPause(){paused=!paused;toggles++;},onZoom(){zoom++;},onSound(){sound++;},onHelp(){help++;},onHint(){}});
    try{h.start('PlayControls',props());walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());assert.equal(paused,canPause?true:initial);
-    walk(h.find('Modal')).find(n=>n.type==='button'&&n.props['role']==='switch'&&n.props['aria-checked']===false)!.props['onClick']();assert.equal(sound,1);
+    assert.equal(h.find('SoundSettings').props['enabled'],false);h.find('SoundSettings').props['onChange'](true);assert.equal(sound,1);
     walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Büyük harf modu')!.props['onClick']();h.update('PlayControls',props());assert.equal(zoom,1);assert.equal(paused,initial);assert.equal(toggles,canPause&&!initial?2:0);
     walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Kurallar')!.props['onClick']();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
    }finally{h.close();}
@@ -622,7 +622,7 @@ describe('result and play preference surfaces',()=>{
  });
  it('timed tools expose comfort controls without pausing and disappear when the match ends',()=>{
   const h=view('components/game/common.tsx');let sound=0;const props={sound:true,onSound:()=>sound++};
-  try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);walk(h.tree).find(n=>n.type==='button'&&n.props['role']==='switch'&&n.props['aria-checked']===true)!.props['onClick']();assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahta/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
+  try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);assert.equal(h.find('SoundSettings').props['enabled'],true);h.find('SoundSettings').props['onChange'](false);assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahta/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
  });
 });
 
@@ -721,9 +721,9 @@ it('preserves all side-game destinations beneath three primary choices and retur
  const click=(label:string)=>{const n=walk(h.tree).find(n=>n.type==='button'&&text(n).startsWith(label));assert(n,label);n.props['onClick']();h.paint();};
  try{
   h.start('Explore',props);const primary=walk(h.tree).find(n=>n.props['className']==='event-menu extra-games-menu')!;assert.equal(walk(primary).filter(n=>n.type==='button').length,3);
-  click('Günlük bulmaca');assert.equal(calls.pop(),'gunluk');click('Kısa oyunlar');assert.equal(h.find('Modal').props['title'],'Kısa oyunlar');click('Hızlı Tur');assert.equal(calls.pop(),'sprint');click('Bonus turları');assert.equal(h.find('Modal').props['title'],'Bonus turları');h.find('Modal').props['onClose']();h.paint();assert.equal(h.find('Modal').props['title'],'Kısa oyunlar');h.find('Modal').props['onClose']();h.paint();
-  for(const label of ['Hikâyeler','İpucu Avı','Serbest oyun','Ek bölümler']){click(label);assert.equal(h.find('Modal').props['title'],label);h.find('Modal').props['onClose']();h.paint();}
-  click('Gizli Tema');assert.equal(calls.pop(),content.MYSTERIES[0]!.id);click('Çizerek alıştırma yap');assert.equal(calls.pop().tutorial,true);
+  click('Günlük bulmaca');assert.equal(calls.pop(),'gunluk');click('Kısa oyunlar');assert.equal(h.find('Modal').props['title'],'Kısa oyunlar');click('Hızlı tur');assert.equal(calls.pop(),'sprint');click('Bonus turları');assert.equal(h.find('Modal').props['title'],'Bonus turları');h.find('Modal').props['onClose']();h.paint();assert.equal(h.find('Modal').props['title'],'Kısa oyunlar');h.find('Modal').props['onClose']();h.paint();
+  for(const label of ['Hikâyeler','İpucu avı','Serbest oyun','Ek bölümler']){click(label);assert.equal(h.find('Modal').props['title'],label);h.find('Modal').props['onClose']();h.paint();}
+  click('Gizli tema');assert.equal(calls.pop(),content.MYSTERIES[0]!.id);click('Çizerek alıştırma yap');assert.equal(calls.pop().tutorial,true);
  }finally{h.close();}
 });
 it('keeps solo notices in the footer before, during and after a hint without changing the puzzle',()=>{

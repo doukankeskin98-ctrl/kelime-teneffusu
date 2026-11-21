@@ -10,6 +10,7 @@ import {launch,sleep} from './chrome.mjs';
 
 const out=path.resolve(process.env.EVIDENCE_DIR??'../world-review.nosync/release-0570/screens');
 const moments=process.argv.includes('--moments');
+const resultsOnly=process.argv.includes('--results-only');
 const polish=process.argv.includes('--polish');
 const surfaceCheck=process.argv.includes('--surfaces');
 const readabilityOnly=process.argv.includes('--readability-only');
@@ -66,8 +67,8 @@ async function draw(word,hold,shape=fixture.shape){
 }
 async function verifyReadableDialogs(width){
  async function inspect(name,title){
-  await waitFor("document.querySelector('dialog[open] h2')?.textContent==="+JSON.stringify(title));
-  if(name.startsWith('privacy'))await waitFor("!!document.querySelector('dialog[open] .privacy-copy p')");
+  await waitFor("[...document.querySelectorAll('dialog[open] h2')].at(-1)?.textContent==="+JSON.stringify(title));
+  if(name==='privacy')await waitFor("!!document.querySelector('dialog[open] .privacy-copy p')");
   if(name.startsWith('support'))await waitFor("!!document.querySelector('dialog[open] #support-detail')");
   await waitFor("!document.querySelector('dialog[open] .screen-load-state')");
   await page.evaluate('document.fonts.ready');await sleep(240);
@@ -101,8 +102,8 @@ async function verifyReadableDialogs(width){
    failures.push(...await inspect('support-preview',title));
   }
  }
- for(const [name,button,title] of [['riddle','İpucu Avı','Tanımı çöz, kelimeyi bul'],['mystery','Gizli Tema','Ortak bağlantıyı bul']]){
-  await home();await click('[aria-label="Diğer oyunlar"]');await click('.extra-games-details summary');await textButton(button);
+ for(const [name,button,title] of [['riddle','İpucu avı','Tanımı çöz, kelimeyi bul'],['mystery','Gizli tema','Ortak bağlantıyı bul']]){
+  await home();await click('[aria-label="Oyunlar"]');await click('.extra-games-details summary');await textButton(button);
   if(name==='riddle')await click('.riddle-shelf .button');
   failures.push(...await inspect(name,title));
  }
@@ -110,14 +111,14 @@ async function verifyReadableDialogs(width){
  failures.push(...await inspect('concealed','Saklı kelimeyi keşfet'));
  await home();signedInFixture=true;
  try{await click('[aria-label="Günlük bulmaca"]');
-  await waitFor("document.querySelector('.daily-studio-copy button')?.textContent.includes('Günün keşfine başla')");
-  await textButton('Günün keşfine başla');
+  await waitFor("document.querySelector('.daily-studio-copy button')?.textContent.trim()==='Başla'");
+  await textButton('Başla');
   failures.push(...await inspect('daily-guide','Bugünün ortak tahtası'));
   if(polish)return;
   await home();await click('[aria-label="Ayarları aç"]');await textButton('Gizlilik ve hesap');
-  await waitFor("!!document.querySelector('.account-danger button[aria-expanded]')");
-  await click('.account-danger button[aria-expanded]');
-  failures.push(...await inspect('privacy-account','Gizlilik ve hesap'));
+  await waitFor("!!document.querySelector('.account-danger button[aria-haspopup=dialog]')");
+  await click('.account-danger button[aria-haspopup=dialog]');
+  failures.push(...await inspect('privacy-account','Hesap silme'));
  }finally{signedInFixture=false;}
  if(!baseline)assert.deepEqual(failures,[],'Dialog text contrast');
 }
@@ -196,14 +197,15 @@ async function recordPlayMoments(width){
  }
 }
 async function settingsContrast(width){
- await home();await click('[aria-label="Ayarları aç"]');await textButton('Diğer ayarlar');
+ await home();await click('[aria-label="Ayarları aç"]');await textButton('Ses düzeyi');
+ const sound=await measureDialogText(page);await shot(width,'sound-level');await textButton('Diğer ayarlar');
  await waitFor("!!document.querySelector('.settings-sheet .game-disclosure-trigger')");
- for(const title of ['Ses düzeyi','Erişilebilirlik','Tahta ve çizgi renkleri','Kullanım verileri'])await textButton(title);
+ for(const title of ['Erişilebilirlik','Tahta ve çizgi renkleri','Kullanım verileri'])await textButton(title);
  await shot(width,'more-settings-open');
  const settings=await measureDialogText(page);
  await home();await click('[aria-label="Oyuncu profilini aç"]');await click('#collection-tab-achievements');
  await shot(width,'achievements');const achievements=await measureDialogText(page,'#collection-panel-achievements');
- const rows=[...settings,...achievements];writeFileSync(path.join(out,width+'-settings-achievements.json'),JSON.stringify(rows,null,2));
+ const rows=[...sound,...settings,...achievements];writeFileSync(path.join(out,width+'-settings-achievements.json'),JSON.stringify(rows,null,2));
  if(!baseline)assert.deepEqual(rows.filter(r=>!r.pass).map(r=>[r.text,r.ratio]),[],'Settings and achievements');
 }
 async function verifyChapterTransitions(width){
@@ -248,7 +250,7 @@ async function verifySideScreens(width){
   }
   await home();
  }
- await click('[aria-label="Diğer oyunlar"]');await textButton('Kısa oyunlar');await textButton('Bonus turları');await click('.bonus-library .event-menu button');
+ await click('[aria-label="Oyunlar"]');await textButton('Kısa oyunlar');await textButton('Bonus turları');await click('.bonus-library .event-menu button');
  await waitFor("!!document.querySelector('.bonus-ready')");await sleep(650);await shot(width,'bonus-ready');
  if(!baseline){
   assert.equal((await css('.bonus-target')).background,'rgb(116, 69, 238)');
@@ -293,14 +295,14 @@ try{
    continue;
   }
   await page.viewport(w,h,1);await home();await shot(w,'home');
-  if(w===393){
-   for(const [selector,name] of [['.berrak-orbit','map'],['[aria-label="Albümlerim"]','album'],['[aria-label="Günlük bulmaca"]','daily'],['[aria-label="Arena"]','arena'],['[aria-label="Diğer oyunlar"]','other'],['[aria-label="Oyuncu profilini aç"]','profile'],['[aria-label="Ayarları aç"]','settings']]){
+  if(w===393&&!resultsOnly){
+   for(const [selector,name] of [['.berrak-orbit','map'],['[aria-label="Albümlerim"]','album'],['[aria-label="Günlük bulmaca"]','daily'],['[aria-label="Arena"]','arena'],['[aria-label="Oyunlar"]','other'],['[aria-label="Oyuncu profilini aç"]','profile'],['[aria-label="Ayarları aç"]','settings']]){
     await click(selector);await shot(w,name);
     if(name==='map'){await click('.journey-map-world.is-current');await shot(w,'map-chapters');}
     if(name==='profile'){await click('#collection-tab-achievements');await shot(w,'achievements');await click('#collection-tab-profile');await textButton('Profil oluştur');await shot(w,'identity');}
     if(name==='settings'){await textButton('Gizlilik ve hesap');await shot(w,'privacy');await textButton('Ayarlara dön');await textButton('Diğer ayarlar');await shot(w,'settings-more');await textButton('Ayarlara dön');await textButton('Destek');await shot(w,'support');}
     if(name==='arena'){await textButton('Arkadaşlarınla oyna');await shot(w,'arena-room-entry');await click('dialog[open] .modal-head button');await textButton('Meydan oku');await shot(w,'challenge');}
-    if(name==='other'){await textButton('Kısa oyunlar');await shot(w,'short-games');await textButton('Bonus turları');await shot(w,'bonus-library');await click('dialog[open] .modal-head button');await textButton('Hızlı Tur');await shot(w,'sprint-intro');}
+    if(name==='other'){await textButton('Kısa oyunlar');await shot(w,'short-games');await textButton('Bonus turları');await shot(w,'bonus-library');await click('dialog[open] .modal-head button');await textButton('Hızlı tur');await shot(w,'sprint-intro');}
     await home();
    }
   }

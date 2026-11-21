@@ -137,7 +137,7 @@ describe('Solo live account resumption',()=>{
    page.setResume(saved([2],30,1));await page.settle();
    assert.deepEqual(page.save.strokes.map(s=>s.id),board.placements.slice(0,3).map(s=>s.id));
    assert.equal(page.save.elapsed,30);assert.equal(page.save.hints,1);
-   assert.match(page.text(),/Hesabındaki keşifler bu tahtaya eklendi/);
+   assert.match(page.text(),/Hesabındaki kelimeler bu tahtaya eklendi/);
   }finally{page.close();}
  });
  it('preserves both discoveries when resume and a fresh selection queue before the next render',async()=>{

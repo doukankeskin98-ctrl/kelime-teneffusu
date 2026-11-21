@@ -1,8 +1,8 @@
 // Exercise every menu through the mobile entry point with a generated local player's save.
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {mkdirSync,writeFileSync} from 'node:fs';
-import path from 'node:path';
+import {mkdirSync,writeFileSync,mkdtempSync,cpSync,rmSync} from 'node:fs';
+import path from 'node:path';import {tmpdir} from 'node:os';
 import {preview} from 'vite';
 import {launch,sleep} from './chrome.mjs';
 import {screens} from './readability-screens.mjs';
@@ -15,7 +15,8 @@ mkdirSync(dir,{recursive:true});
 const fx=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/veteran-save.ts'],{encoding:'utf8'}));
 const save=JSON.parse(fx.value);
 for(const c of fx.chapters.slice(120))delete save.saves['route:'+c.id];
-const server=await preview({configFile:false,build:{outDir:'dist-mobile'},preview:{host:'127.0.0.1',port:0},logLevel:'error'});
+const frozenBuild=mkdtempSync(path.join(tmpdir(),'kt-menu-build-'));cpSync('dist-mobile',frozenBuild,{recursive:true});
+const server=await preview({configFile:false,build:{outDir:frozenBuild},preview:{host:'127.0.0.1',port:0},logLevel:'error'});
 const url='http://127.0.0.1:'+server.httpServer.address().port;
 const metrics={};
 let page;
@@ -75,5 +76,5 @@ try {
   writeFileSync(path.join(dir,'metrics.json'),JSON.stringify(metrics));
   execFileSync(process.env.PYTHON??'python3',['scripts/visual/readability-contrast.py',out,String(width)],{stdio:'inherit'});
 }finally{
-  try{await page?.close();}finally{await server.close();}
+  try{await page?.close();}finally{await server.close();rmSync(frozenBuild,{recursive:true,force:true});}
 }

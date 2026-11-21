@@ -1,4 +1,5 @@
 'use client';
+import {GAME_TERMS} from '@/lib/game/glossary';
 import {LIVING_STORIES} from '@/lib/game/story-content';
 import {BookOpen,CalendarDays,Gamepad2,Swords} from 'lucide-react';
 import type {Progress} from '@/lib/game/progress';
@@ -26,7 +27,7 @@ export function JourneyHome({progress,onPlay,onExplore,onDetails,onDaily,onArena
   {label:'Günlük',name:'Günlük bulmaca',icon:CalendarDays,action:onDaily,fresh:!progress.days.includes(istanbulDay())},
   {label:'Albüm',name:'Albümlerim',icon:BookOpen,action:onAlbums},
   {label:'Arena',name:'Arena',icon:Swords,action:onArena},
-  {label:'Diğer',name:'Diğer oyunlar',icon:Gamepad2,action:onExplore},
+  {label:GAME_TERMS.games,name:'Oyunlar',icon:Gamepad2,action:onExplore},
  ];
  return <section className="berrak-landing" aria-labelledby="journey-home-title">
   <div className="berrak-landscape" aria-hidden="true"><SceneArt theme={expeditionTheme(world)} scene={story?.scene} worldId={world.id} eager/></div>

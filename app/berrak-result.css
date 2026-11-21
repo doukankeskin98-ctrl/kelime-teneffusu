@@ -144,3 +144,29 @@ html[data-reduce-motion=true] .modal.game-dialog.scenic-outcome.berrak-result.sc
   content:"";display:block;width:100%;height:100%;transform:rotate(var(--flight-angle));
   border-radius:100%;background:linear-gradient(90deg,transparent,#ffca54 52%,#fff9d9);filter:drop-shadow(0 0 3px #ffd164);
 }
+
+/* Labels and gain stay outside the fixed control geometry. */
+.berrak-result .result-shortcuts button{position:relative}
+.berrak-result .result-shortcuts button>small{position:absolute;top:100%;left:50%;transform:translateX(-50%);font-size:13px;line-height:18px;white-space:nowrap;color:white;pointer-events:auto}
+.result-star-gain{position:absolute;inset:auto -30px 0 auto;color:var(--result-gold);font-size:16px;animation:star-total-gain 900ms ease-out both;pointer-events:none}
+@keyframes star-total-gain{from{opacity:0;transform:translateY(6px)}25%{opacity:1}to{opacity:0;transform:translateY(-16px)}}
+.berrak-result .result-star-stage{position:relative}
+.berrak-result .result-best{position:absolute;top:100%;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:13px;line-height:18px;color:white}
+.berrak-result .result-world-caption .result-unlock-notice{font-size:13px;line-height:1.3;max-width:270px;margin:4px auto 0}
+@media(prefers-reduced-motion:reduce){.result-star-gain{animation:none}}
+html[data-reduce-motion=true] .result-star-gain{animation:none}
+/* Reserve space for a newly unlocked world without moving the continuation button. */
+.berrak-result .journey-result:has(.result-unlock-notice){--reward-extra-space:54px}
+.berrak-result .journey-result:has(.result-best){--reward-extra-space:18px}
+.berrak-result .journey-result:has(.result-best) .result-star-stage{margin-bottom:24px}
+.berrak-result.journey-outcome .result-world-medallion{--medal-size:clamp(80px,calc(20vh - var(--reward-extra-space,0px)),180px)}
+@supports(height:1cqh){
+ .berrak-result.journey-outcome .result-world-medallion{--medal-size:clamp(80px,calc(100cqh - clamp(120px,23svh,170px) - var(--reward-extra-space,0px)),220px)}
+}
+
+/* Short screens keep the text inside the same 46 px touch target. */
+@media(max-height:650px){
+ .berrak-result .result-shortcuts button:has(>small){border-radius:14px}
+ .berrak-result .result-shortcuts button:has(>small)>svg{position:absolute;top:4px;width:19px;height:19px}
+ .berrak-result .result-shortcuts button>small{top:24px;line-height:18px}
+}

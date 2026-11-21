@@ -39,7 +39,7 @@ export class GameService {
    const p=await this.q('SELECT id,nickname FROM players WHERE id=?',userId).first<{id:string;nickname:string}>();
    if(!p)throw new GameError('Profil hazırlanamadı',503);return p;
  }
- async rename(userId:string,name:unknown){const nickname=clampName(name);if(!acceptablePlayerName(nickname))throw new GameError('Başka bir oyuncu adı seç.');if(await this.q('SELECT 1 FROM player_restrictions WHERE user_id=? AND name_locked=1',userId).first())throw new GameError('Oyuncu adın inceleme nedeniyle değiştirilemiyor.',403);if(nickname.length<2)throw new GameError('Takma ad en az 2 karakter olsun.');await this.profile(userId);await this.q('UPDATE players SET nickname=? WHERE id=?',nickname,userId).run();return this.profile(userId);}
+ async rename(userId:string,name:unknown){const nickname=clampName(name);if(!acceptablePlayerName(nickname))throw new GameError('Başka bir oyuncu adı seç.');if(await this.q('SELECT 1 FROM player_restrictions WHERE user_id=? AND name_locked=1',userId).first())throw new GameError('Oyuncu adın inceleme nedeniyle değiştirilemiyor.',403);if(nickname.length<2)throw new GameError('Takma ad en az 2 karakter olsun.');await this.profile(userId);await this.db.batch([this.q('UPDATE players SET nickname=? WHERE id=?',nickname,userId),this.q("UPDATE dailies SET nickname=? WHERE user_id=? AND nickname=''",nickname,userId)]);return this.profile(userId);}
  private async row(id:string){const row=await this.q('SELECT id,data,revision,expires FROM rooms WHERE id=?',id).first<RoomRow>();if(!row)throw new GameError('Oda bulunamadı.',404);return row;}
  private parse(row:RoomRow){return JSON.parse(row.data) as Room;}
  private async active(userId:string){
@@ -284,6 +284,7 @@ export class GameService {
    throw new GameError('Grup lobileri şu an yoğun. Biraz sonra yeniden dene veya özel oda oluştur.',503,'ARENA_QUEUE_BUSY');
  }
  async enter(userId:string,kind:'quick'|'friend',joinCode?:string,group=false,roundPolicy:ArenaRoundPolicy='words'){
+   if(!(await this.profile(userId)).nickname.trim())throw new GameError('Arena için oyuncu adını seç.',409,'PLAYER_NAME_REQUIRED');
    const active=await this.active(userId);if(active)return this.state(userId,active.id);
    if(joinCode){const row=await this.q("SELECT id,data,revision,expires FROM rooms WHERE code=? AND (kind='friend' OR json_extract(data,'$.mode')='group')",joinCode.trim().toUpperCase()).first<RoomRow>();if(!row)throw new GameError('Bu kodla bir oda bulunamadı.',404);return this.joinRow(userId,row);}
    if(kind==='quick'&&group)return this.enterQuickGroup(userId,roundPolicy);
@@ -359,9 +360,9 @@ export class GameService {
    return this.dailyView(JSON.parse(row.data));
  }
  async daily(userId:string){
-   const day=istanbulDay(this.clock()),now=this.clock(),p=await this.profile(userId);const id=crypto.randomUUID();
+   const day=istanbulDay(this.clock()),now=this.clock();await this.profile(userId);const id=crypto.randomUUID();
    const data:Daily={id,day,starts:now,strokes:[],hints:0,finished:null,duration:0};
-   await this.q('INSERT OR IGNORE INTO dailies(id,user_id,nickname,day,data,created) VALUES(?,?,?,?,?,?)',id,userId,p.nickname,day,JSON.stringify(data),now).run();
+   await this.q('INSERT OR IGNORE INTO dailies(id,user_id,nickname,day,data,created) SELECT ?,id,nickname,?,?,? FROM players WHERE id=?',id,day,JSON.stringify(data),now,userId).run();
    const row=await this.q('SELECT id,data,revision FROM dailies WHERE user_id=? AND day=?',userId,day).first<DailyRow>();if(!row)throw new GameError('Günlük hazırlanamadı.',503);return this.dailyView(JSON.parse(row.data));
  }
  async dailyClaim(userId:string,id:string,a:unknown,b:unknown,hint=false,requestId?:unknown,targetId?:unknown){
@@ -389,7 +390,7 @@ export class GameService {
  }
  async rankings(){
    const day=istanbulDay(this.clock());
-   const daily=(await this.q('SELECT nickname,duration FROM dailies WHERE day=? AND completed=1 ORDER BY duration,created LIMIT 20',day).all<{nickname:string;duration:number}>()).results;
+   const daily=(await this.q('SELECT nickname,duration FROM dailies WHERE day=? AND completed=1 AND length(trim(nickname))>0 ORDER BY duration,created LIMIT 20',day).all<{nickname:string;duration:number}>()).results;
    const arena=(await this.q('SELECT p.nickname,e.played,e.value AS rating,COALESCE((SELECT SUM(r.win) FROM results r JOIN rating_events re ON re.room_id=r.room_id WHERE r.user_id=p.id),0) AS wins,COALESCE((SELECT SUM(r.score) FROM results r JOIN rating_events re ON re.room_id=r.room_id WHERE r.user_id=p.id),0) AS score FROM ratings e JOIN players p ON p.id=e.user_id WHERE e.played>0 ORDER BY e.value DESC,e.played DESC LIMIT 20').all<{nickname:string;played:number;wins:number;score:number;rating:number}>()).results;
    return {day,daily,arena};
  }

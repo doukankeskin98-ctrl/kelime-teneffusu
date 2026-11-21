@@ -45,3 +45,41 @@ jobs:
           path: |
             pnpm-lock.yaml
             drizzle/
+
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        width: [320, 393]
+    env:
+      EVIDENCE_DIR: outputs/integrity
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow==11.3.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm mobile:build
+      - name: First journey, control positions and normal-close persistence
+        run: node scripts/visual/integrity/run-gate.mjs ${{ matrix.width }}
+      - name: Every menu and agreed terminology
+        run: |
+          node scripts/visual/readability.mjs ${{ matrix.width }}
+          node scripts/visual/integrity/terim-denetimi.mjs "$EVIDENCE_DIR" ${{ matrix.width }} --yolculuk "$EVIDENCE_DIR/${{ matrix.width }}/journey/log.json" --kaynak .
+      - name: All chapter titles and saved unlock states
+        if: matrix.width == 393
+        run: node scripts/visual/integrity/chapter-layout.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integrity-${{ matrix.width }}
+          path: ${{ env.EVIDENCE_DIR }}
+          retention-days: 7

@@ -65,7 +65,7 @@ export function menuMetrics() {
       if(r.width<1||r.height<1)continue;
       const points=samplePoints(el,r);
       if(!points.length)continue;
-      texts.push({points,t:label.slice(0,50),r:rect(r),fs:parseFloat(css.fontSize),fw:Number(css.fontWeight),c:css.color,op,
+      texts.push({points,t:label,r:rect(r),fs:parseFloat(css.fontSize),fw:Number(css.fontWeight),c:css.color,op,
         cell:!!el.closest('[data-cell]'),ah:!!el.closest('[aria-hidden=true]'),badge:badge(el),hint:!!el.closest('button[aria-label*="İpucu"]'),
         clip:(/hidden|clip/.test(css.overflowX) && el.scrollWidth>el.clientWidth+1) ||
           (/hidden|clip/.test(css.overflowY) && css.webkitLineClamp!=='none' && el.scrollHeight>el.clientHeight+2)});

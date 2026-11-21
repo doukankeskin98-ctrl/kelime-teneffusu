@@ -9,7 +9,7 @@ import {CollectionScene} from './Discovery';
 type Goal=ReturnType<typeof journeyGoal>;
 export function PieceTrail({earned,current}:{earned:boolean[];current?:number}){
  return <ol className="piece-trail" aria-label={`${earned.filter(Boolean).length} / ${earned.length} koleksiyon parçası`}>
-  {earned.map((done,i)=><li key={i} className={done?'earned':i===current?'current':''} aria-label={`${i+1}. parça: ${done?'koleksiyonunda':i===current?'bu keşfin hedefi':'henüz açılmadı'}`}><span>{done?<Check size={15}/>:i===5?<Gift size={15}/>:i+1}</span></li>)}
+  {earned.map((done,i)=><li key={i} className={done?'earned':i===current?'current':''} aria-label={`${i+1}. parça: ${done?'koleksiyonunda':i===current?'bu bölümün hedefi':'henüz açılmadı'}`}><span>{done?<Check size={15}/>:i===5?<Gift size={15}/>:i+1}</span></li>)}
  </ol>;
 }
 export function JourneyObjective({goal,complete}:{goal:Goal;complete:boolean}){

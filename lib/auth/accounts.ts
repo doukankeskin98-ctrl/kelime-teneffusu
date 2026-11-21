@@ -21,6 +21,8 @@ export class Accounts {
   try{await this.db.batch([
    guest?this.db.prepare('INSERT INTO accounts(provider_id,game_user_id,username,created) SELECT ?,?,?,? WHERE EXISTS(SELECT 1 FROM game_sessions WHERE token_hash=? AND user_id=? AND expires>?)').bind(principal.providerId,gameId,username,Date.now(),guest.tokenHash,guest.userId,guest.now):this.db.prepare('INSERT INTO accounts(provider_id,game_user_id,username,created) VALUES(?,?,?,?)').bind(principal.providerId,gameId,username,Date.now()),
    this.db.prepare('INSERT OR IGNORE INTO players(id,nickname,created) SELECT ?,?,? WHERE EXISTS(SELECT 1 FROM accounts WHERE provider_id=? AND game_user_id=?)').bind(gameId,username,Date.now(),principal.providerId,gameId),
+   this.db.prepare("UPDATE players SET nickname=? WHERE id=? AND nickname='' AND EXISTS(SELECT 1 FROM accounts WHERE provider_id=? AND game_user_id=?)").bind(username,gameId,principal.providerId,gameId),
+   this.db.prepare("UPDATE dailies SET nickname=? WHERE user_id=? AND nickname='' AND EXISTS(SELECT 1 FROM accounts WHERE provider_id=? AND game_user_id=?)").bind(username,gameId,principal.providerId,gameId),
    ...(guest?[this.db.prepare('DELETE FROM game_sessions WHERE user_id=? AND EXISTS(SELECT 1 FROM accounts WHERE provider_id=? AND game_user_id=?)').bind(gameId,principal.providerId,gameId)]:[])
   ]);}catch{
    const after=await this.find(principal);if(after){if(guest&&after.game_user_id!==guest.userId)throw new IdentityError('Bu hesap başka bir oyuncu profiline bağlı. Kayıtların ayrı korunuyor.',409);return after;}

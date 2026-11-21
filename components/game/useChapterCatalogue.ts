@@ -57,7 +57,7 @@ export function useChapterCatalogue({initial,initialCompanions,collection,themeI
   }catch{
    if(!current())return;
    request.current.failedOffset=offset;
-   setState(s=>({...s,loading:false,offline:!navigator.onLine,error:navigator.onLine?'Yeni keşifler şu an yüklenemedi.':''}));
+   setState(s=>({...s,loading:false,offline:!navigator.onLine,error:navigator.onLine?'Yeni bölümler şu an yüklenemedi.':''}));
   }
  };
  useEffect(()=>{

@@ -67,3 +67,11 @@ describe('selected daily hint reaches the service without revealing placements',
   const retry=await h.request('POST','','alice',payload);assert.deepEqual((await retry.json() as any).hintCell,target.a);
  });
 });
+
+it('fences anonymous naming to its captured owner and retains legacy naming calls',async()=>{
+ const h=await route();try{
+  await h.game.rename('bob','Bob');const response=await h.request('POST','','bob',{action:'rename',name:'Eski misafir',expectedOwnerId:'alice'});assert.equal(response.status,409);assert.equal((await h.game.profile('bob')).nickname,'Bob');
+  assert.equal((await h.request('POST','','bob',{action:'rename',name:'Yeni Bob',expectedOwnerId:'bob'})).status,200);
+  assert.equal((await h.request('POST','','bob',{action:'rename',name:'Bob'})).status,200);
+ }finally{h.sqlite.close();}
+});

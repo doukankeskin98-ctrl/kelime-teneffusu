@@ -1,3 +1,4 @@
+import {RULES_COPY} from './rules-copy.ts';
 import {AUTHORED_JOURNEY} from './authored-journey.ts';
 import {journeyRevision} from './journey-revisions.ts';
 import {horizonRouteForChapter} from './horizons-content.ts';
@@ -65,5 +66,5 @@ export function chapterVeils(id:string|undefined,targets:Target[],revision=1):Re
 }
 export function veilInstruction(veils:Record<number,WordVeil>){
  const modes=Object.values(veils);
- return modes.includes('hidden')?'Her yıldız saklı bir harf. Bölümün konusundan yola çık.':modes.includes('initial')?'Bazı kelimelerde yalnız ilk harf açık. Yıldızlar kalan harfler.':null;
+ return modes.includes('hidden')?RULES_COPY.hidden:modes.includes('initial')?RULES_COPY.initial:null;
 }

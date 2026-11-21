@@ -1,3 +1,4 @@
+import type {Account} from '../components/game/Pages.tsx';
 import * as journeyRevisions from '../lib/game/journey-revisions.ts';
 import * as progressStorage from '../lib/game/progress-storage.ts';
 import * as progressCodec from '../lib/game/progress-codec.ts';
@@ -103,10 +104,10 @@ describe('actual daily Solo pending and lifetime UI',()=>{
   }finally{h.close();}
  });
 });
-async function app(storage=tabStorage(),options:{initial?:progress.Progress;query?:string;local?:ReturnType<typeof tabStorage>;offline?:boolean}={}){
- let revision=0,serverOwner='alice',profileReads=0;const network={onLine:!options.offline};const browser=Object.assign(new EventTarget(),{matchMedia:()=>({matches:true}),scrollTo(){}});
- const f=fixture(Date.parse('2026-10-28T08:00Z')),daily=await f.game.daily('alice'),gates:ReturnType<typeof deferred<any>>[]=[],calls:any[]=[],account=(id:string)=>({authenticated:true,kind:'guest',profile:{id,nickname:id}}),p=options.initial??{...progress.emptyProgress(),tutorialDone:true};
- const h=view('components/game/App.tsx',{'@/lib/game/discovery':discovery,'@/lib/game/catalog':catalog,'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/daily-action':action,'@/lib/game/legacy':{SAVE_KEY:'legacy'},'@/components/auth/useMembership':{useMembership:()=>({ready:true,revision,user:null,available:false})},'./useCloudProgress':{useCloudProgress:()=> 'local'},'./Pages':{DailyPage:'DailyPage',Explore:'Explore',ProfilePage:'ProfilePage'},'./Solo':{Solo:'Solo'},'./daily-transport':{requestDaily:async(id:string,owner:string,intent:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name:'dailyState',id,owner,intent,signal});return gate.promise;}},'./common':{Help:'Help',Modal:'Modal',getApi:async()=>{profileReads++;return account(serverOwner);},api:async(name:string,data:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name,data,signal});return gate.promise;}}},{navigator:network,window:browser,sessionStorage:storage,location:{href:'https://test/'+(options.query??'?sekme=gunluk'),pathname:'/',search:options.query??'?sekme=gunluk'},history:{replaceState(){}},localStorage:options.local??{getItem:(key:string)=>key===progress.PROGRESS_KEY+':last-user'?'alice':JSON.stringify(p),setItem(){}}});
+async function app(storage=tabStorage(),options:{initial?:progress.Progress;query?:string;local?:ReturnType<typeof tabStorage>;offline?:boolean;anonymous?:boolean;profileResponse?:(next:Account,signal:AbortSignal,read:number)=>Promise<Account>}={}){
+ let revision=0,serverOwner=options.anonymous?'':'alice',profileReads=0;const network={onLine:!options.offline};const browser=Object.assign(new EventTarget(),{matchMedia:()=>({matches:true}),scrollTo(){}});
+ const f=fixture(Date.parse('2026-10-28T08:00Z')),daily=await f.game.daily('alice'),gates:ReturnType<typeof deferred<any>>[]=[],calls:any[]=[],account=(id:string):Account=>id?({authenticated:true,kind:'guest',profile:{id,nickname:options.anonymous?'':id}}):({authenticated:false}),p=options.initial??{...progress.emptyProgress(),tutorialDone:true};
+ const h=view('components/game/App.tsx',{'@/lib/platform/runtime':{gameIsActive:()=>true,appFetch:async()=>{serverOwner='guest:daily';return{ok:true};}},'@/lib/game/discovery':discovery,'@/lib/game/catalog':catalog,'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/daily-action':action,'@/lib/game/legacy':{SAVE_KEY:'legacy'},'@/components/auth/useMembership':{useMembership:()=>({ready:true,revision,user:null,available:false})},'./useCloudProgress':{useCloudProgress:()=> 'local'},'./Pages':{DailyPage:'DailyPage',Explore:'Explore',ProfilePage:'ProfilePage'},'./Solo':{Solo:'Solo'},'./daily-transport':{requestDaily:async(id:string,owner:string,intent:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name:'dailyState',id,owner,intent,signal});return gate.promise;}},'./common':{Help:'Help',Modal:'Modal',getApi:async(_action:string,signal:AbortSignal)=>{profileReads++;return options.profileResponse?.(account(serverOwner),signal,profileReads)??account(serverOwner);},api:async(name:string,data:unknown,signal:AbortSignal)=>{const gate=deferred<any>();gates.push(gate);calls.push({name,data,signal});return gate.promise;}}},{navigator:network,window:browser,sessionStorage:storage,location:{href:'https://test/'+(options.query??'?sekme=gunluk'),pathname:'/',search:options.query??'?sekme=gunluk'},history:{replaceState(){}},localStorage:options.local??{getItem:(key:string)=>key===progress.PROGRESS_KEY+':last-user'?'alice':JSON.stringify(p),setItem(){}}});
  browser.addEventListener('kt-auth-updated',()=>{revision++;h.change();});
  h.start(()=>h.exports['GameApp']({}));await h.settle();return{...h,connect(online:boolean){network.onLine=online;browser.dispatchEvent(new Event(online?'online':'offline'));},storage,get revision(){return revision;},get profileReads(){return profileReads;},setServerOwner(id:string){serverOwner=id;},get tree(){return h.tree;},get afterUnmount(){return h.afterUnmount;},f,daily,gates,calls,account,start(){h.find('DailyPage').props['start']();},switchOwner(id:string,commit=true){h.state(v=>v?.authenticated===true&&v?.profile?.id,account(id),commit);}};
 }
@@ -224,5 +225,48 @@ it('keeps an offline mystery from the previous device owner out of a different a
   assert(!nodes(h.tree).some(n=>n.type==='Mystery'));
   assert.equal(h.find('Explore').props['progress'].saves['mystery:'+spec.id],undefined);
   assert.equal(progress.loadProgress(local.getItem(progress.PROGRESS_KEY+':alice')).saves['mystery:'+spec.id]!.strokes.length,1);
+ }finally{h.close();h.f.sqlite.close();}
+});
+
+it('anonymous daily creates one session, preserves device progress and starts the existing verified protocol',async()=>{
+ const local=tabStorage(),p={...progress.emptyProgress(),sound:false,zoom:true};local.setItem(progress.PROGRESS_KEY,JSON.stringify(p));
+ const h=await app(tabStorage(),{local,anonymous:true});try{
+  h.start();h.start();await h.settle();assert.equal(h.calls.length,1);assert.equal(h.calls[0].data.expectedOwnerId,'guest:daily');
+  h.gates[0]!.resolve(await h.f.game.daily('guest:daily'));await h.settle();const solo=h.find('Solo');assert.ok(solo);assert.equal(solo.props['ownerId'],'guest:daily');assert.equal(solo.props['dailyNamed'],false);assert.equal(solo.props['progress'].sound,false);assert.equal(solo.props['progress'].zoom,true);
+ }finally{h.close();h.f.sqlite.close();}
+});
+it('daily bootstrap isolates a previous account from a newly discovered owner',async()=>{
+ const local=tabStorage(),p=progress.emptyProgress(),board=content.journeyBoard(content.journeyById('uzay-1')!);
+ p.saves['route:uzay-1']=progress.cleanSave({strokes:board.placements,elapsed:20,hints:0,complete:false,stars:0},board);
+ local.setItem(progress.PROGRESS_KEY+':last-user','alice');local.setItem(progress.PROGRESS_KEY+':alice',JSON.stringify(p));local.setItem(progress.PROGRESS_KEY+':bob',JSON.stringify(progress.emptyProgress()));
+ const h=await app(tabStorage(),{local});try{
+  h.state(v=>v?.authenticated===true&&v?.profile?.id,{authenticated:false});const original=local.getItem(progress.PROGRESS_KEY+':alice');h.setServerOwner('bob');h.start();await h.settle();
+  assert.equal(h.calls[0].data.expectedOwnerId,'bob');h.gates[0]!.resolve(await h.f.game.daily('bob'));await h.settle();assert.equal(h.find('Solo').props['progress'].saves['route:uzay-1'],undefined);assert.equal(local.getItem(progress.PROGRESS_KEY+':alice'),original);
+ }finally{h.close();h.f.sqlite.close();}
+});
+it('ignores a naming response after leaving the daily result',async()=>{
+ const gate=deferred<{nickname:string}>(),calls:{data:{expectedOwnerId:string};signal:AbortSignal}[]=[],named:unknown[][]=[],h=view('components/game/DailyRankingJoin.tsx',{'./common':{api:(_action:string,data:unknown,signal:AbortSignal)=>{calls.push({data:data as {expectedOwnerId:string},signal});return gate.promise;}}});
+ h.start(()=>h.exports['DailyRankingJoin']({ownerId:'guest:one',onNamed:(...args:unknown[])=>named.push(args)}));
+ h.find('button').props['onClick']();h.paint();const pending=h.find('form').props['onSubmit']({preventDefault(){}});assert.equal(calls[0]!.data.expectedOwnerId,'guest:one');
+ h.close();assert.equal(calls[0]!.signal.aborted,true);gate.resolve({nickname:'Yeni ad'});await pending;assert.deepEqual(named,[]);assert.equal(h.afterUnmount,0);
+});
+it('an old daily result cannot rename the current account display',async()=>{
+ const h=await app();try{h.start();await h.settle();h.gates[0]!.resolve(h.daily);await h.settle();const old=h.find('Solo').props['onDailyNamed'];h.state(v=>v?.authenticated===true&&v?.profile?.id,{authenticated:true,kind:'guest',profile:{id:'bob',nickname:''}});old('Eski ad','alice');await h.settle();assert.equal(h.find('Solo').props['ownerId'],'bob');assert.equal(h.find('Solo').props['dailyNamed'],false);}finally{h.close();h.f.sqlite.close();}
+});
+
+it('leaving Arena cancels a single-flight profile check and prevents a late entry dialog',async()=>{
+ const gate=deferred<Account>(),signals:AbortSignal[]=[];let waiting=false;
+ const h=await app(undefined,{query:'?sekme=arena',anonymous:true,profileResponse:async(next,signal)=>{if(waiting){signals.push(signal);return gate.promise;}return next;}});
+ try{waiting=true;h.find('Arena').props['onLogin']();h.find('Arena').props['onLogin']();await h.settle();assert.equal(signals.length,1);
+  nodes(h.tree).find(n=>n.props?.['aria-label']==='Yolculuğa dön')!.props['onClick']();await h.settle();assert.equal(signals[0]!.aborted,true);
+  gate.resolve({authenticated:false});await h.settle();assert.equal(nodes(h.tree).some(n=>n.type==='EntryPanel'),false);assert.ok(h.find('Explore'));
+ }finally{h.close();h.f.sqlite.close();}
+});
+it('a profile read started during daily bootstrap cannot undo the adopted anonymous owner',async()=>{
+ const bootstrap=deferred<Account>(),stale=deferred<Account>();let active=false,read=0;
+ const h=await app(undefined,{anonymous:true,local:tabStorage(),profileResponse:async(next)=>!active?next:++read===1?bootstrap.promise:read===2?stale.promise:next});
+ try{active=true;h.start();await h.settle();h.connect(false);await h.settle();h.connect(true);await h.settle();assert.equal(read,2);
+  bootstrap.resolve({authenticated:false});await h.settle();assert.equal(h.calls[0].data.expectedOwnerId,'guest:daily');stale.resolve({authenticated:false});await h.settle();
+  h.gates[0]!.resolve(h.daily);await h.settle();assert.equal(h.find('Solo').props['ownerId'],'guest:daily');
  }finally{h.close();h.f.sqlite.close();}
 });
