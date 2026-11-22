@@ -17,7 +17,6 @@ mkdirSync(out,{recursive:true});
 const fixture=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/berrak-fixture.ts'],{encoding:'utf8'}));
 const server=createServer((req,res)=>{
  const url=new URL(req.url,'http://localhost');
- if(url.pathname==='/__test_seed'){res.writeHead(200,{'Content-Type':'text/html'});res.end('<!doctype html><title>Test save</title><main id="seed"></main>');return;}
  if(url.pathname==='/api/chapters'&&url.searchParams.get('collection')==='releases'){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(fixture.catalogue));return;}
  if(signedInFixture&&url.pathname==='/api/game'&&!url.searchParams.has('action')){
   res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(fixture.guestAccount));return;
@@ -45,7 +44,6 @@ async function waitFor(expression){
 }
 async function home(progress=fixture.progress) {
  await seedProgress(page,url,progress);
- await page.goto(url,350);
  await waitFor("!!document.querySelector('.berrak-landing')&&!document.getElementById('native-boot')");
 }
 const rawOutput=path.join(out,process.env.METRICS||'metrics.json');

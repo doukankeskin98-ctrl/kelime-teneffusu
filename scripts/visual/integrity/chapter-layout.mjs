@@ -8,7 +8,7 @@ import {launch,sleep} from '../chrome.mjs';
 const fixtures=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/integrity/chapter-fixtures.mts'],{encoding:'utf8'}));
 const out=path.resolve(process.env.EVIDENCE_DIR??'outputs/integrity/chapters');mkdirSync(out,{recursive:true});
 const build=mkdtempSync(path.join(tmpdir(),'kt-chapter-build-'));cpSync('dist-mobile',build,{recursive:true});
-const server=await preview({configFile:false,plugins:[{name:'isolated-fixture',configurePreviewServer(s){s.middlewares.use((req,res,next)=>{if(req.url==='/__test_seed'){res.setHeader('Content-Type','text/html');res.end('<!doctype html><title>Fixture</title><main id="seed"></main>');}else next();});}}],build:{outDir:build},preview:{host:'127.0.0.1',port:0},logLevel:'error'});
+const server=await preview({configFile:false,build:{outDir:build},preview:{host:'127.0.0.1',port:0},logLevel:'error'});
 let page;const report=[];const url='http://127.0.0.1:'+server.httpServer.address().port;
 async function until(expr){for(let i=0;i<100;i++){if(await page.evaluate(expr))return;await sleep(40);}throw Error(expr);}
 const click=selector=>page.evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
@@ -17,7 +17,7 @@ try{
  for(const width of [320,393]){
   await page.viewport(width,width===320?568:852,2,{top:width===320?20:59,bottom:width===320?0:34,left:0,right:0});
   for(const f of fixtures){
-   await seedProgress(page,url,f.progress);await page.goto(url,150);
+   await seedProgress(page,url,f.progress,150);
    await until("!!document.querySelector('.berrak-orbit')");await click('.berrak-orbit');await until("!!document.querySelector('.journey-map-all')");await click('.journey-map-all');
    const worlds=f.count===312?52:2;
    for(let world=1;world<=worlds;world++){

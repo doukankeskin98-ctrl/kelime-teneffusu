@@ -10,13 +10,7 @@ const before=process.argv.includes('--before'),out=path.resolve(process.env.EVID
 const fixture=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/release-fixture.ts'],{encoding:'utf8'}));
 const progress={...fixture.progress,guideDone:false,tutorialDone:false,mechanicGuides:[]};
 const types={'.js':'text/javascript','.css':'text/css','.html':'text/html','.webp':'image/webp','.woff2':'font/woff2','.png':'image/png'};
-const server=createServer((req,res)=>{
- if(req.url==='/__test_seed'){
-  res.writeHead(200,{'Content-Type':'text/html'});
-  res.end('<!doctype html><title>Fixture</title><main id="seed"></main>');
-  return;
- }
- if(req.url.startsWith('/api/')){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({authenticated:false,available:false}));return;}let file=path.join(root,new URL(req.url,'http://x').pathname);if(!existsSync(file)||statSync(file).isDirectory())file=path.join(root,'index.html');res.writeHead(200,{'Content-Type':types[path.extname(file)]??'application/octet-stream'});createReadStream(file).pipe(res);});
+const server=createServer((req,res)=>{if(req.url.startsWith('/api/')){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({authenticated:false,available:false}));return;}let file=path.join(root,new URL(req.url,'http://x').pathname);if(!existsSync(file)||statSync(file).isDirectory())file=path.join(root,'index.html');res.writeHead(200,{'Content-Type':types[path.extname(file)]??'application/octet-stream'});createReadStream(file).pipe(res);});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url=`http://127.0.0.1:${server.address().port}/`,page=await launch({port:Number(process.env.CHROME_PORT??9353)}),report=[];
 function readFirstSession(){
  const board=document.querySelector('.letter-board'),guide=document.querySelector('.first-play-guide');
@@ -66,7 +60,7 @@ function assertPlayArea(start,current){
 try{
  for(const [width,height] of (before?[[320,568],[393,852]]:[[320,568],[375,667],[393,852],[430,932]])){
   await page.viewport(width,height,2,{top:width<=375?20:59,bottom:width<=375?0:34,left:0,right:0});
-  await seedProgress(page,url,progress);await page.goto(url);
+  await seedProgress(page,url,progress,1000);
   const home=await capture('home',width);await page.evaluate(`document.querySelector('.stage-play').click()`);await sleep(500);const start=await capture('start',width);
   if(!before&&width===320){
    await page.evaluate("document.documentElement.dataset.leftHanded='true'");

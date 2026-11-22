@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 18
     strategy:
       matrix:
-        sizes: ['320x568,393x852', '375x667,430x932']
+        sizes: ['320x568', '375x667', '393x852', '430x932']
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
