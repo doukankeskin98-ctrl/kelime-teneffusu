@@ -6,6 +6,7 @@
  *  - En çok 12 kelime (liste 3 satırda iri yazıyla okunmalı).
  *  - Zorluk: kelime sayısı + çapraz/ters + kesişme + gizli kelime (yalnız ilk harf görünür).
  * Eski dünyalar 6 bölüm: 1–2 kolay, 3–4 orta, 5 ZOR, 6 final; ardından mevcut bonus turu (dokunulmaz).
+ * Bilmece (tanım) bölümleri zorluk zincirinin dışındadır: zorluğu tanımı çözmekten gelir, '+2 puan' kuralına girmez.
  */
 export const SINIR={maxSutun:9,maxSatir:9,maxKelime:12,minHarf:3,maxHarf:9,maxUzun:2,ucHarfOran:0.25};
 // Yönler: 4 ileri (→ ↓ ↘ ↗) + 4 ters (← ↑ ↖ ↙). Çapraz = ↘ ↗ ↖ ↙.
@@ -27,13 +28,26 @@ const YON_TABLO_D2={ // dünya 2: biraz daha hafif
  11:{caprazAz:3,caprazCok:5,tersAz:2,tersCok:4,yonCok:2,yonAz:6},
  12:{caprazAz:4,caprazCok:6,tersAz:3,tersCok:5,yonCok:2,yonAz:6}};
 const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
-export function hedef(world,pos,{clue=false}={}){
- const t=Math.min(1,Math.max(0,(world-1)/51));
+/** Aynı dünyada bir önceki normal bölümle kelime ve gizli sayısı aynı kalırsa gizli kelime bir artar (en çok kelimenin yarısı).
+ *  Böylece '+2 puan' kuralı tahta şansına bırakılmaz. Bilmece bölümleri zincire girmez. 1–3. dünyada hiçbir değer değişmez. */
+export function hedef(world,pos,{clue=false,_zincir=true}={}){
+ const h=hedefHam(world,pos,{clue});
+ if(_zincir&&!clue&&world>3&&pos>1){const p=hedef(world,pos-1,{clue:false});if(p.words===h.words&&h.hidden<=p.hidden)h.hidden=Math.min(Math.floor(h.words/2),p.hidden+1);}
+ return h;
+}
+function hedefHam(world,pos,{clue=false}={}){
+ // 19 Kasım 2026 (ürün sahibi: '100. bölümler hâlâ çok kolay'): eğri 52 dünyaya değil, ilk 15 dünyaya yayılır.
+ // Kelime sayısı 15. dünyada (≈90. bölüm), gizli kelime 21. dünyada (≈126. bölüm) tavana ulaşır; sonrası tavanda kalır.
+ // 1–3. dünyanın değerleri eski eğriyle birebir aynıdır (onaylı pilot değişmez).
+ const t=Math.min(1,Math.max(0,(world-1)/14)),th=Math.min(1,Math.max(0,(world-1)/20));
  const tier=pos<=2?'kolay':pos<=4?'orta':pos===5?'zor':'final';
  let h={tier,C:pos>=5?9:8,R:9,
   words:[0,lerp(7,10,t),lerp(8,10,t),lerp(9,11,t),lerp(9,11,t),lerp(10,12,t),lerp(11,12,t)][pos],
-  hidden:[0,lerp(0,2,t),lerp(1,2,t),lerp(1,3,t),lerp(2,3,t),lerp(3,4,t),lerp(3,4,t)][pos],
+  hidden:[0,lerp(0,2,th),lerp(1,2,th),lerp(1,3,th),lerp(2,3,th),lerp(3,4,th),lerp(3,4,th)][pos],
   dirs:'hepsi',crossMin:null,maxCross:null};
+ // Geç evre (22. dünyadan sonra): kelime tavanda, zorluk gizli kelime ve ters/çapraz payıyla yavaşça artar.
+ // 52. dünyada sıra 1–6 için gizli kelime 3,3,4,4,5,5 (WoW 35. bölüm: 9 kelimenin 4'ü gizli).
+ if(world>21){const tl=Math.min(1,(world-21)/31),late=[0,3,3,4,4,5,5][pos];h.hidden=Math.round(h.hidden+(late-h.hidden)*tl);}
  if(world===1){ // her bölüm tek yenilik öğretir; yön kuralı burada elle
   const W1={1:{words:6,C:7,R:8,hidden:0,dirs:'duz',maxCross:0,yon:{caprazAz:0,caprazCok:0,tersAz:0,tersCok:0,yonCok:3,yonAz:2}},
    2:{words:6,C:7,R:8,hidden:0,dirs:'ileri',maxCross:0,yon:{caprazAz:1,caprazCok:2,tersAz:0,tersCok:0,yonCok:2,yonAz:3}},
@@ -45,6 +59,7 @@ export function hedef(world,pos,{clue=false}={}){
  if(clue)h={...h,words:lerp(6,8,t),hidden:0,C:8,R:9};
  h.words=Math.min(SINIR.maxKelime,h.words);
  if(!h.yon)h.yon=(world===2?YON_TABLO_D2:YON_TABLO)[Math.max(7,h.words)]; // 6 kelimelik tanım bölümü 7'nin kuralını alır
+ if(world>=30&&!clue){const y={...h.yon};y.caprazAz=Math.min(y.caprazCok,y.caprazAz+1);y.tersAz=Math.min(y.tersCok,y.tersAz+1);h.yon=y;} // 30. dünyadan sonra her tahtada bir çapraz ve bir ters fazla
  if(h.words<7&&!['duz','ileri'].includes(h.dirs))h.yon={...h.yon,caprazAz:2,caprazCok:3,tersAz:1,tersCok:2,yonAz:4};
  if(h.crossMin===null)h.crossMin=h.maxCross===0?0:Math.max(1,Math.floor(h.words/3));
  return h;

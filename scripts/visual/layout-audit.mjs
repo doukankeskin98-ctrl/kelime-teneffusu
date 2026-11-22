@@ -45,7 +45,7 @@ const url = `http://127.0.0.1:${server.address().port}/`;
 const open = chapter => `(async () => {
   const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
   const until = async find => { for(let i=0;i<100;i++){const value=find();if(value)return value;await wait(20);} };
-  const picker = await until(()=>document.querySelector('button[aria-label="Yolculuğum: bölümler ve albümler"]'));
+  const picker = await until(()=>!document.querySelector('.game-boot')&&document.querySelector('button[aria-label="Yolculuğum: bölümler ve albümler"]'));
   if (!picker) return 'bölüm seçici yok';
   picker.click();
   const all=await until(()=>document.querySelector('.journey-map-all'));
@@ -55,7 +55,7 @@ const open = chapter => `(async () => {
   if(!world) return 'dünya seçimi yok';
   world.click();
   const button = await until(()=>document.querySelector('.chapter-picker-grid button[aria-label^="Bölüm ${chapter.number}:"]'));
-  if (!button || button.disabled) return 'bölüm açılamadı';
+  if (!button || button.disabled) return 'bölüm açılamadı: '+JSON.stringify([...document.querySelectorAll('.chapter-picker-grid button')].map(b=>[b.getAttribute('aria-label'),b.disabled]));
   button.click();
   if(!await until(()=>document.querySelector('.letter-board') && document.querySelector('.play-chapter-number')?.textContent.match(/\\d+/)?.[0]===String(${chapter.number})))return 'açılan bölüm doğrulanamadı';
   await document.fonts.ready;
@@ -71,11 +71,13 @@ try {
     const safe = firstVisit||fixed ? {...insets[width+'x'+height],left:0,right:0} : undefined;
     await page.viewport(width,height,2,safe);
     await page.goto(url+'__layout_seed',100);
+    await page.send('Storage.clearDataForOrigin',{origin:new URL(url).origin,storageTypes:'indexeddb'});
     await page.evaluate(`localStorage.clear(); localStorage.setItem(${JSON.stringify(fixture.key)}, ${JSON.stringify(fixture.value)}); 'ok'`);
     const rows = [];
     for (const chapter of only ? fixture.chapters.filter(item => only.includes(item.number)) : fixture.chapters) {
       if(firstVisit){
         await page.goto(url+'__layout_seed',80);
+        await page.send('Storage.clearDataForOrigin',{origin:new URL(url).origin,storageTypes:'indexeddb'});
         const progress=JSON.parse(fixture.value);
         for(const item of fixture.chapters.slice(chapter.number-1)) delete progress.saves['route:'+item.id];
         await page.evaluate('localStorage.setItem('+JSON.stringify(fixture.key)+','+JSON.stringify(JSON.stringify(progress))+')');

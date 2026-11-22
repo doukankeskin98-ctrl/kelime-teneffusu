@@ -44,7 +44,7 @@ export function JourneyHome({progress,onPlay,onExplore,onDetails,onDaily,onArena
   <div className="berrak-enter">
    {story?<><button className="stage-play" onClick={playStory}>{storySave?'Devam et':'Oyna'}</button><button className="berrak-story-return" onClick={()=>onViewChange?.('journey')}>Bölüm yolculuğuna dön</button></>
     :current&&goal?<button className="stage-play" aria-label={`Bölüm ${current.number} · ${worldChapter(current.chapter.id,current.chapter.revision)?.topic??current.chapter.title} · ${state.continuing?'Devam et':'Oyna'}`} onClick={()=>play(chapters.find(c=>c.chapter.id===current.chapter.id)!)}>
-      {current.chapter.revision===2&&current.chapter.difficulty==='Ustalık'&&<small className="berrak-tag">Zor</small>}{current.chapter.clues&&<small className="berrak-tag">Bilmece</small>}Bölüm {current.number}
+      {(current.chapter.revision??1)>1&&current.chapter.difficulty==='Ustalık'&&<small className="berrak-tag">Zor</small>}{current.chapter.clues&&<small className="berrak-tag">Bilmece</small>}Bölüm {current.number}
      </button>
     :<><p>{state.total} bölüm tamamlandı</p><button className="stage-play" onClick={onDetails}>Bölümleri aç</button></>}
   </div>

@@ -1,5 +1,5 @@
 'use client';
-import {rowsForTargets} from '@/lib/game/rack-rows';
+import {rowsForTargets,targetAdvance} from '@/lib/game/rack-rows';
 import {Disclosure} from './Disclosure';
 import {SoundSettings} from './SoundSettings';
 import {StarTotal} from './StarTotal';
@@ -57,6 +57,7 @@ export function MobileTargets({words,unavailable=false,passive=false}:{words:Wor
  useEffect(()=>()=>cancelAnimationFrame(focusFrame.current),[]);
  useEffect(()=>{if(unavailable)setOpen(false);},[unavailable]);
  const close=()=>{setOpen(false);cancelAnimationFrame(focusFrame.current);focusFrame.current=requestAnimationFrame(()=>{if(opener.current?.isConnected)opener.current.focus({preventScroll:true});});};
+ const swipeStart=useRef<number|null>(null),swiped=useRef(false);
  const choose=(group:number)=>{setPreferred(group);words.onFocusGroup?.(group);};
  if(!target||!copy)return null;
  return <div className="mobile-targets clue-targets" aria-label={ordered?'Hikâye adımları':'Bilmece hedefleri'}>
@@ -70,19 +71,19 @@ export function MobileTargets({words,unavailable=false,passive=false}:{words:Wor
     </Label>
    </div>;
   })}</div>
-  <button type="button" className="active-clue" ref={opener} disabled={unavailable} aria-haspopup="dialog" aria-expanded={open} onClick={()=>setOpen(true)}>
-   <strong>{copy.text}</strong><ListChecks size={19} aria-hidden="true"/><span className="sr-only">{ordered?'Etkin ipucunu aç':'Tanımların tamamını aç'}</span>
+  <button type="button" className="active-clue" ref={opener} disabled={unavailable} aria-haspopup="dialog" aria-expanded={open} onTouchStart={event=>{swiped.current=false;swipeStart.current=event.touches[0]?.clientX??null;}} onTouchEnd={event=>{const x=event.changedTouches[0]?.clientX;if(unavailable||ordered||x===undefined||swipeStart.current===null)return;const delta=x-swipeStart.current;swipeStart.current=null;if(Math.abs(delta)<30)return;const available=groups.filter(g=>words.board.targets.some(t=>t.group===g&&!found.has(t.id)));if(available.length<2)return;swiped.current=true;choose(available[(available.indexOf(active!)+(delta<0?1:-1)+available.length)%available.length]!);}} onClick={()=>{if(swiped.current){swiped.current=false;return;}setOpen(true);}}>
+   <strong aria-live="polite"><span className="clue-definition">{copy.text}</span><span className="sr-only"> · {target.text.length} harf</span></strong><ListChecks size={19} aria-hidden="true"/><span className="sr-only">{ordered?'Etkin ipucunu aç':'Tanımların tamamını aç'}</span>
   </button>
   {open&&!unavailable&&<Modal title={ordered?'Şimdiki ipucu':'Tanımlar'} onClose={close}><div className="board-words-sheet">{ordered?<p className="full-clue">{copy.text}</p>:<WordList {...words} focusedGroup={active} onFocusGroup={group=>{choose(group);close();}}/>}<button type="button" className="button primary full" onClick={close}>Tahtaya dön</button></div></Modal>}
  </div>;
 }
 
 /** Equal letter cells keep hidden and revealed labels in exactly the same footprint. */
-function targetLetters(text:string,veil:WordVeil='open'){return <span className="target-letters">{[...veiledText(text,veil)].map((char,index)=><span data-target-letter key={index} className={char==='✱'?'masked-letter':/\s/.test(char)?'target-space':undefined}>{char==='✱'?<><span className="mask-text">✱</span><svg aria-hidden="true" viewBox="0 0 12 16"><path d="M6 2v12M1 5l10 6M1 11l10-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg></>:char}</span>)}</span>;}
+function targetLetters(text:string,veil:WordVeil='open',stable=false,concealed=false){return <span className="target-letters">{[...veiledText(text,veil)].map((char,index)=><span data-target-letter key={index} style={stable?{width:targetAdvance([...text][index]??char,concealed&&index>0)+'em',padding:0}:undefined} className={char==='✱'?'masked-letter':/\s/.test(char)?'target-space':undefined}>{char==='✱'?<><span className="mask-text">✱</span><svg aria-hidden="true" viewBox="0 0 12 16"><path d="M6 2v12M1 5l10 6M1 11l10-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg></>:char}</span>)}</span>;}
 
 export function WordList({board,strokes,golden,clues,veils,focusedGroup,onFocusGroup,rack=false,authored=false,unavailable=false}:WordListData&{rack?:boolean;authored?:boolean;unavailable?:boolean}){
  const groups=[...new Set(board.targets.map(t=>t.group))],[seen,setSeen]=useState(()=>new Set(groups.filter(group=>board.targets.filter(t=>t.group===group).every(t=>strokes.some(s=>s.id===t.id)))));
- const rows=rack&&authored?rowsForTargets(board.targets):[];
+ const rows=rack&&authored?rowsForTargets(board.targets,veils):[];
  const entries=groups.map(group=>{
   const parts=board.targets.filter(t=>t.group===group),target=parts[0]!,done=parts.every(t=>strokes.some(s=>s.id===t.id));
   const split=parts.length>1,clue=clues?.[target.text],copy=wordCardCopy(target,done,clues,veils?.[group]);
@@ -95,7 +96,7 @@ export function WordList({board,strokes,golden,clues,veils,focusedGroup,onFocusG
      {clue}<small>{target.text.length} harf</small>
     </span>
     <span data-word-label className="clue-face clue-answer" style={{visibility:done?'visible':'hidden'}} aria-hidden={!done}>{target.label}</span>
-   </>:<><span data-word-label>{rack&&split?parts.map((part,i)=><span key={part.id}><span data-word-part={part.id} className={strokes.some(s=>s.id===part.id)?'part-found':''}>{targetLetters(part.text,strokes.some(s=>s.id===part.id)?'open':veils?.[group]==='initial'&&i>0?'hidden':veils?.[group])}</span>{i<parts.length-1?' ':''}</span>): targetLetters(target.label,done?'open':veils?.[group])}</span>{(copy.detail||veils?.[group]&&veils[group]!=='open')&&<small>{copy.detail??`${target.label.replace(/\s/g,'').length} harf`}</small>}{split&&!rack&&<small>{parts.map(t=><span data-word-part={t.id} className={strokes.some(s=>s.id===t.id)?'part-found':''} key={t.id}>{veiledText(t.text,strokes.some(s=>s.id===t.id)?'open':veils?.[group])}</span>)}</small>}</>}</div>
+   </>:<><span data-word-label>{rack&&split?parts.map((part,i)=><span key={part.id}><span data-word-part={part.id} className={strokes.some(s=>s.id===part.id)?'part-found':''}>{targetLetters(part.text,strokes.some(s=>s.id===part.id)?'open':veils?.[group]==='initial'&&i>0?'hidden':veils?.[group],authored,!!veils?.[group]&&veils[group]!=='open')}</span>{i<parts.length-1?' ':''}</span>): targetLetters(target.label,done?'open':veils?.[group],authored,!!veils?.[group]&&veils[group]!=='open')}</span>{(copy.detail||veils?.[group]&&veils[group]!=='open')&&<small>{copy.detail??`${target.label.replace(/\s/g,'').length} harf`}</small>}{split&&!rack&&<small>{parts.map(t=><span data-word-part={t.id} className={strokes.some(s=>s.id===t.id)?'part-found':''} key={t.id}>{veiledText(t.text,strokes.some(s=>s.id===t.id)?'open':veils?.[group])}</span>)}</small>}</>}</div>
    {parts.some(t=>t.id===golden)&&<b>×2</b>}
    {onFocusGroup&&!done&&<button type="button" className="target-focus-button" disabled={unavailable} aria-pressed={focusedGroup===group} aria-label={`${copy.spoken??copy.text}${copy.detail&&!copy.spoken?' · '+copy.detail:''} · Hedef seç`} onClick={()=>onFocusGroup(group)}/>}
   </div>;

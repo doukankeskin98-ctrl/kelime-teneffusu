@@ -1,0 +1,51 @@
+# Mitoloji ve efsane adları (Türkçe kullanımdaki yazımıyla). Zemberek özel ad listesinde bulunmayanlar.
+# Biçim: AD | açıklama. Yalnız [özel] kategorilerde kullanılır. Claude, 19 Kasım 2026.
+ZEUS | Yunan mitolojisi, tanrıların başı
+HERA | Yunan mitolojisi, Zeus'un eşi
+ARES | Yunan mitolojisi, savaş tanrısı
+HADES | Yunan mitolojisi, yeraltı tanrısı
+HERMES | Yunan mitolojisi, haberci tanrı
+ATHENA | Yunan mitolojisi, bilgelik tanrıçası
+APOLLON | Yunan mitolojisi, güneş ve müzik tanrısı
+ARTEMİS | Yunan mitolojisi, av tanrıçası
+AFRODİT | Yunan mitolojisi, aşk tanrıçası
+POSEİDON | Yunan mitolojisi, deniz tanrısı
+DEMETER | Yunan mitolojisi, bereket tanrıçası
+DİONYSOS | Yunan mitolojisi, bağ tanrısı
+EROS | Yunan mitolojisi, aşk tanrısı
+AŞİL | Akhilleus; Türkçede yerleşik ad (Aşil topuğu)
+PERSEUS | Medusa'yı yenen kahraman
+İKAROS | Balmumu kanatlarla uçan genç
+ODYSSEUS | Odysseia destanının kahramanı
+JASON | Altın Post'u arayan kahraman
+THESEUS | Minotor'u yenen kahraman
+ORPHEUS | Müzisyen kahraman
+ALPAMIŞ | Türk destanı kahramanı
+PANDORA | Pandora'nın kutusu
+MEDUSA | Saçları yılan olan Gorgon
+PEGASUS | Kanatlı at
+MİNOTOR | Girit labirentindeki boğa başlı yaratık
+GRİFON | Kartal başlı, aslan gövdeli yaratık
+DELFİ | Yunanistan, kâhinlik merkezi
+İTAKA | Odysseus'un adası
+SPARTA | Antik Yunan kenti
+ATLANTİS | Batık efsane kıta
+ERGENEKON | Türk destanındaki vadi
+ÖTÜKEN | Göktürk kutsal ormanı
+ARGOS | Antik Yunan kenti
+MİKENE | Antik Yunan kenti
+UMAY | Türk mitolojisi, bereket ve çocuk koruyucusu
+ERLİK | Türk mitolojisi, yeraltı hükümdarı
+ÜLGEN | Türk mitolojisi, iyilik tanrısı
+TENGRİ | Türk mitolojisi, gök tanrısı
+ODİN | İskandinav mitolojisi, tanrıların babası
+THOR | İskandinav mitolojisi, gök gürültüsü tanrısı
+İSİS | Mısır mitolojisi, anne tanrıça
+OSİRİS | Mısır mitolojisi, ölüler tanrısı
+ANUBİS | Mısır mitolojisi, çakal başlı tanrı
+HORUS | Mısır mitolojisi, şahin başlı tanrı
+GANİMEDE | Jüpiter'in en büyük uydusu
+TİTAN | Satürn'ün en büyük uydusu
+TRİTON | Neptün'ün en büyük uydusu
+CERES | Asteroit kuşağındaki cüce gezegen
+HALLEY | Halley kuyrukluyıldızı

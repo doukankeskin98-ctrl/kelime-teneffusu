@@ -1,0 +1,86 @@
+# Yolculuk v2 kelime bankası, sürüm 3 · dünya 13–24 · Claude, 19 Kasım 2026
+# Biçim: dünya 1–3 bankasıyla aynı. Bilmece satırı "KELİME=tanım; ..." (tanım ≤34 karakter, cevabı içermez).
+@dunya 13 sinema | Film Atölyesi
+01 | İlk kare | FİLM KAMERA KARE PLAN ÇEKİM MAKARA PELİKÜL VİZÖR OBJEKTİF STÜDYO AÇI NEGATİF PROJEKTÖR
+02 | Kamera arkasında | TRİPOD KADRAJ MERCEK ODAK YÖNETMEN YAPIMCI SENARİST KAMERAMAN ASİSTAN VİNÇ FİLTRE RAY MONİTÖR
+03 | Setin teknik işleri | IŞIK SES MİKROFON SPOT YANKI REFLEKTÖR DUBLAJ EFEKT FON KONTRAST AYDINLIK SESSİZLİK GÜRÜLTÜ TINI ALTYAZI
+04 | Kurgu masası | KURGU KESME GEÇİŞ SAHNE RENK MONTAJ KARARMA JENERİK FRAGMAN AÇILIŞ KAPANIŞ SÜRE ÖNİZLEME ZAMAN
+05 | Çekim günü | SET KLAKET SENARYO TEKRAR DEKOR FİGÜRAN DUBLÖR KARAVAN MEGAFON ROL AKSİYON JENERATÖR IŞIKÇI KOSTÜMCÜ MAKYÖZ
+06 | Gösterim zamanı | PERDE FESTİVAL ALKIŞ GALA SİNEMA VİZYON PRÖMİYER MISIR KOLTUK AFİŞ GİŞE BAŞROL SEANS ELEŞTİRİ LOCA BİLETÇİ
+@dunya 14 yesilcam | Tiyatro Sokağı
+01 | Perde açılıyor | TİYATRO PİYES DRAM KOMEDİ TRAJEDİ GONG SUFLÖR REJİSÖR MONOLOG DİYALOG BALKON MEDDAH KARAGÖZ KANTO
+02 | Kuliste | KULİS AYNA MAKYAJ ASKI FIRÇA PUDRA RUJ PERUK BIYIK TARAK KREM ALLIK RİMEL MASKE PARFÜM
+03 | Kostüm odası | KOSTÜM KUMAŞ İĞNE İPLİK DÜĞME ŞAPKA PELERİN ELBİSE ÇİZME ETEK YELEK FERMUAR KEMER MANTO PAPYON
+04 | Sahneye hazırlık | PROVA REPLİK EZBER VURGU JEST MİMİK TONLAMA DİKSİYON DOĞAÇLAMA METİN DURUŞ BAKIŞ DUYGU NEFES
+05 | Sahne düzeni | AKSESUAR PENCERE MASA SANDALYE TAHT HALI ŞAMDAN PARAVAN MERDİVEN AVİZE ÇERÇEVE VAZO SANDIK SAAT KAFES
+06 | Son alkış | SELAM ÇİÇEK FUAYE BİLET BUKET BRAVO İMZA BROŞÜR TEŞEKKÜR VEDA KUTLAMA GÖZYAŞI HEYECAN BİS PROGRAM
+@dunya 15 diziler | Öykü Atölyesi
+01 | Bir fikir | FİKİR MERAK HAYAL İLHAM ESİN DÜŞÜNCE KIVILCIM TASLAK KONU TEMA AMAÇ SEZGİ HEVES
+02 | Yazı masasında | DEFTER KALEM SATIR SAYFA NOT KENAR BOŞLUK PARAGRAF CÜMLE MÜREKKEP KARALAMA ATAŞ KAĞIT SİLGİ
+03 | Öykü kişileri | DOST YOLCU GEZGİN KOMŞU PRENSES KRAL BÜYÜCÜ CADI DEV PERİ KORSAN KAHRAMAN ANLATICI ŞÖVALYE DEDEKTİF
+04 | Öykünün mekânları | KÜTÜPHANE DEĞİRMEN BAHÇE LİMAN KASABA SARAY ŞATO KULE MAĞARA KÖŞK KONAK ZİNDAN DENİZ KÖY ORMAN ADA
+05 | Hikâyenin akışı | BAŞLANGIÇ OLAY DÜĞÜM ÇÖZÜM SONUÇ SERÜVEN GİRİŞ GELİŞME SÜRPRİZ ENTRİKA SIR İPUCU MACERA ÇATIŞMA GERİLİM KADER
+06 | Son sayfa | BAŞLIK KAPAK ÖNSÖZ YAZAR OKUR KİTAP SONSÖZ İTHAF CİLT BASKI YAYINEVİ EDİTÖR ÇEVİRMEN DİZİN AYRAÇ
+@dunya 16 mitoloji | Efsane Tepesi
+01 | Olimpos sakinleri [özel] | ZEUS HERA ARES HADES HERMES ATHENA APOLLON ARTEMİS AFRODİT POSEİDON DEMETER DİONYSOS EROS
+02 | Efsane kahramanları [özel] | HERKÜL AŞİL PERSEUS İKAROS ODYSSEUS JASON THESEUS ORPHEUS KÖROĞLU MANAS ALPAMIŞ ATLAS PANDORA
+03 | Efsanevi izler | ANKA=Küllerinden yeniden doğan kuş; MEDUSA=Saçları yılan, bakışı taş eder; PEGASUS=Kanatlı beyaz at; MİNOTOR=Labirentteki boğa başlı dev; SFENKS=Yolcuya bilmece soran yaratık; EJDERHA=Ağzından ateş saçan sürüngen; TEPEGÖZ=Dede Korkut'un tek gözlü devi; ŞAHMERAN=Yarısı kadın, yarısı yılan; SİREN=Şarkısıyla denizciyi çağırır; HİDRA=Başı kesildikçe çoğalan yılan; GRİFON=Kartal başlı, aslan gövdeli
+04 | Mitolojinin yerleri [özel] | OLİMPOS TROYA LABİRENT DELFİ GİRİT İTAKA SPARTA ATLANTİS ERGENEKON ÖTÜKEN KAFDAĞI TAPINAK ARGOS MİKENE
+05 | Dünyanın tanrıları [özel] | UMAY ERLİK ÜLGEN TENGRİ KAYRA ODİN THOR LOKİ İSİS OSİRİS ANUBİS HORUS JÜPİTER ALBASTI MERKÜR
+06 | Efsanenin son sayfası | DESTAN=Kahramanlık anlatan uzun şiir; MİT=İlahların ve evrenin öyküsü; KEHANET=Geleceği önceden bildirmek; LANET=Birine dilenen kötü dilek; MUSKA=Uğur getirsin diye taşınır; TILSIM=Büyülü koruyucu nesne; KAHİN=Geleceği gördüğüne inanılan; SUNAK=Armağanların bırakıldığı taş; ADAK=Dilek için sunulan armağan; ÖLÜMSÜZ=Hiç ölmeyen; TANRIÇA=Kadın ilah; YAZGI=Önceden çizilmiş gelecek
+@dunya 17 kiyi-liman | Limanda Sabah
+01 | İskelede | TEKNE HALAT İSKELE GÜVERTE PALAMAR BALIKÇI OLTA YEM SANDAL KAYIK MAVNA RIHTIM TAKA GIRGIR
+02 | Rotanı çiz | PUSULA HARİTA ROTA YÖN KUZEY GÜNEY DOĞU ENLEM BOYLAM MİL SEYİR RADAR KOORDİNAT
+03 | Teknenin parçaları | DÜMEN=Teknenin yönünü çeviren parça; ÇAPA=Denize atılıp tekneyi tutar; FİLİKA=Gemideki kurtarma sandalı; PERVANE=Suyu döndürüp tekneyi iter; PRUVA=Teknenin ön ucu; KIÇ=Teknenin arka ucu; OMURGA=Tekne altının belkemiği; KAMARA=Gemide uyunan küçük oda; LOMBOZ=Gemi yanındaki yuvarlak pencere; AMBAR=Gemide yük konan bölme
+04 | Kıyıda bir mola | MARTI DALGA KÖPÜK KUM ÇAKIL SAHİL MİDYE ŞEZLONG HAVLU PLAJ MAYO KUMSAL İSTAKOZ YOSUN
+05 | Yelken açılıyor | YELKEN RÜZGAR AKINTI AÇIKLAR FIRTINA MARİNA KATAMARAN TAYFA DENİZCİ DÜMENCİ YAT GULET BOT ORSA FLOK
+06 | Limandan çıkış | FENER VAPUR SEFER GEMİ KAPTAN GÜMRÜK FERİBOT MOTOR TELSİZ VARIŞ KALKIŞ YOLCULUK ŞİLEP TANKER RÖMORKÖR
+@dunya 18 kiyi-carsi | Çarşı Sokakları
+01 | Pazar kuruluyor | SEPET TEZGAH TERAZİ KASA PAZARCI BRANDA KASAP MANAV DÜKKAN VİTRİN FİYAT KANTAR ÇUVAL KOLİ
+02 | Kahvaltılık tezgâhı | ZEYTİN PEYNİR REÇEL KAYMAK BAL TEREYAĞI SUCUK PASTIRMA YUMURTA TAHİN PEKMEZ KAŞAR LOR ÇÖKELEK
+03 | Alışveriş çantası | KESE=Paranın konduğu küçük torba; TARTI=Ağırlığı ölçme işi; ETİKET=Ürünün üstündeki fiyat kâğıdı; BOZUKLUK=Cebi şıkırdatan madeni para; FİŞ=Kasadan verilen ödeme kâğıdı; FİLE=Örgülü alışveriş çantası; LİSTE=Alınacakların yazıldığı kâğıt; İNDİRİM=Fiyattan düşülen miktar; CÜZDAN=Kartların ve paranın yeri; POŞET=Naylon taşıma torbası; KUPON=Ucuzluk sağlayan kâğıt; PARAÜSTÜ=Kasiyerin geri verdiği para
+04 | Çay molası | SİMİT ÇAY TOST SEMAVER DEMLİK BARDAK ŞEKER KAHVE SOHBET GAZETE TAVLA TEPSİ LİMON KURABİYE
+05 | Ekmek yapımı | HAMUR FIRIN SUSAM MAYA MERDANE OKLAVA KEPEK ÇÖREKOTU SÜT TUZ ODUN KÖZ YOĞURMA PİŞİRME KABARMA
+06 | Sıcak tepsi | KEK BÖREK POĞAÇA PASTA ÇÖREK BAKLAVA KATMER ACIBADEM GÖZLEME PİDE KÜNEFE TATLI ELMALI AÇMA LAVAŞ
+@dunya 19 kiyi-patika | Kıyı Patikası
+01 | Ağaçların arasından | PATİKA ÇAM MEŞE KAYIN KESTANE ÇINAR SÖĞÜT KAVAK LADİN GÜRGEN ARDIÇ SEDİR DIŞBUDAK AKÇAAĞAÇ
+02 | Daldaki sesler | SERÇE SAKA BÜLBÜL SAKSAĞAN KARGA GÜVERCİN KUMRU İSPİNOZ KIRLANGIÇ ÇALIKUŞU SIĞIRCIK CIVILTI ÖTÜŞ ARDIÇKUŞU
+03 | Ağacın izleri | KOZALAK=Çam ağacının pullu meyvesi; YAPRAK=Sonbaharda sararıp düşer; KABUK=Ağacı saran sert örtü; KÖK=Toprağın altında suyu emer; DAL=Ağacın yana uzanan kolu; GÖVDE=Ağacın dik duran kalın kısmı; BUDAK=Ağaçtaki koyu düğüm izi; HALKA=Kesitte yaşı gösteren çizgi; REÇİNE=Çamdan sızan yapışkan öz; PALAMUT=Meşenin şapkalı meyvesi
+04 | Çiçekli köşe | LALE GÜL MENEKŞE PAPATYA KARANFİL SÜMBÜL NERGİS ORKİDE ZAMBAK MANOLYA ŞAKAYIK KASIMPATI LEYLAK SARDUNYA
+05 | Küçük komşular | KELEBEK KİRPİ SİNCAP KARINCA TIRTIL ÖRÜMCEK SİNEK KARAFATMA KÖSTEBEK FARE SOLUCAN ÇEKİRGE ARI SALYANGOZ BÖCEK
+06 | Sıcakta bir mola | ÇİMEN DERE ÇİÇEK TOPRAK GÖLGE HAMAK ÇARDAK ÇEŞME PINAR SERİNLİK YOSUN KUYU ÇALI KAYA KÜTÜK
+@dunya 20 kiyi-fener | Fenerde Akşam
+01 | Fenerin girişi | LAMBA IŞIK BEKÇİ KAPI ANAHTAR KİLİT TOKMAK EŞİK KUBBE GALERİ DUVAR BASAMAK FENERCİ GÖZCÜ
+02 | Gün batarken | GÜNEŞ BULUT KIZILLIK TURUNCU SİLÜET IŞILTI YAKAMOZ LACİVERT KARANLIK MELTEM ESİNTİ BAKIR VEDA
+03 | Işığın yolu | MERCEK=Işığı kırıp görüntüyü büyütür; CAM=Işığı geçiren saydam madde; AYNA=Karşısındakini geri gösteren yüzey; PRİZMA=Beyaz ışığı renklere ayırır; GÖKKUŞAĞI=Yağmurdan sonra yedi renk kemer; YANSIMA=Durgun suda görünen görüntü; KIRILMA=Suya giren ışığın eğilmesi; LAZER=Tek renkli, dar ışık demeti; FOTON=Işığın en küçük taneciği; TAYF=Işığın renk dizilimi; SERAP=Çölde görülen sahte su
+04 | Herkes uyurken | GECE YILDIZ UYKU RÜYA BAYKUŞ YARASA MUM YORGAN YASTIK NİNNİ NÖBET FISILTI HUZUR SAKİN
+05 | Göğe son bakış | DOLUNAY GÖKYÜZÜ PARILTI SAMANYOLU METEOR GÖKTAŞI HİLAL ÜLKER GÖKADA UYDU VENÜS SATÜRN ŞAFAK TELESKOP GEZEGEN
+06 | Kıyıdan hatıra | KART RESİM PUL ZARF HATIRA FOTOĞRAF ALBÜM MEKTUP POSTA MÜHÜR DAMGA BİBLO BİLEZİK NAZARLIK BONCUK
+@dunya 21 doga-bahce | Bahçede İlkbahar
+01 | Bahçe gereçleri | TOHUM SAKSI KÜREK FİDE TIRMIK HORTUM KOVA MAKAS ELDİVEN KAZMA BEL TIRPAN ORAK ÇİT
+02 | Filizler | FİLİZ TOMURCUK SÜRGÜN FİDAN ÇİMLENME GONCA AŞI ÇELİK BAHAR NİSAN YEŞİL TAZE BÜYÜME BİTKİ
+03 | Bahçe işleri | SERA=Camdan yapılmış bitki evi; GÜBRE=Toprağı besleyen katkı; SULAMA=Bitkiye su verme işi; BUDAMA=Fazla dalları kesme işi; AŞILAMA=Bir dalı başka gövdeye eklemek; DİKİM=Fideyi toprağa yerleştirmek; HASAT=Ürünün toplandığı zaman; ÇAPALAMA=Toprağı kabartıp ot temizlemek; EKİM=Tohumu toprağa saçmak; İLAÇLAMA=Böceğe karşı püskürtme; BELLEME=Toprağı bel ile kazmak
+04 | Renkler | MOR SARI PEMBE BEYAZ KIRMIZI MAVİ SİYAH GRİ BORDO LİLA EFLATUN TURKUAZ BEJ FUŞYA ALTIN
+05 | Kokulu bitkiler | LAVANTA NANE FESLEĞEN KEKİK ADAÇAYI BİBERİYE MELİSA REYHAN DEFNE MAYDANOZ DEREOTU KİŞNİŞ TARHUN YASEMİN HANIMELİ
+06 | Sebzeler | DOMATES BİBER MARUL TURP PATLICAN KABAK HAVUÇ SOĞAN ISPANAK PIRASA LAHANA BROKOLİ ENGİNAR SALATALIK KEREVİZ
+@dunya 22 doga-dere | Dere Boyunca
+01 | Dere kıyısı | ÇAKIL SAZ KIYI KAMIŞ BALÇIK ÇAMUR NİLÜFER DEĞİRMEN BENT BALIKÇIL TAŞ KUM ÖRDEK SAL
+02 | Akan sular [özel] | ŞELALE AKARSU IRMAK NEHİR KAYNAK HAVZA FIRAT DİCLE SAKARYA SEYHAN CEYHAN ARAS MERİÇ MENDERES ASİ
+03 | Suyun hâlleri | BUZ=Donmuş su; BUHAR=Kaynayan suyun yükselen hâli; DAMLA=Musluktan tek tek düşer; ÇİY=Sabah çimenin üstündeki su; KIRAĞI=Soğuk sabah yaprağa konan beyazlık; SİS=Yere inmiş bulut; DOLU=Gökten düşen sert donmuş taneler; KAR=Beyaz, yumuşak kış yağışı; SARKIT=Saçaktan aşağı uzanan donmuş su; BUZUL=Dağda ağır ağır akan donmuş kütle; BUĞU=Soğuk camda beliren ince su; NEM=Havada saklı görünmez su
+04 | Dereyi geçmek | KÖPRÜ TAHTA KORKULUK AYAK KİRİŞ DİREK ÇİVİ CİVATA ÇEKİÇ TESTERE MARANGOZ KERESTE HALAT TAKOZ
+05 | Dere canlıları | KURBAĞA YUSUFÇUK ALABALIK SUSAMURU KEREVİT YILAN SEMENDER İRİBAŞ SÜLÜK KUNDUZ YENGEÇ SAZAN TURNA KIZBÖCEĞİ KARABATAK BALIK KARİDES
+06 | Dağ arası | VADİ YAMAÇ KAYA TÜNEL GEÇİT KANYON UÇURUM SIRT TEPE ZİRVE BOĞAZ OVA YAYLA DORUK PLATO ÇAĞLAYAN SIRADAĞ KAYALIK
+@dunya 23 doga-kamp | Vadide Kamp
+01 | Çadır kurma | ÇADIR KAZIK MAT GERGİ TULUM ŞİLTE SİNEKLİK TENTE ZEMİN KAMP ATEŞ KAMPÇI ÇUKUR İSKELET
+02 | Kamp çantası | TERMOS DÜDÜK ÇAKI MATARA KİBRİT KONSERVE AÇACAK İLKYARDIM BANDAJ PİL KURUYEMİŞ YAĞMURLUK BATTANİYE
+03 | Yürüyüş gereçleri | BOT=Bileği saran yürüyüş ayakkabısı; PONÇO=Başa geçirilen yağmurluk; BATON=Yürürken dayanılan sopa; ÇORAP=Ayağı sürtünmeden korur; BERE=Başı ısıtan örgü şapka; ATKI=Boynu saran uzun örgü; KAPÜŞON=Ceketin başa geçen başlığı; MONT=Kalın, sıcak dış ceket; TOZLUK=Bacağı çamurdan korur; DÜRBÜN=Uzağı yakın gösterir; KUMANYA=Yola alınan azık
+04 | Kamp sofrası | KUPA KAŞIK TABAK ÇATAL BIÇAK MANGAL IZGARA TENCERE TAVA ÇAYDANLIK KÖMÜR ŞİŞ PİKNİK ÖRTÜ
+05 | Hava olayları | YAĞMUR ŞİMŞEK YILDIRIM BORA KASIRGA SAĞANAK ÇİSENTİ TİPİ AYAZ NEM SEL ÇIĞ KURAKLIK ZEMHERİ SAMYELİ
+06 | Yol bulma | TABELA DÖNEMEÇ HARİTA PUSULA KAVŞAK AYRIM SAPAK YOKUŞ İNİŞ İŞARET ROTA YÖN İPUCU YOSUN KUZEY KILAVUZ REHBER GÜNEŞ AĞAÇ
+@dunya 24 doga-gozlem | Yıldızlı Gece
+01 | Günün sonu | AKŞAM ALACA BATI UFUK GURUP İKİNDİ YATSI KIZIL AKŞAMÜSTÜ GÜNBATIMI LOŞLUK AYDEDE SERİN
+02 | Ay | EVRE KRATER YENİAY MEHTAP AYIŞIĞI GELGİT ASTRONOT HİLAL DOLUNAY TUTULMA AYYILDIZ ROKET GÜMÜŞ
+03 | Gözlem araçları | TRİPOD=Üç ayaklı sabitleyici; OKÜLER=Göze değen ilk mercek; TELESKOP=Uzak gök cisimlerini büyütür; GÖZLEMEVİ=Gök izlemek için yapılan bina; KUBBE=Dönerek açılan yuvarlak tavan; FİLTRE=Güneşe bakarken gözü korur; USTURLAP=Eski gök ölçme aleti; KADRAN=Açı ölçen çeyrek daire; AYNA=Işığı toplayan parlak yüzey; ODAK=Işığın toplandığı nokta; LAZER=Yıldızı gösteren yeşil ışık
+04 | Gece sesleri | CIRCIR HIŞIRTI ÇITIRTI GICIRTI UĞULTU HORLAMA HAVLAMA ULUMA VIZILTI TIKIRTI ŞIRILTI ÇAĞILTI PATIRTI MIRILTI
+05 | Gökyüzü haritası | ZODYAK EKVATOR YÖRÜNGE EKSEN KUTUP BURÇ MERİDYEN GÜNDÖNÜMÜ KOÇ BOĞA İKİZLER YAY OĞLAK KOVA TERAZİ AKREP
+06 | Gözlem notları | TARİH SAAT ÇİZİM NOT KAYIT DEFTER KALEM TAHMİN SONUÇ KONUM GÖZLEMCİ KROKİ RAPOR ÖLÇEK ARŞİV

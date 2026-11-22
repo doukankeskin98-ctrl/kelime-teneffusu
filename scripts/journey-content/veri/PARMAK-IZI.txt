@@ -1,0 +1,9 @@
+yerlesim.json  SHA-256 799556ca62b80c7c22c1f9ddc5470bf8e8f18a90fc94711757a07f74c5d15c45
+312 bölüm, HATA 0 (tahta-denetimi.mts --banka, 20 Kasım 2026).
+20 Kasım 2026: 44 bölüm başlığı değişti (liste kelime-bankasi/bant-uyumu.md sonunda). Tahtalar, kelimeler, gizli kimlikler ve tanımlar 19 Kasım tablosuyla birebir aynı; yalnız "band" alanı değişti.
+1–18. bölümün tahtaları 0.58.0-pilot.1 ile birebir aynı; 6. ve 12. bölümün başlığı değişti, pilot modülü yeni tablodan yeniden üretilmeli.
+Önceki tablo (19 Kasım): SHA-256 2a12b0e752c84b96dc8ab3c85a488ad9d75a4f88fc6efa8713e980806f718c47
+Yeniden üretim:
+  cat kelime-bankasi/yolculuk-v3-dunya-01-03.txt kelime-bankasi/yolculuk-v3-dunya-04-12.txt kelime-bankasi/yolculuk-v3-dunya-13-24.txt kelime-bankasi/yolculuk-v3-dunya-25-36.txt kelime-bankasi/yolculuk-v3-dunya-37-52.txt > tum-banka.txt
+  node --experimental-strip-types araclar/uretici-v3.mts <oyun-kökü> tum-banka.txt cikti
+Oyun kökü: b2b789a (lib/game/engine.ts ve board-quality.ts bu sürümdeki gibi). Süre: Apple M2'de ~11 dakika.

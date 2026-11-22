@@ -1,0 +1,118 @@
+import {build, preview} from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'node:path';
+import {tmpdir} from 'node:os';
+import {mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
+import {launch} from './integrity/cdp.mjs';
+import {capturePlayLayout, layoutProblems} from './layout-measure.mjs';
+
+const subset = process.argv[2]?.split(',').map(Number);
+const numbers = subset ?? Array.from({length:312}, (_, i) => i+1);
+const out = path.resolve('../world-review.nosync/release-0580-local', subset?'matrix-sample':'matrix');
+const dir = mkdtempSync(path.join(tmpdir(), 'kt0580-matrix-'));
+mkdirSync(out, {recursive:true});
+const root = process.cwd();
+const conf = {configFile:false, root:path.join(root,'scripts/visual/catalogue-fixture'), publicDir:path.join(root,'public'),
+  resolve:{alias:{'@':root}},define:{__KT_LOCAL_JOURNEY_PILOT__:'true'},plugins:[react()],build:{outDir:dir,emptyOutDir:true},logLevel:'error'};
+
+async function inspect(number, published) {
+  window.showChapter(number, published);
+  await document.fonts.ready;
+  await new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>requestAnimationFrame(done))));
+  const layout = window.measure();
+  if(layout.error) return layout;
+  const rack = document.querySelector('.target-rack[data-authored-rack]');
+  const gaps = [],edges=[];
+  if(rack){
+    const bounds=rack.getBoundingClientRect();
+    for(const row of rack.querySelectorAll('.word-rack-row')){
+      const words=[...row.querySelectorAll('.target-letters')].map(word=>word.getBoundingClientRect());
+      edges.push(words[0].left-bounds.left,bounds.right-words.at(-1).right);
+      for(let i=1;i<words.length;i++)gaps.push(words[i].left-words[i-1].right);
+    }
+  }
+  const definitions=[];
+  const clue=document.querySelector('.active-clue');
+  let selectionWorks=true;
+  if(clue){
+    const slots=[...document.querySelectorAll('.clue-slot')], ordered=clue.closest('[aria-label="Hikâye adımları"]');
+    const frame=()=>new Promise(requestAnimationFrame);
+    for(let i=0;i<(ordered?1:slots.length);i++){
+      const visible=clue.querySelector('.clue-definition'), range=document.createRange();range.selectNodeContents(visible);
+      const box=clue.getBoundingClientRect(),rects=[...range.getClientRects()];
+      const selected=slots.findIndex(s=>s.classList.contains('is-focus-target'));
+      const expectedLength=slots[selected]?.querySelectorAll('[data-target-letter]').length;
+      definitions.push({text:visible.textContent,group:selected,lines:rects.length, width:box.width, height:box.height, overTop:Math.max(0,box.top-Math.min(...rects.map(r=>r.top))), overBottom:Math.max(0,Math.max(...rects.map(r=>r.bottom))-box.bottom),
+        clipped:!rects.length||rects.some(r=>r.left<box.left-1||r.right>box.right+1||r.top<box.top-1||r.bottom>box.bottom+1),
+        spoken:clue.querySelector('strong')?.textContent.endsWith(expectedLength+' harf')});
+      if(!ordered){
+        const from=new Touch({identifier:1,target:clue,clientX:120}),to=new Touch({identifier:1,target:clue,clientX:65});
+        for(const [name,point] of [['touchstart',from],['touchend',to]]){
+          clue.dispatchEvent(new TouchEvent(name,{bubbles:true,cancelable:true,touches:name==='touchend'?[]:[point],changedTouches:[point]}));
+        }
+        await frame();
+      }
+    }
+    if(!ordered){
+      selectionWorks=new Set(definitions.map(x=>x.group)).size===slots.length;
+      // A new tap, following the previous swipe, opens all clues.
+      clue.dispatchEvent(new TouchEvent('touchstart',{bubbles:true}));clue.click();await frame();
+      const pick=document.querySelector('dialog[open] [data-word-group="1"] button');
+      if(pick){pick.click();await frame();}
+      selectionWorks=selectionWorks&&!!pick&&slots[1].classList.contains('is-focus-target')&&!document.querySelector('dialog[open]');
+    }
+  }
+  return {...layout,gap:gaps.length?Math.min(...gaps):null,edge:edges.length?Math.min(...edges):null,
+    definitions,selectionWorks,authored:!!document.querySelector('[data-authored-board]')};
+}
+let browser,server;
+const all=[],failures=[];
+try{
+  await build(conf);
+  server=await preview({...conf,preview:{host:'127.0.0.1',port:0}});
+  browser=await launch({port:subset?19656:19652});
+  await browser.goto('http://127.0.0.1:'+server.httpServer.address().port);
+  await browser.eval('window.measure='+capturePlayLayout.toString()+';window.inspectChapter='+inspect.toString()+';true');
+  for(const [w,h] of [[320,568],[375,667],[393,852],[430,932]]){
+    await browser.viewport(w,h,1);
+    await browser.send('Emulation.setSafeAreaInsetsOverride',{insets:{top:w<=375?20:59,bottom:w<=375?0:34,left:0,right:0}});
+    for(const published of [true,false]){
+      let origin;
+      for(const n of numbers){
+        const v=await browser.eval('window.inspectChapter('+n+','+published+')');
+        const issues=layoutProblems(v);
+        if(!v.error){
+          if(v.authored===published)issues.push('Wrong catalogue');
+          if(v.gap!==null&&v.gap<13.9)issues.push('word gap '+v.gap.toFixed(1));
+          if(v.edge!==null&&v.edge<9.9)issues.push('card margin '+v.edge.toFixed(1));
+          for(const d of v.definitions){
+            if(d.clipped)issues.push('clue clipped: '+d.text);
+            if(!d.spoken)issues.push('missing spoken length: '+d.text);
+          }
+          if(!v.selectionWorks)issues.push('clue selection');
+          origin??=[v.stage.top,v.controls.at(-1)?.top];
+          if(Math.abs(origin[0]-v.stage.top)>1||Math.abs(origin[1]-v.controls.at(-1)?.top)>1)issues.push('unstable frame');
+        }
+        all.push({w,n,published,board:v.board,stageTop:v.stage?.top,topic:v.topic,rack:v.rack,clueRect:v.targets?.at(-1),tools:v.controls,...(subset?{words:v.words}:{}),clues:v.definitions,gap:v.gap,edge:v.edge,issues});
+        if(issues.length){
+          if(failures.filter(x=>x.w===w&&x.published===published).length<3)console.log(JSON.stringify({w,n,published,issues}));
+          failures.push({w,n,published,issues});
+        }
+        if(subset&&published&&w<=375){
+          const {data}=await browser.send('Page.captureScreenshot',{format:'jpeg',quality:70});
+          writeFileSync(path.join(out,'original-'+w+'-'+n+'.jpg'),Buffer.from(data,'base64'));
+        }
+        if(!published&&(((w===320||w===393)&&(n%6===1||n%6===0))||n===297)){
+          const {data}=await browser.send('Page.captureScreenshot',{format:'jpeg',quality:54});
+          writeFileSync(path.join(out,w+'-'+n+'.jpg'),Buffer.from(data,'base64'));
+        }
+      }
+      console.log(w,published?'published':'pilot',all.length,failures.length);
+    }
+  }
+}finally{
+  await browser?.close();await server?.close();rmSync(dir,{recursive:true,force:true});
+  writeFileSync(path.join(out,'measurements.json'),JSON.stringify(all));
+  writeFileSync(path.join(out,'issues.json'),JSON.stringify(failures));
+}
+if(failures.length||all.length!==numbers.length*8)process.exitCode=1;

@@ -1,0 +1,286 @@
+{
+ "hata": 0,
+ "uyari": 40,
+ "rows": [
+  {
+   "sev": "UYARI",
+   "lv": 1,
+   "word": "HİLAL",
+   "kod": "özel ad",
+   "msg": "yalnız özel ad olarak bulundu, kategori [özel] değil"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 1,
+   "word": "HİLAL",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 35246, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 2,
+   "word": "MARS",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 2,
+   "word": "DÜNYA",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 3,
+   "word": "ANTEN",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 30349, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 4,
+   "word": "KÜME",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 6,
+   "word": "TELESKOP",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 6,
+   "word": "MERCEK",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 46393, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 6,
+   "word": "DÜRBÜN",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 42515, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 6,
+   "word": "TERMOS",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 7,
+   "word": "AYVALIK",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 8,
+   "word": "BURSA",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 10,
+   "word": "EFES",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 11,
+   "word": "KAŞ",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 11,
+   "word": "AYDER",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 11,
+   "word": "AMASRA",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 11,
+   "word": "CUNDA",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 11,
+   "word": "GÖREME",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 11,
+   "word": "PAMUKKALE",
+   "kod": "sınır",
+   "msg": "eski tahtanın önceki 6 bölümünde var; üretici seçmez"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 12,
+   "word": "KERVAN",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 48253, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 12,
+   "word": "KİLİM",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 12,
+   "word": "SEYYAH",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 12,
+   "word": "ÇARŞI",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 12,
+   "word": "ÇİNİ",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 14,
+   "word": "SİLGİ",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 14,
+   "word": "CETVEL",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 14,
+   "word": "MATARA",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 14,
+   "word": "PERGEL",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 15,
+   "word": "TÜRKÇE",
+   "kod": "özel ad",
+   "msg": "yalnız özel ad olarak bulundu, kategori [özel] değil"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 15,
+   "word": "ALMANCA",
+   "kod": "özel ad",
+   "msg": "yalnız özel ad olarak bulundu, kategori [özel] değil"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 15,
+   "word": "COĞRAFYA",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 31178, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 15,
+   "word": "İNGİLİZCE",
+   "kod": "özel ad",
+   "msg": "yalnız özel ad olarak bulundu, kategori [özel] değil"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 16,
+   "word": "SEKSEK",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 16,
+   "word": "SALINCAK",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 43850, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 16,
+   "word": "KAYDIRAK",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 16,
+   "word": "MİSKET",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 37143, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 16,
+   "word": "KANTİN",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 17,
+   "word": "KERMES",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 18,
+   "word": "KARNE",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  },
+  {
+   "sev": "UYARI",
+   "lv": 18,
+   "word": "KEP",
+   "kod": "nadir",
+   "msg": "altyazı sıklığı 50.000 dışı, haber ilk 10.000 dışı; tanınırlığı elle doğrula"
+  }
+ ]
+}

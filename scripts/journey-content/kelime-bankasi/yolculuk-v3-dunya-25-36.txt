@@ -1,0 +1,85 @@
+# Yolculuk v2 kelime bankası, sürüm 3 · dünya 25–36 · Claude, 19 Kasım 2026
+@dunya 25 renkler-bahce | Meyve Bahçesi
+01 | Bahçe meyveleri | ELMA ARMUT AYVA ŞEFTALİ NEKTARİN MUŞMULA YENİDÜNYA KARPUZ KAVUN ÜVEZ İĞDE KESTANE KAYISI
+02 | Turunçgil ve tropik | LİMON PORTAKAL MANDALİNA GREYFURT TURUNÇ BERGAMOT KİVİ MUZ ANANAS MANGO PAPAYA AVOKADO GUAVA
+03 | Kuru meyveler | KAYISI=Malatya'nın ünlü turuncu meyvesi; HURMA=Çölün tatlı, kahverengi meyvesi; ZERDALİ=Küçük, yabani turuncu meyve; PESTİL=Meyve ezmesinden ince yaprak; KÖME=Cevizli pekmez sucuğu; SULTANİ=Çekirdeksiz, sarı kuru tane; ÜZÜM=Salkım salkım yetişen tane; İNCİR=Aydın'ın ballı meyvesi; DUT=Pekmezi yapılan beyaz meyve; ERİK=Kurusu kompostoya girer
+04 | Kıtır kıtır | CEVİZ BADEM FINDIK FISTIK LEBLEBİ KESTANE ÇEKİRDEK KAJU PEKAN ÇEREZ KAVURGA KURUYEMİŞ SUSAM AYÇİÇEĞİ
+05 | Kırmızı ve mor meyveler | ÇİLEK KİRAZ VİŞNE NAR AHUDUDU BÖĞÜRTLEN KIZILCIK KUŞBURNU KARADUT ALIÇ ERİK DUT İNCİR ÜZÜM KARPUZ MÜRDÜM FRAMBUAZ MERSİN GREYFURT KUŞÜZÜMÜ MÜRVER ŞAHDUT
+06 | Meyveden lezzetler | REÇEL HOŞAF KOMPOSTO MARMELAT ŞURUP PEKMEZ SİRKE LİMONATA ŞERBET TURTA JÖLE DONDURMA ELMALI PASTA SALATA
+@dunya 26 renkler-mutfak | Mutfakta Bir Gün
+01 | Pazar sebzeleri | SARIMSAK BEZELYE BAMYA FASULYE PANCAR PATATES ŞALGAM TERE MANTAR ROKA SEMİZOTU KUŞKONMAZ BÖRÜLCE MISIR
+02 | Bakliyat ve tahıl | NOHUT MERCİMEK BAKLA BARBUNYA SOYA MAŞ FAVA BULGUR PİRİNÇ İRMİK ŞEHRİYE KUSKUS ERİŞTE YARMA KİNOA
+03 | Mutfak gereçleri | RENDE=Havucu ince şeritlere ayırır; SÜZGEÇ=Makarnanın suyunu ayırır; KEVGİR=Kızartmayı yağdan alan kaşık; HAVAN=Baharatı döverek ezer; KEPÇE=Çorbayı tabağa koyar; ÇIRPICI=Yumurtayı köpürtür; DÜDÜKLÜ=Fasulyeyi çabuk pişiren tencere; SATIR=Kemiği kesen iri bıçak; MAŞA=Közü tutan iki kollu alet; ÖNLÜK=Mutfakta giysiyi korur; HUNİ=Sıvıyı dar ağza aktarır
+04 | Süt ürünleri | AYRAN YOĞURT PEYNİR KAYMAK KEFİR LABNE KREMA SÜT SÜTLAÇ KEŞ HELLİM TEREYAĞI KAŞAR LOR ÇÖKELEK
+05 | Baharatlar | KİMYON TARÇIN ZENCEFİL ZERDEÇAL KARANFİL SUMAK İSOT KARABİBER YENİBAHAR SAFRAN VANİLYA KAKULE MAHLEP ÇEMEN KEKİK
+06 | Çorbalar | TARHANA YAYLA EZOGELİN İŞKEMBE MERCİMEK TAVUK PAÇA DÜĞÜN TOYGA ARABAŞI BALIK SEBZE LAPA ŞEHRİYE DOMATES
+@dunya 27 renkler-atolye | El İşi Atölyesi
+01 | Resim gereçleri | FIRÇA BOYA PALET TUVAL ŞÖVALE SULUBOYA PASTEL GUAJ AKRİLİK KARAKALEM KANSON TİNER SİLGİ MÜREKKEP
+02 | Dikiş kutusu | İĞNE İPLİK YÜKSÜK MAKARA DÜĞME FERMUAR ÇITÇIT KOPÇA TEBEŞİR MEZURA TELA LASTİK SÖKÜCÜ MAKAS
+03 | Örgü sepeti | ŞİŞ=Örgü yapılan uzun çubuk; TIĞ=Ucu kancalı örgü aracı; YÜN=Koyundan alınan lif; ÇİLE=Halka gibi sarılmış iplik; YUMAK=Top gibi sarılmış iplik; KAZAK=Kış için örülen sıcak giysi; PATİK=Bebek için örülen ayakkabı; DANTEL=İnce iplikten ajurlu süs; OYA=Yazma kenarına işlenen süs; İLMEK=Örgünün tek halkası; ŞAL=Omuza atılan örgü örtü
+04 | Kumaşlar | KETEN İPEK SATEN KADİFE PAMUK KOT TÜL ŞİFON ORGANZE TAFTA KAŞMİR POLAR VİSKON BASMA PAZEN GABARDİN
+05 | Ahşap atölyesi | ZIMPARA KESKİ MATKAP TUTKAL VERNİK CİLA İSKARPELA MENGENE TALAŞ KERPETEN TORNA OYMA DÜBEL ÇEKİÇ TESTERE
+06 | Takılar | KOLYE BİLEZİK KÜPE YÜZÜK BROŞ HALHAL TOKA ZİNCİR MADALYON GERDANLIK İNCİ PIRLANTA ZÜMRÜT YAKUT FİRUZE
+@dunya 28 renkler-muzik | Müzik Sokağı
+01 | Müzik yazısı | NOTA PORTE ÖLÇÜ SUS DİYEZ BEMOL NATÜREL BAĞ TEMPO DÖRTLÜK SEKİZLİK SOLFEJ ANAHTAR AKOR
+02 | Telli çalgılar | GİTAR BAĞLAMA KEMAN KANUN ÇELLO VİYOLA ARP LAVTA KEMENÇE CURA TAMBUR SANTUR BANJO MANDOLİN
+03 | Üflemeli çalgılar | FLÜT=Yan tutularak üflenen gümüş boru; NEY=Mevlevilerin kamış çalgısı; KAVAL=Çobanın ağaç düdüğü; KLARNET=Kamışlı, siyah tahta çalgı; ZURNA=Düğünde davulun eşi; TROMPET=Pistonlu, parlak sesli bakır; SAKSAFON=Cazın kıvrık bakır çalgısı; OBUA=Çift kamışlı ince sesli çalgı; TUBA=En kalın sesli bakır çalgı; MIZIKA=Ağızda kaydırılan küçük çalgı
+04 | Vurmalı çalgılar | DAVUL ZİL TEF BONGO DARBUKA BATERİ TİMPANİ KASTANYET KUDÜM BENDİR NAKKARE KSİLOFON TRAMPET ÇAN
+05 | Şarkının bölümleri | KITA NAKARAT GİRİŞ FİNAL KÖPRÜ SOLO ARA ÇIKIŞ MELODİ RİTİM VOKAL SÖZ DÖNÜŞ MISRA BEYİT KAPANIŞ
+06 | Birlikte çalanlar | KORO TRİO ORKESTRA BANDO DÜET KUARTET MEHTER FASIL TOPLULUK SENFONİ KORİST ŞEF SOLİST ÇALGICI GRUP
+@dunya 29 kesif-zanaat | Ustaların Sokağı
+01 | Seramik kaplar | VAZO TESTİ KÜP TABAK ÇANAK ÇÖMLEK KASE FİNCAN GÜVEÇ İBRİK SAKSI AMFORA ÇİNİ TUZLUK
+02 | Deri eşyalar | ÇANTA KEMER CÜZDAN ELDİVEN CEKET ÇİZME AYAKKABI SANDALET EYER KOŞUM TASMA KILIF ÇARIK POSTAL
+03 | Metal atölyesi | ÖRS=Kızgın metalin dövüldüğü blok; KÖRÜK=Ateşe hava üfleyen deri torba; MAŞA=Kor tutan iki kollu alet; PERÇİN=İki levhayı birleştiren çivi; LEHİM=Metali eriterek bağlar; KAYNAK=Metali ısıyla birleştirme; DEMİRCİ=Kızgın metali döven usta; KALAY=Kapları parlatan kaplama metali; DÖKÜM=Eriyik metali kalıba akıtmak; TELKARİ=Gümüş telden ince işçilik; BAKIR=Kızıl renkli, işlenen metal
+04 | Cam eşyalar | BARDAK SÜRAHİ ŞİŞE KAVANOZ KADEH VİTRAY BONCUK AVİZE KÜRE AKVARYUM FANUS PENCERE ŞAMDAN TÜP
+05 | Yapı taşları | MERMER GRANİT BAZALT KALKER KAYRAK TRAVERTEN ONİKS KUMTAŞI TUĞLA KİREMİT BETON ÇİMENTO KİREÇ ALÇI HARÇ ANDEZİT
+06 | Ölçüm araçları | METRE CETVEL KUMPAS GÖNYE TERAZİ MEZURA PERGEL İLETKİ BAROMETRE KANTAR ŞAKUL ALTİMETRE VOLTMETRE HIZÖLÇER SAAT METRONOM TARTI PUSULA
+@dunya 30 kesif-kitap | Kitap Köşesi
+01 | Edebiyat türleri | ROMAN ÖYKÜ MASAL ŞİİR DENEME FABL GAZEL KOŞMA MANİ BİYOGRAFİ ANI SÖYLEŞİ GÜNLÜK HİKAYE DESTAN
+02 | Kitabın parçaları | KAPAK ÖNSÖZ DİZİN SAYFA SIRT CİLT BÖLÜM SONSÖZ KÜNYE İTHAF SÖZLÜK KAYNAKÇA BAŞLIK
+03 | Yazım kuralları | VİRGÜL=Cümlede kısa duraklama işareti; NOKTA=Cümlenin sonuna konur; TIRNAK=Aktarılan sözü çevreler; TİRE=Satır sonunda kelimeyi böler; ÜNLEM=Şaşkınlık bildiren işaret; KESME=Özel adı ekinden ayırır; PARANTEZ=Açıklamayı iki yay içine alır; HECE=Tek solukta söylenen parça; ŞAPKA=Harfin üstündeki inceltme işareti; YAZIM=Kelimeleri doğru yazma kuralı
+04 | Okuma köşesi | RAF KİTAP AYRAÇ ETİKET ATLAS DERGİ GAZETE KATALOG DOSYA KUTU KÜTÜPHANE BROŞÜR ALBÜM SÖZLÜK
+05 | Yazının düzeni | SATIR PARAGRAF SÜTUN BAŞLIK DİPNOT KENAR BOŞLUK GİRİNTİ ARALIK HİZA MADDE ALTBAŞLIK PUNTO LİSTE ÖZET
+06 | Kitabı hazırlayanlar | YAZAR EDİTÖR ÇEVİRMEN ÇİZER YAYINCI DİZGİCİ REDAKTÖR ŞAİR ROMANCI GRAFİKER TASARIMCI MATBAACI KİTAPÇI DAĞITICI OKUR ÖYKÜCÜ MASALCI
+@dunya 31 kesif-yolculuk | Yolcu Günlüğü
+01 | Kara taşıtları | OTOMOBİL OTOBÜS KAMYON MİNİBÜS TAKSİ DOLMUŞ BİSİKLET TRAKTÖR TIR JİP AMBULANS KARAVAN FAYTON KAĞNI
+02 | Raylı ulaşım | TREN TRAMVAY METRO VAGON FÜNİKÜLER TELEFERİK LOKOMOTİF BANLİYÖ RAY PERON İSTASYON KONDÜKTÖR GAR MAKİNİST DURAK HAT YOLCU SİNYAL TÜNEL KUŞET
+03 | Su taşıtları | VAPUR=Boğazda iskeleden iskeleye taşır; FERİBOT=Arabaları da taşıyan gemi; GONDOL=Venedik kanallarının sandalı; KANO=Çift kürekle sürülen ince tekne; DENİZALTI=Suyun altında yol alan gemi; KADIRGA=Kürekli eski savaş gemisi; KAYIK=Küreğiyle yol alan küçük tekne; SAL=Bağlanmış kütüklerden tekne; YAT=Gezinti için lüks tekne; TANKER=Petrol taşıyan dev gemi; GULET=Ahşap Türk yelkenlisi
+04 | Gökyüzünde yolculuk | UÇAK PLANÖR BALON ZEPLİN JET DRON PARAŞÜT ROKET UÇURTMA PİLOT KANAT PERVANE KOKPİT HOSTES PİST
+05 | Yolun bölümleri | ŞERİT BANKET KAVŞAK KALDIRIM REFÜJ VİRAJ OTOYOL BULVAR CADDE RAMPA BARİYER ASFALT GİŞE KÖPRÜ SOKAK
+06 | Yolculuk belgeleri | PASAPORT BİLET VİZE KİMLİK EHLİYET RUHSAT SİGORTA MAKBUZ FATURA DÖVİZ İZİN DAVETİYE SERTİFİKA KART DAMGA
+@dunya 32 kesif-zaman | Zamanın İzinde
+01 | Takvim yaprağı | TAKVİM TATİL BAYRAM SALI YARIN BUGÜN DÜN RANDEVU YILBAŞI PERŞEMBE ÇARŞAMBA PAZARTESİ CUMARTESİ HAFTASONU PAZAR
+02 | Aylar | OCAK ŞUBAT MART NİSAN MAYIS HAZİRAN TEMMUZ AĞUSTOS EYLÜL EKİM KASIM ARALIK MEVSİM
+03 | Zaman ölçüleri | SANİYE=Bir tıkırtı kadar kısa süre; DAKİKA=Kırk beşi bir ders eder; SAAT=Yelkovanın tam turu; HAFTA=Yedi gecelik süre; YIL=On iki aylık süre; ASIR=Tam yüz senelik süre; SALİSE=Göz açıp kapama kadar an; MİLENYUM=Bin senelik dönem; ÇAĞ=Tarihin uzun bir dönemi; DEVİR=Bir hükümdarın dönemi; GÜN=Dünyanın kendi çevresinde turu
+04 | Mevsimlerin izleri | İLKBAHAR SONBAHAR YAZ KIŞ HAZAN CEMRE HIDRELLEZ NEVRUZ KARTOPU HASAT SOĞUK SICAK ZEMHERİ GÜNDÖNÜMÜ
+05 | Saatin parçaları | AKREP YELKOVAN KADRAN PİL ZEMBEREK KORDON KAYIŞ SARKAÇ ALARM ÇARK DİŞLİ RAKAM KURMA MİL PİM
+06 | Günün vakitleri | SABAH ÖĞLE İKİNDİ AKŞAM GECE ŞAFAK SEHER TAN KUŞLUK YATSI SAHUR İFTAR KAHVALTI GÜNDÜZ GURUP
+@dunya 33 ufuk-ciftlik | Çiftlik Sabahı
+01 | Tarladan tahıllar | BUĞDAY ARPA YULAF ÇAVDAR MISIR PİRİNÇ DARI ÇELTİK BAŞAK TANE SAP KEPEK İRMİK
+02 | Köy avlusunda | AHIR KÜMES SAMAN YEMLİK HOROZ İNEK KEÇİ KOYUN KAZ HİNDİ EŞEK TANDIR KUYU ODUN
+03 | Arılıkta | BAL=Çiçek özünden yapılan tatlı; PETEK=Altıgen gözlü mum yapı; POLEN=Arının çiçekten taşıdığı toz; PROPOLİS=Arıların yaptığı yapışkan reçine; ARISÜTÜ=Ana arıyı besleyen özel gıda; KOVAN=Arıların yaşadığı kutu; KRALİÇE=Yumurtlayan tek ana arı; ARICI=Arı yetiştiren kişi; NEKTAR=Çiçeğin tatlı özsuyu; MASKE=Yüzü sokmaya karşı koruyan file; İŞÇİ=Çiçek çiçek gezen dişi arı
+04 | Ekin zamanı | EKİM HASAT SULAMA SÜRÜM BİÇME HARMAN GÜBRELEME NADAS TOHUMLAMA ÇİFTÇİ TARLA BAĞBOZUMU TOPLAMA BELLEME
+05 | Çiftlik araçları | SABAN TIRMIK ORAK DİRGEN TRAKTÖR PULLUK RÖMORK DÖVEN TIRPAN BALYA SİLO MİBZER YABA KAĞNI KAZMA
+06 | Kiler kapları | ÇUVAL SEPET BİDON KAVANOZ FIÇI DAMACANA TENEKE SANDIK TORBA HEYBE KASA KUTU KÜP TESTİ ÇÖMLEK BAKRAÇ GÜĞÜM KAZAN TAS KAP
+@dunya 34 ufuk-orman | Ormanın Katları
+01 | Ormanın ağaçları | MEŞE KAYIN LADİN SEDİR ÇAM GÜRGEN KÖKNAR KIZILAĞAÇ ARDIÇ DIŞBUDAK IHLAMUR KESTANE SÖĞÜT
+02 | Ağaca yakından bak | KABUK GÖVDE KÖK DAL BUDAK HALKA REÇİNE ÖZSU KÜTÜK KOVUK LİF SÜRGÜN YAPRAK TAÇ
+03 | Orman izleri | PENÇE=Ayının sivri tırnaklı ayağı; TÜY=Kuştan düşen hafif parça; KOZALAK=Çamın pullu meyvesi; PALAMUT=Meşe dalından düşen meyve; YUVA=Kuşun dallardan ördüğü ev; BOYNUZ=Geyiğin her yıl döktüğü çatal; OYUK=Ağaçkakanın açtığı delik; KEMİK=Toprakta kalan beyaz iz; KOZA=Tırtılın ördüğü ipek ev; PATİKA=Ayakların açtığı dar yol
+04 | Orman memelileri | GEYİK TİLKİ VAŞAK SANSAR AYI KURT KARACA SAMUR ÇAKAL PORSUK GELİNCİK TAVŞAN KİRPİ SİNCAP
+05 | Toprağın üstünde | YOSUN MANTAR EĞRELTİ LİKEN KÜF HUMUS SOLUCAN KARINCA SALYANGOZ BÖCEK DİKEN FİLİZ TOHUM KÜTÜK ÇALI
+06 | Ağaç tepelerinde | KARGA SAKSAĞAN SİNCAP BAYKUŞ ŞAHİN ATMACA KARTAL DOĞAN SERÇE BÜLBÜL İSPİNOZ GÜVERCİN TIRTIL KELEBEK YUVA
+@dunya 35 ufuk-gol | Göl Kıyısında
+01 | Gölün kuşları | ÖRDEK KUĞU PELİKAN BALIKÇIL FLAMİNGO KARABATAK SAKARMEKE MARTI LEYLEK TURNA KAZ SUNA ANGUT SUTAVUĞU
+02 | Suyun çevresi | KIYI SAZLIK KUMSAL KÖRFEZ BURUN KOY ADA YARIMADA LAGÜN BATAKLIK SULAK KAMIŞLIK KAYALIK
+03 | Göl balıkçısı | SAZAN=Gölün iri pullu balığı; YAYIN=Bıyıklı, iri tatlı su balığı; TURNA=Sivri ağızlı yırtıcı göl balığı; ALABALIK=Benekli, soğuk dere balığı; SUDAK=Eğirdir Gölü'nün ünlü balığı; KADİFE=Kaygan, yeşil göl balığı; MERSİN=Havyarı değerli dev balık; OLTA=Balık tutmaya yarayan ipli çubuk; YEM=İğneye takılan küçük lokma; KEREVİT=Tatlı suyun kıskaçlı kabuklusu
+04 | Göl kıyısında yeşil | NİLÜFER KAMIŞ SAZ SÜSEN HASIROTU LOTUS PAPİRÜS ALG SÖĞÜT KAVAK ÇAYIR YOSUN EĞRELTİ ÇİMEN
+05 | Kıyıdaki küçük canlılar | KURBAĞA YUSUFÇUK SİNEK KELEBEK SALYANGOZ SÜLÜK İRİBAŞ SEMENDER KARAFATMA ÇEKİRGE YENGEÇ YILAN KIZBÖCEĞİ ÖRÜMCEK KARINCA MİDYE TIRTIL BÖCEK
+06 | Sakin bir piknik | ÖRTÜ TERMOS MİNDER SEPET SANDVİÇ KARPUZ LİMONATA MANGAL HAMAK UÇURTMA ŞEMSİYE KÖFTE SEMAVER TAVLA GİTAR
+@dunya 36 ufuk-yagmur | Yağmurdan Sonra
+01 | Gökteki hava | BULUT YAĞMUR DOLU ŞİMŞEK YILDIRIM GÖKKUŞAĞI SİS PUS BORA SAĞANAK ÇİSENTİ KAR AYAZ NEM
+02 | Rüzgârlar | POYRAZ LODOS MELTEM FIRTINA KEŞİŞLEME GÜNBATISI KIBLE SAMYELİ TAYFUN KASIRGA ESİNTİ MUSON ALİZE
+03 | Yağış ve yüzey izleri | KAR=Lapa lapa yağan beyaz; ÇİY=Sabah otların üstündeki damlalar; KIRAĞI=Soğuk sabah yaprağa konan buz; SAĞANAK=Ani ve şiddetli boşanan yağış; BUZLANMA=Yolun cam gibi kayganlaşması; GÖLCÜK=Çukurda biriken su; TİPİ=Rüzgârla savrulan beyaz yağış; ÇIĞ=Dağdan kopup kayan beyaz kütle; SEL=Yatağından taşan coşkun su; SARKIT=Saçaktan aşağı uzanan buz; DOLU=Buz taneleri hâlinde yağış; BUĞU=Soğuk camda beliren ince su; YAĞMUR=Bulutlardan düşen su damlaları
+04 | Havayı ölçmek | DERECE BASINÇ NEM HIZ BAROMETRE UYDU RADAR TAHMİN SICAKLIK YAĞIŞ MİLİMETRE İSTASYON BALON SELSİYUS GÖZLEM GRAFİK MİLİBAR
+05 | Yağmurlu gün çantası | ŞEMSİYE ÇİZME MONT KILIF YAĞMURLUK KAPÜŞON PELERİN HAVLU ÇORAP MENDİL GALOŞ BERE ATKI ELDİVEN ŞAPKA
+06 | Yağmurun izleri | DAMLA ÇAMUR GÖLET SEL GÖKKUŞAĞI GÖLCÜK SALYANGOZ SOLUCAN MANTAR ISLAKLIK OLUK SAÇAK ŞIPIRTI TAZELİK YOSUN TOPRAK ÇİMEN SERİNLİK KOKU

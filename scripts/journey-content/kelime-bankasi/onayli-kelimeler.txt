@@ -30,3 +30,127 @@ KAPADOKYA | Nevşehir çevresi, peribacaları (UNESCO)
 PAMUKKALE | Denizli, travertenler (UNESCO)
 KEKOVA | Antalya Demre, batık şehir ve koy
 SALDA | Burdur Yeşilova, Salda Gölü
+# --- dünya 4–12 (19 Kasım 2026) ---
+PİLAV | TDK: pilav; Zemberek ana sözlükte eksik
+ŞAKŞUKA | TDK: şakşuka (zeytinyağlı patlıcan kızartması)
+EZME | TDK: ezme (acılı domates mezesi)
+GÜLLAÇ | TDK: güllaç
+TİMPANİ | Orkestra davulu; müzik terimi
+ANAKART | TDK: anakart (bilgisayar)
+SOĞUTUCU | TDK: soğutucu (soğutmak)
+KLASÖR | TDK: klasör
+KLAVYE | TDK: klavye
+TARAYICI | TDK: tarayıcı (bilgisayar)
+AKIŞ | TDK: akış (akmak)
+EMOJİ | TDK Güncel Türkçe Sözlük: emoji
+ATIŞ | TDK: atış (atmak)
+YAKANTOP | TDK: yakantop (çocuk oyunu)
+ORTASAHA | Futbolda orta saha; oyun ekranında tek kelime olarak bitişik yazılır (ORTASAHA oyuncusu). Editör kararı
+ÜÇLÜK | TDK: üçlük (basketbolda üç sayılık atış)
+ZON | Basketbolda bölge savunması (zon savunma); spor terimi
+SKORBORD | TDK: skorbord
+ŞUTÖR | TDK: şutör
+OKÇULUK | TDK: okçuluk
+DAMBIL | TDK: dambıl
+PLEYOF | TDK: pleyof (play-off)
+DİNLEYİCİ | TDK: dinleyici (dinlemek)
+KUĞU | TDK: Kuğu takımyıldızı (Cygnus)
+# --- dünya 13–24 (19 Kasım 2026) ---
+AÇILIŞ | TDK: açılış (açılmak)
+KLAKET | TDK: klaket (sinema)
+GONG | TDK: gong
+KAĞIT | TDK: kâğıt; oyun alfabesinde Â yok, düz A ile yazılır
+SONSÖZ | TDK: sonsöz
+KAHİN | TDK: kâhin; oyun alfabesinde Â yok
+RÜZGAR | TDK: rüzgâr; oyun alfabesinde Â yok
+TEZGAH | TDK: tezgâh; oyun alfabesinde Â yok
+DÜKKAN | TDK: dükkân; oyun alfabesinde Â yok
+PARAÜSTÜ | TDK: paraüstü
+ÇÖREKOTU | TDK: çörekotu
+ACIBADEM | TDK: acıbadem (kurabiyesi)
+ÖTÜŞ | TDK: ötüş (ötmek)
+LEYLAK | TDK: leylak
+KIRILMA | TDK: kırılma (fizik)
+FOTON | TDK: foton
+LİLA | TDK: lila
+ADAÇAYI | TDK: adaçayı
+CİVATA | TDK: civata
+SUSAMURU | TDK: susamuru
+PONÇO | TDK: panço/ponço; yağmurluk, Türkçede yaygın kullanım
+TABELA | TDK: tabela
+USTURLAP | TDK: usturlap
+MAKYÖZ | TDK: makyöz
+# --- dünya 25–36 (19 Kasım 2026) ---
+PEKAN | TDK: pekan (cevizi)
+MARMELAT | TDK: marmelat
+KİNOA | TDK Güncel Türkçe Sözlük: kinoa
+LABNE | Süzme krem peynir; Türkiye market ve mutfak kullanımında yaygın
+EZOGELİN | Ezogelin çorbası; Türk mutfağının bilinen çorba adı
+KANSON | TDK: kanson (kâğıdı)
+TELA | TDK: tela
+SÖKÜCÜ | TDK: sökücü (sökmek)
+VİSKON | TDK: viskon
+İSKARPELA | TDK: iskarpela
+OYMA | TDK: oyma (oymak)
+SUS | TDK: sus (müzikte susma işareti)
+BONGO | TDK: bongo
+KORİST | TDK: korist
+KASE | TDK: kâse; oyun alfabesinde Â yok
+TELKARİ | TDK: telkâri
+HİKAYE | TDK: hikâye; oyun alfabesinde Â yok
+DAĞITICI | TDK: dağıtıcı
+DRON | TDK Güncel Türkçe Sözlük: dron
+PROPOLİS | TDK: propolis
+DÖVEN | TDK: döven (düven)
+FLAMİNGO | TDK: flamingo
+SAKARMEKE | TDK: sakarmeke
+HASIROTU | TDK: hasırotu
+SELSİYUS | TDK: selsiyus
+AYÇİÇEĞİ | TDK: ayçiçeği (çekirdeği kuruyemiş)
+# --- dünya 37–52 (19 Kasım 2026) ---
+BUMBA | TDK: bumba (yelken)
+TRAMOLA | TDK: tramola (denizcilik)
+LOGAR | TDK: logar
+KABARTMA | TDK: kabartma (tozu)
+LAMBADER | TDK: lambader
+KURUTUCU | TDK: kurutucu (kurutmak)
+ŞAŞIRTMA | TDK: şaşırtma (fide şaşırtma)
+TORF | TDK: torf
+OBTÜRATÖR | TDK: obtüratör (fotoğraf)
+NETLEME | TDK: netleme (netlemek)
+KONTRJUR | TDK: kontrjur (fotoğraf)
+FLAŞ | TDK: flaş
+TİRAD | TDK: tirat/tirad (tiyatro)
+İNDİGO | TDK: indigo
+KAMUFLAJ | TDK: kamuflaj
+HATAYİ | TDK: hatayi (süsleme motifi)
+SİSAL | TDK: sisal
+CECİM | TDK: cecim (dokuma)
+VUAL | TDK: vual (kumaş)
+BÜRET | TDK: büret (laboratuvar)
+PETRİ | Petri kabı; laboratuvar terimi
+KROZE | TDK: kroze (laboratuvar)
+İTME | TDK: itme (itmek)
+KOMET | TDK: komet (kuyrukluyıldız)
+AURORA | TDK: aurora (kutup ışığı)
+İÇLİK | TDK: içlik
+LENS | TDK: lens
+ÖZÇEKİM | TDK: özçekim (selfie karşılığı)
+MİLİBAR | TDK: milibar
+METRONOM | TDK: metronom
+KAZANAN | TDK: kazanan (kazanmak)
+KUŞÜZÜMÜ | TDK: kuşüzümü
+MUŞAMBA | TDK: muşamba
+BALLIK | TDK: ballık
+PEYNİRLİK | TDK: peynirlik
+SÜTLÜK | TDK: sütlük
+ÇEKPAS | TDK: çekpas
+BUZLUK | TDK: buzluk
+TERMOFOR | TDK: termofor
+AKTRİS | TDK: aktris
+MÜRVER | TDK: mürver
+ŞAHDUT | TDK: şahdut
+KUŞET | TDK: kuşet
+SOMYA | TDK: somya
+PANDUF | TDK: panduf
+STATİF | TDK: statif

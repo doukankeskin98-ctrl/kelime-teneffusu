@@ -1,0 +1,66 @@
+# Yolculuk v2 kelime bankası, sürüm 3 · dünya 4–12 · Claude, 19 Kasım 2026
+# Biçim: "@dunya NN tema | Dünya adı", sonra "sıra | bant [özel] | kelimeler (tercih sırasıyla)".
+# Bilmece satırı: "sıra | bant | KELİME=tanım; KELİME=tanım" (tanım en çok 34 karakter, cevabı içermez).
+@dunya 04 hayvanlar | Fısıltı Ormanı
+01 | Küçük dostlarımız | KEDİ KÖPEK TAVŞAN KANARYA HAMSTER CİVCİV PAPAĞAN KUZU BALIK ÖRDEK
+02 | Ormanın sakinleri | AYI KURT GEYİK VAŞAK KARACA PORSUK SAMUR ÇAKAL KUNDUZ ALAGEYİK
+03 | Yuvadaki sırlar | ARI=Peteğinde bal saklar; LEYLEK=Bacanın tepesine yuva kurar; SİNCAP=Ağaç kovuğuna fındık saklar; BAYKUŞ=Gece avlanan iri gözlü kuş; KİRPİ=Tehlikede dikenli top olur; YARASA=Mağarada baş aşağı uyur; KÖSTEBEK=Toprağın altında tünel kazar; SERÇE=Saçak altına yuva yapar; ÖRÜMCEK=Ağını örüp avını bekler
+04 | Denizde ve karada | YUNUS BALİNA PENGUEN MARTI FOK AHTAPOT YENGEÇ KURBAĞA TİMSAH MORS DENİZATI SEMENDER
+05 | Vahşi doğa | ZEBRA FİL PARS GERGEDAN HİPOPOTAM LEOPAR ÇİTA GORİL KANGURU SIRTLAN ANTİLOP JAGUAR BUFALO
+06 | Ormanın gizli canlıları | KELEBEK=Tırtılken koza örer; KARINCA=Kolonide durmadan çalışır; SALYANGOZ=Evini sırtında taşır; GELİNCİK=İnce uzun gövdeli küçük avcı; SOLUCAN=Toprağı havalandırır; GUGUK=Yumurtasını başka yuvaya bırakır; ÇEKİRGE=Uzun arka bacaklarıyla sıçrar; YUSUFÇUK=Gölet üstünde süzülen ince böcek; GÜVE=Yünlü giysileri delen minik böcek
+@dunya 05 lezzetler | Tarçın Sokağı
+01 | Fırından sofraya | SİMİT BÖREK PİDE POĞAÇA AÇMA LAHMACUN EKMEK BAZLAMA GÖZLEME ÇÖREK KURABİYE LAVAŞ
+02 | Ev yemekleri | MANTI DOLMA SARMA PİLAV TÜRLÜ KAVURMA MUSAKKA YAHNİ GÜVEÇ KEŞKEK MENEMEN ŞAKŞUKA
+03 | Mutfağın sırları | BAL=Arının yaptığı tatlı; TUZ=Yemeğe tat veren beyaz taneler; MAYA=Hamuru kabartır; SİRKE=Ekşi tadıyla salataya katılır; TARÇIN=Ağaç kabuğundan gelen baharat; SALÇA=Domatesten yapılan koyu ezme; NİŞASTA=Muhallebiye kıvam verir; KEKİK=Kurutulup baharat olan yaprak; NANE=Ayranı ferahlatan yeşil yaprak
+04 | Sofra hazır | KÖFTE KEBAP TARHANA CACIK ÇORBA SALATA TURŞU PİYAZ EZME HAYDARİ İSKENDER MERCİMEK ŞİŞ
+05 | Tatlı sofrası | KÜNEFE LOKUM REVANİ KADAYIF HELVA KAZANDİBİ GÜLLAÇ MUHALLEBİ TULUMBA ŞEKERPARE KEŞKÜL DONDURMA PESTİL KEMALPAŞA
+06 | Son lokmanın bilmecesi | ŞERBET=Şekerli, soğuk tatlı içecek; AŞURE=Kırk malzemeli tatlı; ZEYTİN=Sofranın siyah ya da yeşil tanesi; ÇAY=İnce belli bardakta içilir; KAHVE=Telvesiyle fala bakılır; LİMONATA=Ekşi meyveli serin içecek; HOŞAF=Kuru meyveden yapılan içecek; KOMPOSTO=Haşlanıp soğutulan meyve suyu; BOZA=Tarçınla içilen kış içeceği
+@dunya 06 muzik | Melodi Koyu
+01 | Müziğin alfabesi | NOTA AKOR KORO TEMPO DİYEZ BEMOL OKTAV GAM MAKAM USUL SOLFEJ ANAHTAR
+02 | Çalgılar konuşuyor | GİTAR KEMAN FLÜT DAVUL KANUN NEY ZURNA KAVAL DARBUKA TEF ARP MANDOLİN AKORDEON
+03 | Sahnede ne var? | PİYANO=Siyah beyaz tuşlu çalgı; MİKROFON=Şarkıcının elindeki ses aleti; HOPARLÖR=Sesi büyüterek yayar; SPOT=Sanatçıyı aydınlatan ışık; NOTALIK=Müzisyenin önündeki kâğıt ayaklığı; MİKSER=Sesleri karıştıran masa; AMFİ=Elektro gitarın ses kutusu; KULAKLIK=Müzisyen sesini bundan duyar; PENA=Tele vurulan ince parça; BAGET=Davulcunun çubuğu
+04 | Orkestranın sesi | KLARNET ÇELLO TROMPET TROMBON OBUA FAGOT KONTRBAS TUBA VİYOLA KORNO TİMPANİ ŞEF SAKSAFON BATERİ
+05 | Şarkının içinden | NAKARAT SOLİST ALBÜM TÜRKÜ GİRİŞ KITA SÖZ VOKAL DÜET ARANJMAN BESTECİ NİNNİ MARŞ KLİP
+06 | Konserin son alkışı | ALKIŞ=Ellerle verilen beğeni; BİS=Seyircinin bir daha isteği; CAZ=Doğaçlamayı seven müzik türü; SAHNE=Sanatçının çıktığı yükselti; TURNE=Şehir şehir dolaşan müzik gezisi; FİNAL=Gösterinin son bölümü; PLAK=Pikapta dönen siyah kayıt; DİNLETİ=Küçük çaplı müzik gösterisi; ORKESTRA=Birlikte çalan büyük topluluk; KONSER=Canlı müzik gecesi; AFİŞ=Duvara asılan gösteri ilanı; DİNLEYİCİ=Müziği salonda izleyen kişi
+@dunya 07 dunya | Rüzgâr Limanı
+01 | Avrupa durakları [özel] | ROMA PARİS PRAG MADRİD OSLO VARŞOVA SOFYA BÜKREŞ BRÜKSEL DUBLİN MİLANO
+02 | Dünya sokakları [özel] | TOKYO BERLİN LONDRA VİYANA PEKİN MOSKOVA DUBAİ BAKÜ TAHRAN HAVANA TORONTO DELHİ BANGKOK
+03 | Yol çantamda ne var? | BİLET=Yolculuk için alınan belge; VALİZ=Tekerlekli yol çantası; PASAPORT=Yurt dışı yolculuk belgesi; REHBER=Gezilecek yerleri anlatan kitap; ŞAPKA=Başı güneşten korur; ŞEMSİYE=Yağmurda açılır; TERLİK=Otel odasında giyilir; HAVLU=Banyodan sonra kurulanılır; YASTIK=Yolda boyna takılan şişme destek; KİMLİK=Üstünde adın ve fotoğrafın var
+04 | Şehirler ve çöller [özel] | ATİNA KAHİRE LİZBON SİDNEY SAHRA GOBİ KALAHARİ ATAKAMA NAMİB TUNUS RABAT NAİROBİ MARAKEŞ RİYAD
+05 | Yeryüzünün izleri [özel] | AMAZON EKVATOR OKYANUS NİL HİMALAYA EVEREST KANYON BUZUL VOLKAN ŞELALE DELTA KUTUP TUNDRA SAVAN ALPLER
+06 | Kıyıdaki sırlar | ADA=Dört yanı suyla çevrili kara; LİMAN=Gemilerin sığındığı korunaklı yer; KÖPRÜ=İki yakayı birbirine bağlar; FENER=Gemilere yol gösteren ışıklı kule; KOY=Denizin karaya girdiği küçük cep; MENDİREK=Gemi barınağını koruyan taş set; İSKELE=Teknelerin yanaştığı uzun yol; BURUN=Denize uzanan sivri kara; KÖRFEZ=Karaya sokulmuş geniş deniz; ŞAMANDIRA=Suyun üstünde yüzen işaret
+@dunya 08 bilim | Merak Vadisi
+01 | En küçük yapı taşları | ATOM HÜCRE DOKU GEN KROMOZOM ÇEKİRDEK PROTEİN ENZİM BAKTERİ VİRÜS ORGANEL MİKROP AMİP
+02 | Fiziğin dünyası | ENERJİ KUVVET DALGA HIZ İVME KÜTLE AĞIRLIK SÜRTÜNME BASINÇ GÜÇ ISI YERÇEKİMİ FREKANS
+03 | Bilim insanının işi | DENEY=Bir fikri sınamak için yapılır; GÖZLEM=Dikkatle izleyip not almak; HİPOTEZ=Sınanacak bilimsel tahmin; VERİ=Ölçülerek toplanan bilgi; MİKROSKOP=Çok küçüğü büyüterek gösterir; TABLO=Satır ve sütunlu düzen; GRAFİK=Sayıların çizgiyle gösterimi; NUMUNE=İncelemek için alınan parça; DEĞİŞKEN=Sınamada değiştirilen etken; RAPOR=Çalışmanın yazılı anlatımı
+04 | Maddenin içinde | PROTON NÖTRON ELEKTRON MOLEKÜL ELEMENT BİLEŞİK KARIŞIM ÇÖZELTİ ASİT BAZ İYON ALAŞIM PLAZMA METAL
+05 | Bilimin peşinde | BİYOLOJİ JEOLOJİ EKOLOJİ GENETİK ASTRONOMİ BOTANİK ZOOLOJİ ANATOMİ OPTİK EVRİM BULUŞ KEŞİF MAKALE ARAŞTIRMA
+06 | Laboratuvar bilmeceleri | TÜP=İnce uzun cam deney kabı; PİPET=Sıvıyı damla damla çeker; HUNİ=Sıvıyı dar ağza aktarır; ÖLÇÜM=Bir büyüklüğü sayıyla bulmak; TEORİ=Kanıtla desteklenen açıklama; ÖNLÜK=Laboratuvarın beyaz giysisi; ELDİVEN=Elleri kimyasaldan korur; SPATULA=Tozu almaya yarayan kaşık; GÖZLÜK=Gözü sıçramalardan korur; BEHER=Ağzı geniş, çizgili cam kap
+@dunya 09 teknoloji | Işık Atölyesi
+01 | İlk bağlantı | KOD DEVRE MODEM KABLO SİNYAL ANTEN ŞİFRE ADRES PROTOKOL BAĞLANTI MESAJ PAKET FİBER
+02 | Bilgisayarın içinde | YAZILIM DONANIM BELLEK İŞLEMCİ DİSK ANAKART KASA SOĞUTUCU BAYT DOSYA KLASÖR BİT SÜRÜCÜ
+03 | Masanın üzerindekiler | EKRAN=Görüntünün belirdiği yüzey; KLAVYE=Harf tuşlarının dizildiği tahta; FARE=Masada kaydırılan imleç aracı; YAZICI=Belgeyi kâğıda döker; TARAYICI=Kâğıdı dijital kopyaya çevirir; LAMBA=Masayı aydınlatır; TABLET=Dokunmatik, ince taşınır cihaz; DİZÜSTÜ=Kapağı katlanan bilgisayar; TELEFON=Uzaktakiyle konuşturur; AJANDA=Günlük planların defteri
+04 | Bağlı bir dünya | SUNUCU İNTERNET SENSÖR UYGULAMA ŞEBEKE UYDU HESAP PROFİL İNDİRME YÜKLEME ÇEVRİMİÇİ AKIŞ TAKİPÇİ
+05 | Dijital izler | BULUT YONGA KAMERA GÖRÜNTÜ İMLEÇ SİMGE YEDEK ÇEREZ GEÇMİŞ KAYIT ARŞİV ETİKET EMOJİ PİL
+06 | Atölyenin sırları | LEHİM=Parçaları eriterek birleştirir; TORNAVİDA=Vidayı sıkar ya da gevşetir; PENSE=Teli büker ve keser; MATKAP=Delik açan döner alet; BATARYA=Cihazın şarj olan enerjisi; DİRENÇ=Akımı sınırlayan devre parçası; MOTOR=Elektriği harekete çevirir; DİŞLİ=Birbirini döndüren çark; SİGORTA=Aşırı akımda devreyi keser
+@dunya 10 doksanlar | Sokak Oyunları
+01 | Mahallede oyun | SOKAK PARK EBE BEŞTAŞ İSTOP UÇURTMA TOPAÇ BİRDİRBİR MENDİL DOKUZTAŞ BİSİKLET PATEN KAYKAY
+02 | Bilye çemberi | BİLYE MİSKET ÇEMBER ÇUKUR HEDEF NİŞAN YARIŞMA KAZANAN TOPRAK PARMAK TORBA RAKİP RÖVANŞ ATIŞ
+03 | İp ve seksek | SEKSEK TEBEŞİR ÇİZGİ TAŞ KARE ATLAMA HALAT SAYI DENGE ÇİFT KALDIRIM ZIPLAMA TEKERLEME
+04 | Birlikte oynamak | TAKIM KALE PAS YAKANTOP BAYRAK KURA OYUNCU ARKADAŞ BERABERE GALİP YENİLGİ ZAFER HAKEM
+05 | Parkta | SALINCAK OYUNCAK HAVUZ ÇİMEN KOVA PİKNİK ÇARDAK BALON KAYDIRAK GÜVERCİN FIRDÖNDÜ ÇEŞME FİDAN BANK
+06 | Saklambaç | SAKLAMBAÇ SOBE SAKLANMA KÖŞE GÖLGE DUVAR AĞAÇ DOLAP ÇALI MERDİVEN BODRUM ÇATI KAPI FISILTI TÜNEL
+@dunya 11 futbol | Yeşil Tribün
+01 | İlk düdük | TOP GOL SAHA DİREK KRAMPON STADYUM KADRO MAÇ SEYİRCİ İDMAN TARAFTAR ISINMA FUTBOL
+02 | Takım ruhu | FORMA KAPTAN TRİBÜN ŞAMPİYON KUPA MADALYA ATKI TEZAHÜRAT ANTRENÖR KULÜP ARMA LİG SEZON
+03 | Sahanın kuralları | KALECİ=Topu elle tutabilen tek oyuncu; KORNER=Köşe bayrağından yapılan atış; PENALTI=Ceza noktasından tek atış; OFSAYT=Son savunmacının gerisinde kalmak; FAUL=Kurala aykırı müdahale; KART=Hakemin cebinden çıkan uyarı; TAÇ=Yan çizgiden elle atış; BARAJ=Serbest vuruşta dizilen duvar; DEPLASMAN=Rakibin sahasında oynanan maç; UZATMA=Süreye eklenen dakikalar
+04 | Maçın içinden | FORVET DEFANS KANAT DERBİ ASİST LİBERO STOPER BEK ÇALIM KONTRA PRES GOLCÜ MARKAJ
+05 | Golün yolları | VOLE DÜDÜK RÖVEŞATA FRİKİK KAFA ŞUT PLASE AŞIRTMA TOPUK FİLE ORTA DOKSAN SKOR ÇAPRAZ
+06 | Son düdüğün bilmecesi | GALİBİYET=Maçı kazanmak; TEBRİK=Maç sonu rakibe uzatılan söz; ÖZET=Maçın kısa görüntüleri; RÖPORTAJ=Maç sonu yapılan konuşma; PUAN=Ligde sıralamayı belirler; AVERAJ=Atılan ve yenen gol farkı; FİKSTÜR=Maçların takvimi; TRANSFER=Oyuncunun kulüp değiştirmesi; SEVİNÇ=Golden sonra taşan duygu
+@dunya 12 basketbol | Altın Parke
+01 | Potaya doğru | POTA PANO SMAÇ TURNİKE ÜÇLÜK İKİLİK RİBAUNT BLOK PİVOT BASKET SEKTİRME PARKE
+02 | Salon sporları | VOLEYBOL HENTBOL BADMİNTON JİMNASTİK GÜREŞ JUDO KARATE BOKS ESKRİM HALTER TEKVANDO BİLARDO BOVLİNG
+03 | Oyunun dili | MOLA=Oyunu durduran kısa dinlenme; PERİYOT=Maçın on dakikalık bölümü; ZON=Bölgeyi koruyan savunma; YEDEK=Kenarda sırasını bekler; SALON=Maçın oynandığı kapalı yer; SKORBORD=Sayıların yandığı büyük tabela; TAPA=Rakip şutunu havada kesmek; KOÇ=Takımı kenardan yönetir; ŞUTÖR=Uzaktan isabetle atan oyuncu; TAKTİK=Maç öncesi çizilen oyun planı
+04 | Olimpiyat yolu | ATLETİZM YÜZME KÜREK OKÇULUK MARATON GÜLLE CİRİT MEŞALE PODYUM REKOR KOŞU ENGEL TRİATLON KANO YELKEN
+05 | Spor salonunda | DAMBIL MİNDER PARALEL BARFİKS ŞINAV MEKİK ESNEME KONDİSYON TRAMPLEN BANDAJ DUŞ ANTRENMAN KAS NABIZ TER
+06 | Parkenin sırları | PLEYOF=Lig bitince oynanan son turlar; TURNUVA=Çok takımlı yarışma; ELEME=Kaybedenin veda ettiği tur; SÖZLEŞME=Oyuncuyla kulübün imzası; ŞAMPİYONA=Bir sporun en büyük yarışı; ÖDÜL=Başarıya verilen armağan; UNVAN=Kazanınca adına eklenen sıfat; EFSANE=Adı unutulmayan büyük oyuncu; KARİYER=Bir sporcunun meslek yolu; LİSANS=Sporcunun resmi oynama belgesi

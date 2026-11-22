@@ -17,6 +17,13 @@ export async function checkAuthoredChapter(page,number,width,out){
  assert.equal(state.letters,level.grid.join(''),'chapter '+number+' grid');
  assert.equal(state.title,level.band);
  const checkRack=async()=>{
+  if(level.clues){
+   const observed=await page.evaluate(`(()=>{const rack=document.querySelector('.clue-slots'),clue=document.querySelector('.clue-definition');if(!rack||!clue)return null;
+    const box=rack.getBoundingClientRect();const words=[...rack.querySelectorAll('.target-letters')];
+    return {count:words.length,text:clue.textContent,inside:words.every(w=>{const r=w.getBoundingClientRect();return r.left>=box.left-1&&r.right<=box.right+1&&r.top>=box.top-1&&r.bottom<=box.bottom+1;})};})()`);
+   assert(observed?.inside&&observed.count===level.placements.length&&Object.values(level.clues).includes(observed.text),'clue rack '+number);
+   return;
+  }
   const {values,leftEdge,rightEdge}=await page.evaluate(`(()=>{const rack=document.querySelector(".target-rack").getBoundingClientRect();return {leftEdge:rack.left,rightEdge:rack.right,values:[...document.querySelectorAll('.word-rack-row')].map(row=>[...row.querySelectorAll('.target-letters')].map(word=>{
    const glyphs=[...word.querySelectorAll('[data-target-letter]')].map(el=>el.getBoundingClientRect());
    return [Math.min(...glyphs.map(g=>g.left)),Math.max(...glyphs.map(g=>g.right))];
@@ -35,7 +42,7 @@ export async function checkAuthoredChapter(page,number,width,out){
  if(width!==320&&width!==393)return;
  for(let index=0;index<level.placements.length;index++){
   if(index===level.placements.length-1&&out){
-   await page.evaluate("Promise.allSettled(document.querySelector('.target-rack').getAnimations({subtree:true}).filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).map(a=>a.finished))");await checkRack();
+   await page.evaluate("Promise.allSettled(document.querySelector('.target-rack,.clue-slots').getAnimations({subtree:true}).filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).map(a=>a.finished))");await checkRack();
    await page.screenshot(path.join(out,`pilot-${width}-${number}-last.png`));
   }
   const [word,r,c,y,x]=level.placements[index];

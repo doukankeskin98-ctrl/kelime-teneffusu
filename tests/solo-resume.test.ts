@@ -1,3 +1,4 @@
+import * as authoredJourney from '../lib/game/authored-journey.ts';
 import {pilotMetric} from '../lib/game/telemetry.ts';
 import * as journeyRevisions from '../lib/game/journey-revisions.ts';
 import * as progressStorage from '../lib/game/progress-storage.ts';
@@ -86,7 +87,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true,jour
  vm.runInNewContext(ts.transpileModule(readFileSync('components/game/useResultPresentation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:resultHook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback,window:windowTarget,document:documentTarget,performance:{now:()=>now},setTimeout:timer(false),clearTimeout:(id:number)=>timers.delete(id)});
  modules['./useResultPresentation']=resultHook;
  const exports:Record<string,unknown>={};
- vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
+ vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/authored-journey'?authoredJourney:name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
   window:windowTarget,document:documentTarget,performance:{now:()=>now},Event,
   setInterval:timer(true),setTimeout:timer(false),clearInterval:(id:number)=>timers.delete(id),clearTimeout:(id:number)=>timers.delete(id)
  });

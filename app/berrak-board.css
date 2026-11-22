@@ -346,7 +346,7 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
   grid-template-rows:44px calc(var(--frame-topic) + var(--frame-list) + 8px) minmax(0,1fr) var(--tool-size);
  }
  .game-app .scenic-play[data-journey-frame] .viewport-targets.has-word-rack>.target-rack,
- .game-app .scenic-play[data-journey-frame] .viewport-targets.has-clue-slots>.clue-slots {margin-top:4px!important}
+ .game-app .scenic-play[data-journey-frame] .viewport-targets.has-clue-rack>.clue-targets {margin-top:4px!important}
  .game-app .scenic-play[data-journey-frame] .target-rack:not([data-authored-rack]) .word-tag{
   min-width:calc((100% - 56px)/5 + 1px)!important;
  }
@@ -355,4 +355,41 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
 @media (orientation:portrait) and (max-width:759px) {
  .game-app .scenic-play[data-authored-board] .target-rack[data-authored-rack] .word-rack-row {column-gap:14px}
  .game-app .scenic-play[data-authored-board] .target-rack[data-authored-rack] .word-tag [data-target-letter] {padding-inline:0;letter-spacing:0}
+}
+@media (orientation:portrait) and (max-width:759px){
+ .scenic-play[data-authored-board] .active-clue{touch-action:pan-y}
+ .scenic-play[data-journey-frame] .active-clue>strong{position:relative;display:block;-webkit-line-clamp:unset;overflow:visible}
+}
+/* Extend the target card into the page gutter on the narrowest phones. */
+@media (orientation:portrait) and (max-width:340px){
+ .game-app .scenic-play[data-authored-board] .targets-panel{margin-inline:-3px!important;width:auto}
+}
+
+@media (orientation:portrait) and (max-width:759px) {
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .clue-targets{grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
+ .scenic-play[data-journey-frame] .active-clue>svg{flex:0 0 14px;width:14px}
+}
+@media (orientation:portrait) and (max-width:380px) {
+ /* Legacy definitions are longer. Share the topic and list rows with the
+    definition, leaving the board and hint button on their original lines. */
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .has-clue-rack{
+   display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);
+   grid-template-rows:auto minmax(0,1fr);align-content:stretch;
+ }
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .has-clue-rack .target-topic{
+   grid-column:1;grid-row:1;height:auto;min-height:var(--frame-topic);border-radius:10px 0 0 0;
+ }
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .has-clue-rack h1{
+   white-space:normal;font-size:14px;line-height:1.12;
+ }
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .clue-targets{display:contents}
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .clue-slots{
+   grid-column:1;grid-row:2;align-self:stretch;background:white;
+ }
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .active-clue{
+   grid-column:2;grid-row:1 / 3;margin:9px 0 4px;height:calc(100% - 13px);background:white;border:0;border-left:1px solid #dcd9ed;
+ }
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .active-clue>svg{display:none}
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .active-clue>strong{font-size:14px;line-height:1.07}
+ .game-app .scenic-play[data-journey-frame]:not([data-authored-board]) .clue-slots{column-gap:3px}
 }

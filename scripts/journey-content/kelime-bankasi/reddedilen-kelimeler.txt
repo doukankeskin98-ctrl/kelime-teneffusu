@@ -1,0 +1,5 @@
+# Editör kararıyla reddedilen kelimeler. Sözlükte bulunsalar da belirtilen kategoriye giremez.
+# Biçim: KELİME | kategori adı (ya da * = her kategori) | gerekçe
+# Codex'in 19 Kasım 2026 bulgusu: ÜLKER geri eklenirse sözlük denetimi geçiriyordu.
+ÜLKER | Takımyıldızlar | Boğa takımyıldızındaki açık yıldız kümesi (M45); takımyıldız değil
+HALKA | Güneş sistemi | Gezegen halkası gök cismi değil
