@@ -33,12 +33,30 @@ export async function launch({port=9333,profile,reuse=false}={}){
   async shot(f){const {data}=await send('Page.captureScreenshot',{format:'png'});writeFileSync(f,Buffer.from(data,'base64'));},
   // Kapanış türleri: 'duzgun' = Browser.close (Chrome kaydı diske yazar), 'SIGTERM' / 'SIGKILL' = süreç sonlandırma
   async close(kind='SIGKILL'){
-   if(stopped()){clean();return;}
-   try{if(kind==='duzgun')await send('Browser.close');else p.kill(kind);
-   try{sock.close();}catch{}
-   for(let i=0;i<80&&p.exitCode===null&&p.signalCode===null;i++)await sleep(50);
-   if(!stopped())throw new Error('Requested shutdown did not complete: '+kind);
-   }finally{await stop();clean();}
+   if(stopped()){
+    clean();
+    if(kind==='duzgun')throw new Error('Chrome exited before the normal close request');
+    return;
+   }
+   try{
+    if(kind==='duzgun'){
+     if(sock.readyState!==WebSocket.OPEN)throw new Error('Chrome disconnected before the normal close request');
+     // Chrome can close the debugging socket before acknowledging Browser.close.
+     // The child process exit below is the completion signal for this command.
+     sock.send(JSON.stringify({id:++id,method:'Browser.close'}));
+    }else{
+     p.kill(kind);
+    }
+    for(let i=0;i<80&&!stopped();i++)await sleep(50);
+    if(!stopped())throw new Error('Requested shutdown did not complete: '+kind);
+    if(kind==='duzgun'&&(p.exitCode!==0||p.signalCode!==null)){
+     throw new Error('Unexpected Chrome exit: '+(p.signalCode??p.exitCode));
+    }
+   }finally{
+    sock.close();
+    await stop();
+    clean();
+   }
   }};
  return page;
  }catch(error){await stop();clean();throw error;}
