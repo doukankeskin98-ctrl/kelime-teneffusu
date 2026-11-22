@@ -1,3 +1,4 @@
+import {seedProgress} from './seed-progress.mjs';
 // Record the release menus against a local mobile build and deterministic API fixtures.
 // Run from the repository root. BUILD_DIR and EVIDENCE_DIR select inputs and output.
 import {measureDialogText} from './dialog-contrast.mjs';
@@ -42,7 +43,11 @@ async function waitFor(expression){
  for(let i=0;i<75;i++){if(await page.evaluate(expression))return;await sleep(80);}
  throw new Error(expression+' '+await page.evaluate('document.body.innerText.slice(0,180)'));
 }
-async function home(progress=fixture.progress){await page.goto(url+'/__test_seed',100);await waitFor("!!document.getElementById('seed')");await page.evaluate(`localStorage.clear();sessionStorage.clear();localStorage.setItem('kelime-teneffusu-v2',${JSON.stringify(JSON.stringify(progress))})`);await page.goto(url,350);await waitFor("!!document.querySelector('.berrak-landing')&&!document.getElementById('native-boot')");}
+async function home(progress=fixture.progress) {
+ await seedProgress(page,url,progress);
+ await page.goto(url,350);
+ await waitFor("!!document.querySelector('.berrak-landing')&&!document.getElementById('native-boot')");
+}
 const rawOutput=path.join(out,process.env.METRICS||'metrics.json');
 const persist=()=>writeFileSync(rawOutput,JSON.stringify({surface:'Headless Chrome with mobile viewport and emulated safe area; synthetic save and local API fixture',records,errors:page.errors},null,2));
 const dismiss=()=>click('dialog[open] .modal-head button');

@@ -1,3 +1,4 @@
+import {seedProgress} from './seed-progress.mjs';
 // Render the four reference states using the production client and an isolated synthetic save.
 import {measureDialogText} from './dialog-contrast.mjs';
 import {verifyResultLayout} from './result-layout.mjs';
@@ -41,7 +42,11 @@ async function waitFor(expression){
  for(let i=0;i<75;i++){if(await page.evaluate(expression))return;await sleep(80);}
  throw new Error(expression+' '+await page.evaluate('document.body.innerText.slice(0,180)'));
 }
-async function home(progress=fixture.progress){await page.goto(url+'/__test_seed',100);await waitFor("!!document.getElementById('seed')");await page.evaluate(`localStorage.clear();sessionStorage.clear();localStorage.setItem('kelime-teneffusu-v2',${JSON.stringify(JSON.stringify(progress))})`);await page.goto(url,350);await waitFor("!!document.querySelector('.berrak-landing')&&!document.getElementById('native-boot')");}
+async function home(progress=fixture.progress) {
+ await seedProgress(page,url,progress);
+ await page.goto(url,350);
+ await waitFor("!!document.querySelector('.berrak-landing')&&!document.getElementById('native-boot')");
+}
 async function shot(width,name){
  if(name==='support')await waitFor("!!document.querySelector('.support-kinds')");
  assert.equal(await page.evaluate("!!document.querySelector('#native-boot')"),false,name+' game boot overlay');
