@@ -8,3 +8,9 @@ declare const __KT_LOCAL_JOURNEY_PILOT__:boolean;
 export function localJourneyPreview(){
  return typeof __KT_LOCAL_JOURNEY_PILOT__!=='undefined' && __KT_LOCAL_JOURNEY_PILOT__ && typeof location!=='undefined' && ['localhost','127.0.0.1','[::1]'].includes(location.hostname);
 }
+
+// The separate Capacitor build retains its own catalogue until a native release.
+declare const __KT_RELEASED_WEB_JOURNEY__:boolean;
+export function authoredJourneyEnabled(){
+ return (typeof __KT_RELEASED_WEB_JOURNEY__!=='undefined' && __KT_RELEASED_WEB_JOURNEY__) || localJourneyPreview();
+}

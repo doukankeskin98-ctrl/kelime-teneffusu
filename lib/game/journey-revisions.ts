@@ -1,6 +1,6 @@
 import {journeyById,type Journey} from './content.ts';
 import {AUTHORED_JOURNEY,authoredRevision,isAuthoredRevision} from './authored-journey.ts';
-import {CONTENT_REVISION_TWO,localJourneyPreview} from './progress-rollout.ts';
+import {CONTENT_REVISION_TWO,authoredJourneyEnabled} from './progress-rollout.ts';
 import type {Progress,SavedLevel} from './progress.ts';
 
 /** Pilot catalogue, never substituted for released revision 1. These are not live
@@ -28,7 +28,7 @@ export function revisionSave(progress:Pick<Progress,'saves'|'revisionSaves'>,key
 export function playableJourney(id:string,progress:Pick<Progress,'saves'>,enableRevisionTwo?:boolean){
  const saved=progress.saves['route:'+id];
  if(saved)return journeyRevision(id,savedRevision(saved));
- const eligible=enableRevisionTwo??(AUTHORED_JOURNEY[id]?localJourneyPreview():CONTENT_REVISION_TWO);
+ const eligible=enableRevisionTwo??(AUTHORED_JOURNEY[id]?authoredJourneyEnabled():CONTENT_REVISION_TWO);
  return journeyRevision(id,eligible?(AUTHORED_JOURNEY[id]?authoredRevision(id):JOURNEY_REVISION_TWO[id]?2:1):1);
 }
 export const journeyPresentationKey=(journey:Journey)=>'route:'+journey.id+(journey.revision?'@'+journey.revision:'');
