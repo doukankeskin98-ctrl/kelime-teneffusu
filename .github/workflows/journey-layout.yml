@@ -34,8 +34,13 @@ jobs:
           SIZES: ${{ matrix.sizes }}
           EVIDENCE_DIR: ${{ runner.temp }}/journey/released
       - run: pnpm journey:pilot:build
+      - name: Check both complete catalogues and every riddle definition
+        run: node scripts/visual/catalogue-matrix.mjs
+        env:
+          KT_LAYOUT_SIZES: ${{ matrix.sizes }}
+          EVIDENCE_DIR: ${{ runner.temp }}/journey
       - name: Check the authored pilot on a separate localhost origin
-        run: node scripts/visual/layout-audit.mjs "$SIZES" 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 --first-visit --fixed-frame --pilot
+        run: node scripts/visual/layout-audit.mjs "$SIZES" 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,29,191,276,297,300 --first-visit --fixed-frame --pilot
         env:
           SIZES: ${{ matrix.sizes }}
           KT_LAYOUT_BUILD: dist-pilot

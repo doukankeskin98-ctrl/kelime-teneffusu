@@ -8,7 +8,8 @@ import {capturePlayLayout, layoutProblems} from './layout-measure.mjs';
 
 const subset = process.argv[2]?.split(',').map(Number);
 const numbers = subset ?? Array.from({length:312}, (_, i) => i+1);
-const out = path.resolve('../world-review.nosync/release-0580-local', subset?'matrix-sample':'matrix');
+const sizes=(process.env.KT_LAYOUT_SIZES??'320x568,375x667,393x852,430x932').split(',').map(size=>size.split('x').map(Number));
+const out = path.resolve(process.env.EVIDENCE_DIR??'../world-review.nosync/release-0580-local', subset?'matrix-sample':'matrix');
 const dir = mkdtempSync(path.join(tmpdir(), 'kt0580-matrix-'));
 mkdirSync(out, {recursive:true});
 const root = process.cwd();
@@ -73,7 +74,7 @@ try{
   browser=await launch({port:subset?19656:19652});
   await browser.goto('http://127.0.0.1:'+server.httpServer.address().port);
   await browser.eval('window.measure='+capturePlayLayout.toString()+';window.inspectChapter='+inspect.toString()+';true');
-  for(const [w,h] of [[320,568],[375,667],[393,852],[430,932]]){
+  for(const [w,h] of sizes){
     await browser.viewport(w,h,1);
     await browser.send('Emulation.setSafeAreaInsetsOverride',{insets:{top:w<=375?20:59,bottom:w<=375?0:34,left:0,right:0}});
     for(const published of [true,false]){
@@ -83,6 +84,7 @@ try{
         const issues=layoutProblems(v);
         if(!v.error){
           if(v.authored===published)issues.push('Wrong catalogue');
+          if(published&&n===10&&w===320&&(v.board.width<272||v.letterPx<21))issues.push('long board too small');
           if(v.gap!==null&&v.gap<13.9)issues.push('word gap '+v.gap.toFixed(1));
           if(v.edge!==null&&v.edge<9.9)issues.push('card margin '+v.edge.toFixed(1));
           for(const d of v.definitions){
@@ -115,4 +117,4 @@ try{
   writeFileSync(path.join(out,'measurements.json'),JSON.stringify(all));
   writeFileSync(path.join(out,'issues.json'),JSON.stringify(failures));
 }
-if(failures.length||all.length!==numbers.length*8)process.exitCode=1;
+if(failures.length||all.length!==numbers.length*sizes.length*2)process.exitCode=1;
