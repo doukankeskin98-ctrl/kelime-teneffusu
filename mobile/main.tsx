@@ -1,4 +1,5 @@
 import {setEngagementAdapter,type EngagementAdapter} from '@/lib/platform/engagement';
+import {setNativeProgressStore} from '@/lib/platform/progress-backup';
 import {attachIncomingLinks} from '@/lib/platform/incoming-links';
 import {createRoot} from 'react-dom/client';
 import {Capacitor,CapacitorHttp,registerPlugin} from '@capacitor/core';
@@ -15,6 +16,10 @@ import {installNativeSharing} from './sharing';
 import '@/app/game-styles.css';
 import './native.css';
 if(Capacitor.isNativePlatform()){
+ if(Capacitor.isPluginAvailable('GameProgress')){
+  const store=registerPlugin<{read(options:{keys:string[]}):Promise<{values:Record<string,string|null>}>;change(options:{expected:Record<string,string|null>;values:Record<string,string|null>}):Promise<{changed:boolean}>}>('GameProgress');
+  setNativeProgressStore({read:keys=>store.read({keys}).then(r=>r.values),change:(expected,values)=>store.change({expected,values}).then(r=>r.changed)});
+ }
  setNativeTransport(nativeApiTransport(options=>CapacitorHttp.request(options)));
  installNativeSharing();
  if(Capacitor.getPlatform()==='ios'&&Capacitor.isPluginAvailable('GameEngagement'))setEngagementAdapter(registerPlugin<EngagementAdapter>('GameEngagement'));
@@ -24,10 +29,11 @@ if(Capacitor.isNativePlatform()){
  setHapticsAdapter(nativeHaptics(driver,()=>gameIsActive()&&!document.hidden));
  void App.addListener('appStateChange',({isActive})=>{
   setGameActive(isActive);
-  if(!isActive){stopHapticSelection();window.dispatchEvent(new Event('blur'));}
+  if(!isActive){stopHapticSelection();window.dispatchEvent(new Event('kt-progress-flush'));window.dispatchEvent(new Event('kt-sync-now'));window.dispatchEvent(new Event('blur'));}
   document.dispatchEvent(new Event('visibilitychange'));
   if(isActive){window.dispatchEvent(new Event('kt-sync-now'));window.dispatchEvent(new Event('kt-app-resume'));}
  });
+ void App.addListener('pause',()=>window.dispatchEvent(new Event('kt-progress-flush')));
  window.addEventListener('kt-game-ready',()=>{void attachIncomingLinks({listen:receive=>App.addListener('appUrlOpen',event=>receive(event.url)),launch:()=>App.getLaunchUrl().then(value=>value??{})},route=>{history.replaceState(null,'',route);window.dispatchEvent(new PopStateEvent('popstate'));}).catch(()=>{/* The game remains playable without invitation metadata. */});},{once:true});
  document.documentElement.dataset['nativeApp']='true';
 }

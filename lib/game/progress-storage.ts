@@ -1,9 +1,12 @@
 import {emptyProgress,mergeProgress,readProgress,normalizeProgress,type Progress,PROGRESS_KEY} from './progress.ts';
-import {encodeProgress,sameProgress,ProgressFormatError} from './progress-codec.ts';
+import {encodeProgress,sameProgress,progressBytes,ProgressFormatError} from './progress-codec.ts';
+import {PROGRESS_MAX_BYTES} from './progress-limits.ts';
 import {COMPACT_PROGRESS_WRITES} from './progress-rollout.ts';
 const validated=new WeakMap<object,Map<string,string>>();
 function validateStored(storage:object,key:string,raw:string|null){if(!raw)return;let known=validated.get(storage);if(!known){known=new Map();validated.set(storage,known);}if(known.get(key)!==raw){readProgress(raw);known.set(key,raw);}}
 export interface ProgressStorage {getItem(key:string):string|null;setItem(key:string,value:string):void;removeItem?(key:string):void}
+let backupWriter:((owner:string,progress:Progress)=>void)|undefined;
+export function setProgressBackupWriter(writer:(owner:string,progress:Progress)=>void){backupWriter=writer;}
 export function progressStorageKeys(owner=''){
  const suffix=owner?':'+owner:'',compact='kelime-teneffusu-v3'+suffix;
  return {legacy:PROGRESS_KEY+suffix,compact,pending:compact+':pending',shadow:compact+':shadow',backup:compact+':pre-v3'};
@@ -22,6 +25,12 @@ export function shadowProgress(storage:ProgressStorage,owner:string,progress:Pro
  storage.setItem(key,raw);verified(storage.getItem(key)??'',progress);return raw;
 }
 export function writeStoredProgress(storage:ProgressStorage,owner:string,progress:Progress,activate=COMPACT_PROGRESS_WRITES){
+ try{writeLocalProgress(storage,owner,progress,activate);}finally{backupWriter?.(owner,progress);}
+}
+function writeLocalProgress(storage:ProgressStorage,owner:string,progress:Progress,activate:boolean){
+ // A full authored pilot exceeds the verbose envelope's existing byte cap.
+ // Use the already supported lossless format without widening the storage limit.
+ if(Object.values(progress.saves).some(s=>s.revision)&&progressBytes(JSON.stringify(progress))>PROGRESS_MAX_BYTES)activate=true;
  const keys=progressStorageKeys(owner),compact=storage.getItem(keys.compact),legacy=storage.getItem(keys.legacy);
  // Never overwrite an unreadable original, even after a failed app boot.
  validateStored(storage,keys.legacy,legacy);validateStored(storage,keys.compact,compact);

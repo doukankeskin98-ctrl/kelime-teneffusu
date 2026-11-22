@@ -23,5 +23,11 @@ export async function launch({port=9333,profile,reuse=false}={}){
   async clickText(pat){return page.eval(`(()=>{const re=new RegExp(${JSON.stringify(pat)},'i');const els=[...document.querySelectorAll('button,a,[role=button],summary')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&!e.disabled&&(re.test((e.innerText||'').trim())||re.test(e.getAttribute('aria-label')||''))});const e=els[0];if(!e)return false;e.scrollIntoView({block:'center'});e.click();return true})()`);},
   async shot(f){const {data}=await send('Page.captureScreenshot',{format:'png'});writeFileSync(f,Buffer.from(data,'base64'));},
   // Kapanış türleri: 'duzgun' = Browser.close (Chrome kaydı diske yazar), 'SIGTERM' / 'SIGKILL' = süreç sonlandırma
-  async close(kind='SIGKILL'){if(kind==='duzgun'){try{await send('Browser.close');}catch{}for(let i=0;i<40&&p.exitCode===null;i++)await sleep(100);}try{sock.close();}catch{}if(p.exitCode===null)p.kill(kind==='duzgun'?'SIGKILL':kind);for(let i=0;i<40&&p.exitCode===null&&p.signalCode===null;i++)await sleep(100);}};
+  async close(kind='SIGKILL'){
+   if(p.exitCode!==null||p.signalCode!==null)return;
+   if(kind==='duzgun')await send('Browser.close');else p.kill(kind);
+   try{sock.close();}catch{}
+   for(let i=0;i<80&&p.exitCode===null&&p.signalCode===null;i++)await sleep(50);
+   if(p.exitCode===null&&p.signalCode===null){p.kill('SIGKILL');throw new Error('Requested shutdown did not complete: '+kind);}
+  }};
  return page;}
