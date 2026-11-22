@@ -18,7 +18,16 @@ try{
   await page.viewport(width,width===320?568:852,2,{top:width===320?20:59,bottom:width===320?0:34,left:0,right:0});
   for(const f of fixtures){
    await seedProgress(page,url,f.progress,150);
-   await until("!!document.querySelector('.berrak-orbit')");await click('.berrak-orbit');await until("!!document.querySelector('.journey-map-all')");await click('.journey-map-all');
+   const mapButton=await page.evaluate(`(()=>{
+    const button=document.querySelector('.berrak-orbit'),r=button.getBoundingClientRect();
+    const point=[r.x+r.width/2,r.y+r.height/2];
+    return button.contains(document.elementFromPoint(...point))?point:null;
+   })()`);
+   assert.ok(mapButton,'The journey map must be reachable by touch after restoring progress');
+   await page.touch([mapButton]);
+   await until("!!document.querySelector('.journey-map-all')");
+   assert.equal(await page.evaluate("document.querySelector('.journey-map-heading>span').textContent"),f.count+'/312 bölüm');
+   await click('.journey-map-all');
    const worlds=f.count===312?52:2;
    for(let world=1;world<=worlds;world++){
     const selector=`.journey-map-world[aria-label^="Dünya ${world}:"]`;await until(`!!document.querySelector(${JSON.stringify(selector)})`);await click(selector);await until("document.querySelectorAll('.chapter-picker-grid button').length===6");await page.evaluate('document.fonts.ready.then(()=>true)');

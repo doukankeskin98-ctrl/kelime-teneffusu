@@ -13,10 +13,13 @@ export async function seedProgress(page, url, progress, settleMs = 350) {
   try {
     await page.goto(url, settleMs);
     for (let attempt = 0; attempt < 100; attempt++) {
-      if (await page.evaluate('window.__ktFixtureLoaded === true')) return;
+      const ready = await page.evaluate(`window.__ktFixtureLoaded === true &&
+        !!document.querySelector('.native-shell[data-ready="true"] .main-area:not([inert]) .berrak-orbit') &&
+        !document.getElementById('native-boot')`);
+      if (ready) return;
       await sleep(50);
     }
-    throw new Error('The fixture did not load on the initial game document');
+    throw new Error('The seeded player did not reach the interactive home screen');
   } finally {
     await page.send('Page.removeScriptToEvaluateOnNewDocument', {identifier});
   }
