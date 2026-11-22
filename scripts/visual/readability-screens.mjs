@@ -24,7 +24,7 @@ export const screens = [
  ['19-arena-arkadas',['^Arena','Arkadaşlarınla'], 'Özel oda oluştur'],
  ['20-arena-hizli',['^Arena','Hızlı eşleş'], 'Oyun sunucusuna şu an ulaşılamıyor.'],
  ['21-arena-meydan',['^Arena','Meydan okuma'], 'Yeni meydan okuma'],
- ['22-arkadaslarim',['^Arena','Arkadaşlarım'], 'Arkadaş ekle'],
+ ['22-arkadaslarim',['^Arena','Arkadaşlarım'], 'Arkadaşlarınla birlikte oyna'],
  ['23-diger-oyunlar',['^Oyunlar$'], 'Kısa oyunlar'],
  ['24-kisa-oyunlar',['^Oyunlar$','Kısa oyunlar'], 'Bonus turları'],
  ['25-hikayeler',['^Oyunlar$','Hikâyeler'], 'Fenerin ışığı'],

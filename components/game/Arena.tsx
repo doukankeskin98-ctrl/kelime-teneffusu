@@ -105,8 +105,9 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   <div className="arena-stage-art" aria-hidden="true"><SceneArt scene="stadium" eager/><div/></div>
   <SectionHeading id="arena-title" className="arena-stage-heading" title="Arena" detail="120 saniye. Her maç yeni kelimeler."/>
   <div className="arena-stage-emblem" aria-hidden="true"><Swords size={64}/><i/><i/></div>
-  <div className="arena-stage-dock">{!online&&<p className="arena-offline-note" role="status"><WifiOff size={18}/><span>Arena için internet bağlantısı gerekiyor.</span><button className="text-button" onClick={practice}>Solo oyna</button></p>}{roundPreference}
+  <div className="arena-stage-dock">{!online&&<p className="arena-offline-note" role="status"><WifiOff size={18}/><span>Arena için internet bağlantısı gerekiyor.</span><button className="text-button" onClick={practice}>Solo oyna</button></p>}
    <button className="stage-play" disabled={busy||!online} onClick={authenticated?()=>void run('enter',{kind:'quick',mode:'group',roundPolicy:riddles?'mixed':'words'}):onLogin}>{busy?<LoaderCircle className="spin" size={22}/>:<Swords size={22}/>}<span>Hızlı eşleş<small>Açık grup · 2 veya daha fazla oyuncu</small></span><ArrowRight size={21}/></button>
+   {roundPreference}
    <button className="arena-friend-action" disabled={busy||!online} onClick={()=>setHubPanel('friend')}><Users size={23}/><span>Arkadaşlarınla oyna<small>Oda oluştur veya kodla katıl</small></span><ArrowRight size={20}/></button>
    {error&&<p className="error-box" role="alert">{error}</p>}
    <div className="arena-secondary-actions"><button disabled={busy||!online} onClick={authenticated?()=>void run('enter',{kind:'quick'}):onLogin}><ShieldCheck size={17}/>Dereceli düello</button><button onClick={()=>setHubPanel('rankings')}><Trophy size={17}/>Sıralama</button><button onClick={()=>setHubPanel('rules')}><Clock size={17}/>Kurallar</button></div>

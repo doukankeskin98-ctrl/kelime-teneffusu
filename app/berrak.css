@@ -266,16 +266,16 @@ dialog.modal.game-dialog .game-settings .comfort-setting i:not(.switch) {
   background:var(--berrak-wash);color:var(--berrak-ui-dark);
 }
 dialog.modal.game-dialog .game-settings .comfort-setting[aria-checked=true] i {background:var(--berrak-ui-dark);color:white}
-dialog.modal.game-dialog .game-settings .board-color-options button {
+dialog.modal.game-dialog .game-settings :is(.board-color-options,.palette-options) button {
   color:var(--berrak-ink);background:var(--berrak-surface);border-color:var(--berrak-line);
 }
-dialog.modal.game-dialog .game-settings .board-color-options button[aria-pressed=true] {
+dialog.modal.game-dialog .game-settings :is(.board-color-options,.palette-options) button[aria-pressed=true] {
   border-color:var(--berrak-ui-dark);background:var(--berrak-wash);
 }
 dialog.modal.game-dialog .game-settings .palette-options button[aria-pressed=true] {
-  color:white;background:var(--berrak-ui-dark);border-color:var(--berrak-ui-dark);
+  color:var(--berrak-ink);background:var(--berrak-wash);border-color:var(--berrak-ui-dark);
 }
-dialog.modal.game-dialog .game-settings .palette-options button[aria-pressed=true] :is(small,b) {color:white}
+dialog.modal.game-dialog .game-settings .palette-options button[aria-pressed=true] :is(small,b,svg) {color:var(--berrak-ink)}
 dialog.modal.game-dialog .game-settings :is(.palette-options button,.sound-preview):disabled {
   opacity:1;color:var(--berrak-muted);background:var(--berrak-wash);
 }
@@ -401,8 +401,8 @@ dialog.modal.game-dialog:is(.game-tools-modal,.settings-home):not(.scene-result)
  max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 32px);
 }
 dialog.modal.game-dialog:is(.game-tools-modal,.settings-home)>.modal-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;}
-dialog.modal.game-dialog :is(.setting-row,.comfort-setting,.game-disclosure-trigger){padding-inline:16px;gap:12px;min-height:52px;font-size:17px;}
-dialog.modal.game-dialog :is(.setting-row,.comfort-setting) b{font-size:17px;}
+dialog.modal.game-dialog :is(.setting-row,.comfort-setting,.game-disclosure-trigger,.settings-links button){padding-inline:16px;gap:12px;min-height:52px;font-size:17px;font-weight:600;}
+dialog.modal.game-dialog :is(.setting-row,.comfort-setting) b{font-size:17px;font-weight:600;}
 dialog.modal.game-dialog :is(.comfort-setting,.setting-row)[aria-checked=true] .switch::after{transform:translateX(20px)}
 .support-technical[role=switch]{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:12px 0;text-align:left;background:transparent;border:0;color:var(--berrak-ink)}
 .support-technical .switch{flex-shrink:0}.support-technical[aria-checked=true] .switch{background:var(--berrak-ui)}
@@ -427,3 +427,5 @@ dialog.modal.game-dialog :is(.comfort-setting,.setting-row)[aria-checked=true] .
 
 dialog.modal.game-dialog.settings-home .sound-slider-row label{font-size:16px;line-height:1.4}
 .native-shell .option-picker-trigger:disabled{opacity:1;color:var(--berrak-muted);background:var(--berrak-wash)}
+
+dialog.modal.game-dialog:is(.settings-home,.settings-sheet)>.modal-head h2{font-size:22px;font-weight:800;}
