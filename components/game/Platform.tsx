@@ -30,8 +30,8 @@ export function Platform({consent,playing=false,installTarget=null}:{consent:boo
   const reload=()=>{reloading=true;};window.addEventListener('kt-update-now',reload);
   return ()=>{stopped=true;window.removeEventListener('online',change);window.removeEventListener('offline',change);window.removeEventListener('beforeinstallprompt',before);window.removeEventListener('appinstalled',installed);window.removeEventListener('kt-update-now',reload);navigator.serviceWorker?.removeEventListener('controllerchange',controller);};
  },[]);
- if(playing)return offline?<div className="offline-status compact" role="status"><WifiOff size={15}/>Çevrimdışı · Solo keşiflerin cihazında kaydedilir.</div>:null;
- return <>{offline&&<div className="offline-status" role="status"><WifiOff size={17}/>Çevrimdışısın. İndirilmiş solo keşiflerini oynamaya devam edebilirsin.</div>}{update&&<div className="update-notice"><span>Yeni bir teneffüs hazır.</span><button className="text-button" onClick={()=>{window.dispatchEvent(new Event('kt-update-now'));update.postMessage({type:'ACTIVATE'});}}><RefreshCw size={15}/>Yenile</button></div>}{
+ if(playing)return offline?<div className="offline-status compact" role="status"><WifiOff size={15}/>Çevrimdışı · Tek kişilik oyunların cihazında kaydedilir.</div>:null;
+ return <>{offline&&<div className="offline-status" role="status"><WifiOff size={17}/>Çevrimdışısın. İndirdiğin bölümleri oynamaya devam edebilirsin.</div>}{update&&<div className="update-notice"><span>Yeni bir teneffüs hazır.</span><button className="text-button" onClick={()=>{window.dispatchEvent(new Event('kt-update-now'));update.postMessage({type:'ACTIVATE'});}}><RefreshCw size={15}/>Yenile</button></div>}{
   installTarget&&!hidden&&(install||ios)&&createPortal(
    <div className="install-setting">
     <button type="button" className="button secondary full" aria-expanded={install?undefined:help} onClick={async()=>{

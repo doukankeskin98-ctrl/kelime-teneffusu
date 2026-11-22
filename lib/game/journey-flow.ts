@@ -22,8 +22,9 @@ export function bonusOffer(before:Progress,after:Progress,chapterId:string){
 /** Uses the real authored load. No new locks, targets, timer or save identity. */
 export function chapterPace(id:string,revision=1){
  const info=worldChapter(id,revision);if(!info)return null;
+ if(revision>1&&info.chapter.difficulty==='Ustalık')return {kind:'challenge',label:'Zor',detail:info.topic} as const;
  const board=journeyBoard(info.chapter),veils=chapterVeils(id,board.targets,revision);
- if(info.position===0)return {kind:'easy',label:'Rahat başlangıç',detail:`${info.chapter.words.length} açık kelime`} as const;
+ if(info.position===0)return {kind:'easy',label:'Rahat başlangıç',detail:`${info.chapter.words.length} kelime`} as const;
  if(Object.values(veils).includes('hidden')||Object.values(veils).includes('initial'))return {kind:'challenge',label:'Saklı kelime',detail:Object.values(veils).includes('hidden')?'Konuya bak, saklı kelimeyi keşfet':'İlk harfiyle verilen kelimeyi keşfet'} as const;
  return {kind:'normal',label:info.chapter.clues?'Bilmece':'Keşif',detail:`${info.chapter.words.length} kelime`} as const;
 }

@@ -72,10 +72,11 @@ export function WordFeedback({root,scope,board,confirmed,preview,turned,paused}:
    arrivals.current.set(destination,(arrivals.current.get(destination)??0)+1);destination.dataset['wordArriving']='true';
    let arrived=false;
    const arrive=(landed=false)=>{if(arrived)return;arrived=true;
+    if(landed&&destination.hasAttribute('data-word-group'))destination.dataset['wordLanding']='true';
     if(landed&&!stopped&&!live.current.paused&&!document.hidden&&gameIsActive()&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches&&document.documentElement.dataset['reduceMotion']!=='true')playHaptic('landing',live.current.enabled);const left=(arrivals.current.get(destination)??1)-1;if(left>0)arrivals.current.set(destination,left);else{arrivals.current.delete(destination);delete destination.dataset['wordArriving'];}};
    const spark=document.createElement('span');spark.className='word-flight word-flight-letters';spark.setAttribute('aria-hidden','true');screen.appendChild(spark);
    const animations:Animation[]=[];let timer:ReturnType<typeof setTimeout>|undefined,stopped=false;
-   const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);arrive();for(const animation of animations)animation.cancel();spark.remove();work.current.delete(id);};
+   const stop=()=>{if(stopped)return;stopped=true;clearTimeout(timer);arrive();if(!arrivals.current.has(destination))delete destination.dataset['wordLanding'];for(const animation of animations)animation.cancel();spark.remove();work.current.delete(id);};
    work.current.set(id,stop);
    try{
     for(const [i,letter] of letters.entries()){

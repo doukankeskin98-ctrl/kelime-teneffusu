@@ -1,0 +1,113 @@
+# Yolculuk v2 kelime bankası, sürüm 3 · dünya 37–52 · Claude, 19 Kasım 2026
+@dunya 37 ufuk-kamp | Dağ Evinin Yolu
+01 | Kamp çantasında | ÇADIR MAT TULUM FENER TERMOS MATARA ÇAKI DÜDÜK AÇACAK KİBRİT KUMANYA BANDAJ KONSERVE İLKYARDIM BATTANİYE YAĞMURLUK KURUYEMİŞ
+02 | Patikanın çevresi | UÇURUM YAMAÇ SIRT VADİ ZİRVE TEPE DORUK YAYLA ORMAN KAYA PINAR DERE GEÇİT ÇALILIK ŞELALE KAYALIK ÇAĞLAYAN
+03 | Yön bulmak | PUSULA=İğnesi hep kuzeyi gösterir; HARİTA=Yolları gösteren katlanır kâğıt; KROKİ=Elle çizilmiş kaba plan; TABELA=Yol ayrımındaki yön levhası; DÜRBÜN=Uzağı yakın gösterir; ALTİMETRE=Yüksekliği gösteren alet; İŞARET=Taşa boyanmış yol izi; KILAVUZ=Yolu bilen rehber kişi; ROTA=Önceden çizilen yol planı; TELSİZ=Ekibi birbirine bağlar; UYDU=Konumu gökten bildirir
+04 | Yürüyüş donanımı | BOT BATON ÇANTA TOZLUK KAPÜŞON MONT BERE ELDİVEN ÇORAP PONÇO KASK HALAT KARABİNA GÖZLÜK ŞAPKA
+05 | Kamp ateşi yanında | ODUN KÖZ MAŞA KİBRİT KOR KIVILCIM DUMAN ALEV ÇIRA KÜL GİTAR MASAL KESTANE MISIR ÇAYDANLIK
+06 | Dağ evinin içi | SOBA SEDİR KİLİM YORGAN ŞÖMİNE MİNDER POST ŞİLTE LAMBA SANDIK DOLAP KİRİŞ SEMAVER YASTIK HALI
+@dunya 38 ufuk-ada | Ada İskelesi
+01 | İskeleye yanaşırken | HALAT DUBA İSKELE RIHTIM PALAMAR MANEVRA TAMPON LİMAN MENDİREK VAPUR KAPTAN TAYFA KÜPEŞTE BABA
+02 | Tekne gövdesi ve donanım | DÜMEN ÇAPA PRUVA OMURGA PERVANE KIÇ KAMARA LOMBOZ AMBAR FİLİKA GÜVERTE BORDA MOTOR
+03 | Denizin hâlleri | DALGA=Rüzgârla kabarıp kıyıya vurur; AKINTI=Denizin içindeki su yolu; GELGİT=Ayın çekimiyle yükselip alçalma; KÖPÜK=Kıyıya vuran suyun beyazlığı; GİRDAP=Suyu döndürüp içine çeken çukur; TSUNAMİ=Depremin kabarttığı dev su duvarı; ÇALKANTI=Suyun sarsılıp çırpınması; YAKAMOZ=Gece suda parlayan ışıltı; SÖRF=Tahtayla deniz üstünde kaymak; FIRTINA=Denizi kabartan sert hava; LODOS=Denizi kabartan güney rüzgârı
+04 | Adanın kıyıları | KOY BURUN KAYALIK PLAJ KUMSAL MAĞARA LAGÜN ÇAKIL SAHİL ADACIK ZEYTİNLİK SIĞLIK RESİF MERCAN KÖRFEZ İSKELE FENER BOĞAZ KAYA
+05 | Rüzgârla yol almak | DİREK YELKEN MAKARA İSKOTA FLOK BUMBA ORSA TRAMOLA MAYNA BAYRAK FORA SANCAK VİNÇ PUSULA DÜMENCİ
+06 | Kıyıda dinlenirken | ŞEZLONG HAVLU GÖLGELİK MAYO ŞEMSİYE KİTAP DONDURMA KARPUZ HAMAK PALET ŞNORKEL MASKE SİMİT KOVA BRONZ TERLİK ŞAPKA YELPAZE
+@dunya 39 ufuk-kent | Kentin Ayrıntıları
+01 | Sokağın üstünde | TABELA LAMBA LEVHA PANO KABLO AFİŞ KAMERA TENTE SAÇAK ANTEN GÜVERCİN ÇAMAŞIR BAYRAK SEMAFOR BALON KUŞ IŞIK
+02 | Kent yapıları | MÜZE KULE OKUL HASTANE KÜTÜPHANE CAMİ KİLİSE BELEDİYE STADYUM SİNEMA TİYATRO POSTANE KARAKOL İTFAİYE
+03 | Yapının dışı | CEPHE=Binanın sokağa bakan yüzü; BALKON=Dışarı taşan küçük teras; ÇATI=Binanın en üstündeki örtü; OLUK=Yağmuru damdan indiren kanal; BACA=Sobanın dumanını dışarı atar; KİREMİT=Damı kaplayan pişmiş toprak; PANJUR=Pencereyi örten kanatlı kapak; SIVA=Duvarı kaplayan harç tabakası; PARMAKLIK=Terası çeviren demir çubuklar; KEPENK=Dükkânı kapatan demir kapak; SAÇAK=Damın duvardan taşan ucu
+04 | Meydanda buluşma | HEYKEL ÇEŞME BANK SAAT SİMİTÇİ BÜFE KAFE DURAK ANIT HAVUZ FISKIYE KALABALIK RANDEVU KONSER
+05 | Karşıya geçerken | RAMPA GEÇİT BORDÜR KALDIRIM ZEBRA YAYA LOGAR MAZGAL KAPAK PATEN DÜĞME AĞAÇ TABELA ALTGEÇİT DİREK
+06 | Apartman girişinde | ZİL KAPI PASPAS POSTALIK KAPICI ASANSÖR MERDİVEN DİYAFON POSTACI KARGO KOLİ SAKSI İSİMLİK BASAMAK AYNA
+@dunya 40 ufuk-pazar | Mahalle Pazarı
+01 | Yeşil tezgâh | ROKA TERE MARUL PAZI SEMİZOTU KUŞKONMAZ BROKOLİ BEZELYE FASULYE SALATALIK BİBER ENGİNAR BAKLA BÖRÜLCE
+02 | Mor tezgâh | PANCAR TURP LAHANA PATLICAN ERİK ÜZÜM İNCİR DUT BÖĞÜRTLEN SOĞAN VİŞNE KARADUT ŞALGAM NAR
+03 | Pazar ölçüleri | KİLO=Pazarda domatesin tartı birimi; GRAM=Altının tartıldığı küçük ölçü; ADET=Tane tane sayılan ölçü; DEMET=Bağlanmış maydanoz ya da tere; KANTAR=Çuvalları tartan büyük terazi; DÜZİNE=On iki tanelik takım; DESTE=On tanelik bağ; OKKA=Eski dört yüz dirhemlik ölçü; LİTRE=Sıvının hacim ölçüsü; ÇEYREK=Bir bütünün dörtte biri; DARA=Kabın tartıdan düşülen ağırlığı
+04 | Satıcının köşesi | KASA TERAZİ ETİKET POŞET SEPET BRANDA FİYAT SANDIK ÇUVAL ÖNLÜK KÜLAH FİLE TEZGAH TABURE MUŞAMBA LEĞEN ÖLÇÜ
+05 | Kokulu yeşillikler | NANE REYHAN DEREOTU MAYDANOZ FESLEĞEN KEKİK BİBERİYE TARHUN KİŞNİŞ MELİSA ADAÇAYI ISIRGAN EBEGÜMECİ LAVANTA DEFNE
+06 | Kışlık alışveriş | KABAK PIRASA KEREVİZ ISPANAK HAVUÇ PATATES AYVA PORTAKAL MANDALİNA ELMA KESTANE CEVİZ BALKABAĞI TURŞU BROKOLİ
+@dunya 41 ufuk-firin | Fırın Sokağı
+01 | Hamurun malzemeleri | MAYA ŞEKER SÜT TUZ YUMURTA TEREYAĞI MARGARİN KABARTMA VANİLYA KAKAO NİŞASTA İRMİK YOĞURT KREMA
+02 | Fırının tezgâhı | TEPSİ MERDANE KÜREK KALIP OKLAVA SPATULA FIRÇA ELEK KASE ÇIRPICI BIÇAK TEKNE TAHTA
+03 | Fırından sıcak | SİMİT=Susamlı halka ekmek; POĞAÇA=Peynirli, yumuşak fırın hamuru; BAZLAMA=Sacda pişen kalın ekmek; PİDE=Ramazanda kuyruk olunan ekmek; AÇMA=Tereyağlı yumuşak halka hamur; LAVAŞ=Fırında kabaran ince ekmek; GEVREK=İzmir'de susamlı halkanın adı; ÇÖREK=Tatlı, mayalı hamur işi; BÖREK=Yufka katlarıyla yapılır; LAHMACUN=Kıymalı ince hamur; KATMER=Antep'in fıstıklı katlı tatlısı
+04 | Hamura şekil vermek | BEZE ÖRGÜ HALKA RULO YUVARLAK BURGU DİLİM ÜÇGEN KARE SARMA KATLAMA ŞERİT YUFKA KIVRIM
+05 | Üstüne serpilir | SUSAM HAŞHAŞ KEPEK ÇÖREKOTU TARÇIN PUDRA FINDIK FISTIK PEYNİR KAŞAR KEKİK SUMAK YULAF AYÇİÇEĞİ BADEM
+06 | Fırın tatlıları | KEK KURABİYE TURTA SUFLE PASTA BAKLAVA REVANİ KÜNEFE KADAYIF ŞEKERPARE ACIBADEM EKLER KRUVASAN BİSKÜVİ TİRAMİSU
+@dunya 42 ufuk-sofra | Kahvaltı Sofrası
+01 | Sofraya hazırlık | ÇATAL BIÇAK KAŞIK PEÇETE TABAK ÖRTÜ BARDAK SÜRAHİ TUZLUK BİBERLİK NİHALE ÇAYDANLIK EKMEKLİK KÜRDANLIK
+02 | Küçük kahvaltılıklar | ZEYTİN BAL REÇEL PEYNİR SUCUK SALAM SOSİS DOMATES SALATALIK CEVİZ KAŞAR LOR HELVA PASTIRMA KAVURMA
+03 | Kahvaltı kapları | FİNCAN=Kahvenin içildiği küçük kap; KASE=Çorba ya da yoğurt kabı; DEMLİK=Ocakta üstte duran küçük çay kabı; ŞEKERLİK=Çaya atılan küplerin kabı; ÇAYDANLIK=Altta suyu kaynatan kap; REÇELLİK=Reçelin konduğu küçük kap; TEPSİ=Kahvaltının taşındığı geniş kap; KAVANOZ=Reçelin saklandığı cam kap; KUPA=Kulplu, büyük içecek kabı; SEMAVER=Kömürle ısınan çay kazanı; BALLIK=Balın konduğu küçük kap; PEYNİRLİK=Peynirin konduğu kapaklı kap; SÜTLÜK=Sütün konduğu küçük kap
+04 | Yumurtayla yapılanlar | OMLET MENEMEN ÇILBIR KREP HAŞLAMA KAYGANA MAYONEZ PUDİNG SUCUKLU KAŞARLI SAHAN MUHALLEBİ KAZANDİBİ PASTA KURABİYE KEK
+05 | Ekmek üstüne | KAYMAK TAHİN PEKMEZ TEREYAĞI MARMELAT LABNE HUMUS EZME ZAHTER SALÇA AVOKADO HARDAL KETÇAP PEYNİR ÇÖKELEK
+06 | Sofranın içecekleri | ÇAY SÜT KAHVE AYRAN LİMONATA KAKAO IHLAMUR ADAÇAYI KUŞBURNU SODA MADENSUYU KEFİR SALEP ŞERBET BOZA ŞALGAM KOMPOSTO
+@dunya 43 ufuk-ev | Evde Bir Gün
+01 | Pencere çevresinde | PERDE PANJUR CAM SİNEKLİK STOR TÜL KORNİŞ PERVAZ MENTEŞE KANAT SAKSI JALUZİ DENİZLİK
+02 | Oturma odası | KOLTUK SEHPA HALI ABAJUR KANEPE KİTAPLIK AVİZE TABLO KUMANDA VAZO ÇERÇEVE BERJER PUF LAMBADER
+03 | Temizlik zamanı | FIRÇA=Kıllarıyla kiri ovar; SÜNGER=Köpüklü suyu emen yumuşak parça; KOVA=Su taşınan kulplu kap; BEZ=Masayı silen kumaş parçası; SÜPÜRGE=Yerdeki çöpü toplar; FARAŞ=Toplanan çöpü alan küçük kürek; PASPAS=Yeri ıslak silen saplı araç; ELDİVEN=Elleri köpükten korur; DETERJAN=Kiri çözen köpüklü madde; SABUN=Elleri köpürten kalıp; ÇEKPAS=Yerdeki suyu iten lastikli sopa; SİRKE=Kireci çözen ekşi sıvı; TOZ=Mobilyada biriken ince kir
+04 | Çamaşır köşesi | ASKI MANDAL ÜTÜ SEPET KURUTUCU LEĞEN ÇAMAŞIR LEKE MAKİNE ÇORAP HAVLU BUHAR KATLAMA TEL
+05 | Yatmadan önce | YASTIK ÇARŞAF NEVRESİM DÖŞEK YORGAN BATTANİYE KOMODİN GARDIROP ŞİFONYER PİJAMA TERLİK BAZA YATAK AYNA UYKU SABAHLIK GECELİK SOMYA ÇEKMECE PANDUF
+06 | Çekmecede saklı | ANAHTAR DÜĞME PİL TARAK MAKAS BANT ZARF MUM KİBRİT ATAŞ SİLGİ TOKA GÖZLÜK FATURA MADALYON
+@dunya 44 ufuk-bahcivan | Minik Bahçıvan
+01 | Bitkinin parçaları | YAPRAK ÇİÇEK TOHUM SAP KÖK GÖVDE DAL DİKEN POLEN NEKTAR MEYVE ÇANAK SÜRGÜN
+02 | Bahçede bir gün | BUDAMA DİKİM ÇAPALAMA SULAMA EKİM HASAT AŞILAMA İLAÇLAMA BELLEME GÜBRELEME TOPLAMA ŞAŞIRTMA BİÇME
+03 | Bahçıvanın gereçleri | ÇAPA=Toprağı kabartan sivri alet; KÜREK=Toprak atan geniş uçlu alet; SULUK=Uzun ağızlı sulama kabı; MAKAS=Dalları kesen iki ağızlı alet; TIRMIK=Yaprakları toplayan dişli alet; HORTUM=Musluktan bahçeye su taşır; ELDİVEN=Elleri dikene karşı korur; KAZMA=Sert toprağı kıran alet; TIRPAN=Uzun otları biçen eğri bıçak; SAKSI=Çiçeğin konduğu toprak kap; BEL=Toprağı derin kazan ayaklı alet; ORAK=Ekin biçen yarım ay bıçak; ÇİT=Bahçeyi çeviren alçak engel; ÇAKI=Aşı için kullanılan küçük bıçak
+04 | Saksıdaki çiçekler | LALE MENEKŞE SÜMBÜL BEGONYA SARDUNYA ORKİDE KAKTÜS GÜL BEGONVİL KASIMPATI NERGİS ZAMBAK PETUNYA KARANFİL
+05 | Bahçe toprağı | KUM KİL TORF KOMPOST HUMUS GÜBRE SOLUCAN ÇAKIL TAŞ KİREÇ ALÜVYON ÇAMUR MİNERAL NEM YOSUN
+06 | Filizlenirken | FİLİZ TOMURCUK FİDE ÇİMLENME FİDAN SÜRGÜN GONCA BAHAR TOHUM GÜNEŞ IŞIK BÜYÜME UYANIŞ TAZE YAĞMUR
+@dunya 45 ufuk-fotograf | Fotoğraf Gezisi
+01 | Fotoğraf makinesi | MERCEK GÖVDE EKRAN FİLTRE OBJEKTİF VİZÖR DEKLANŞÖR SENSÖR AYNA KAYIŞ KAPAK TETİK OBTÜRATÖR
+02 | Çekimin ayarları | ODAK POZ DİYAFRAM NETLİK KONTRAST PARLAKLIK KADRAJ AÇI NETLEME SÜRE DENGE PANORAMA KESKİNLİK
+03 | Işık ve görüntü | GÖLGE=Işığın önü kesilince düşen koyuluk; SİLÜET=Işığa karşı kararan biçim; YANSIMA=Suda ters görünen görüntü; PARLAMA=Merceğe vuran güneş halkası; KONTRJUR=Işığa karşı yapılan çekim; KARANLIK=Işığın hiç olmadığı an; HARE=Işık kaynağının çevresindeki halka; GURUP=Güneşin battığı anın kızıllığı; FLAŞ=Anlık patlayan yapay ışık; RENK=Işığın göze ulaşan tonu; SİS=Görüntüyü yumuşatan buğu
+04 | Fotoğraf türleri | PORTRE MANZARA MAKRO SOKAK BELGESEL HABER MODA DOĞA GECE SPOR MİMARİ ÜRÜN DÜĞÜN ÖZÇEKİM
+05 | Fotoğrafçının yanında | TRİPOD FLAŞ PİL KART BATARYA ŞARJ KABLO REFLEKTÖR BEZ FIRÇA YEDEK KUMANDA DRON YAĞMURLUK LENS MİKROFON STATİF ÇANTA
+06 | Karanlık odada | FİLM BANYO NEGATİF BASKI BÜYÜTME MANDAL TEPSİ KİMYASAL KAĞIT MAKARA TANK POZİTİF PELİKÜL KONTAK KURUTMA
+@dunya 46 ufuk-sahne | Tiyatro Kulisi
+01 | Tiyatro binası | PERDE DEKOR KULİS SAHNE LOCA BALKON FUAYE SUFLÖR PROJEKTÖR SPOT KANAT RAMPA SALON FON ORKESTRA
+02 | Oyuncunun hazırlığı | KOSTÜM MAKYAJ PERUK MASKE EZBER PROVA AYNA PUDRA ISINMA NEFES DİKSİYON HEYECAN BIYIK
+03 | Tiyatroda duyulur | REPLİK=Oyuncunun söylediği söz; TİRAD=Tek kişinin uzun konuşması; ALKIŞ=Seyircinin el çırpması; SUFLE=Unutulan sözü gizlice hatırlatmak; GONG=Oyunun başladığını bildirir; MONOLOG=Kendi kendine konuşma; DİYALOG=İki kişinin karşılıklı konuşması; KAHKAHA=Güldürüde salonu doldurur; BRAVO=Beğenen seyircinin bağırışı; FISILTI=Seyirciler arasındaki alçak ses
+04 | Gösteriye giderken | BİLET AFİŞ GİŞE SEANS BROŞÜR PROGRAM KOLTUK SIRA VESTİYER PALTO BUKET DAVETİYE BİLETÇİ TAKSİ
+05 | Oyun türleri | KOMEDİ DRAM TRAJEDİ MÜZİKAL OPERA OPERET BALE PANDOMİM VODVİL SKEÇ KUKLA KARAGÖZ ORTAOYUNU MEDDAH KABARE
+06 | Sahne ekibi | OYUNCU REJİSÖR YAZAR IŞIKÇI DEKORCU KOSTÜMCÜ MAKYÖZ DRAMATURG KOREOGRAF YÖNETMEN ASİSTAN TEKNİSYEN MARANGOZ TERZİ SUFLÖR AKTÖR AKTRİS FİGÜRAN
+@dunya 47 ufuk-desen | Renk ve Desen
+01 | Sıcak renkler | KIRMIZI TURUNCU SARI KİREMİT BORDO PEMBE ALTIN BAKIR HARDAL KARAMEL MERCAN SOMON KIZIL
+02 | Soğuk renkler | LACİVERT TURKUAZ PETROL İNDİGO MAVİ CAMGÖBEĞİ ÇİVİT LİLA EFLATUN FİRUZE ZÜMRÜT DENİZ GÖK
+03 | Kalemin izleri | NOKTA=Kalemin kâğıda ilk dokunuşu; ÇİZGİ=Kalemin kâğıtta bıraktığı uzun iz; KONTUR=Biçimin dış sınırı; TARAMA=Sık hatlarla koyuluk vermek; ESKİZ=Hızlı ilk çizim denemesi; KROKİ=Kaba taslak plan; KAVİS=Yay gibi eğri hat; SPİRAL=Dönerek büyüyen eğri; ZİKZAK=Kırık kırık giden hat; GÖLGE=Işığın düşmediği koyu bölge
+04 | Tekrarlanan desenler | PUANTİYE ÇİZGİLİ EKOSE BAKLAVA KAZAYAĞI ÇİÇEKLİ KAMUFLAJ DAMALI ARABESK RUMİ HATAYİ MOZAİK DALGA LEOPAR
+05 | Resim malzemeleri | PASTEL GUAJ AKRİLİK KÖMÜR SULUBOYA YAĞLIBOYA MÜREKKEP TEBEŞİR KARAKALEM FIRÇA PALET SPATULA TİNER VERNİK ŞÖVALE KALEM BOYA
+06 | Resmin yüzeyi | KAĞIT TUVAL KARTON DUVAR AHŞAP CAM SERAMİK KUMAŞ PARŞÖMEN TAŞ KANSON ASTAR DOKU FRESK TAHTA
+@dunya 48 ufuk-dokuma | Dokuma Evi
+01 | Doğal lifler | PAMUK YÜN KETEN İPEK KENEVİR JÜT TİFTİK KAŞMİR ANGORA DEVETÜYÜ SİSAL BAMBU MOHER
+02 | Dokuma tezgâhında | MEKİK ÇÖZGÜ ATKI TARAK TEZGAH İPLİK GÜCÜ DÜĞÜM İLMEK KİRKİT DESEN MOTİF BOYA
+03 | İplik biçimleri | YUMAK=Top gibi sarılmış iplik; MAKARA=İpliğin sarıldığı küçük silindir; ÇİLE=Halka hâlinde sarılmış iplik; BOBİN=Makineye takılan iplik silindiri; KANGAL=Halka hâlinde sarılı tel ya da ip; LİF=İpliğin en ince teli; BÜKÜM=İpliğe verilen burgu; SİMLİ=Parlak teller katılmış iplik; KORDON=Kalın burulmuş ip; ŞERİT=Dar, uzun kumaş bant
+04 | Dokunmuş ev eşyaları | HALI KİLİM ÖRTÜ HEYBE CECİM ZİLİ PEŞTAMAL HAVLU YAZMA PERDE SECCADE MİNDER BATTANİYE PALAS
+05 | Kumaş yüzeyleri | KADİFE SATEN TÜL KEÇE ŞİFON TAFTA ORGANZE KOT POLAR KREP GABARDİN PAZEN TÜVİT SÜET VUAL
+06 | El işi süsleri | DANTEL OYA NAKIŞ PÜSKÜL BONCUK PUL PAYET KURDELE FİYONK KANAVİÇE APLİKE ROZET SIRMA ETAMİN SİM
+@dunya 49 ufuk-deney | Deney Masası
+01 | Laboratuvar kapları | BEHER TÜP BALON PİPET MEZÜR BÜRET PETRİ HUNİ KROZE ŞİŞE DAMLALIK LAM KAPSÜL
+02 | Hâller ve dönüşümler | KATI SIVI GAZ PLAZMA BUHAR BUZ ERİME DONMA KAYNAMA YOĞUŞMA KRİSTAL AKIŞKAN JEL
+03 | Ölçülen büyüklükler | KÜTLE=Bir cisimdeki madde miktarı; HACİM=Cismin kapladığı yer; UZUNLUK=İki uç arasındaki mesafe; SICAKLIK=Termometrenin gösterdiği değer; ZAMAN=Saatin ölçtüğü şey; HIZ=Saatte alınan kilometre; BASINÇ=Yüzeye düşen kuvvet; AĞIRLIK=Yer çekiminin cisme kuvveti; ALAN=Bir yüzeyin büyüklüğü; ENERJİ=İş yapabilme yeteneği; AKIM=Telden geçen elektrik miktarı
+04 | Işığı yakmak | PİL KABLO AMPUL ANAHTAR DİRENÇ SİGORTA BATARYA DUY VOLTAJ PRİZ FİŞ MOTOR DİYOT TEL DEVRE ELEKTRON GÜÇ
+05 | Mıknatısın çevresi | KUTUP ALAN DEMİR NİKEL ÇEKİM İTME PUSULA ÇİVİ ATAŞ BOBİN KUZEY GÜNEY MANYETİK TOZ ÇELİK KUVVET ELEKTRİK
+06 | Bir deneyin aşamaları | SORU DENEY GÖZLEM SONUÇ HİPOTEZ VERİ TAHMİN ÖLÇÜM TABLO GRAFİK ANALİZ RAPOR KANIT TEKRAR DEĞİŞKEN
+@dunya 50 ufuk-gok | Gökyüzü Defteri
+01 | Güneş çevresinde [özel] | MERKÜR VENÜS DÜNYA MARS PLÜTON GÜNEŞ YÖRÜNGE UYDU KUŞAK ATMOSFER EKSEN GEZEGEN ISI
+02 | Gaz ve buz devleri [özel] | JÜPİTER SATÜRN URANÜS NEPTÜN HALKA FIRTINA METAN AMONYAK HİDROJEN HELYUM TİTAN GANİMEDE TRİTON
+03 | Uzayın küçük cisimleri | METEOR=Atmosferde yanarak kayan ışık; ASTEROİT=Mars ile Jüpiter arasındaki kaya; UYDU=Gezegenin çevresinde dönen cisim; KOMET=Kuyruklu yıldızın bilimsel adı; GÖKTAŞI=Yere düşen uzay kayası; KRATER=Çarpmanın açtığı çukur; BULUTSU=Yıldızların doğduğu gaz kümesi; CERES=Kaya kuşağındaki cüce gezegen; TOZ=Uzayı dolduran minik zerreler; HALLEY=Her 76 yılda bir görünen
+04 | Göğü gözlerken | TELESKOP MERCEK KUBBE ODAK DÜRBÜN OKÜLER TRİPOD FİLTRE GÖZLEMEVİ HARİTA ZODYAK FENER TERMOS BATTANİYE YILDIZ GÖKYÜZÜ SANDALYE GECE
+05 | Göklere yolculuk | ROKET KAPSÜL YÖRÜNGE MODÜL MEKİK ASTRONOT KASK İSTASYON MOTOR YAKIT ANTEN FIRLATMA KOZMONOT GERİSAYIM İNİŞ YERÇEKİMİ ROBOT KALKIŞ UZAY BAYRAK
+06 | Gökyüzü olayları | TUTULMA ŞAFAK GURUP AURORA GÖKKUŞAĞI DOLUNAY HİLAL ŞİMŞEK HARE SERAP KAVUŞUM YILDIRIM YENİAY MEHTAP SAMANYOLU
+@dunya 51 ufuk-yol | Yol Kenarı Defteri
+01 | Kara yolu yapıları | TÜNEL VİYADÜK KÖPRÜ MENFEZ GİŞE OTOYOL KAVŞAK BARİYER RAMPA BANKET REFÜJ ŞERİT ASFALT
+02 | Tren istasyonu | RAY PERON VAGON MAKAS GAR LOKOMOTİF KONDÜKTÖR MAKİNİST BAVUL HAMAL BÜFE DÜDÜK SAAT
+03 | Yol işaretleri | DUR=Sekizgen kırmızı levhanın emri; YAYA=Zebra çizgiden karşıya geçen kişi; HIZ=Levhadaki sayının sınırladığı; DÖNÜŞ=Okla gösterilen yön değişimi; VİRAJ=Yolun keskin kıvrımı; KAVŞAK=Yolların kesiştiği yer; OKUL=Çocuklar çıkabilir uyarısı; PARK=Mavi P harfinin izni; ÇIKIŞ=Otoyoldan ayrılma yeri; KAYGAN=Yağmurda kayan yol uyarısı; GEÇİT=Trenin geçtiği hemzemin yer
+04 | Dinlenme tesisinde | OTOPARK LOKANTA MARKET MESCİT BENZİN AKARYAKIT TUVALET KAFE BÜFE ÇAY SİMİT MOLA ŞARJ HEDİYELİK
+05 | Yolculukta konaklama | OTEL PANSİYON HOSTEL KAMP MOTEL HAN BUNGALOV KARAVAN ÇADIR ODA ANAHTAR KAHVALTI VALİZ KONUK YATAK
+06 | Gezginin notları | GÜNLÜK ROTA ADRES BÜTÇE HARİTA FOTOĞRAF PUL HATIRA DEFTER TARİH KROKİ LİSTE TAVSİYE ANI MÜZE
+@dunya 52 ufuk-kis | Kışın Renkleri
+01 | Soğuğa hazırlanırken | ATKI BERE ELDİVEN KABAN MONT PALTO KAZAK İÇLİK YELEK BOT ÇİZME ODUN KÖMÜR
+02 | Karlı yamaçlarda | KAYAK KIZAK KASK BATON TELESİYEJ TELEFERİK PİST KARTOPU ÇIĞ GÖZLÜK KAYAKÇI ZİRVE PATEN
+03 | Kışın içecekleri | SALEP=Tarçın serpilen sıcak süt içeceği; BOZA=Leblebiyle içilen ekşimsi içecek; ÇAY=İnce belli bardakta içilir; IHLAMUR=Çiçeği demlenen kokulu ağaç; KAKAO=Sütle karıştırılan çikolata tozu; KUŞBURNU=Kırmızı meyvesi demlenip içilir; KAHVE=Telvesiyle fala bakılır; ADAÇAYI=Boğaz ağrısına iyi gelen bitki; ZENCEFİL=Acımsı kökü demlenip içilir; ÇORBA=Kaşıkla içilen sıcak yemek
+04 | Kış havası | SİS TİPİ AYAZ BULUT KAR KIRAĞI DON BUZ POYRAZ ZEMHERİ FIRTINA SOĞUK DOLU KARAKIŞ
+05 | Buzun biçimleri | SARKIT KRİSTAL BUZUL TABAKA BUZDAĞI KÜP KIRAĞI DOLU BUZLANMA BLOK HEYKEL İGLO ÇATLAK PUL KAR BUZLUK KABUK PARÇA
+06 | Sıcak odada | ŞÖMİNE SOBA YORGAN MİNDER BATTANİYE KESTANE KİTAP KÖZ TERLİK HIRKA PİJAMA KİLİM SEMAVER MASAL KAZAK TERMOFOR ÇAY

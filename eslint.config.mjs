@@ -12,6 +12,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "dist/**",
     "dist-mobile/**",
+    "dist-pilot/**",
     "ios/App/App/public/**",
     "ios/App/DerivedData/**",
     ".sites-runtime/**",

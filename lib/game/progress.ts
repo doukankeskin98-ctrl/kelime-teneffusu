@@ -8,7 +8,7 @@ import {ALL_THEMES as THEMES} from './catalog.ts';
 import {PLAYABLE_JOURNEYS,MYSTERIES,journeyBoard,mysteryBoard} from './content.ts';
 import {BONUS_WORDS,cleanBonusSave,mergeBonusSave,type BonusSave} from './journey-bonus.ts';
 import {MECHANIC_GUIDES,WORD_TRAIL,type MechanicGuideId} from './journey-flow.ts';
-export interface SavedLevel {revision?:2;strokes:Stroke[];elapsed:number;hints:number;complete:boolean;stars:number}
+export interface SavedLevel {revision?:2|3;strokes:Stroke[];elapsed:number;hints:number;complete:boolean;stars:number}
 export interface Progress {
  revisionSaves?:Record<string,Record<string,SavedLevel>>;
  ambience?:boolean;weekly?:WeeklyProgress;
@@ -44,7 +44,7 @@ export function normalizeProgress(value:unknown,strict=false):Progress {
   if(r.saves&&typeof r.saves==='object')for(const [key,saved] of Object.entries(r.saves)){
    if(!knownKeys.has(key)){if(strict)throw new ProgressFormatError('Unknown saved chapter');continue;}
    if(!saved||typeof saved!=='object')throw new ProgressFormatError('Invalid saved chapter');
-   if(saved.revision!==undefined&&saved.revision!==2)throw new ProgressFormatError('Unknown content revision');
+   if(saved.revision!==undefined&&saved.revision!==2&&saved.revision!==3)throw new ProgressFormatError('Unknown content revision');
    const board=progressBoard(key,savedRevision(saved));if(!board)throw new ProgressFormatError('Unavailable content revision');const clean=cleanSave(saved,board);if(strict&&!sameProgress(clean,saved))throw new ProgressFormatError('Invalid saved path or result');saves[key]=clean;
   }
   const revisionSaves:NonNullable<Progress['revisionSaves']>={};
@@ -52,7 +52,7 @@ export function normalizeProgress(value:unknown,strict=false):Progress {
    if(!knownKeys.has(key)||!versions||typeof versions!=='object')throw new ProgressFormatError('Invalid revision history');
    const clean:Record<string,SavedLevel>={};for(const [version,save] of Object.entries(versions)){
     const revision=Number(version),board=progressBoard(key,revision);
-    if(!board||![1,2].includes(revision)||savedRevision(save)!==revision)throw new ProgressFormatError('Invalid revision history');
+    if(!board||![1,2,3].includes(revision)||savedRevision(save)!==revision)throw new ProgressFormatError('Invalid revision history');
     clean[version]=cleanSave(save,board);if(strict&&!sameProgress(clean[version],save))throw new ProgressFormatError('Invalid historical path or result');
    }if(Object.keys(clean).length)revisionSaves[key]=clean;
   }}
@@ -74,7 +74,7 @@ export function cleanSave(raw:SavedLevel|undefined,board:Pick<Puzzle,'size'|'gri
  if(Array.isArray(raw?.strokes))for(const s of raw.strokes.slice(0,30)){if(!s)continue;const t=match(board,s.a,s.b);if(t?.id===s.id&&!strokes.some(x=>x.id===s.id))strokes.push({id:s.id,a:s.a,b:s.b});}
  const hints=Number.isInteger(raw?.hints)?Math.max(0,Math.min(3,raw!.hints)):0;
  const elapsed=typeof raw?.elapsed==='number'&&Number.isFinite(raw.elapsed)?Math.max(0,Math.min(604800,Math.floor(raw.elapsed))):0;
- return {...(raw?.revision===2?{revision:2 as const}:{}),strokes,hints,elapsed,complete:strokes.length===board.targets.length,stars:strokes.length===board.targets.length?3-Math.min(2,hints):0};
+ return {...(raw?.revision?{revision:raw.revision}:{}),strokes,hints,elapsed,complete:strokes.length===board.targets.length,stars:strokes.length===board.targets.length?3-Math.min(2,hints):0};
 }
 /** Solo progress is never used to award competitive points. Concurrent device saves only add discoveries. */
 export function mergeProgress(server:Progress,local:Progress):Progress {

@@ -5,12 +5,12 @@ import {createServer} from 'node:http';
 import {createReadStream,existsSync,statSync,mkdirSync,writeFileSync} from 'node:fs';
 import path from 'node:path';
 import {launch,sleep} from './chrome.mjs';
-const before=process.argv.includes('--before'),out=path.resolve(process.env.EVIDENCE_DIR??'../world-review.nosync/release-053'),root=path.resolve('dist-mobile');mkdirSync(out,{recursive:true});
+const before=process.argv.includes('--before'),out=path.resolve(process.env.EVIDENCE_DIR??'../world-review.nosync/release-053'),root=path.resolve(process.env.BUILD_DIR??'dist-mobile');mkdirSync(out,{recursive:true});
 const fixture=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/release-fixture.ts'],{encoding:'utf8'}));
 const progress={...fixture.progress,guideDone:false,tutorialDone:false,mechanicGuides:[]};
 const types={'.js':'text/javascript','.css':'text/css','.html':'text/html','.webp':'image/webp','.woff2':'font/woff2','.png':'image/png'};
 const server=createServer((req,res)=>{if(req.url.startsWith('/api/')){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({authenticated:false,available:false}));return;}let file=path.join(root,new URL(req.url,'http://x').pathname);if(!existsSync(file)||statSync(file).isDirectory())file=path.join(root,'index.html');res.writeHead(200,{'Content-Type':types[path.extname(file)]??'application/octet-stream'});createReadStream(file).pipe(res);});
-await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url=`http://127.0.0.1:${server.address().port}/`,page=await launch({port:9353}),report=[];
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url=`http://127.0.0.1:${server.address().port}/`,page=await launch({port:Number(process.env.CHROME_PORT??9353)}),report=[];
 function readFirstSession(){
  const board=document.querySelector('.letter-board'),guide=document.querySelector('.first-play-guide');
  const dock=document.querySelector('.solo-control-dock'),heading=document.querySelector('dialog[open] .modal-head h2');
@@ -26,6 +26,7 @@ function readFirstSession(){
    reachable:button.contains(document.elementFromPoint(...center))};
  });
  return {text:document.body.innerText,guide:guide?.innerText??null,guideTarget:guide?.querySelector('b')?.textContent,
+  guidance:rect(guide?.querySelector('[role=status]')),badge:rect(dock?.querySelector('.hint-button>span')),
   board:rect(board),stage:rect(board?.closest('.board-stage')),cornerCells:[rect(cells[0]),rect(cells[cells.length-1])],
   controls,overflow:document.documentElement.scrollWidth>innerWidth,dockBottom:rect(dock)?.bottom,
   headingOutline:heading?getComputedStyle(heading).outlineStyle:null,viewport:innerHeight};
@@ -44,22 +45,35 @@ function assertPlayArea(start,current){
  assert.ok(current.dockBottom<=current.viewport+1);
  for(const button of current.controls){
   assert.ok(button.reachable&&button.height>=44,'Unreachable touch target: '+button.label);
-  if(current.viewport<=740)assert.ok(button.width>=44,'Compact control is too narrow: '+button.label);
+  assert.ok(button.width>=44,'Control is too narrow: '+button.label);
  }
+ if(current.guidance&&current.viewport<=740){
+  const gap=(a,b)=>Math.max(a.x-b.x-b.width,b.x-a.x-a.width);
+  for(const box of [...current.controls,current.badge]){
+   assert(box,'The visible hint counter has measurable bounds');
+   assert(gap(current.guidance,box)>=8,'Guide too close to a control or its counter');
+  }
+ }
+
 }
 try{
- for(const [width,height] of (before?[[375,667]]:[[320,568],[375,667],[393,852],[430,932]])){
-  await page.viewport(width,height,1);await page.goto(url);await page.evaluate(`localStorage.clear();localStorage.setItem('kelime-teneffusu-v2',${JSON.stringify(JSON.stringify(progress))})`);await page.goto(url);
+ for(const [width,height] of (before?[[320,568],[393,852]]:[[320,568],[375,667],[393,852],[430,932]])){
+  await page.viewport(width,height,2,{top:width<=375?20:59,bottom:width<=375?0:34,left:0,right:0});await page.goto(url);await page.evaluate(`localStorage.clear();localStorage.setItem('kelime-teneffusu-v2',${JSON.stringify(JSON.stringify(progress))})`);await page.goto(url);
   const home=await capture('home',width);await page.evaluate(`document.querySelector('.stage-play').click()`);await sleep(500);const start=await capture('start',width);
+  if(!before&&width===320){
+   await page.evaluate("document.documentElement.dataset.leftHanded='true'");
+   const mirrored=await capture('left-handed',width);assertPlayArea(start,mirrored);
+   await page.evaluate("document.documentElement.dataset.leftHanded='false'");
+  }
   const chapter=fixture.chapters[0],first=chapter.placements.find(p=>p.label===start.guideTarget)??chapter.placements[0];
   const draw=async(p)=>{const r=await page.evaluate(`(()=>{const b=document.querySelector('.letter-board').getBoundingClientRect();return {x:b.x,y:b.y,w:b.width,h:b.height}})()`);const point=c=>[r.x+(c[1]+.5)*r.w/chapter.shape.columns,r.y+(c[0]+.5)*r.h/chapter.shape.rows],a=point(p.a),b=point(p.b);await page.touch(Array.from({length:14},(_,i)=>[a[0]+(b[0]-a[0])*i/13,a[1]+(b[1]-a[1])*i/13]));};
   let hint=null,miss=null;
-  if(!before&&width===320){
+  if(width===320){
    const hintButton=start.controls.find(b=>b.label.includes('İpucu'));
    await page.touch([hintButton.center]);await sleep(120);
-   hint=await capture('hint',width);assert.match(hint.guide,/ilk harf/i);assertPlayArea(start,hint);
+   hint=await capture('hint',width);assert.match(hint.guide,/ilk harf/i);if(!before)assertPlayArea(start,hint);
    const short={...first,b:first.b.map((n,i)=>n-Math.sign(n-first.a[i]))};await draw(short);await sleep(120);
-   miss=await capture('near-miss',width);assert.match(miss.guide,/harfine kadar kaydır/);assertPlayArea(start,miss);
+   miss=await capture('near-miss',width);assert.match(miss.guide,/harfine kadar kaydır/);if(!before)assertPlayArea(start,miss);
   }
   await draw(first);const accepted=await read();await sleep(1600);const firstWord=await capture('first-word',width);
   for(const p of chapter.placements.filter(p=>p.id!==first.id)){await draw(p);await sleep(200);}

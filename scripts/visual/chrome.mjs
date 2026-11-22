@@ -1,5 +1,5 @@
 // Dependency-free driver for a local, headless Google Chrome (DevTools protocol).
-// Optional developer tooling: it is not part of CI and installs nothing.
+// Used by local visuals and the CI mobile contrast check.
 import {spawn} from 'node:child_process';
 import {existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -55,6 +55,7 @@ export async function launch({port = 9333} = {}) {
   await call('Runtime.enable');
   return {
     errors,
+    send: call,
     async startRecording(directory){mkdirSync(directory,{recursive:true});recording={directory,frames:[]};await call('Page.startScreencast',{format:'jpeg',quality:85,everyNthFrame:1,maxWidth:430,maxHeight:932});},
     async stopRecording(){await call('Page.stopScreencast');const result=recording;recording=null;if(result)writeFileSync(path.join(result.directory,'frames.json'),JSON.stringify(result.frames));return result?.frames??[];},
     async key(key,code=key) {
@@ -85,7 +86,8 @@ export async function launch({port = 9333} = {}) {
     },
     async screenshot(file) {
       const {data} = await call('Page.captureScreenshot', {format: 'png'});
-      writeFileSync(file, Buffer.from(data, 'base64'));
+      if (file) writeFileSync(file, Buffer.from(data, 'base64'));
+      else return data;
     },
     async close() {
       try { await send('Browser.close'); } catch { /* already closed */ }

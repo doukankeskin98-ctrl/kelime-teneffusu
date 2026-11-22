@@ -3,7 +3,7 @@ import {safetyFailure} from '@/lib/game/player-safety';
 import {env} from 'cloudflare:workers';
 import {authJson,boundedJson,gameMember,requireSameOrigin} from '@/lib/auth/server';
 import {IdentityError} from '@/lib/auth/verify';
-import {GameError} from '@/lib/game/server';
+import {GameError,GameService} from '@/lib/game/server';
 import {SocialService} from '@/lib/game/social';
 import {rateLimit} from '@/lib/game/security';
 import {recordOperationalFault} from '@/lib/studio/health';
@@ -22,6 +22,7 @@ export async function POST(request:Request){try{
  requireSameOrigin(request);const game=service(),member=await gameMember(request);if(!member)throw new GameError('Bir oyuncu profiliyle devam et.',401);
  await rateLimit(env.DB!,'social:'+member.userId,100);
  const data=await boundedJson(request,4096),code=typeof data['code']==='string'?data['code'].toUpperCase():'';
+ if(['create','start','invite','accept'].includes(String(data['action']))&&!(await new GameService(env.DB!).profile(member.userId)).nickname.trim())throw new GameError('Arkadaşlarınla oynamak için oyuncu adını seç.',409,'PLAYER_NAME_REQUIRED');
  switch(data['action']){
   case 'create':return authJson(await game.create(member.userId,data['chapterId']??data['themeId']));
   case 'start':return authJson(await game.start(member.userId,code));

@@ -9,7 +9,7 @@ import {recordOperationalFault} from '@/lib/studio/health';
 import {THEMES} from '@/lib/game/catalog';
 import {releaseCatalogue} from '@/lib/studio/releases';
 export const dynamic='force-dynamic';
-function store(){if(!env.DB)throw new StudioError('Yeni keşiflere şu an ulaşılamıyor.',503);return new ChapterStore(env.DB);}
+function store(){if(!env.DB)throw new StudioError('Bölümlere şu an ulaşılamıyor.',503);return new ChapterStore(env.DB);}
 export async function GET(request:Request){try{
  const service=store(),url=new URL(request.url),id=url.searchParams.get('id');
  if(url.searchParams.get('collection')==='releases'&&!id&&!url.searchParams.has('action')){const theme=url.searchParams.get('theme')??undefined;if(theme&&!THEMES.some(t=>t.id===theme))throw new StudioError('Bu dünya bulunamadı.',400);return authJson(releaseCatalogue(Number(url.searchParams.get('offset')??0),Date.now(),theme));}
@@ -23,4 +23,4 @@ export async function PUT(request:Request){try{
  if('expectedOwnerId' in data&&data['expectedOwnerId']!==member.userId)throw new StudioError('Hesap değişti. Kayıt bu cihazda korunuyor.',409);
  return authJson(await service.saveProgress(member.userId,data['id'],data['save']));
  }catch(e){return failure(e);}}
-async function failure(e:unknown){const known=e instanceof StudioError||e instanceof IdentityError||e instanceof GameError,status=known?e.status:503;if(status>=500)await recordOperationalFault(env.DB,'chapters');return authJson({error:known?e.message:'Bu keşfe şu an ulaşılamıyor. Yeniden dene.'},status);}
+async function failure(e:unknown){const known=e instanceof StudioError||e instanceof IdentityError||e instanceof GameError,status=known?e.status:503;if(status>=500)await recordOperationalFault(env.DB,'chapters');return authJson({error:known?e.message:'Bu bölüme şu an ulaşılamıyor. Yeniden dene.'},status);}

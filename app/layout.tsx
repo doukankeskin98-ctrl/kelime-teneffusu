@@ -6,7 +6,7 @@ export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',t
 export const metadata: Metadata = {
   metadataBase: new URL("https://kelime-teneffusu.healica.chatgpt.site"),
   title: "Kelime Teneffüsü | Keşfet, bul, kapış",
-  description: "16 dünya, özel keşif rotaları, Gizli Tema ve arkadaşlarınla gerçek kelime düelloları. Merakına bir teneffüs.",
+  description: "52 dünya, günlük bulmacalar, Gizli tema ve arkadaşlarınla gerçek kelime düelloları. Merakına bir teneffüs.",
   alternates: {canonical:"/"},
   openGraph: {title:"Kelime Teneffüsü",description:"Keşfet. Bul. Arkadaşlarınla kapış.",locale:"tr_TR",type:"website",images:[{url:"/share-card.png",width:1200,height:630,alt:"Kelime Teneffüsü: merakına bir teneffüs."}]},
   twitter: {card:"summary_large_image",title:"Kelime Teneffüsü",images:["/share-card.png"]},

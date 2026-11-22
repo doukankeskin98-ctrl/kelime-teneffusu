@@ -1,3 +1,11 @@
+20 Kasım 2026 · **0.57.6 yerel aday** · Ana ekran, Yolculuğum ve bölüm başlığında okunurluk, hesap silme onayı ve 34 ekranlık görsel kontrol. [Değişiklikler ve ölçüm yöntemi](okunurluk-0576.md).
+
+19 Kasım 2026 · **0.57.4 yerel aday** · Küçük ekranda sabit tahta ve alt araçlar, İpucu düğmesinden hedef seçimi ve kalabalık kelime listesinde dört sütun. [Ölçümler ve cihaz kontrolünün kapsamı](sabit-tahta-0574.md).
+
+18 Kasım 2026 · **0.57.3 yerel aday** · Okunaklı seçim çizgisi, arka arkaya çizim, erişilebilir rehber ve tahtadan albüm parçasına bölüm sonu geçişi. [Oyun hissi ve doğrulama](oyun-hissi-0573.md).
+
+18 Kasım 2026 · **0.57.2 yerel aday** · Gizlilik, destek ve dört rehberde metin kontrastı, doğru dünya karşılaması ve küçük telefonda ilk çizimin yerleşimi. Ölçümler ve doğrulama [0.57.2 kalite raporunda](kalite-0572.md).
+
 18 Kasım 2026 · 0.56.2 · Küçük telefonlarda ilk kelimeden sonra tahta yerinde kalır. Yeni çizimin ilk harfi hemen görünür. Bölümün sonunda kelime çizgileri sonuç açılmadan önce kısa süre manzarada kalır. Geri dönüş noktası 0.56.1 (Sites 113).
 
 16 Kasım 2026 · **0.56.1**: ECC seçici beceri kurulumu; Arena eski tur penceresi ve sonradan yüklenen ekranların yerinde yeniden denenmesi. Kayıt/312 bölüm/çizim ve animasyon zamanlamaları aynı. Rapor: docs/release-0.56.1.md. iOS50 paketlendi; telefona kurulmadı.

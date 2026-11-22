@@ -17,5 +17,5 @@ export function nextDiscovery(progress:Progress){
  const key=config.journey?'route:'+config.journey:`${config.themeId}.${config.level}`,save=progress.saves[key];
  const mode=config.practice?'replay':save&&!save.complete&&save.strokes.length?'continue':Object.keys(progress.saves).length?'next':'start';
  const title=config.journey?journeyById(config.journey)!.title:LEVEL_NAMES[config.level]!;
- return {config,title,theme:findTheme(config.themeId).title,mode,label:mode==='continue'?'Keşfe devam et':mode==='replay'?'Bir daha keşfet':mode==='next'?'Sıradaki keşif':'Keşfe başla',found:mode==='continue'?save!.strokes.length:0};
+ return {config,title,theme:findTheme(config.themeId).title,mode,label:mode==='continue'?'Bölüme devam et':mode==='replay'?'Tekrar oyna':mode==='next'?'Sıradaki bölüm':'Bölüme başla',found:mode==='continue'?save!.strokes.length:0};
 }

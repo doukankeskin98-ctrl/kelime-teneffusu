@@ -17,13 +17,13 @@ function boot(native=true,available=true){
  const modules:Record<string,unknown>={
   'react-dom/client':{createRoot:()=>({render(){}})},'react/jsx-runtime':{jsx:()=>null},
   '@capacitor/core':{Capacitor:{isNativePlatform:()=>native,getPlatform:()=>native?'ios':'web',isPluginAvailable:(name:string)=>name==='GameHaptics'&&available},CapacitorHttp:{request(){}},registerPlugin:(name:string)=>{registrations.push(name);return plugin;}},
-  '@capacitor/app':{App:{addListener:async(_event:string,fn:typeof listener)=>{listener=fn;}}},
+  '@capacitor/app':{App:{addListener:async(_event:string,fn:typeof listener)=>{if(_event==='appStateChange')listener=fn;}}},
   '@capacitor/haptics':{Haptics:fallback,ImpactStyle:{Light:'light',Medium:'medium'},NotificationType:{Success:'success'}},
   '@/components/game/App':{GameApp:()=>null},'@/lib/studio/releases':{releaseCatalogue:()=>({chapters:[],themeCounts:{}})},
   '@/lib/platform/runtime':{setNativeTransport(){},setGameActive:(value:boolean)=>{active=value;},gameIsActive:()=>active},
   '@/lib/platform/native-transport':{nativeApiTransport:()=>{}},'@/lib/platform/native-haptics':{nativeHaptics},
   '@/lib/game/haptics':{setHapticsAdapter:(value:HapticsAdapter)=>{adapter=value;},stopHapticSelection:()=>adapter?.stopSelection?.()},
-  '@/lib/platform/engagement':{setEngagementAdapter(){}},'@/lib/platform/incoming-links':{attachIncomingLinks},'@/app/game-styles.css':{},'./game-center':{installNativeGameCenter(){}},'./native.css':{},'./sharing':{installNativeSharing(){}}
+  '@/lib/platform/progress-backup':{setNativeProgressStore(){}},'@/lib/platform/engagement':{setEngagementAdapter(){}},'@/lib/platform/incoming-links':{attachIncomingLinks},'@/app/game-styles.css':{},'./game-center':{installNativeGameCenter(){}},'./native.css':{},'./sharing':{installNativeSharing(){}}
  };
  const document=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},getElementById:()=>({})});
  vm.runInNewContext(compiled,{exports:{},require:(name:string)=>{assert(name in modules,name);return modules[name];},window:new EventTarget(),document,Event,requestAnimationFrame:(fn:()=>void)=>{fn();return 1;}});

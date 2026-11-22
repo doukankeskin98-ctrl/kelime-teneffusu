@@ -14,22 +14,19 @@
  background:transparent!important; /* the normal board sets its paper inline */
  border-color:transparent;box-shadow:none;outline:none
 }
-.quiet-play[data-result-phase=exit] .letter-board::after{
- content:'';position:absolute;inset:0;z-index:0;background:var(--board-paper,var(--berrak-surface,#fff));
- border-radius:inherit;pointer-events:none
-}
-.quiet-play[data-result-phase=exit] .letter-board::after,
-.quiet-play[data-result-phase=exit] .letter-grid,
+.quiet-play[data-result-phase=exit] .letter-grid {visibility:hidden}
+.quiet-play[data-result-phase=exit] .board-scroll {background:transparent}
+
 .quiet-play[data-result-phase=exit] .viewport-targets,
 .quiet-play[data-result-phase=exit] .solo-control-dock,
 .quiet-play[data-result-phase=exit] .board-input-tools,
 .quiet-play[data-result-phase=exit] .play-feedback-rail{
  animation:play-layer-fade 70ms ease-out both
 }
-.quiet-play[data-result-phase=exit] .board-ink{animation:play-ink-exit var(--result-exit-ms) linear both}
+.quiet-play[data-result-phase=exit] .board-ink{animation:play-ink-exit 80ms ease-out both}
 .quiet-play[data-result-phase=exit] .board-ink :is(.active-selection,.is-pending,.word-end-flash,.hint-guide,.hint-ring,rect){visibility:hidden}
 @keyframes play-layer-fade{from{opacity:1}to{opacity:0}}
-@keyframes play-ink-exit{0%,70%{opacity:1}100%{opacity:0}}
+@keyframes play-ink-exit{from{opacity:.34}to{opacity:0}}
 @keyframes play-header-exit{to{opacity:0;transform:translateY(-12px)}}
 @keyframes play-board-exit{to{opacity:0;transform:scale(.985)}}
 @keyframes play-tools-exit{to{opacity:0;transform:translateY(12px)}}

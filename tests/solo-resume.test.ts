@@ -1,3 +1,5 @@
+import * as authoredJourney from '../lib/game/authored-journey.ts';
+import {pilotMetric} from '../lib/game/telemetry.ts';
 import * as journeyRevisions from '../lib/game/journey-revisions.ts';
 import * as progressStorage from '../lib/game/progress-storage.ts';
 import * as progressCodec from '../lib/game/progress-codec.ts';
@@ -76,7 +78,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true,jour
   react:hooks,'react/jsx-runtime':{jsx:(type:unknown,props:Record<string,unknown>)=>({type,props}),jsxs:(type:unknown,props:Record<string,unknown>)=>({type,props}),Fragment:'Fragment'},
   '@/lib/game/story-content':stories,'./StoryExperience':{StoryHud:'StoryHud',StoryResult:'StoryResult'},'@/lib/game/riddle-content':riddleContent,'@/lib/game/catalog':catalog,'@/lib/game/engine':engine,'@/lib/game/content':content,
   '@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,
-  '@/lib/studio/chapter-progress':chapterProgress,'@/lib/game/telemetry':{track(){}},
+  '@/lib/studio/chapter-progress':chapterProgress,'@/lib/game/telemetry':{track(){},pilotMetric},
   '@/lib/game/main-journey':mainJourney,'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},
   './common':{PlayLayout:'PlayLayout',PlayControls:'PlayControls',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}},
   './AchievementLoop':{JourneyObjective:'JourneyObjective',VictorySummary:'VictorySummary',NextJourneyPreview:'NextJourneyPreview'}
@@ -85,7 +87,7 @@ function harness({initial=saved([]),practice=false,known=false,reduced=true,jour
  vm.runInNewContext(ts.transpileModule(readFileSync('components/game/useResultPresentation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:resultHook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback,window:windowTarget,document:documentTarget,performance:{now:()=>now},setTimeout:timer(false),clearTimeout:(id:number)=>timers.delete(id)});
  modules['./useResultPresentation']=resultHook;
  const exports:Record<string,unknown>={};
- vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
+ vm.runInNewContext(compiled,{exports,require:(name:string)=>name==='@/lib/game/authored-journey'?authoredJourney:name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:modules[name]??{},
   window:windowTarget,document:documentTarget,performance:{now:()=>now},Event,
   setInterval:timer(true),setTimeout:timer(false),clearInterval:(id:number)=>timers.delete(id),clearTimeout:(id:number)=>timers.delete(id)
  });
@@ -136,7 +138,7 @@ describe('Solo live account resumption',()=>{
    page.setResume(saved([2],30,1));await page.settle();
    assert.deepEqual(page.save.strokes.map(s=>s.id),board.placements.slice(0,3).map(s=>s.id));
    assert.equal(page.save.elapsed,30);assert.equal(page.save.hints,1);
-   assert.match(page.text(),/Hesabındaki keşifler bu tahtaya eklendi/);
+   assert.match(page.text(),/Hesabındaki kelimeler bu tahtaya eklendi/);
   }finally{page.close();}
  });
  it('preserves both discoveries when resume and a fresh selection queue before the next render',async()=>{

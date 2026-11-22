@@ -7,7 +7,7 @@ import {Board} from './Board';
 import {COAST_CHAPTERS} from '@/lib/game/coast-content';
 import {reviewDraft} from '@/lib/game/content-review';
 import {WordList} from './common';
-const INITIAL={title:'Küçük bir keşif',themeId:'uzay',words:['KAPSÜL','METEOR','YÖRÜNGE','UYDU'],size:7,seed:42};
+const INITIAL={title:'Kısa bir bölüm',themeId:'uzay',words:['KAPSÜL','METEOR','YÖRÜNGE','UYDU'],size:7,seed:42};
 export function ContentStudio(){
  const [definitions,setDefinitions]=useState('');
  const [title,setTitle]=useState(INITIAL.title),[themeId,setThemeId]=useState(INITIAL.themeId),[words,setWords]=useState(INITIAL.words.join('\n')),[size,setSize]=useState(INITIAL.size),[seed,setSeed]=useState(42),[solutions,setSolutions]=useState(false),[strokes,setStrokes]=useState<Stroke[]>([]),[notice,setNotice]=useState('');

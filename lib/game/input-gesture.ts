@@ -1,4 +1,4 @@
-import type {Cell,Puzzle,Stroke,Target} from './engine';
+import {match,type Cell,type Puzzle,type Stroke,type Target} from './engine.ts';
 import {dimensions,gridShape,type BoardShape} from './board-projection.ts';
 /** Extra center tolerance between cells; on-ray cell interiors are also valid. */
 export const CELL_HIT_RADIUS=.47;
@@ -33,12 +33,54 @@ export function earlyWordEnd(board:Pick<Puzzle,'grid'|'size'>,targets:Target[],s
  const word=candidates.filter(word=>word.length>=2&&word.length<=length&&!candidates.some(long=>long.length>word.length&&long.startsWith(word))).sort((a,b)=>a.length-b.length)[0];
  return word?[start[0]+dr*(word.length-1),start[1]+dc*(word.length-1)]:null;
 }
-export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell,size:BoardShape,release=false):GestureStep{
+// A finger can straddle the boundary between two letters. On lift, allow only
+// endpoints physically within that small contact margin on the established ray.
+// An exact match takes priority; two plausible words must never award either.
+export function touchReleaseWord(board:Pick<Puzzle,'grid'|'size'>,targets:Target[],found:Stroke[],
+ start:Cell,end:Cell,down:Cell,up:Cell,margin:number):{a:Cell;b:Cell}|null {
+ const dy=end[0]-start[0],dx=end[1]-start[1],steps=Math.max(Math.abs(dy),Math.abs(dx));
+ if(steps<2||!targets.length||margin<=0||!Number.isFinite(margin))return null;
+ if(dy&&dx&&Math.abs(dy)!==Math.abs(dx))return null;
+ const puzzle={...board,targets};
+ if(match(puzzle,start,end))return null;
+ const dr=Math.sign(dy),dc=Math.sign(dx);
+ const within=(p:Cell,c:Cell)=>Math.hypot(
+  Math.max(c[0]-p[0],0,p[0]-c[0]-1),Math.max(c[1]-p[1],0,p[1]-c[1]-1)
+ )<=Math.min(margin,.12);
+ let result:{a:Cell;b:Cell}|null=null;
+ for(const deltaA of [0,-1,1]){
+  const a:Cell=[start[0]+deltaA*dr,start[1]+deltaA*dc];
+  if(!within(down,a))continue;
+  for(const deltaB of [0,1,-1]){
+   if(deltaA===0&&deltaB===0)continue;
+   const b:Cell=[end[0]+deltaB*dr,end[1]+deltaB*dc];
+   if(!within(up,b))continue;
+   const target=match(puzzle,a,b);
+   if(!target||target.text.length<4||found.some(s=>s.id===target.id))continue;
+   if(result)return null;
+   result={a,b};
+  }
+ }
+ return result;
+}
+export function advanceGesture(start:Cell,current:Cell,axis:Cell|null,point:Cell,size:BoardShape,release=false,downContact?:Cell):GestureStep{
  const unchanged={cell:current,axis},shape=dimensions(size),limits=[shape.rows,shape.columns];
  if(!point.every(Number.isFinite)||limits.some(n=>!Number.isInteger(n)||n<1))return unchanged;
  // Pointer capture may carry a fast swipe beyond the board. Limit that grace to
  // two cells: ordinary finger overshoot is accepted, remote/corrupt samples are not.
  if(point.some((value,i)=>value< -2||value>limits[i]!+2))return unchanged;
+ // Close to the anchor, its centre can be almost half a cell away from the
+ // contact. Trust the finger's heading when it agrees with the neighbour it hit.
+ if(downContact){
+  const row=Math.floor(point[0]),col=Math.floor(point[1]),dr=row-start[0],dc=col-start[1];
+  if(row>=0&&row<shape.rows&&col>=0&&col<shape.columns&&Math.max(Math.abs(dr),Math.abs(dc))===1){
+   const y=point[0]-downContact[0],x=point[1]-downContact[1];
+   const angle=Math.round(Math.atan2(y,x)/(Math.PI/4))*Math.PI/4;
+   if(Math.hypot(y,x)>=.5&&Math.round(Math.sin(angle))===dr&&Math.round(Math.cos(angle))===dc){
+    return {cell:[row,col],axis:[dr,dc]};
+   }
+  }
+ }
  const dy=point[0]-start[0]-.5,dx=point[1]-start[1]-.5;
  if(Math.hypot(dy,dx)<.5&&!axis)return unchanged;
  // The first letter is the anchor, not the first direction. Re-evaluate the ray

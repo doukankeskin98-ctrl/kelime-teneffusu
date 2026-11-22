@@ -15,6 +15,6 @@ export function PlayComfortSettings({section='all'}:{section?:'all'|'haptics'|'m
  if(!value||(section==='haptics'&&!vibration))return null;
  return <div className="play-comfort-settings game-settings" aria-label="Oyun hissi">
   {section!=='motion'&&vibration&&<button className="comfort-setting" role="switch" aria-checked={value.haptics} onClick={value.onHaptics}><Smartphone/><span><b>Titreşim</b></span><i className="switch" aria-hidden="true"/></button>}
-  {section!=='haptics'&&<button className="comfort-setting" role="switch" aria-checked={value.comfort.reduceMotion} onClick={()=>value.onComfort({...value.comfort,reduceMotion:!value.comfort.reduceMotion})}><Move/><span><b>Hareketi azalt</b><small>Kısa ve sakin geçişler</small></span><i>{value.comfort.reduceMotion?'Açık':'Kapalı'}</i></button>}
+  {section!=='haptics'&&<button className="comfort-setting" role="switch" aria-checked={value.comfort.reduceMotion} onClick={()=>value.onComfort({...value.comfort,reduceMotion:!value.comfort.reduceMotion})}><Move/><span><b>Hareketi azalt</b><small>Kısa ve sakin geçişler</small></span><i className="switch" aria-hidden="true"/></button>}
  </div>;
 }

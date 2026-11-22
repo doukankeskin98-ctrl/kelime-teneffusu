@@ -6,7 +6,7 @@ import {useEffect,useLayoutEffect,useMemo,useRef,useState,type CSSProperties,typ
 import {attachBoardSize,setBoardDrawing} from '@/lib/game/viewport';
 import {attachLegacyTouch,type BoardPointer} from '@/lib/game/legacy-ui';
 import {type Cell,type Puzzle,type Stroke,type Target} from '@/lib/game/engine';
-import {advanceGesture,earlyWordEnd,gestureTip} from '@/lib/game/input-gesture';
+import {advanceGesture,earlyWordEnd,gestureTip,touchReleaseWord} from '@/lib/game/input-gesture';
 import {gridShape,surfaceLine} from '@/lib/game/board-projection';
 import {track} from '@/lib/game/telemetry';
 /** Existing numeric groups retain their color. Bonus paths use the stable target order. */
@@ -15,7 +15,7 @@ export function strokeColor(id:string,index?:number){
  const fallback=index!==undefined&&index>=0?index:Array.from(id).reduce((n,c)=>(n*31+c.charCodeAt(0))>>>0,0);
  return `var(--word-${Math.abs(Number.isFinite(group)?group:fallback)%8})`;
 }
-type Drag={cells:Cell[];id:number;source:'pointer'|'touch';type:string;start:Cell;current:Cell;axis:Cell|null;moved:boolean;tapOnly:boolean;x:number;y:number;pan:boolean;rect:DOMRect};
+type Drag={cells:Cell[];id:number;source:'pointer'|'touch';type:string;start:Cell;downContact:Cell;current:Cell;axis:Cell|null;moved:boolean;tapOnly:boolean;x:number;y:number;pan:boolean;rect:DOMRect};
 export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,blocked=false,busy=false,pan=false,statusText='Sunucu onayı bekleniyor.',zoom=false,hint,hintEnd,demonstration,onCommit,onPreview,onSelectStart,onSelectLetter,onSelectEnd,onResume}:{board:Pick<Puzzle,'grid'|'size'>;strokes:Stroke[];earlyTargets?:Target[];paused?:boolean;readOnly?:boolean;blocked?:boolean;busy?:boolean;pan?:boolean;statusText?:string;zoom?:boolean;hint?:Cell|null;hintEnd?:Cell|null;demonstration?:{a:Cell;b:Cell}|null;onCommit:(a:Cell,b:Cell)=>void;onPreview?:(text:string)=>void;onSelectStart?:()=>void;onSelectLetter?:(depth:number)=>void;onSelectEnd?:()=>void;onResume?:()=>void}){
  const rejected=useRef<SVGGElement|null>(null),rejectTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);
  const clearRejection=()=>{clearTimeout(rejectTimer.current);rejected.current?.remove();rejected.current=null;};
@@ -83,12 +83,13 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
   if(disabled.current||!e.isPrimary||(e.pointerType==='mouse'&&e.button!==0))return;
   if(drag.current){const current=drag.current;if(e.input==='touch'&&current.source==='pointer'&&current.type==='touch'){current.id=e.pointerId;current.source='touch';current.rect=ref.current!.getBoundingClientRect();if(!current.tapOnly)e.preventDefault();}return;}
   const rect=ref.current!.getBoundingClientRect(),start=cellAt(e.clientX,e.clientY,rect),tapOnly=zoom&&pan&&e.pointerType!=='mouse';
-  drag.current={cells:[start],id:e.pointerId,source:e.input??'pointer',type:e.pointerType,start,current:start,axis:null,moved:false,tapOnly,x:e.clientX,y:e.clientY,pan:false,rect};
+  const downContact:Cell=[(e.clientY-rect.top)/rect.height*rows,(e.clientX-rect.left)/rect.width*columns];
+  drag.current={cells:[start],downContact,id:e.pointerId,source:e.input??'pointer',type:e.pointerType,start,current:start,axis:null,moved:false,tapOnly,x:e.clientX,y:e.clientY,pan:false,rect};
   if(!tapOnly){contact.current=true;setBoardDrawing(ref.current!,true,window);e.preventDefault();try{if(e.input!=='touch'&&typeof window.PointerEvent==='function')ref.current?.setPointerCapture?.(e.pointerId);}catch{/* Capture is optional; an active in-board swipe still works. */}if(!anchor)show(drag.current.cells);}
   const at=performance.now();requestAnimationFrame(()=>track('input_feedback',performance.now()-at));
  };
  const advance=(d:Drag,x:number,y:number,release=false)=>{
-  const rect=d.rect,point:Cell=[(y-rect.top)/rect.height*rows,(x-rect.left)/rect.width*columns],step=advanceGesture(d.start,d.current,d.axis,point,shape,release);
+  const rect=d.rect,point:Cell=[(y-rect.top)/rect.height*rows,(x-rect.left)/rect.width*columns],step=advanceGesture(d.start,d.current,d.axis,point,shape,release,d.downContact);
   d.axis=step.axis;if(same(d.current,step.cell))return false;d.current=step.cell;d.cells=surfaceLine(d.start,d.current,shape);if(!same(d.start,step.cell))d.moved=true;return true;
  };
  const move=(e:BoardPointer)=>{
@@ -105,7 +106,26 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
   const point:Cell=[(e.clientY-d.rect.top)/d.rect.height*rows,(e.clientX-d.rect.left)/d.rect.width*columns];
   schedule(d.cells,gestureTip(d.start,d.current,d.axis,point,shape),changed);
  };
- const up=(e:BoardPointer)=>{const d=drag.current;if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;d.rect=ref.current!.getBoundingClientRect();const cell=cellAt(e.clientX,e.clientY,d.rect);drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;releaseContact();if(disabled.current)return clear();if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);}else{advance(d,e.clientX,e.clientY,true);if(d.moved)commit(d.start,earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current)||d.current);else if(same(cell,d.start))tap(d.start);else clear();}};
+ const up=(e:BoardPointer)=>{
+  const d=drag.current;
+  if(!d||d.id!==e.pointerId||d.source!==(e.input??'pointer'))return;
+  const rect=ref.current!.getBoundingClientRect();d.rect=rect;
+  const cell=cellAt(e.clientX,e.clientY,rect);
+  drag.current=null;pending.current=null;cancelAnimationFrame(frame.current);frame.current=0;releaseContact();
+  if(disabled.current)return clear();
+  if(d.tapOnly){if(!d.pan&&same(cell,d.start))tap(d.start);return;}
+  advance(d,e.clientX,e.clientY,true);
+  if(!d.moved){if(same(cell,d.start))tap(d.start);else clear();return;}
+  const end=earlyTargets&&earlyWordEnd(board,earlyTargets,strokes,d.start,d.current);
+  if(end)return commit(d.start,end);
+  if(earlyTargets&&d.type==='touch'){
+   const upContact:Cell=[(e.clientY-rect.top)/rect.height*rows,(e.clientX-rect.left)/rect.width*columns];
+   const tolerance=Math.min(.12,6/Math.max(rect.width/columns,rect.height/rows));
+   const word=touchReleaseWord(board,earlyTargets,strokes,d.start,d.current,d.downContact,upContact,tolerance);
+   if(word)return commit(word.a,word.b);
+  }
+  commit(d.start,d.current);
+ };
  const cancel=(e:BoardPointer)=>{if(drag.current?.id===e.pointerId&&drag.current.source===(e.input??'pointer'))clear();};
  const key=(e:KeyboardEvent)=>{if(paused)return;clearRejection();ref.current?.classList.remove('board-entering');const dirs:Record<string,Cell>={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};const dir=dirs[e.key];if(dir){e.preventDefault();const next:Cell=[Math.max(0,Math.min(rows-1,cursor[0]+dir[0])),Math.max(0,Math.min(columns-1,cursor[1]+dir[1]))];setCursor(next);if(anchor&&!disabled.current)show(surfaceLine(anchor,next,shape));}else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!disabled.current)tap(cursor);}else if(e.key==='Escape')clear();};
  const legacyHandlers=useRef({down,move,up,cancel:clear,pan:()=>zoom&&pan||readOnly||blocked});legacyHandlers.current={down,move,up,cancel:clear,pan:()=>zoom&&pan||readOnly||blocked};
@@ -115,7 +135,7 @@ export function Board({board,strokes,earlyTargets,paused=false,readOnly=false,bl
  const resume=()=>{if(canResume&&!document.hidden&&gameIsActive()){clear();onResume?.();}};
  const grid=useMemo(()=>board.grid.flatMap((row,r)=>row.map((ch,c)=><span data-cell={`${r},${c}`} style={{'--letter-enter-delay':Math.min(60,(r+c)*6)+'ms'} as CSSProperties} ref={element=>{letters.current[r*columns+c]=element;}} key={`${r},${c}`}>{paused?'·':ch}</span>)),[board.grid,paused,columns]);
  return <div className={'board-scroll'+(zoom?' zoomed':'')}><div ref={ref} className={"letter-board"+(strokes.length?" has-found":"")} role="application" aria-busy={busy||undefined} aria-label={paused?'Kelime tahtası duraklatıldı. Hazır olduğunda devam et.':`${readOnly?'Bölüm tamamlandı. İnceleme tahtası. Klavyede oklarla harfleri incele.':blocked?'Kelime tahtası. '+statusText:'Kelime tahtası. Kaydır veya ilk ve son harfe dokun. Klavyede oklar ve Enter ile seç.'} ${focused?`${cursor[0]+1}. satır, ${cursor[1]+1}. sütun: ${board.grid[cursor[0]]?.[cursor[1]]??''}.`:''}`} tabIndex={paused?-1:0} onFocus={()=>setFocused(true)} onBlur={()=>{setFocused(false);clear();}} onKeyDown={key} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={cancel} onLostPointerCapture={cancel} onContextMenu={e=>e.preventDefault()} style={{'--n':columns,'--board-rows':rows,width:'100%',background:'var(--board-paper,var(--berrak-surface,#fff))',touchAction:zoom&&pan||readOnly||blocked?'pan-x pan-y':'none'} as CSSProperties}>
-  <svg viewBox={`0 0 ${columns} ${rows}`} className="board-ink" aria-hidden="true">{!paused&&strokes.map(s=><g key={s.id}><line className={'stroke-outline'+(busy&&!confirmedFound.current.has(s.id)?' is-pending':'')} {...line(s.a,s.b)} strokeWidth=".94" strokeLinecap="round"/><line className={'found-stroke'+(busy&&!confirmedFound.current.has(s.id)?' is-pending':!initialFound.current.has(s.id)?' is-new':'')} onAnimationEnd={()=>initialFound.current.add(s.id)} {...line(s.a,s.b)} stroke={strokeColor(s.id,earlyTargets?.findIndex(t=>t.id===s.id))} strokeWidth=".84" strokeLinecap="round"/>{!busy&&!initialFound.current.has(s.id)&&<circle className="word-end-flash" cx={s.b[1]+.5} cy={s.b[0]+.5} r=".38" fill="none" stroke={strokeColor(s.id,earlyTargets?.findIndex(t=>t.id===s.id))} strokeWidth=".09"/>}</g>)}<g ref={inkRef} className="active-selection" data-active="false"><line ref={outlineRef} className="active-stroke-outline" x1=".5" y1=".5" x2=".5" y2=".5" strokeWidth="1" strokeLinecap="round"/><line ref={lineRef} x1=".5" y1=".5" x2=".5" y2=".5" stroke="var(--selection)" strokeWidth=".83" strokeLinecap="round"/></g>{hint&&hintEnd&&!paused&&!readOnly&&!blocked&&<line className="hint-guide" {...line(hint,hintEnd)} fill="none" stroke="#a94d2e" strokeWidth=".16" strokeDasharray=".15 .14" strokeLinecap="round"/>}{hint&&!paused&&!readOnly&&!blocked&&<circle className="hint-ring" cx={hint[1]+.5} cy={hint[0]+.5} r=".42" fill="none" stroke="#a94d2e" strokeWidth=".075"/>}{focused&&!paused&&<rect x={cursor[1]+.07} y={cursor[0]+.07} width=".86" height=".86" rx=".2" fill="none" stroke="#21574b" strokeWidth=".065"/>}</svg>
+  <svg viewBox={`0 0 ${columns} ${rows}`} className="board-ink" aria-hidden="true">{!paused&&strokes.map(s=><g key={s.id} data-last-stroke={s===strokes.at(-1)||undefined}><line className={'stroke-outline'+(busy&&!confirmedFound.current.has(s.id)?' is-pending':'')} {...line(s.a,s.b)} strokeWidth=".94" strokeLinecap="round"/><line className={'found-stroke'+(busy&&!confirmedFound.current.has(s.id)?' is-pending':!initialFound.current.has(s.id)?' is-new':'')} onAnimationEnd={()=>initialFound.current.add(s.id)} {...line(s.a,s.b)} stroke={strokeColor(s.id,earlyTargets?.findIndex(t=>t.id===s.id))} strokeWidth=".84" strokeLinecap="round"/>{!busy&&!initialFound.current.has(s.id)&&<circle className="word-end-flash" cx={s.b[1]+.5} cy={s.b[0]+.5} r=".38" fill="none" stroke={strokeColor(s.id,earlyTargets?.findIndex(t=>t.id===s.id))} strokeWidth=".09"/>}</g>)}<g ref={inkRef} className="active-selection" data-active="false"><line ref={outlineRef} className="active-stroke-outline" x1=".5" y1=".5" x2=".5" y2=".5" strokeWidth="1" strokeLinecap="round"/><line ref={lineRef} x1=".5" y1=".5" x2=".5" y2=".5" stroke="var(--selection)" strokeWidth=".83" strokeLinecap="round"/></g>{hint&&hintEnd&&!paused&&!readOnly&&!blocked&&<line className="hint-guide" {...line(hint,hintEnd)} fill="none" stroke="#a94d2e" strokeWidth=".16" strokeDasharray=".15 .14" strokeLinecap="round"/>}{hint&&!paused&&!readOnly&&!blocked&&<circle className="hint-ring" cx={hint[1]+.5} cy={hint[0]+.5} r=".42" fill="none" stroke="#a94d2e" strokeWidth=".075"/>}{focused&&!paused&&<rect x={cursor[1]+.07} y={cursor[0]+.07} width=".86" height=".86" rx=".2" fill="none" stroke="#21574b" strokeWidth=".065"/>}</svg>
   <div className="letter-grid" aria-hidden="true">{grid}</div>{demonstration&&!paused&&!readOnly&&!blocked&&!busy&&!pan&&<DrawGuide key={demonstration.a.join(',')+':'+demonstration.b.join(',')} size={shape} a={demonstration.a} b={demonstration.b}/>}{paused&&!canResume&&<div className="board-paused"><span>Duraklatıldı</span><small>Hazır olduğunda devam et.</small></div>}
  </div>{canResume&&<button type="button" className="board-paused board-resume" onClick={resume} aria-label="Oyuna devam et"><span>Duraklatıldı</span><small>Devam etmek için tahtaya dokun</small></button>}</div>;
 }

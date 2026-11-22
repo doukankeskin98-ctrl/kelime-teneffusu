@@ -10,9 +10,9 @@ const packSave=(s:SavedLevel)=>[s.strokes.map(t=>[t.id,...t.a,...t.b]),s.elapsed
 function unpackSave(value:unknown){
  if(!Array.isArray(value)||value.length!==6)return fail();
  const [paths,elapsed,hints,complete,stars,revision]=value;
- if(!Array.isArray(paths)||paths.length>30||!Number.isInteger(elapsed)||elapsed<0||elapsed>604800||!Number.isInteger(hints)||hints<0||hints>3||![0,1].includes(complete)||!Number.isInteger(stars)||stars<0||stars>3||![1,2].includes(revision))return fail();
+ if(!Array.isArray(paths)||paths.length>30||!Number.isInteger(elapsed)||elapsed<0||elapsed>604800||!Number.isInteger(hints)||hints<0||hints>3||![0,1].includes(complete)||!Number.isInteger(stars)||stars<0||stars>3||![1,2,3].includes(revision))return fail();
  const strokes=paths.map(path=>{if(!Array.isArray(path)||path.length!==5||typeof path[0]!=='string'||path[0].length>64||path.slice(1).some(n=>!Number.isInteger(n)||n<0||n>31))return fail();return {id:path[0],a:[path[1],path[2]],b:[path[3],path[4]]};});
- return {strokes,elapsed,hints,complete:complete===1,stars,...(revision===2?{revision:2 as const}:{})};
+ return {strokes,elapsed,hints,complete:complete===1,stars,...((revision===2||revision===3)?{revision:revision as 2|3}:{})};
 }
 export function parseProgressEnvelope(raw:string):Record<string,unknown>{
  if(progressBytes(raw)>PROGRESS_MAX_BYTES)return fail();
@@ -25,7 +25,7 @@ export function parseProgressEnvelope(raw:string):Record<string,unknown>{
  if(data['revisionSaves']!==undefined){
   if(!object(data['revisionSaves'])||Object.keys(data['revisionSaves']).length>312)return fail();
   revisionSaves=Object.fromEntries(Object.entries(data['revisionSaves']).map(([key,versions])=>{
-   if(!object(versions)||Object.keys(versions).some(v=>!['1','2'].includes(v)))return fail();
+   if(!object(versions)||Object.keys(versions).some(v=>!['1','2','3'].includes(v)))return fail();
    return [key,Object.fromEntries(Object.entries(versions).map(([version,save])=>[version,unpackSave(save)]))];
   }));
  }

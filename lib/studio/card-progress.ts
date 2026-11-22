@@ -21,8 +21,8 @@ export function mergeCardProgress(a:ChapterCardProgress|undefined,b:ChapterCardP
  return parseCardProgress({foundIds:[...new Set([...a.foundIds,...b.foundIds])],elapsed:Math.max(a.elapsed,b.elapsed),hints:Math.max(a.hints,b.hints)},spec)!;
 }
 export function chapterCardCopy(value:ChapterCardProgress|undefined,state:ChapterCardState,spec:ChapterSpec){
- if(value?.complete)return {kind:'complete' as const,action:'Bir daha keşfet',detail:`${value.stars} yıldız · En iyi ${timeLabel(value.elapsed)}`};
+ if(value?.complete)return {kind:'complete' as const,action:'Tekrar oyna',detail:`${value.stars} yıldız · En iyi ${timeLabel(value.elapsed)}`};
  if(value?.foundIds.length){const total=chapterTargetIds(spec).length;return {kind:'continue' as const,action:'Kaldığın yerden',detail:`${value.foundIds.length}/${total} ${total>spec.words.length?'kelime parçası':'kelime'} bulundu`};}
- if(value&&state==='ready')return {kind:'new' as const,action:'Keşfe başla',detail:'Seni bekleyen bir keşif'};
+ if(value&&state==='ready')return {kind:'new' as const,action:'Bölüme başla',detail:'Yeni bölüm'};
  return {kind:'unknown' as const,action:'Keşfi aç',detail:state==='loading'?'İlerlemene bakılıyor…':state==='offline'?'Çevrimdışı · Bulut bilgisi alınamıyor':state==='error'?'İlerleme durumu alınamadı':'Yeni bir keşif'};
 }

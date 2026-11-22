@@ -1,0 +1,46 @@
+# Dünya yer adları (Türkçe yazım). Zemberek yalnız Türkiye yer adlarını içerir; bu liste [özel] kategoriler içindir.
+# Biçim: AD | tür. Claude, 19 Kasım 2026. Yazım: TDK Yazım Kılavuzu ve Türkçe atlas kullanımı.
+ROMA | İtalya başkenti
+PARİS | Fransa başkenti
+PRAG | Çekya başkenti
+MADRİD | İspanya başkenti
+OSLO | Norveç başkenti
+VARŞOVA | Polonya başkenti
+SOFYA | Bulgaristan başkenti
+BÜKREŞ | Romanya başkenti
+BRÜKSEL | Belçika başkenti
+DUBLİN | İrlanda başkenti
+MİLANO | İtalya şehri
+TOKYO | Japonya başkenti
+BERLİN | Almanya başkenti
+LONDRA | Birleşik Krallık başkenti
+VİYANA | Avusturya başkenti
+PEKİN | Çin başkenti
+MOSKOVA | Rusya başkenti
+DUBAİ | BAE şehri
+BAKÜ | Azerbaycan başkenti
+TAHRAN | İran başkenti
+HAVANA | Küba başkenti
+TORONTO | Kanada şehri
+DELHİ | Hindistan şehri
+BANGKOK | Tayland başkenti
+ATİNA | Yunanistan başkenti
+KAHİRE | Mısır başkenti
+LİZBON | Portekiz başkenti
+SİDNEY | Avustralya şehri
+SAHRA | Afrika çölü
+GOBİ | Asya çölü
+KALAHARİ | Afrika çölü
+ATAKAMA | Şili çölü
+NAMİB | Afrika çölü
+TUNUS | Tunus başkenti
+RABAT | Fas başkenti
+NAİROBİ | Kenya başkenti
+MARAKEŞ | Fas şehri
+RİYAD | Suudi Arabistan başkenti
+AMAZON | Güney Amerika ırmağı ve yağmur ormanı
+NİL | Afrika ırmağı
+HİMALAYA | Asya dağ sırası
+EVEREST | Dünyanın en yüksek dağı
+ALPLER | Avrupa dağ sırası
+ARAS | Doğu Anadolu ırmağı

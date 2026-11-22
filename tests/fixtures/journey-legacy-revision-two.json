@@ -1,0 +1,3439 @@
+{
+  "source": "2f5eaa2",
+  "fixtures": [
+    {
+      "id": "ufuk-gok-1",
+      "complete": false,
+      "board": {
+        "version": 2,
+        "size": 8,
+        "grid": [
+          [
+            "K",
+            "J",
+            "E",
+            "T",
+            "Ç",
+            "G",
+            "G",
+            "Ş"
+          ],
+          [
+            "Ğ",
+            "R",
+            "R",
+            "I",
+            "E",
+            "I",
+            "J",
+            "K"
+          ],
+          [
+            "A",
+            "L",
+            "Ş",
+            "K",
+            "K",
+            "N",
+            "S",
+            "P"
+          ],
+          [
+            "Z",
+            "I",
+            "Ğ",
+            "A",
+            "İ",
+            "A",
+            "U",
+            "I"
+          ],
+          [
+            "N",
+            "Ö",
+            "H",
+            "Y",
+            "R",
+            "M",
+            "T",
+            "Ç"
+          ],
+          [
+            "Ö",
+            "İ",
+            "Ş",
+            "T",
+            "D",
+            "T",
+            "O",
+            "G"
+          ],
+          [
+            "R",
+            "H",
+            "U",
+            "H",
+            "E",
+            "A",
+            "Ğ",
+            "P"
+          ],
+          [
+            "O",
+            "B",
+            "G",
+            "T",
+            "K",
+            "K",
+            "K",
+            "Ğ"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "ÇEKİRDEK",
+            "text": "ÇEKİRDEK",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "KATMAN",
+            "text": "KATMAN",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "YAKIT",
+            "text": "YAKIT",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "ISI",
+            "text": "ISI",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "IŞIN",
+            "text": "IŞIN",
+            "group": 4
+          }
+        ],
+        "placements": [
+          {
+            "id": "0.0",
+            "label": "ÇEKİRDEK",
+            "text": "ÇEKİRDEK",
+            "group": 0,
+            "a": [
+              0,
+              4
+            ],
+            "b": [
+              7,
+              4
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "KATMAN",
+            "text": "KATMAN",
+            "group": 1,
+            "a": [
+              7,
+              5
+            ],
+            "b": [
+              2,
+              5
+            ]
+          },
+          {
+            "id": "2.0",
+            "label": "YAKIT",
+            "text": "YAKIT",
+            "group": 2,
+            "a": [
+              4,
+              3
+            ],
+            "b": [
+              0,
+              3
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "IŞIN",
+            "text": "IŞIN",
+            "group": 4,
+            "a": [
+              1,
+              3
+            ],
+            "b": [
+              4,
+              0
+            ]
+          },
+          {
+            "id": "3.0",
+            "label": "ISI",
+            "text": "ISI",
+            "group": 3,
+            "a": [
+              3,
+              7
+            ],
+            "b": [
+              1,
+              5
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-1": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "0.0",
+                "a": [
+                  7,
+                  4
+                ],
+                "b": [
+                  0,
+                  4
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  2,
+                  5
+                ],
+                "b": [
+                  7,
+                  5
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": false,
+            "stars": 0
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-1",
+      "complete": true,
+      "board": {
+        "version": 2,
+        "size": 8,
+        "grid": [
+          [
+            "K",
+            "J",
+            "E",
+            "T",
+            "Ç",
+            "G",
+            "G",
+            "Ş"
+          ],
+          [
+            "Ğ",
+            "R",
+            "R",
+            "I",
+            "E",
+            "I",
+            "J",
+            "K"
+          ],
+          [
+            "A",
+            "L",
+            "Ş",
+            "K",
+            "K",
+            "N",
+            "S",
+            "P"
+          ],
+          [
+            "Z",
+            "I",
+            "Ğ",
+            "A",
+            "İ",
+            "A",
+            "U",
+            "I"
+          ],
+          [
+            "N",
+            "Ö",
+            "H",
+            "Y",
+            "R",
+            "M",
+            "T",
+            "Ç"
+          ],
+          [
+            "Ö",
+            "İ",
+            "Ş",
+            "T",
+            "D",
+            "T",
+            "O",
+            "G"
+          ],
+          [
+            "R",
+            "H",
+            "U",
+            "H",
+            "E",
+            "A",
+            "Ğ",
+            "P"
+          ],
+          [
+            "O",
+            "B",
+            "G",
+            "T",
+            "K",
+            "K",
+            "K",
+            "Ğ"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "ÇEKİRDEK",
+            "text": "ÇEKİRDEK",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "KATMAN",
+            "text": "KATMAN",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "YAKIT",
+            "text": "YAKIT",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "ISI",
+            "text": "ISI",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "IŞIN",
+            "text": "IŞIN",
+            "group": 4
+          }
+        ],
+        "placements": [
+          {
+            "id": "0.0",
+            "label": "ÇEKİRDEK",
+            "text": "ÇEKİRDEK",
+            "group": 0,
+            "a": [
+              0,
+              4
+            ],
+            "b": [
+              7,
+              4
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "KATMAN",
+            "text": "KATMAN",
+            "group": 1,
+            "a": [
+              7,
+              5
+            ],
+            "b": [
+              2,
+              5
+            ]
+          },
+          {
+            "id": "2.0",
+            "label": "YAKIT",
+            "text": "YAKIT",
+            "group": 2,
+            "a": [
+              4,
+              3
+            ],
+            "b": [
+              0,
+              3
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "IŞIN",
+            "text": "IŞIN",
+            "group": 4,
+            "a": [
+              1,
+              3
+            ],
+            "b": [
+              4,
+              0
+            ]
+          },
+          {
+            "id": "3.0",
+            "label": "ISI",
+            "text": "ISI",
+            "group": 3,
+            "a": [
+              3,
+              7
+            ],
+            "b": [
+              1,
+              5
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-1": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "0.0",
+                "a": [
+                  7,
+                  4
+                ],
+                "b": [
+                  0,
+                  4
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  2,
+                  5
+                ],
+                "b": [
+                  7,
+                  5
+                ]
+              },
+              {
+                "id": "2.0",
+                "a": [
+                  0,
+                  3
+                ],
+                "b": [
+                  4,
+                  3
+                ]
+              },
+              {
+                "id": "4.0",
+                "a": [
+                  4,
+                  0
+                ],
+                "b": [
+                  1,
+                  3
+                ]
+              },
+              {
+                "id": "3.0",
+                "a": [
+                  1,
+                  5
+                ],
+                "b": [
+                  3,
+                  7
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": true,
+            "stars": 2
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-2",
+      "complete": false,
+      "board": {
+        "version": 2,
+        "size": 8,
+        "grid": [
+          [
+            "J",
+            "Ü",
+            "A",
+            "Ş",
+            "D",
+            "K",
+            "V",
+            "U"
+          ],
+          [
+            "P",
+            "M",
+            "L",
+            "A",
+            "N",
+            "B",
+            "L",
+            "K"
+          ],
+          [
+            "A",
+            "A",
+            "L",
+            "E",
+            "C",
+            "Ü",
+            "J",
+            "Ü"
+          ],
+          [
+            "J",
+            "G",
+            "R",
+            "F",
+            "C",
+            "U",
+            "O",
+            "N"
+          ],
+          [
+            "A",
+            "N",
+            "J",
+            "L",
+            "Y",
+            "B",
+            "G",
+            "Ö"
+          ],
+          [
+            "L",
+            "M",
+            "D",
+            "L",
+            "A",
+            "A",
+            "Y",
+            "S"
+          ],
+          [
+            "I",
+            "T",
+            "J",
+            "S",
+            "F",
+            "K",
+            "T",
+            "M"
+          ],
+          [
+            "İ",
+            "Ç",
+            "E",
+            "B",
+            "Ş",
+            "U",
+            "O",
+            "B"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "TAYF",
+            "text": "TAYF",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "DALGA",
+            "text": "DALGA",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "RENK",
+            "text": "RENK",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "PARLAK",
+            "text": "PARLAK",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "SÖNÜK",
+            "text": "SÖNÜK",
+            "group": 4
+          }
+        ],
+        "placements": [
+          {
+            "id": "3.0",
+            "label": "PARLAK",
+            "text": "PARLAK",
+            "group": 3,
+            "a": [
+              1,
+              0
+            ],
+            "b": [
+              6,
+              5
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "DALGA",
+            "text": "DALGA",
+            "group": 1,
+            "a": [
+              0,
+              4
+            ],
+            "b": [
+              4,
+              0
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "SÖNÜK",
+            "text": "SÖNÜK",
+            "group": 4,
+            "a": [
+              5,
+              7
+            ],
+            "b": [
+              1,
+              7
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "TAYF",
+            "text": "TAYF",
+            "group": 0,
+            "a": [
+              6,
+              6
+            ],
+            "b": [
+              3,
+              3
+            ]
+          },
+          {
+            "id": "2.0",
+            "label": "RENK",
+            "text": "RENK",
+            "group": 2,
+            "a": [
+              3,
+              2
+            ],
+            "b": [
+              0,
+              5
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-2": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "3.0",
+                "a": [
+                  6,
+                  5
+                ],
+                "b": [
+                  1,
+                  0
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  4,
+                  0
+                ],
+                "b": [
+                  0,
+                  4
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": false,
+            "stars": 0
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-2",
+      "complete": true,
+      "board": {
+        "version": 2,
+        "size": 8,
+        "grid": [
+          [
+            "J",
+            "Ü",
+            "A",
+            "Ş",
+            "D",
+            "K",
+            "V",
+            "U"
+          ],
+          [
+            "P",
+            "M",
+            "L",
+            "A",
+            "N",
+            "B",
+            "L",
+            "K"
+          ],
+          [
+            "A",
+            "A",
+            "L",
+            "E",
+            "C",
+            "Ü",
+            "J",
+            "Ü"
+          ],
+          [
+            "J",
+            "G",
+            "R",
+            "F",
+            "C",
+            "U",
+            "O",
+            "N"
+          ],
+          [
+            "A",
+            "N",
+            "J",
+            "L",
+            "Y",
+            "B",
+            "G",
+            "Ö"
+          ],
+          [
+            "L",
+            "M",
+            "D",
+            "L",
+            "A",
+            "A",
+            "Y",
+            "S"
+          ],
+          [
+            "I",
+            "T",
+            "J",
+            "S",
+            "F",
+            "K",
+            "T",
+            "M"
+          ],
+          [
+            "İ",
+            "Ç",
+            "E",
+            "B",
+            "Ş",
+            "U",
+            "O",
+            "B"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "TAYF",
+            "text": "TAYF",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "DALGA",
+            "text": "DALGA",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "RENK",
+            "text": "RENK",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "PARLAK",
+            "text": "PARLAK",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "SÖNÜK",
+            "text": "SÖNÜK",
+            "group": 4
+          }
+        ],
+        "placements": [
+          {
+            "id": "3.0",
+            "label": "PARLAK",
+            "text": "PARLAK",
+            "group": 3,
+            "a": [
+              1,
+              0
+            ],
+            "b": [
+              6,
+              5
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "DALGA",
+            "text": "DALGA",
+            "group": 1,
+            "a": [
+              0,
+              4
+            ],
+            "b": [
+              4,
+              0
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "SÖNÜK",
+            "text": "SÖNÜK",
+            "group": 4,
+            "a": [
+              5,
+              7
+            ],
+            "b": [
+              1,
+              7
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "TAYF",
+            "text": "TAYF",
+            "group": 0,
+            "a": [
+              6,
+              6
+            ],
+            "b": [
+              3,
+              3
+            ]
+          },
+          {
+            "id": "2.0",
+            "label": "RENK",
+            "text": "RENK",
+            "group": 2,
+            "a": [
+              3,
+              2
+            ],
+            "b": [
+              0,
+              5
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-2": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "3.0",
+                "a": [
+                  6,
+                  5
+                ],
+                "b": [
+                  1,
+                  0
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  4,
+                  0
+                ],
+                "b": [
+                  0,
+                  4
+                ]
+              },
+              {
+                "id": "4.0",
+                "a": [
+                  1,
+                  7
+                ],
+                "b": [
+                  5,
+                  7
+                ]
+              },
+              {
+                "id": "0.0",
+                "a": [
+                  3,
+                  3
+                ],
+                "b": [
+                  6,
+                  6
+                ]
+              },
+              {
+                "id": "2.0",
+                "a": [
+                  0,
+                  5
+                ],
+                "b": [
+                  3,
+                  2
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": true,
+            "stars": 2
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-3",
+      "complete": false,
+      "board": {
+        "version": 2,
+        "size": 9,
+        "grid": [
+          [
+            "K",
+            "P",
+            "I",
+            "Ç",
+            "E",
+            "C",
+            "İ",
+            "Ö",
+            "G"
+          ],
+          [
+            "P",
+            "A",
+            "C",
+            "Ç",
+            "H",
+            "B",
+            "L",
+            "İ",
+            "K"
+          ],
+          [
+            "Ç",
+            "S",
+            "J",
+            "O",
+            "A",
+            "Ç",
+            "R",
+            "O",
+            "İ"
+          ],
+          [
+            "J",
+            "E",
+            "Ç",
+            "S",
+            "Ü",
+            "B",
+            "N",
+            "Z",
+            "Ç"
+          ],
+          [
+            "K",
+            "H",
+            "F",
+            "M",
+            "Ö",
+            "U",
+            "S",
+            "Ğ",
+            "H"
+          ],
+          [
+            "H",
+            "S",
+            "S",
+            "Y",
+            "M",
+            "G",
+            "T",
+            "Z",
+            "L"
+          ],
+          [
+            "M",
+            "E",
+            "S",
+            "A",
+            "F",
+            "E",
+            "O",
+            "M",
+            "Ö"
+          ],
+          [
+            "Ş",
+            "N",
+            "L",
+            "L",
+            "Z",
+            "Ğ",
+            "R",
+            "K",
+            "E"
+          ],
+          [
+            "Ğ",
+            "Ü",
+            "Ç",
+            "G",
+            "E",
+            "N",
+            "T",
+            "Ü",
+            "A"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "AÇI",
+            "text": "AÇI",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "ÖLÇÜM",
+            "text": "ÖLÇÜM",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "MESAFE",
+            "text": "MESAFE",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "KONUM",
+            "text": "KONUM",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "HESAP",
+            "text": "HESAP",
+            "group": 4
+          },
+          {
+            "id": "5.0",
+            "label": "ÜÇGEN",
+            "text": "ÜÇGEN",
+            "group": 5
+          }
+        ],
+        "placements": [
+          {
+            "id": "2.0",
+            "label": "MESAFE",
+            "text": "MESAFE",
+            "group": 2,
+            "a": [
+              6,
+              0
+            ],
+            "b": [
+              6,
+              5
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "ÖLÇÜM",
+            "text": "ÖLÇÜM",
+            "group": 1,
+            "a": [
+              0,
+              7
+            ],
+            "b": [
+              4,
+              3
+            ]
+          },
+          {
+            "id": "3.0",
+            "label": "KONUM",
+            "text": "KONUM",
+            "group": 3,
+            "a": [
+              1,
+              8
+            ],
+            "b": [
+              5,
+              4
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "HESAP",
+            "text": "HESAP",
+            "group": 4,
+            "a": [
+              4,
+              1
+            ],
+            "b": [
+              0,
+              1
+            ]
+          },
+          {
+            "id": "5.0",
+            "label": "ÜÇGEN",
+            "text": "ÜÇGEN",
+            "group": 5,
+            "a": [
+              8,
+              1
+            ],
+            "b": [
+              8,
+              5
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "AÇI",
+            "text": "AÇI",
+            "group": 0,
+            "a": [
+              2,
+              4
+            ],
+            "b": [
+              0,
+              2
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-3": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "2.0",
+                "a": [
+                  6,
+                  5
+                ],
+                "b": [
+                  6,
+                  0
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  4,
+                  3
+                ],
+                "b": [
+                  0,
+                  7
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": false,
+            "stars": 0
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-3",
+      "complete": true,
+      "board": {
+        "version": 2,
+        "size": 9,
+        "grid": [
+          [
+            "K",
+            "P",
+            "I",
+            "Ç",
+            "E",
+            "C",
+            "İ",
+            "Ö",
+            "G"
+          ],
+          [
+            "P",
+            "A",
+            "C",
+            "Ç",
+            "H",
+            "B",
+            "L",
+            "İ",
+            "K"
+          ],
+          [
+            "Ç",
+            "S",
+            "J",
+            "O",
+            "A",
+            "Ç",
+            "R",
+            "O",
+            "İ"
+          ],
+          [
+            "J",
+            "E",
+            "Ç",
+            "S",
+            "Ü",
+            "B",
+            "N",
+            "Z",
+            "Ç"
+          ],
+          [
+            "K",
+            "H",
+            "F",
+            "M",
+            "Ö",
+            "U",
+            "S",
+            "Ğ",
+            "H"
+          ],
+          [
+            "H",
+            "S",
+            "S",
+            "Y",
+            "M",
+            "G",
+            "T",
+            "Z",
+            "L"
+          ],
+          [
+            "M",
+            "E",
+            "S",
+            "A",
+            "F",
+            "E",
+            "O",
+            "M",
+            "Ö"
+          ],
+          [
+            "Ş",
+            "N",
+            "L",
+            "L",
+            "Z",
+            "Ğ",
+            "R",
+            "K",
+            "E"
+          ],
+          [
+            "Ğ",
+            "Ü",
+            "Ç",
+            "G",
+            "E",
+            "N",
+            "T",
+            "Ü",
+            "A"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "AÇI",
+            "text": "AÇI",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "ÖLÇÜM",
+            "text": "ÖLÇÜM",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "MESAFE",
+            "text": "MESAFE",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "KONUM",
+            "text": "KONUM",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "HESAP",
+            "text": "HESAP",
+            "group": 4
+          },
+          {
+            "id": "5.0",
+            "label": "ÜÇGEN",
+            "text": "ÜÇGEN",
+            "group": 5
+          }
+        ],
+        "placements": [
+          {
+            "id": "2.0",
+            "label": "MESAFE",
+            "text": "MESAFE",
+            "group": 2,
+            "a": [
+              6,
+              0
+            ],
+            "b": [
+              6,
+              5
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "ÖLÇÜM",
+            "text": "ÖLÇÜM",
+            "group": 1,
+            "a": [
+              0,
+              7
+            ],
+            "b": [
+              4,
+              3
+            ]
+          },
+          {
+            "id": "3.0",
+            "label": "KONUM",
+            "text": "KONUM",
+            "group": 3,
+            "a": [
+              1,
+              8
+            ],
+            "b": [
+              5,
+              4
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "HESAP",
+            "text": "HESAP",
+            "group": 4,
+            "a": [
+              4,
+              1
+            ],
+            "b": [
+              0,
+              1
+            ]
+          },
+          {
+            "id": "5.0",
+            "label": "ÜÇGEN",
+            "text": "ÜÇGEN",
+            "group": 5,
+            "a": [
+              8,
+              1
+            ],
+            "b": [
+              8,
+              5
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "AÇI",
+            "text": "AÇI",
+            "group": 0,
+            "a": [
+              2,
+              4
+            ],
+            "b": [
+              0,
+              2
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-3": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "2.0",
+                "a": [
+                  6,
+                  5
+                ],
+                "b": [
+                  6,
+                  0
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  4,
+                  3
+                ],
+                "b": [
+                  0,
+                  7
+                ]
+              },
+              {
+                "id": "3.0",
+                "a": [
+                  5,
+                  4
+                ],
+                "b": [
+                  1,
+                  8
+                ]
+              },
+              {
+                "id": "4.0",
+                "a": [
+                  0,
+                  1
+                ],
+                "b": [
+                  4,
+                  1
+                ]
+              },
+              {
+                "id": "5.0",
+                "a": [
+                  8,
+                  5
+                ],
+                "b": [
+                  8,
+                  1
+                ]
+              },
+              {
+                "id": "0.0",
+                "a": [
+                  0,
+                  2
+                ],
+                "b": [
+                  2,
+                  4
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": true,
+            "stars": 2
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-4",
+      "complete": false,
+      "board": {
+        "version": 2,
+        "size": 9,
+        "grid": [
+          [
+            "Ö",
+            "C",
+            "İ",
+            "I",
+            "H",
+            "U",
+            "U",
+            "J",
+            "L"
+          ],
+          [
+            "I",
+            "Ç",
+            "G",
+            "T",
+            "S",
+            "P",
+            "Ğ",
+            "E",
+            "V"
+          ],
+          [
+            "U",
+            "Ğ",
+            "P",
+            "N",
+            "Y",
+            "A",
+            "C",
+            "İ",
+            "F"
+          ],
+          [
+            "Z",
+            "K",
+            "O",
+            "I",
+            "F",
+            "Ü",
+            "G",
+            "R",
+            "Ü"
+          ],
+          [
+            "Ç",
+            "T",
+            "G",
+            "L",
+            "C",
+            "Ş",
+            "B",
+            "O",
+            "Z"
+          ],
+          [
+            "F",
+            "F",
+            "E",
+            "A",
+            "Ü",
+            "C",
+            "U",
+            "M",
+            "Y"
+          ],
+          [
+            "V",
+            "M",
+            "Ç",
+            "K",
+            "C",
+            "E",
+            "L",
+            "A",
+            "O"
+          ],
+          [
+            "O",
+            "E",
+            "Ö",
+            "B",
+            "Ç",
+            "K",
+            "U",
+            "M",
+            "N"
+          ],
+          [
+            "Ö",
+            "Ç",
+            "D",
+            "R",
+            "C",
+            "R",
+            "T",
+            "Z",
+            "İ"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "BULUT",
+            "text": "BULUT",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "ÇÖKÜŞ",
+            "text": "ÇÖKÜŞ",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "FÜZYON",
+            "text": "FÜZYON",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "DEV",
+            "text": "DEV",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "CÜCE",
+            "text": "CÜCE",
+            "group": 4
+          },
+          {
+            "id": "5.0",
+            "label": "KALINTI",
+            "text": "KALINTI",
+            "group": 5
+          }
+        ],
+        "placements": [
+          {
+            "id": "5.0",
+            "label": "KALINTI",
+            "text": "KALINTI",
+            "group": 5,
+            "a": [
+              6,
+              3
+            ],
+            "b": [
+              0,
+              3
+            ]
+          },
+          {
+            "id": "2.0",
+            "label": "FÜZYON",
+            "text": "FÜZYON",
+            "group": 2,
+            "a": [
+              2,
+              8
+            ],
+            "b": [
+              7,
+              8
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "BULUT",
+            "text": "BULUT",
+            "group": 0,
+            "a": [
+              4,
+              6
+            ],
+            "b": [
+              8,
+              6
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "ÇÖKÜŞ",
+            "text": "ÇÖKÜŞ",
+            "group": 1,
+            "a": [
+              8,
+              1
+            ],
+            "b": [
+              4,
+              5
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "CÜCE",
+            "text": "CÜCE",
+            "group": 4,
+            "a": [
+              4,
+              4
+            ],
+            "b": [
+              1,
+              7
+            ]
+          },
+          {
+            "id": "3.0",
+            "label": "DEV",
+            "text": "DEV",
+            "group": 3,
+            "a": [
+              8,
+              2
+            ],
+            "b": [
+              6,
+              0
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-4": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "5.0",
+                "a": [
+                  0,
+                  3
+                ],
+                "b": [
+                  6,
+                  3
+                ]
+              },
+              {
+                "id": "2.0",
+                "a": [
+                  7,
+                  8
+                ],
+                "b": [
+                  2,
+                  8
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": false,
+            "stars": 0
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-4",
+      "complete": true,
+      "board": {
+        "version": 2,
+        "size": 9,
+        "grid": [
+          [
+            "Ö",
+            "C",
+            "İ",
+            "I",
+            "H",
+            "U",
+            "U",
+            "J",
+            "L"
+          ],
+          [
+            "I",
+            "Ç",
+            "G",
+            "T",
+            "S",
+            "P",
+            "Ğ",
+            "E",
+            "V"
+          ],
+          [
+            "U",
+            "Ğ",
+            "P",
+            "N",
+            "Y",
+            "A",
+            "C",
+            "İ",
+            "F"
+          ],
+          [
+            "Z",
+            "K",
+            "O",
+            "I",
+            "F",
+            "Ü",
+            "G",
+            "R",
+            "Ü"
+          ],
+          [
+            "Ç",
+            "T",
+            "G",
+            "L",
+            "C",
+            "Ş",
+            "B",
+            "O",
+            "Z"
+          ],
+          [
+            "F",
+            "F",
+            "E",
+            "A",
+            "Ü",
+            "C",
+            "U",
+            "M",
+            "Y"
+          ],
+          [
+            "V",
+            "M",
+            "Ç",
+            "K",
+            "C",
+            "E",
+            "L",
+            "A",
+            "O"
+          ],
+          [
+            "O",
+            "E",
+            "Ö",
+            "B",
+            "Ç",
+            "K",
+            "U",
+            "M",
+            "N"
+          ],
+          [
+            "Ö",
+            "Ç",
+            "D",
+            "R",
+            "C",
+            "R",
+            "T",
+            "Z",
+            "İ"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "BULUT",
+            "text": "BULUT",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "ÇÖKÜŞ",
+            "text": "ÇÖKÜŞ",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "FÜZYON",
+            "text": "FÜZYON",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "DEV",
+            "text": "DEV",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "CÜCE",
+            "text": "CÜCE",
+            "group": 4
+          },
+          {
+            "id": "5.0",
+            "label": "KALINTI",
+            "text": "KALINTI",
+            "group": 5
+          }
+        ],
+        "placements": [
+          {
+            "id": "5.0",
+            "label": "KALINTI",
+            "text": "KALINTI",
+            "group": 5,
+            "a": [
+              6,
+              3
+            ],
+            "b": [
+              0,
+              3
+            ]
+          },
+          {
+            "id": "2.0",
+            "label": "FÜZYON",
+            "text": "FÜZYON",
+            "group": 2,
+            "a": [
+              2,
+              8
+            ],
+            "b": [
+              7,
+              8
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "BULUT",
+            "text": "BULUT",
+            "group": 0,
+            "a": [
+              4,
+              6
+            ],
+            "b": [
+              8,
+              6
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "ÇÖKÜŞ",
+            "text": "ÇÖKÜŞ",
+            "group": 1,
+            "a": [
+              8,
+              1
+            ],
+            "b": [
+              4,
+              5
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "CÜCE",
+            "text": "CÜCE",
+            "group": 4,
+            "a": [
+              4,
+              4
+            ],
+            "b": [
+              1,
+              7
+            ]
+          },
+          {
+            "id": "3.0",
+            "label": "DEV",
+            "text": "DEV",
+            "group": 3,
+            "a": [
+              8,
+              2
+            ],
+            "b": [
+              6,
+              0
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-4": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "5.0",
+                "a": [
+                  0,
+                  3
+                ],
+                "b": [
+                  6,
+                  3
+                ]
+              },
+              {
+                "id": "2.0",
+                "a": [
+                  7,
+                  8
+                ],
+                "b": [
+                  2,
+                  8
+                ]
+              },
+              {
+                "id": "0.0",
+                "a": [
+                  8,
+                  6
+                ],
+                "b": [
+                  4,
+                  6
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  4,
+                  5
+                ],
+                "b": [
+                  8,
+                  1
+                ]
+              },
+              {
+                "id": "4.0",
+                "a": [
+                  1,
+                  7
+                ],
+                "b": [
+                  4,
+                  4
+                ]
+              },
+              {
+                "id": "3.0",
+                "a": [
+                  6,
+                  0
+                ],
+                "b": [
+                  8,
+                  2
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": true,
+            "stars": 2
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-5",
+      "complete": false,
+      "board": {
+        "version": 2,
+        "size": 9,
+        "grid": [
+          [
+            "K",
+            "N",
+            "U",
+            "D",
+            "E",
+            "R",
+            "E",
+            "L",
+            "Z"
+          ],
+          [
+            "A",
+            "I",
+            "R",
+            "A",
+            "O",
+            "S",
+            "Y",
+            "A",
+            "V"
+          ],
+          [
+            "R",
+            "N",
+            "K",
+            "A",
+            "A",
+            "P",
+            "K",
+            "S",
+            "Ş"
+          ],
+          [
+            "A",
+            "H",
+            "S",
+            "B",
+            "Y",
+            "Ğ",
+            "İ",
+            "Ü",
+            "Ş"
+          ],
+          [
+            "N",
+            "O",
+            "I",
+            "U",
+            "Ç",
+            "A",
+            "L",
+            "R",
+            "N"
+          ],
+          [
+            "L",
+            "R",
+            "R",
+            "Y",
+            "T",
+            "S",
+            "T",
+            "H",
+            "T"
+          ],
+          [
+            "I",
+            "F",
+            "Ğ",
+            "D",
+            "P",
+            "N",
+            "E",
+            "I",
+            "Ö"
+          ],
+          [
+            "K",
+            "Z",
+            "D",
+            "N",
+            "Ğ",
+            "E",
+            "N",
+            "F",
+            "R"
+          ],
+          [
+            "K",
+            "İ",
+            "L",
+            "Z",
+            "İ",
+            "S",
+            "S",
+            "E",
+            "S"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "TRİPOD",
+            "text": "TRİPOD",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "AYAR",
+            "text": "AYAR",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "NETLİK",
+            "text": "NETLİK",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "SESSİZLİK",
+            "text": "SESSİZLİK",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "KARANLIK",
+            "text": "KARANLIK",
+            "group": 4
+          },
+          {
+            "id": "5.0",
+            "label": "SABIR",
+            "text": "SABIR",
+            "group": 5
+          }
+        ],
+        "placements": [
+          {
+            "id": "3.0",
+            "label": "SESSİZLİK",
+            "text": "SESSİZLİK",
+            "group": 3,
+            "a": [
+              8,
+              8
+            ],
+            "b": [
+              8,
+              0
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "KARANLIK",
+            "text": "KARANLIK",
+            "group": 4,
+            "a": [
+              0,
+              0
+            ],
+            "b": [
+              7,
+              0
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "TRİPOD",
+            "text": "TRİPOD",
+            "group": 0,
+            "a": [
+              5,
+              8
+            ],
+            "b": [
+              0,
+              3
+            ]
+          },
+          {
+            "id": "2.0",
+            "label": "NETLİK",
+            "text": "NETLİK",
+            "group": 2,
+            "a": [
+              7,
+              6
+            ],
+            "b": [
+              2,
+              6
+            ]
+          },
+          {
+            "id": "5.0",
+            "label": "SABIR",
+            "text": "SABIR",
+            "group": 5,
+            "a": [
+              1,
+              5
+            ],
+            "b": [
+              5,
+              1
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "AYAR",
+            "text": "AYAR",
+            "group": 1,
+            "a": [
+              4,
+              5
+            ],
+            "b": [
+              1,
+              2
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-5": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "3.0",
+                "a": [
+                  8,
+                  0
+                ],
+                "b": [
+                  8,
+                  8
+                ]
+              },
+              {
+                "id": "4.0",
+                "a": [
+                  7,
+                  0
+                ],
+                "b": [
+                  0,
+                  0
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": false,
+            "stars": 0
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-5",
+      "complete": true,
+      "board": {
+        "version": 2,
+        "size": 9,
+        "grid": [
+          [
+            "K",
+            "N",
+            "U",
+            "D",
+            "E",
+            "R",
+            "E",
+            "L",
+            "Z"
+          ],
+          [
+            "A",
+            "I",
+            "R",
+            "A",
+            "O",
+            "S",
+            "Y",
+            "A",
+            "V"
+          ],
+          [
+            "R",
+            "N",
+            "K",
+            "A",
+            "A",
+            "P",
+            "K",
+            "S",
+            "Ş"
+          ],
+          [
+            "A",
+            "H",
+            "S",
+            "B",
+            "Y",
+            "Ğ",
+            "İ",
+            "Ü",
+            "Ş"
+          ],
+          [
+            "N",
+            "O",
+            "I",
+            "U",
+            "Ç",
+            "A",
+            "L",
+            "R",
+            "N"
+          ],
+          [
+            "L",
+            "R",
+            "R",
+            "Y",
+            "T",
+            "S",
+            "T",
+            "H",
+            "T"
+          ],
+          [
+            "I",
+            "F",
+            "Ğ",
+            "D",
+            "P",
+            "N",
+            "E",
+            "I",
+            "Ö"
+          ],
+          [
+            "K",
+            "Z",
+            "D",
+            "N",
+            "Ğ",
+            "E",
+            "N",
+            "F",
+            "R"
+          ],
+          [
+            "K",
+            "İ",
+            "L",
+            "Z",
+            "İ",
+            "S",
+            "S",
+            "E",
+            "S"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "TRİPOD",
+            "text": "TRİPOD",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "AYAR",
+            "text": "AYAR",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "NETLİK",
+            "text": "NETLİK",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "SESSİZLİK",
+            "text": "SESSİZLİK",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "KARANLIK",
+            "text": "KARANLIK",
+            "group": 4
+          },
+          {
+            "id": "5.0",
+            "label": "SABIR",
+            "text": "SABIR",
+            "group": 5
+          }
+        ],
+        "placements": [
+          {
+            "id": "3.0",
+            "label": "SESSİZLİK",
+            "text": "SESSİZLİK",
+            "group": 3,
+            "a": [
+              8,
+              8
+            ],
+            "b": [
+              8,
+              0
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "KARANLIK",
+            "text": "KARANLIK",
+            "group": 4,
+            "a": [
+              0,
+              0
+            ],
+            "b": [
+              7,
+              0
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "TRİPOD",
+            "text": "TRİPOD",
+            "group": 0,
+            "a": [
+              5,
+              8
+            ],
+            "b": [
+              0,
+              3
+            ]
+          },
+          {
+            "id": "2.0",
+            "label": "NETLİK",
+            "text": "NETLİK",
+            "group": 2,
+            "a": [
+              7,
+              6
+            ],
+            "b": [
+              2,
+              6
+            ]
+          },
+          {
+            "id": "5.0",
+            "label": "SABIR",
+            "text": "SABIR",
+            "group": 5,
+            "a": [
+              1,
+              5
+            ],
+            "b": [
+              5,
+              1
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "AYAR",
+            "text": "AYAR",
+            "group": 1,
+            "a": [
+              4,
+              5
+            ],
+            "b": [
+              1,
+              2
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-5": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "3.0",
+                "a": [
+                  8,
+                  0
+                ],
+                "b": [
+                  8,
+                  8
+                ]
+              },
+              {
+                "id": "4.0",
+                "a": [
+                  7,
+                  0
+                ],
+                "b": [
+                  0,
+                  0
+                ]
+              },
+              {
+                "id": "0.0",
+                "a": [
+                  0,
+                  3
+                ],
+                "b": [
+                  5,
+                  8
+                ]
+              },
+              {
+                "id": "2.0",
+                "a": [
+                  2,
+                  6
+                ],
+                "b": [
+                  7,
+                  6
+                ]
+              },
+              {
+                "id": "5.0",
+                "a": [
+                  5,
+                  1
+                ],
+                "b": [
+                  1,
+                  5
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  1,
+                  2
+                ],
+                "b": [
+                  4,
+                  5
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": true,
+            "stars": 2
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-6",
+      "complete": false,
+      "board": {
+        "version": 2,
+        "size": 9,
+        "grid": [
+          [
+            "E",
+            "H",
+            "Ğ",
+            "P",
+            "M",
+            "S",
+            "Ü",
+            "J",
+            "U"
+          ],
+          [
+            "K",
+            "I",
+            "L",
+            "L",
+            "I",
+            "Z",
+            "I",
+            "K",
+            "E"
+          ],
+          [
+            "V",
+            "M",
+            "Ö",
+            "T",
+            "E",
+            "R",
+            "D",
+            "K",
+            "O"
+          ],
+          [
+            "L",
+            "A",
+            "G",
+            "M",
+            "K",
+            "S",
+            "A",
+            "N",
+            "P"
+          ],
+          [
+            "K",
+            "L",
+            "Ç",
+            "L",
+            "A",
+            "F",
+            "F",
+            "K",
+            "J"
+          ],
+          [
+            "Z",
+            "A",
+            "O",
+            "G",
+            "A",
+            "V",
+            "H",
+            "P",
+            "M"
+          ],
+          [
+            "M",
+            "C",
+            "R",
+            "Ş",
+            "Z",
+            "E",
+            "İ",
+            "E",
+            "Ö"
+          ],
+          [
+            "T",
+            "A",
+            "L",
+            "P",
+            "U",
+            "R",
+            "U",
+            "G",
+            "D"
+          ],
+          [
+            "R",
+            "C",
+            "U",
+            "C",
+            "N",
+            "U",
+            "R",
+            "U",
+            "T"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "ŞAFAK",
+            "text": "ŞAFAK",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "GURUP",
+            "text": "GURUP",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "KIZILLIK",
+            "text": "KIZILLIK",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "MAVİ",
+            "text": "MAVİ",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "TURUNCU",
+            "text": "TURUNCU",
+            "group": 4
+          },
+          {
+            "id": "5.0",
+            "label": "ALACA",
+            "text": "ALACA",
+            "group": 5
+          }
+        ],
+        "placements": [
+          {
+            "id": "2.0",
+            "label": "KIZILLIK",
+            "text": "KIZILLIK",
+            "group": 2,
+            "a": [
+              1,
+              7
+            ],
+            "b": [
+              1,
+              0
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "TURUNCU",
+            "text": "TURUNCU",
+            "group": 4,
+            "a": [
+              8,
+              8
+            ],
+            "b": [
+              8,
+              2
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "ŞAFAK",
+            "text": "ŞAFAK",
+            "group": 0,
+            "a": [
+              6,
+              3
+            ],
+            "b": [
+              2,
+              7
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "GURUP",
+            "text": "GURUP",
+            "group": 1,
+            "a": [
+              7,
+              7
+            ],
+            "b": [
+              7,
+              3
+            ]
+          },
+          {
+            "id": "5.0",
+            "label": "ALACA",
+            "text": "ALACA",
+            "group": 5,
+            "a": [
+              3,
+              1
+            ],
+            "b": [
+              7,
+              1
+            ]
+          },
+          {
+            "id": "3.0",
+            "label": "MAVİ",
+            "text": "MAVİ",
+            "group": 3,
+            "a": [
+              3,
+              3
+            ],
+            "b": [
+              6,
+              6
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-6": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "2.0",
+                "a": [
+                  1,
+                  0
+                ],
+                "b": [
+                  1,
+                  7
+                ]
+              },
+              {
+                "id": "4.0",
+                "a": [
+                  8,
+                  2
+                ],
+                "b": [
+                  8,
+                  8
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": false,
+            "stars": 0
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    },
+    {
+      "id": "ufuk-gok-6",
+      "complete": true,
+      "board": {
+        "version": 2,
+        "size": 9,
+        "grid": [
+          [
+            "E",
+            "H",
+            "Ğ",
+            "P",
+            "M",
+            "S",
+            "Ü",
+            "J",
+            "U"
+          ],
+          [
+            "K",
+            "I",
+            "L",
+            "L",
+            "I",
+            "Z",
+            "I",
+            "K",
+            "E"
+          ],
+          [
+            "V",
+            "M",
+            "Ö",
+            "T",
+            "E",
+            "R",
+            "D",
+            "K",
+            "O"
+          ],
+          [
+            "L",
+            "A",
+            "G",
+            "M",
+            "K",
+            "S",
+            "A",
+            "N",
+            "P"
+          ],
+          [
+            "K",
+            "L",
+            "Ç",
+            "L",
+            "A",
+            "F",
+            "F",
+            "K",
+            "J"
+          ],
+          [
+            "Z",
+            "A",
+            "O",
+            "G",
+            "A",
+            "V",
+            "H",
+            "P",
+            "M"
+          ],
+          [
+            "M",
+            "C",
+            "R",
+            "Ş",
+            "Z",
+            "E",
+            "İ",
+            "E",
+            "Ö"
+          ],
+          [
+            "T",
+            "A",
+            "L",
+            "P",
+            "U",
+            "R",
+            "U",
+            "G",
+            "D"
+          ],
+          [
+            "R",
+            "C",
+            "U",
+            "C",
+            "N",
+            "U",
+            "R",
+            "U",
+            "T"
+          ]
+        ],
+        "targets": [
+          {
+            "id": "0.0",
+            "label": "ŞAFAK",
+            "text": "ŞAFAK",
+            "group": 0
+          },
+          {
+            "id": "1.0",
+            "label": "GURUP",
+            "text": "GURUP",
+            "group": 1
+          },
+          {
+            "id": "2.0",
+            "label": "KIZILLIK",
+            "text": "KIZILLIK",
+            "group": 2
+          },
+          {
+            "id": "3.0",
+            "label": "MAVİ",
+            "text": "MAVİ",
+            "group": 3
+          },
+          {
+            "id": "4.0",
+            "label": "TURUNCU",
+            "text": "TURUNCU",
+            "group": 4
+          },
+          {
+            "id": "5.0",
+            "label": "ALACA",
+            "text": "ALACA",
+            "group": 5
+          }
+        ],
+        "placements": [
+          {
+            "id": "2.0",
+            "label": "KIZILLIK",
+            "text": "KIZILLIK",
+            "group": 2,
+            "a": [
+              1,
+              7
+            ],
+            "b": [
+              1,
+              0
+            ]
+          },
+          {
+            "id": "4.0",
+            "label": "TURUNCU",
+            "text": "TURUNCU",
+            "group": 4,
+            "a": [
+              8,
+              8
+            ],
+            "b": [
+              8,
+              2
+            ]
+          },
+          {
+            "id": "0.0",
+            "label": "ŞAFAK",
+            "text": "ŞAFAK",
+            "group": 0,
+            "a": [
+              6,
+              3
+            ],
+            "b": [
+              2,
+              7
+            ]
+          },
+          {
+            "id": "1.0",
+            "label": "GURUP",
+            "text": "GURUP",
+            "group": 1,
+            "a": [
+              7,
+              7
+            ],
+            "b": [
+              7,
+              3
+            ]
+          },
+          {
+            "id": "5.0",
+            "label": "ALACA",
+            "text": "ALACA",
+            "group": 5,
+            "a": [
+              3,
+              1
+            ],
+            "b": [
+              7,
+              1
+            ]
+          },
+          {
+            "id": "3.0",
+            "label": "MAVİ",
+            "text": "MAVİ",
+            "group": 3,
+            "a": [
+              3,
+              3
+            ],
+            "b": [
+              6,
+              6
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "v": 2,
+        "saves": {
+          "route:ufuk-gok-6": {
+            "revision": 2,
+            "strokes": [
+              {
+                "id": "2.0",
+                "a": [
+                  1,
+                  0
+                ],
+                "b": [
+                  1,
+                  7
+                ]
+              },
+              {
+                "id": "4.0",
+                "a": [
+                  8,
+                  2
+                ],
+                "b": [
+                  8,
+                  8
+                ]
+              },
+              {
+                "id": "0.0",
+                "a": [
+                  2,
+                  7
+                ],
+                "b": [
+                  6,
+                  3
+                ]
+              },
+              {
+                "id": "1.0",
+                "a": [
+                  7,
+                  3
+                ],
+                "b": [
+                  7,
+                  7
+                ]
+              },
+              {
+                "id": "5.0",
+                "a": [
+                  7,
+                  1
+                ],
+                "b": [
+                  3,
+                  1
+                ]
+              },
+              {
+                "id": "3.0",
+                "a": [
+                  6,
+                  6
+                ],
+                "b": [
+                  3,
+                  3
+                ]
+              }
+            ],
+            "hints": 1,
+            "elapsed": 41,
+            "complete": true,
+            "stars": 2
+          }
+        },
+        "sound": true,
+        "zoom": false,
+        "days": [],
+        "last": null,
+        "haptics": true,
+        "contrast": false,
+        "palette": "classic",
+        "tutorialDone": false,
+        "analytics": false,
+        "mysteries": []
+      }
+    }
+  ]
+}

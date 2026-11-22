@@ -7,10 +7,11 @@ import {COAST_CHAPTERS} from './coast-content.ts';
 import {ATLAS_JOURNEYS,ATLAS_REGIONS} from './atlas-content.ts';
 import {LIVING_STORIES} from './story-content.ts';
 import {RIDDLE_CHAPTERS} from './riddle-content.ts';
+import {authoredBoard,isAuthoredRevision} from './authored-journey.ts';
 import {hash,makeCustomPuzzle} from './engine.ts';
 
 export interface Journey {
- revision?:2;
+ revision?:2|3;
  id:string;themeId:string;title:string;subtitle:string;words:string[];size:number;difficulty:'Rahat'|'Dengeli'|'Ustalık';note:string;clues?:Record<string,string>;
 }
 const route=(themeId:string,items:[string,string,string,number,'Rahat'|'Dengeli'|'Ustalık',string][]):Journey[]=>items.map(([title,subtitle,words,size,difficulty,note],i)=>({id:`${themeId}-${i+1}`,themeId,title,subtitle,words:words.split('|'),size,difficulty,note}));
@@ -60,7 +61,7 @@ export const ALL_JOURNEYS=[...JOURNEYS,...JOURNEY_BONUSES];
 export const PLAYABLE_JOURNEYS=[...ALL_JOURNEYS,...RIDDLE_CHAPTERS,...LIVING_STORIES,...ORIGINAL_CHAPTERS];
 export const ACTIVE_JOURNEYS=PLAYABLE_JOURNEYS.filter(j=>!CHAPTER_REPLACEMENTS[j.id]);
 export const journeyById=(id:string)=>PLAYABLE_JOURNEYS.find(j=>j.id===id);
-export const journeyBoard=(j:Journey)=>makeCustomPuzzle(j.words,hash((j.revision===2?'journey-v2:':'journey-v1:')+j.id),j.size);
+export const journeyBoard=(j:Journey)=>(isAuthoredRevision(j.id,j.revision)?authoredBoard(j.id):undefined)??makeCustomPuzzle(j.words,hash((j.revision===2?'journey-v2:':'journey-v1:')+j.id),j.size);
 
 export interface Mystery {id:string;title:string;themeId:string;words:string[];answer:string;options:string[];bonus:string;size:number;note:string}
 export const MYSTERIES:Mystery[]=[

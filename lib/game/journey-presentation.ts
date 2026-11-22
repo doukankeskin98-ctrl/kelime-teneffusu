@@ -31,6 +31,7 @@ export function preparePresentation(source:Puzzle,key:string):Puzzle {
 
 /** Precomputed layouts avoid generator work on the input/render path. */
 export function presentationBoard(source:Puzzle,key:string):Puzzle {
+  if(source.authored)return source;
   const layout=SAFE_LAYOUTS[key];
   if(!layout) return source;
   if(layout.paths.length!==source.targets.length) throw new Error('Tahta hedefleri eşleşmiyor.');

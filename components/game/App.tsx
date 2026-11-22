@@ -1,6 +1,11 @@
 'use client';
+import {appFetch} from '@/lib/platform/runtime';
+import {UserRound} from 'lucide-react';
+import {RULES_COPY} from '@/lib/game/rules-copy';
 import {encodeProgress} from '@/lib/game/progress-codec';
 import {readStoredProgress,writeStoredProgress} from '@/lib/game/progress-storage';
+import {readErasure} from '@/lib/auth/erasure-client';
+import {progressBackup} from '@/lib/platform/progress-backup';
 import {GameCenterAccess} from './GameCenterAccess';
 import {deferredGameScreen} from './DeferredScreen';
 import {SettingsHome} from './SettingsHome';
@@ -32,9 +37,10 @@ import {dailySpec,istanbulDay} from '@/lib/game/engine';
 import {DAILY_REQUEST_TIMEOUT} from '@/lib/game/daily-action';
 import {dailyBoardSignature,readDailyPending} from '@/lib/game/daily-pending';
 import {requestDaily} from './daily-transport';
-import {emptyProgress,loadProgress,mergeProgress,PROGRESS_KEY,streak,collectionStats} from '@/lib/game/progress';
+import {emptyProgress,loadProgress,mergeProgress,PROGRESS_KEY,streak,collectionStats,type Progress} from '@/lib/game/progress';
 import {SAVE_KEY,validateSave} from '@/lib/game/legacy';
 import type {DailyView} from '@/lib/game/server';
+import {ArenaEntryBackdrop} from './ArenaEntryBackdrop';
 import {Arena} from './Arena';
 import {Challenges} from './Challenges';
 import {Platform} from './Platform';
@@ -49,6 +55,7 @@ import type {ChapterBrowseReturn} from '@/lib/studio/chapter-browse';
 import {api,getApi,Help,Modal} from './common';
 import {GameSettings,useComfort} from './GameSettings';
 import {Solo,type SoloConfig} from './Solo';
+import {NetworkState} from './NetworkState';
 import {Explore,DailyPage,ProfilePage,JourneyAlbums,type Account} from './Pages';
 type Nav='kesfet'|'arsiv'|'arena'|'gunluk'|'profil';
 type ArenaTab='live'|'challenge'|'friends';
@@ -64,6 +71,7 @@ const PrivacyInfo=deferredGameScreen('PrivacyInfo',async()=>({default:(await imp
 export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary[];releaseCounts?:Record<string,number>}){
  const [online,setOnline]=useState(true);
  useEffect(()=>{const change=()=>setOnline(typeof navigator==='undefined'||navigator.onLine);change();window.addEventListener('online',change);window.addEventListener('offline',change);return ()=>{window.removeEventListener('online',change);window.removeEventListener('offline',change);};},[]);
+ const [onlineEntryError,setOnlineEntryError]=useState('');
  const [profileError,setProfileError]=useState(''),[profileRetry,setProfileRetry]=useState(0);
  const membership=useMembership(),bootOwner=useRef('');
  const [deleting,setDeleting]=useState(false),[blockedList,setBlockedList]=useState(false),[privacy,setPrivacy]=useState(false),[settingsMore,setSettingsMore]=useState(false),[rewardsInfo,setRewardsInfo]=useState(false);
@@ -89,53 +97,114 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  const [bonus,setBonus]=useState<{worldId:string;next:SoloConfig|null;owner:string|undefined}|null>(null);
  const sceneOwner=useRef(account.profile?.id);useEffect(()=>{if(sceneOwner.current!==account.profile?.id){setBonus(null);sceneOwner.current=account.profile?.id;}},[account.profile?.id]);
  const [albumReturn,setAlbumReturn]=useState(false);
- const liveAccountOwner=useRef(account.profile?.id),dailyLaunch=useRef<{owner:string;controller:AbortController;retired:boolean}|null>(null);liveAccountOwner.current=account.profile?.id;if(dailyLaunch.current&&dailyLaunch.current.owner!==account.profile?.id)dailyLaunch.current.retired=true;
+ const liveAccountOwner=useRef(account.profile?.id),dailyLaunch=useRef<{owner:string|undefined;controller:AbortController;retired:boolean}|null>(null);liveAccountOwner.current=account.profile?.id;if(dailyLaunch.current&&dailyLaunch.current.owner!==account.profile?.id)dailyLaunch.current.retired=true;
  const cancelDailyLaunch=()=>{const launch=dailyLaunch.current;dailyLaunch.current=null;launch?.controller.abort();setBusy(false);};
  useEffect(()=>{if(dailyLaunch.current?.retired)cancelDailyLaunch();},[account.profile?.id]);
  useEffect(()=>()=>{const launch=dailyLaunch.current;dailyLaunch.current=null;launch?.controller.abort();},[]);
+ const onlineProfileRequest=useRef<AbortController|null>(null);
+ const cancelOnlineProfile=()=>{onlineProfileRequest.current?.abort();onlineProfileRequest.current=null;};
+ useEffect(()=>()=>{onlineProfileRequest.current?.abort();onlineProfileRequest.current=null;},[nav,arenaTab,account.profile?.id,membership.revision]);
+ const tearingDown=useRef(false);
+ const profileEpoch=useRef(0),latestProgress=useRef(progress);useEffect(()=>{latestProgress.current=progress;},[progress]);
+ const beginTeardown=(active:boolean)=>{if(active){tearingDown.current=true;profileEpoch.current++;cancelDailyLaunch();cancelOnlineProfile();progressBackup().retire();}else {const epoch=profileEpoch.current,owner=bootOwner.current,current=()=>epoch===profileEpoch.current&&owner===bootOwner.current;void progressBackup().open(owner,current).then(restored=>{if(!current())return;setProgress(p=>mergeProgress(restored,p));tearingDown.current=false;setDeleting(false);}).catch(()=>{if(!current())return;setStorageError(true);tearingDown.current=false;setDeleting(false);});return;}setDeleting(active);};
  const authenticated=account.authenticated,syncStatus=useCloudProgress(deleting?undefined:account.profile?.id,progress,setProgress,ready);
  const openAuth=(mode:AuthMode='signin')=>{if(account.kind==='guest'){try{sessionStorage.setItem('kt-upgrade-progress',encodeProgress(progress));sessionStorage.setItem('kt-upgrade-owner',account.profile?.id??'');}catch{}}const url=new URL(location.href);url.searchParams.set('sekme',nav);if(nav==='arena'&&arenaTab!=='live')url.searchParams.set('mod',arenaTab==='challenge'?'meydan':'arkadaslar');setAuthReturn(safeReturnTo(url.pathname+url.search));setAuthMode(mode);};
  useEffect(()=>{
-  let loaded=emptyProgress();try{bootOwner.current=localStorage.getItem(PROGRESS_KEY+':last-user')??'';loaded=readStoredProgress(localStorage,bootOwner.current);setProgress(loaded);}catch{setStorageError(true);}
-  const route=gameRoute(location.search);setNav(route.nav);setArenaTab(route.section);setInvites(route.invites);
-  setReady(true);
+  let cancelled=false;
+  const warning=()=>setStorageError(true),flush=()=>{void progressBackup().flush();};
+  window.addEventListener('kt-progress-storage-error',warning);window.addEventListener('kt-progress-flush',flush);
+  const markErased=()=>{tearingDown.current=true;profileEpoch.current++;progressBackup().retire();setDeleting(true);};
+  void (async()=>{
+   try{const backup=progressBackup(),erasure=readErasure(localStorage);if(erasure?.erased){markErased();await backup.forget(erasure.owner,true);setSettings(true);setPrivacy(true);}
+    bootOwner.current=await backup.bootOwner();const loaded=await backup.open(bootOwner.current);if(!cancelled)setProgress(loaded);}
+   catch{if(cancelled)return;setStorageError(true);try{if(readErasure(localStorage)?.erased){markErased();bootOwner.current='';setProgress(emptyProgress());setSettings(true);setPrivacy(true);}else {bootOwner.current=localStorage.getItem(PROGRESS_KEY+':last-user')??'';setProgress(readStoredProgress(localStorage,bootOwner.current));}}catch{/* Preserve unreadable originals; writeStoredProgress refuses to overwrite them. */}}
+   if(cancelled)return;
+   const route=gameRoute(location.search);setNav(route.nav);setArenaTab(route.section);setInvites(route.invites);setReady(true);
+  })();
+  return()=>{cancelled=true;profileEpoch.current++;window.removeEventListener('kt-progress-storage-error',warning);window.removeEventListener('kt-progress-flush',flush);progressBackup().retire();};
  },[]);
  useEffect(()=>{if(!ready||!document.getElementById?.('native-boot'))return;let second=0;const first=requestAnimationFrame(()=>{second=requestAnimationFrame(()=>window.dispatchEvent(new Event('kt-game-ready')));});return()=>{cancelAnimationFrame(first);cancelAnimationFrame(second);};},[ready]);
- useEffect(()=>{if(!ready||authenticated)return;try{writeStoredProgress(localStorage,bootOwner.current,progress);}catch{setStorageError(true);}},[progress,ready,authenticated]);
+ useEffect(()=>{if(!ready||authenticated||deleting)return;try{writeStoredProgress(localStorage,bootOwner.current,progress);}catch{setStorageError(true);}},[progress,ready,authenticated,deleting]);
  useEffect(()=>{
-  if(!membership.ready||!online||!navigator.onLine)return;
-  const c=new AbortController();getApi<Account>('',c.signal).then(next=>{
-   if(c.signal.aborted)return;
-   if(bootOwner.current&&next.profile?.id&&bootOwner.current!==next.profile.id){cancelDailyLaunch();setSolo(null);setMystery(null);setDaily(null);setSprint(false);setExtra(null);setPlaying(false);try{setProgress(readStoredProgress(localStorage,next.profile.id));}catch{setProgress(emptyProgress());}}if(next.profile?.id)bootOwner.current=next.profile.id;if(next.authenticated&&next.kind!=='guest'){try{const upgrade=sessionStorage.getItem('kt-upgrade-progress');if(upgrade){setProgress(p=>mergeProgress(p,loadProgress(upgrade)));sessionStorage.removeItem('kt-upgrade-progress');sessionStorage.removeItem('kt-upgrade-owner');}}catch{}}setAccount(next);setProfileError('');
+  if(!ready||deleting||tearingDown.current||!membership.ready||!online||!navigator.onLine)return;
+  const epoch=profileEpoch.current,c=new AbortController();getApi<Account>('',c.signal).then(async next=>{
+   if(c.signal.aborted||tearingDown.current||epoch!==profileEpoch.current)return;
+   if(next.profile?.id&&bootOwner.current!==next.profile.id){
+    const deviceProgress=!bootOwner.current?latestProgress.current:null;
+    cancelDailyLaunch();setSolo(null);setMystery(null);setDaily(null);setSprint(false);setExtra(null);setPlaying(false);
+    let restored:Progress;try{restored=await progressBackup().open(next.profile.id,()=>!c.signal.aborted&&!tearingDown.current&&epoch===profileEpoch.current);}catch(error){if(!(error instanceof Error)||error.name!=='AbortError')setStorageError(true);return;}
+    if(tearingDown.current||epoch!==profileEpoch.current)return;
+    setProgress(deviceProgress?mergeProgress(restored,deviceProgress):restored);
+   }
+   if(next.profile?.id)bootOwner.current=next.profile.id;if(next.authenticated&&next.kind!=='guest'){try{const upgrade=sessionStorage.getItem('kt-upgrade-progress');if(upgrade){setProgress(p=>mergeProgress(p,loadProgress(upgrade)));sessionStorage.removeItem('kt-upgrade-progress');sessionStorage.removeItem('kt-upgrade-owner');}}catch{}}setAccount(next);setProfileError('');
    if(next.needsUsername){setAuthReturn(safeReturnTo(location.pathname+location.search));setAuthMode('username');}
-  }).catch(e=>{if(!c.signal.aborted&&e.name!=='AbortError'&&navigator.onLine)setProfileError('Oyuncu profiline ulaşılamadı. Solo bölümlere devam edebilirsin.');});
+  }).catch(e=>{if(!c.signal.aborted&&epoch===profileEpoch.current&&e.name!=='AbortError'&&navigator.onLine)setProfileError('Oyuncu profiline ulaşılamadı.');});
   return ()=>c.abort();
- },[membership.ready,membership.revision,nav,online,profileRetry]);
+ },[ready,deleting,membership.ready,membership.revision,nav,online,profileRetry]);
  useEffect(()=>{if(!ready)return;const timer=setTimeout(()=>{void BonusRound.preload().catch(()=>{});},1200);return()=>clearTimeout(timer);},[ready]);
  const {stars}=collectionStats(progress),dailyStreak=streak(progress.days,istanbulDay());
- const selectArena=(next:ArenaTab)=>{setArenaTab(next);setError('');history.replaceState(null,'',gameRouteUrl(location.href,'arena',next));const route=gameRoute(location.search);setInvites(route.invites);window.scrollTo({top:0});};
- const selectNav=(next:Nav)=>{if(next==='profil')setProfileVisit(v=>v+1);setProfileOpen(false);cancelDailyLaunch();setBrowseReturn(undefined);setNav(next);setError('');setPlaying(false);if(next!=='arena')setInvites({challenge:'',friend:''});history.replaceState(null,'',gameRouteUrl(location.href,next,arenaTab));window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));};
- useEffect(()=>{const restore=()=>{setAuthReturn(safeReturnTo(location.pathname+location.search));setArenaEntry(v=>v+1);const route=gameRoute(location.search);cancelDailyLaunch();setNav(route.nav);setArenaTab(route.section);setInvites(route.invites);setSolo(null);setBonus(null);setMystery(null);setDaily(null);setSprint(false);setExtra(null);setPlaying(false);};window.addEventListener('popstate',restore);return ()=>window.removeEventListener('popstate',restore);},[]);
+ const selectArena=(next:ArenaTab)=>{cancelOnlineProfile();setArenaTab(next);setError('');history.replaceState(null,'',gameRouteUrl(location.href,'arena',next));const route=gameRoute(location.search);setInvites(route.invites);window.scrollTo({top:0});};
+ const selectNav=(next:Nav)=>{cancelOnlineProfile();if(next==='profil')setProfileVisit(v=>v+1);setProfileOpen(false);cancelDailyLaunch();setBrowseReturn(undefined);setNav(next);setError('');setPlaying(false);if(next!=='arena')setInvites({challenge:'',friend:''});history.replaceState(null,'',gameRouteUrl(location.href,next,arenaTab));window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));};
+ useEffect(()=>{const restore=()=>{cancelOnlineProfile();setAuthReturn(safeReturnTo(location.pathname+location.search));setArenaEntry(v=>v+1);const route=gameRoute(location.search);cancelDailyLaunch();setNav(route.nav);setArenaTab(route.section);setInvites(route.invites);setSolo(null);setBonus(null);setMystery(null);setDaily(null);setSprint(false);setExtra(null);setPlaying(false);};window.addEventListener('popstate',restore);return ()=>window.removeEventListener('popstate',restore);},[]);
  const rememberJourneyView=(view:'stories'|'journey')=>{setJourneyView(view);try{localStorage.setItem('kt-journey-view-v1:'+(account.profile?.id||bootOwner.current||'device'),view);}catch{/* Navigation remains usable without storage. */}};
  useEffect(()=>{if(!ready)return;let view:'stories'|'journey'='journey';try{const saved=localStorage.getItem('kt-journey-view-v1:'+(account.profile?.id||bootOwner.current||'device'));if(saved==='stories'||saved==='journey')view=saved;}catch{}setJourneyView(view);try{setLastStoryId(localStorage.getItem('kt-last-story-v1:'+(account.profile?.id||bootOwner.current||'device'))??undefined);}catch{}},[ready,account.profile?.id]);
- const playSolo=(config:SoloConfig)=>{if(livingStory(config.journey)){rememberJourneyView('stories');setLastStoryId(config.journey);try{localStorage.setItem('kt-last-story-v1:'+(account.profile?.id||bootOwner.current||'device'),config.journey!);}catch{}}else if(config.campaign)rememberJourneyView('journey');setBrowseReturn(undefined);if(theme&&!config.campaign)themeReturn.current=theme.id;setTheme(null);setMystery(null);setSolo({...config,run:Date.now()});setDaily(null);window.scrollTo({top:0});};
+ const playSolo=(config:SoloConfig)=>{cancelOnlineProfile();if(livingStory(config.journey)){rememberJourneyView('stories');setLastStoryId(config.journey);try{localStorage.setItem('kt-last-story-v1:'+(account.profile?.id||bootOwner.current||'device'),config.journey!);}catch{}}else if(config.campaign)rememberJourneyView('journey');setBrowseReturn(undefined);if(theme&&!config.campaign)themeReturn.current=theme.id;setTheme(null);setMystery(null);setSolo({...config,run:Date.now()});setDaily(null);window.scrollTo({top:0});};
  const openBonus=(worldId:string,next:SoloConfig|null)=>{if(!discoveryState(progress).find(s=>s.expedition.id===worldId)?.complete)return;setSolo(null);setBonus({worldId,next,owner:account.profile?.id});window.scrollTo({top:0});};
  const openSolo=(config:SoloConfig)=>{if(liveAccountOwner.current!==account.profile?.id)return;if(config.bonusWorld){const world=EXPEDITIONS.find(w=>w.id===config.bonusWorld);if(!world)return;const next=nextJourneyAfter(progress,expeditionBonusId(world));openBonus(world.id,next?{themeId:next.themeId,level:0,journey:next.id,campaign:true}:null);return;}if(config.campaign&&config.journey&&worldNeedsWelcome(progress,config.journey)){const world=expeditionForChapter(config.journey);if(world){config={...config,arrivalWorld:world.title};setProgress(p=>({...p,welcomedWorlds:[...new Set([...(p.welcomedWorlds??[]),world.id])]}));}}playSolo(config);};
  const back=()=>{setBonus(null);if(themeReturn.current){setTheme(THEMES.find(t=>t.id===themeReturn.current)??null);themeReturn.current=null;}if(extra){setBrowseReturn(extraOrigin.current);if(albumsOpen&&extraOrigin.current?.source!=='album')setAlbumReturn(true);}setExtra(null);setSolo(null);setDaily(null);setMystery(null);window.scrollTo({top:0});window.dispatchEvent(new Event('kt-sync-now'));if(daily)window.dispatchEvent(new Event('kt-auth-updated'));};
+ const openOnlineProfile=async()=>{
+  if(onlineProfileRequest.current)return;
+  if(!navigator.onLine){setOnlineEntryError('İnternet bağlantın yok.');return;}
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);onlineProfileRequest.current=controller;
+  try{
+   const next=await getApi<Account>('',controller.signal);
+   if(onlineProfileRequest.current!==controller||controller.signal.aborted)return;
+   if(next.profile?.id!==account.profile?.id){setProfileRetry(n=>n+1);return;}
+   setOnlineEntryError('');setProfileError('');openAuth();
+  }catch{if(onlineProfileRequest.current===controller)setOnlineEntryError('Oyun sunucusuna şu an ulaşılamıyor.');}
+  finally{clearTimeout(timer);if(onlineProfileRequest.current===controller)onlineProfileRequest.current=null;}
+ };
  const startDaily=async()=>{
-  const owner=account.profile?.id;if(!authenticated||!owner){openAuth();return;}
-  cancelDailyLaunch();const launch={owner,controller:new AbortController(),retired:false};dailyLaunch.current=launch;
+  if(dailyLaunch.current)return;
+  let owner=account.profile?.id;
+  const launch={owner,controller:new AbortController(),retired:false};dailyLaunch.current=launch;
+  const epoch=++profileEpoch.current;
   const isCurrent=()=>dailyLaunch.current===launch&&!launch.retired&&liveAccountOwner.current===owner;
   setBusy(true);setError('');let timer:ReturnType<typeof setTimeout>|undefined,onAbort=()=>{};
-  const deadline=new Promise<never>((_yes,no)=>{onAbort=()=>no(new Error('Günün keşfi zamanında hazırlanamadı. Yeniden deneyebilirsin.'));launch.controller.signal.addEventListener('abort',onAbort,{once:true});timer=setTimeout(()=>launch.controller.abort(),DAILY_REQUEST_TIMEOUT);});
+  const deadline=new Promise<never>((_yes,no)=>{onAbort=()=>no(new Error('Günlük bulmaca zamanında hazırlanamadı. Yeniden deneyebilirsin.'));launch.controller.signal.addEventListener('abort',onAbort,{once:true});timer=setTimeout(()=>launch.controller.abort(),DAILY_REQUEST_TIMEOUT);});
   try{
+   if(!navigator.onLine)throw new Error('İnternet bağlantın yok.');
+   if(!owner){
+    let createdGuest=false;const ensure=async()=>{
+     let next=await getApi<Account>('',launch.controller.signal);
+     if(next.needsVerification||next.needsUsername)throw new Error('Hesap bilgilerini oyuncu profilinden tamamla.');
+     if(!next.authenticated){
+      createdGuest=true;const response=await appFetch('/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({}),signal:launch.controller.signal});
+      if(!response.ok)throw new Error('Oyun sunucusuna şu an ulaşılamıyor. Yeniden dene.');
+      next=await getApi<Account>('',launch.controller.signal);
+     }
+     return next;
+    };
+    const next=await Promise.race([ensure(),deadline]);
+    if(!isCurrent()||launch.controller.signal.aborted)return;
+    if(!next.authenticated||!next.profile?.id)throw new Error('Misafir oturumu açılamadı. Yeniden dene.');
+    // Preserve the device's progress before changing the cloud owner.
+    const ownStored=await progressBackup().open(next.profile.id,()=>isCurrent()&&!launch.controller.signal.aborted&&!tearingDown.current&&epoch===profileEpoch.current);
+    // A completed owner activation is committed even when navigation canceled the launch.
+    if(tearingDown.current||epoch!==profileEpoch.current)return;
+    const adopted=!bootOwner.current||bootOwner.current===next.profile.id?mergeProgress(ownStored,latestProgress.current):ownStored;
+    if(createdGuest)writeStoredProgress(localStorage,next.profile.id,adopted);setProgress(adopted);
+    owner=next.profile.id;launch.owner=owner;liveAccountOwner.current=owner;bootOwner.current=owner;
+    profileEpoch.current++;setAccount(next);setProfileError('');
+   }
+   if(!isCurrent()||launch.controller.signal.aborted)return;
    const pending=readDailyPending(()=>sessionStorage,owner);
    const d=await Promise.race([pending?requestDaily(pending.id,owner,null,launch.controller.signal):api<DailyView>('daily',{expectedOwnerId:owner},launch.controller.signal),deadline]);
    if(!isCurrent()||launch.controller.signal.aborted)return;
    if(!d||typeof d.id!=='string'||typeof d.day!=='string'||!d.board||!Array.isArray(d.strokes)||!Number.isFinite(d.serverNow)||!Number.isFinite(d.starts)||!Number.isFinite(d.duration)||!(d.finished===null||typeof d.finished==='number'&&Number.isFinite(d.finished)))throw new Error('Günlük kaydı doğrulanamadı. Yeniden deneyebilirsin.');
    if(pending&&(pending.id!==d.id||pending.day!==d.day||pending.signature!==dailyBoardSignature(d.board)))throw new Error('Bekleyen günlük işlemi bu kayıtla eşleşmedi. Yeni oyun başlatılmadı.');
    setDaily(d);const spec=dailySpec(d.day);setSolo({themeId:spec.themeId,level:spec.level,run:Date.now()});window.scrollTo({top:0});
-  }catch(e){if(isCurrent())setError(e instanceof Error?e.message:'Günün keşfi hazırlanamadı.');}
+  }catch(e){if(isCurrent())setError(e instanceof Error?e.message:'Günlük bulmaca hazırlanamadı.');}
   finally{clearTimeout(timer);launch.controller.signal.removeEventListener('abort',onAbort);if(dailyLaunch.current===launch){dailyLaunch.current=null;setBusy(false);}}
  };
  const classic=()=>{let level=0;try{level=validateSave(JSON.parse(localStorage.getItem(SAVE_KEY)??'null'))?.round??0;}catch{}openSolo({themeId:'hababam',level,classic:true});};
@@ -153,35 +222,35 @@ export function GameApp({releases=[],releaseCounts={}}:{releases?:ReleaseSummary
  if(bonus&&ready&&bonus.owner===account.profile?.id)return preferences(<div className={'game-app journey-session'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><GameScene scene={sceneForRoute(bonus.worldId,expeditionTheme(EXPEDITIONS.find(w=>w.id===bonus.worldId)!))}/><Platform consent={progress.analytics} playing/>{saveWarning}<BonusRound onHome={goHome} key={(bonus.owner??'device')+':'+bonus.worldId} worldId={bonus.worldId} progress={progress} onProgress={update=>{if(liveAccountOwner.current===bonus.owner)setProgress(update);}} onBack={back} onContinue={()=>{const next=bonus.next;setBonus(null);if(next)openSolo(next);else back();}}/></div>);
  if(sprint&&ready)return preferences(<div className={'game-app sprint-app'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<Sprint key={account.profile?.id??'device'} owner={account.profile?.id} progress={progress} onProgress={setProgress} onBack={()=>setSprint(false)}/></div>);
  if(extra&&ready)return preferences(<div className={'game-app'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<PublishedPlay key={extra.id} initialPractice={extraPractice} pair={extraPair} onRelated={(chapter,pair)=>openExtra(chapter,false,pair)} chapter={extra} userId={account.profile?.id} progress={progress} onProgress={setProgress} onBack={back}/></div>);
- if(solo&&ready)return preferences(<div className={'game-app'+(solo.campaign||livingStory(solo.journey)?' journey-session':'')+(livingStory(solo.journey)?' story-session':'')+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<Solo onHome={goHome} key={`${account.profile?.id??'device'}.${solo.run}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} ownerId={account.profile?.id} progress={progress} onProgress={update=>{if(liveAccountOwner.current===account.profile?.id)setProgress(update);}} onBack={solo.campaign||isRiddleChapter(solo.journey)||livingStory(solo.journey)?back:solo.journey?returnToMap:back} onMap={solo.campaign||isRiddleChapter(solo.journey)||livingStory(solo.journey)?back:returnToMap} onNext={openSolo} onBonus={openBonus} daily={daily??undefined}/></div>);
+ if(solo&&ready)return preferences(<div className={'game-app'+(solo.campaign||livingStory(solo.journey)?' journey-session':'')+(livingStory(solo.journey)?' story-session':'')+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<Solo onHome={goHome} key={`${account.profile?.id??'device'}.${solo.run}.${solo.themeId}.${solo.level}.${daily?.id??''}`} config={solo} ownerId={account.profile?.id} progress={progress} onProgress={update=>{if(liveAccountOwner.current===account.profile?.id)setProgress(update);}} onBack={solo.campaign||isRiddleChapter(solo.journey)||livingStory(solo.journey)?back:solo.journey?returnToMap:back} onMap={solo.campaign||isRiddleChapter(solo.journey)||livingStory(solo.journey)?back:returnToMap} onNext={openSolo} onBonus={openBonus} daily={daily??undefined} dailyNamed={!!account.profile?.nickname} onDailyNamed={(nickname,ownerId)=>setAccount(current=>current.profile?.id===ownerId?{...current,profile:{...current.profile,nickname}}:current)}/></div>);
  if(mystery&&ready)return preferences(<div className={'game-app'+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'}><Platform consent={progress.analytics} playing/>{saveWarning}<Mystery key={(account.profile?.id??'device')+':'+mystery} id={mystery} progress={progress} onProgress={setProgress} onBack={back} onNext={openMystery}/></div>);
  return preferences(<div className={'app-shell native-shell native-'+nav+(!playing?' native-scene':'')+(!playing&&(nav==='arsiv'||nav==='gunluk'||nav==='arena'&&arenaTab!=='live')?' scene-subpage':'')+(playing?' arena-session':'')+(settings?' settings-open':'')+wrap} data-palette={progress.palette} data-board-color={progress.boardColor??'white'} data-ready={ready}>
   {!ready&&<div className="game-boot" role="status" aria-label="Oyun hazırlanıyor"><span>Kt.</span><b>kelime teneffüsü</b></div>}
   <Platform consent={progress.analytics} playing={playing} installTarget={installTarget}/>
   {!playing&&(nav==='arsiv'||nav==='gunluk'||nav==='arena'&&arenaTab!=='live')&&<div className="subpage-scenery" aria-hidden="true"><SceneArt theme={nav==='arena'?'futbol':progress.last?.themeId??'uzay'} journeyId={nav==='arena'?undefined:progress.last?.journey} eager/><div/></div>}
-  <div className="main-area">{!playing&&<header className="native-topbar">
-   {nav==='kesfet'?<button className="berrak-profile" style={{'--album-fill':`${discoveryState(progress).filter(s=>s.complete).length/EXPEDITIONS.length*100}%`} as React.CSSProperties} onClick={()=>{selectNav('profil');setProfileOpen(true);}} aria-label="Oyuncu profilini aç"><span>{progress.trailBadge&&wordTrail(progress).earned.some(t=>t.id===progress.trailBadge)?<TrailBadge id={progress.trailBadge}/>:account.profile?.nickname.slice(0,1)??'K'}</span></button>:<button className="berrak-round" onClick={()=>selectNav('kesfet')} aria-label="Yolculuğa dön"><ArrowLeft size={22}/></button>}
-   <button className="berrak-stars" onClick={()=>setRewardsInfo(true)} aria-label={`${stars} yıldız. Başarı bilgisi`} aria-haspopup="dialog"><Star size={21} fill="currentColor" aria-hidden="true"/>{stars}</button>
+  <div className="main-area" inert={!ready}>{!playing&&<header className="native-topbar">
+   {nav==='kesfet'?<button className="berrak-profile" style={{'--album-fill':`${discoveryState(progress).filter(s=>s.complete).length/EXPEDITIONS.length*100}%`} as React.CSSProperties} onClick={()=>{selectNav('profil');setProfileOpen(true);}} aria-label="Oyuncu profilini aç"><span>{progress.trailBadge&&wordTrail(progress).earned.some(t=>t.id===progress.trailBadge)?<TrailBadge id={progress.trailBadge}/>:account.profile?.nickname.slice(0,1)||<UserRound aria-hidden="true"/>}</span></button>:<button className="berrak-round" onClick={()=>selectNav('kesfet')} aria-label="Yolculuğa dön"><ArrowLeft size={22}/></button>}
+   <button className="berrak-stars" data-star-total={stars} onClick={()=>setRewardsInfo(true)} aria-label={`${stars} yıldız. Başarı bilgisi`} aria-haspopup="dialog"><Star size={21} fill="currentColor" aria-hidden="true"/>{stars}</button>
    <button className="berrak-round settings-trigger" onClick={()=>setSettings(true)} aria-label="Ayarları aç"><Settings size={23}/></button>
   </header>}
-  <main className={'main-content'+(playing?' arena-is-playing':'')} id="game-main"><div className="game-notices">{accountNotice}{(storageError||syncStatus==='storage-error')&&<div className="error-box" role="status">Bu tarayıcıda kayıt alanı kullanılamıyor. İlerlemeni korumak için hesabınla giriş yapabilirsin.</div>}{profileError&&online&&<p className="error-box dismissible-notice" role="status"><span>{profileError}</span><button className="text-button" onClick={()=>{setProfileError('');setProfileRetry(n=>n+1);}}>Yeniden dene</button></p>}{error&&nav!=='gunluk'&&<p className="error-box dismissible-notice" role="alert"><span>{error}</span><button className="text-button" aria-label="Bildirimi kapat" onClick={()=>setError('')}>Kapat</button></p>}{membership.user&&!membership.user.emailVerified&&<div className="auth-banner"><span>Kalıcı hesabın için e-posta adresini doğrula.</span><button className="text-button" onClick={()=>openAuth('verify')}>Doğrulamaya devam et</button></div>}</div>
+  <main className={'main-content'+(playing?' arena-is-playing':'')} id="game-main"><div className="game-notices">{accountNotice}{(storageError||syncStatus==='storage-error')&&<div className="error-box" role="status">Bu tarayıcıda kayıt alanı kullanılamıyor. İlerlemeni korumak için hesabınla giriş yapabilirsin.</div>}{error&&nav!=='gunluk'&&<p className="error-box dismissible-notice" role="alert"><span>{error}</span><button className="text-button" aria-label="Bildirimi kapat" onClick={()=>setError('')}>Kapat</button></p>}{membership.user&&!membership.user.emailVerified&&<div className="auth-banner"><span>Kalıcı hesabın için e-posta adresini doğrula.</span><button className="text-button" onClick={()=>openAuth('verify')}>Doğrulamaya devam et</button></div>}</div>
    {(nav==='kesfet'||nav==='arsiv')&&<Explore onAlbums={()=>setAlbumsOpen(true)} onDetails={()=>setMapWorld('')} libraryPanel={theme?null:libraryPanel} onLibraryPanel={setLibraryPanel} lastStoryId={lastStoryId} journeyView={journeyView} onJourneyView={rememberJourneyView} library={nav==='arsiv'} userId={account.profile?.id} releases={releases} releaseCounts={releaseCounts} onSprint={()=>{setBrowseReturn(undefined);setSprint(true);}} progress={progress} setTheme={setTheme} openSolo={openSolo} setNav={selectNav} classic={classic} onMystery={openMystery} onChallenge={openChallenge} onExtra={openExtra} browseReturn={browseReturn}/>}
-   {nav==='arena'&&<>{!playing&&arenaTab!=='live'&&<button className="arena-back text-button" onClick={()=>selectArena('live')}><ArrowLeft size={18}/>Arena’ya dön</button>}{arenaTab==='live'&&<Arena key={(account.profile?.id??'guest')+':'+arenaEntry} ownerId={account.profile?.id} authenticated={authenticated} onLogin={()=>openAuth()} progress={progress} onProgress={setProgress} practice={()=>openSolo({themeId:'uzay',level:0,journey:'uzay-1',practice:true})} onPlaying={setPlaying} onChallenge={()=>selectArena('challenge')} onFriends={()=>selectArena('friends')}/>} {arenaTab==='challenge'&&<Challenges key={(account.profile?.id??'guest')+':'+arenaEntry} authenticated={authenticated} onLogin={()=>openAuth()} progress={progress} onProgress={setProgress} inviteCode={invites.challenge} onPlaying={setPlaying}/>} {arenaTab==='friends'&&<Friends key={(account.profile?.id??'device')+':'+arenaEntry} authenticated={authenticated} onLogin={()=>openAuth()} invitation={invites.friend} onDuel={()=>selectArena('live')} onChallenge={()=>selectArena('challenge')}/>}</>}
+   {nav==='arena'&&<>{!playing&&arenaTab!=='live'&&<button className="arena-back text-button" onClick={()=>selectArena('live')}><ArrowLeft size={18}/>Arena’ya dön</button>}{!playing&&(!online||!!onlineEntryError)?(arenaTab==='live'?<ArenaEntryBackdrop><NetworkState offline={!online} onRetry={()=>{setOnlineEntryError('');setProfileError('');setProfileRetry(n=>n+1);}}/></ArenaEntryBackdrop>:<NetworkState offline={!online} onRetry={()=>{setOnlineEntryError('');setProfileError('');setProfileRetry(n=>n+1);}}/>):<>{arenaTab==='live'&&<Arena key={(account.profile?.id??'guest')+':'+arenaEntry} ownerId={account.profile?.id} authenticated={authenticated&&!!account.profile?.nickname} onLogin={()=>void openOnlineProfile()} progress={progress} onProgress={setProgress} practice={()=>openSolo({themeId:'uzay',level:0,journey:'uzay-1',practice:true})} onPlaying={setPlaying} onChallenge={()=>selectArena('challenge')} onFriends={()=>selectArena('friends')}/>} {arenaTab==='challenge'&&<Challenges key={(account.profile?.id??'guest')+':'+arenaEntry} authenticated={authenticated&&!!account.profile?.nickname} onLogin={()=>void openOnlineProfile()} progress={progress} onProgress={setProgress} inviteCode={invites.challenge} onPlaying={setPlaying}/>} {arenaTab==='friends'&&<Friends key={(account.profile?.id??'device')+':'+arenaEntry} authenticated={authenticated&&!!account.profile?.nickname} onLogin={()=>void openOnlineProfile()} invitation={invites.friend} onDuel={()=>selectArena('live')} onChallenge={()=>selectArena('challenge')}/>}</>}</>}
    {nav==='gunluk'&&<DailyPage authenticated={authenticated} onLogin={()=>openAuth()} progress={progress} onProgress={setProgress} busy={busy} error={error} start={()=>void startDaily()}/>}
-   {nav==='profil'&&<ProfilePage key={profileVisit} openProfile={profileOpen} onPlay={openSolo} account={account} releases={releases} onExtra={openExtra} setAccount={setAccount} onLogin={()=>openAuth('register')} onLogout={async()=>{try{localStorage.removeItem(PROGRESS_KEY+':last-user');}catch{}bootOwner.current='';await signOutMember();if(account.kind==='native'||account.nativeSession){location.assign('/signout-with-chatgpt?return_to=%2F');return;}setAccount({authenticated:false});setProgress(emptyProgress());selectNav('kesfet');}} progress={progress} onProgress={setProgress} syncStatus={syncStatus} onMap={returnToMap} onSettings={()=>setSettings(true)} browseReturn={browseReturn}/>}
+   {nav==='profil'&&<ProfilePage serviceError={profileError} onServiceRetry={()=>{setProfileError('');setProfileRetry(n=>n+1);}} key={profileVisit} openProfile={profileOpen} onPlay={openSolo} account={account} releases={releases} onExtra={openExtra} setAccount={setAccount} onLogin={()=>openAuth('register')} onLogout={async()=>{const owner=account.profile?.id??bootOwner.current;beginTeardown(true);try{await signOutMember();await progressBackup().forget(owner,true);const anonymous=await progressBackup().open('');bootOwner.current='';if(account.kind==='native'||account.nativeSession){location.assign('/signout-with-chatgpt?return_to=%2F');return;}setAccount({authenticated:false});setProgress(anonymous);selectNav('kesfet');beginTeardown(false);}catch{setStorageError(true);beginTeardown(false);setProfileRetry(n=>n+1);}}} progress={progress} onProgress={setProgress} syncStatus={syncStatus} onMap={returnToMap} onSettings={()=>setSettings(true)} browseReturn={browseReturn}/>}
   </main></div>
 
   {mapWorld!==null&&<ChapterPicker progress={progress} worldId={mapWorld||undefined} onAlbums={()=>{setMapWorld(null);setAlbumsOpen(true);}} onPlay={openSolo} onClose={()=>setMapWorld(null)}/>}
   {albumsOpen&&<Modal title="Albümlerim" className="game-library-sheet game-tools-modal" onClose={()=>setAlbumsOpen(false)}><JourneyAlbums progress={progress} account={account} releases={releases} onExtra={openExtra} onPlay={openSolo} browseReturn={browseReturn} onMap={id=>{setAlbumsOpen(false);returnToMap(id);}}/></Modal>}
-  {rewardsInfo&&<Modal title="Yıldızların" className="game-tools-modal reward-info" onClose={()=>setRewardsInfo(false)} footer={<button className="button primary full" onClick={()=>setRewardsInfo(false)}>Anladım</button>}><div className="reward-total"><Star fill="currentColor"/><b>{stars}</b></div><p>Tamamladığın bölümlerdeki en iyi sonuçlarının toplamı. Yıldızlar harcanmaz; tekrar oynarken daha düşük bir sonuç alırsan azalmaz.</p><dl><div><dt>Bölüm yıldızları</dt><dd>İpuçsuz 3, bir ipucuyla 2, iki veya üç ipucuyla 1 yıldız. Süre yıldızları etkilemez.</dd></div><div><dt>Albüm parçaları</dt><dd>Bir dünyadaki bölümleri tamamladıkça resmin parçaları açılır.</dd></div><div><dt>Rozetler</dt><dd>Özel başarılarının hatırası. Kazandıklarını oyuncu profilinde görebilirsin.</dd></div></dl><button className="button secondary full" onClick={()=>{setRewardsInfo(false);setAlbumsOpen(true);}}>Albümlerime bak</button></Modal>}
+  {rewardsInfo&&<Modal title="Yıldızların" className="game-tools-modal reward-info" onClose={()=>setRewardsInfo(false)} footer={<button className="button primary full" onClick={()=>setRewardsInfo(false)}>Anladım</button>}><div className="reward-total"><Star fill="currentColor"/><b>{stars}</b></div><p>{RULES_COPY.totalStars}</p><dl><div><dt>Bölüm yıldızları</dt><dd>{RULES_COPY.stars}</dd></div><div><dt>Albüm parçaları</dt><dd>Bir dünyadaki bölümleri tamamladıkça resmin parçaları açılır.</dd></div><div><dt>Rozetler</dt><dd>Özel başarılarının rozeti. Kazandıklarını oyuncu profilinde görebilirsin.</dd></div></dl><button className="button secondary full" onClick={()=>{setRewardsInfo(false);setAlbumsOpen(true);}}>Albümlerime bak</button></Modal>}
   {settings&&<div className="settings-scenery" aria-hidden="true"><SceneArt theme={nav==='arena'?'futbol':progress.last?.themeId??'uzay'} journeyId={nav==='arena'?undefined:progress.last?.journey} eager/></div>}
   {settings&&<Modal focusTitleOnChange className={support||privacy||settingsMore?'game-tools-modal settings-sheet':'settings-home'} footer={support||privacy||settingsMore?<button className="button secondary full" onClick={()=>{if(support)supportReturnFocus.current=true;setSupport(false);setPrivacy(false);setSettingsMore(false);}}>Ayarlara dön</button>:undefined} title={support?'Destek':privacy?'Gizlilik ve hesap':settingsMore?'Diğer ayarlar':'Ayarlar'} onClose={()=>{setSettings(false);setSupport(false);setPrivacy(false);setSettingsMore(false);}}>
    {!support&&!privacy&&!settingsMore&&<GameCenterAccess/>}
-   {support?<SupportReport/>:privacy?<><DeleteAccount owner={account.profile?.id} kind={account.kind} onBusy={setDeleting} onErased={()=>{bootOwner.current='';setProgress(emptyProgress());}}/>{authenticated&&<button className="button secondary full" onClick={()=>setBlockedList(v=>!v)} aria-expanded={blockedList}>Engellenen oyuncular</button>}{blockedList&&<BlockedPlayers/>}<PrivacyInfo/></>:settingsMore?<GameSettings progress={progress} onProgress={setProgress} comfort={comfort} onComfort={changeComfort}/>:<SettingsHome progress={progress} onProgress={setProgress} comfort={comfort} onComfort={changeComfort} supportRef={supportOpener} onHome={()=>{setSettings(false);selectNav('kesfet');}} onSupport={()=>setSupport(true)} onMore={()=>setSettingsMore(true)} onPrivacy={()=>setPrivacy(true)} onHelp={()=>{setSettings(false);setHelp(true);}}/>}
+   {support?<SupportReport/>:privacy?<><DeleteAccount owner={account.profile?.id} kind={account.kind} onBusy={beginTeardown} onErased={()=>{bootOwner.current='';setProgress(emptyProgress());}}/>{authenticated&&<button className="button secondary full" onClick={()=>setBlockedList(v=>!v)} aria-expanded={blockedList}>Engellenen oyuncular</button>}{blockedList&&<BlockedPlayers/>}<PrivacyInfo/></>:settingsMore?<GameSettings progress={progress} onProgress={setProgress} comfort={comfort} onComfort={changeComfort}/>:<SettingsHome progress={progress} onProgress={setProgress} comfort={comfort} onComfort={changeComfort} supportRef={supportOpener} onHome={()=>{setSettings(false);selectNav('kesfet');}} onSupport={()=>setSupport(true)} onMore={()=>setSettingsMore(true)} onPrivacy={()=>setPrivacy(true)} onHelp={()=>{setSettings(false);setHelp(true);}}/>}
    {settingsMore&&!support&&!privacy&&<div ref={setInstallTarget}/>}
   </Modal>}
   {theme&&<Modal title={theme.title} className="game-library-sheet game-tools-modal" onClose={()=>setTheme(null)}><p className="muted">Serbest oyun · Zorluğunu seç</p><div className="free-level-list">{LEVEL_NAMES.map((name,l)=>{const saved=progress.saves[`${theme.id}.${l}`];return <button key={l} onClick={()=>openSolo({themeId:theme.id,level:l,practice:saved?.complete})}><span><b>{name}</b><small>{5+l} kelime · {l<2?'Rahat':l<4?'Dengeli':'Ustalık'}</small></span>{saved?.complete?<span aria-label={`${saved.stars} yıldız`}>{[0,1,2].map(i=><Star key={i} size={13} fill={saved.stars>i?'currentColor':'none'}/>)}</span>:<ArrowRight size={18}/>}</button>;})}</div></Modal>}
-  {authMode&&<Modal className="game-tools-modal settings-sheet" title={authMode==='register'?'Oyuncu profilin':'Hoş geldin'} onClose={()=>setAuthMode(null)}><EntryPanel initial={authMode} returnTo={authReturn} user={membership.user} available={membership.available} onDone={()=>location.assign(safeReturnTo(authReturn))}/></Modal>}
-  {help&&<Help onClose={()=>setHelp(false)} onPractice={()=>{setHelp(false);selectNav('kesfet');openSolo({themeId:'uzay',level:0,tutorial:true});}}/>} {busy&&<span className="global-busy" role="status"><LoaderCircle size={18} className="spin"/>Günün keşfi hazırlanıyor…</span>}
+  {authMode&&<Modal className="game-tools-modal settings-sheet" title={authMode==='register'?'Oyuncu profilin':'Hoş geldin'} onClose={()=>setAuthMode(null)}><EntryPanel existingGuest={account.kind==='guest'&&!account.profile?.nickname} ownerId={account.profile?.id} initial={authMode} returnTo={authReturn} user={membership.user} available={membership.available} onDone={()=>location.assign(safeReturnTo(authReturn))}/></Modal>}
+  {help&&<Help onClose={()=>setHelp(false)} onPractice={()=>{setHelp(false);selectNav('kesfet');openSolo({themeId:'uzay',level:0,tutorial:true});}}/>} {busy&&<span className="global-busy" role="status"><LoaderCircle size={18} className="spin"/>Günlük bulmaca hazırlanıyor…</span>}
  </div>);
 }
