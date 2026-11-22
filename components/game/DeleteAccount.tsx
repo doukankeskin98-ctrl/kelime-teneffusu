@@ -1,6 +1,8 @@
 'use client';
 import {setDailyReminder} from '@/lib/platform/engagement';
+import {progressBackup} from '@/lib/platform/progress-backup';
 import {useRef,useState} from 'react';
+import {Modal} from './common';
 import {getAuthClient,bearerHeaders,signOutProvider} from '@/lib/auth/firebase-client';
 import {appFetch} from '@/lib/platform/runtime';
 import {clearErasedProgress,ERASURE_KEY,readErasure,type PendingErasure} from '@/lib/auth/erasure-client';
@@ -14,12 +16,42 @@ export function DeleteAccount({owner,kind,onBusy,onErased}:{owner?:string;kind?:
    localStorage.setItem(ERASURE_KEY,JSON.stringify(job));if(localStorage.getItem(ERASURE_KEY)!==JSON.stringify(job))throw new Error('Silme işleminin devam bilgisi saklanamadı. Hiçbir istek gönderilmedi.');setPending(job);
    const headers=await bearerHeaders().catch(()=>({}));const r=await appFetch('/api/account/delete',{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify({receipt:job.receipt,expectedOwner:job.owner,confirm:'DELETE'})}),v=await r.json() as {erased?:boolean;complete?:boolean;requiresEmail?:boolean;error?:string};
    if(v.requiresEmail)setNeedsEmail(true);if(!r.ok)throw new Error(v.error??'Hesap silinemedi. Kayıtların korunuyor.');
-   if(v.erased){job={...job,erased:true};localStorage.setItem(ERASURE_KEY,JSON.stringify(job));setPending(job);clearErasedProgress(job.owner,localStorage,sessionStorage);try{const reminder=await setDailyReminder(false);if(reminder.enabled)throw new Error();}catch{throw new Error('Hesabın silindi, ancak bu cihazdaki hatırlatma kapatılamadı. Silme işlemini kontrol ederek yeniden dene.');}onErased();}
+   if(v.erased){job={...job,erased:true};localStorage.setItem(ERASURE_KEY,JSON.stringify(job));setPending(job);await progressBackup().forget(job.owner,true);clearErasedProgress(job.owner,localStorage,sessionStorage);try{const reminder=await setDailyReminder(false);if(reminder.enabled)throw new Error();}catch{throw new Error('Hesabın silindi, ancak bu cihazdaki hatırlatma kapatılamadı. Silme işlemini kontrol ederek yeniden dene.');}onErased();}
    if(!v.complete)throw new Error(v.error??'Hesap kapanışı bekliyor. Tekrar dene.');
    await signOutProvider();localStorage.removeItem(ERASURE_KEY);
    if(kind==='native')location.assign('/signout-with-chatgpt?return_to=%2F');else location.assign('/');
   }catch(e){setError((e as Error).message);if(!job?.erased)onBusy(false);}finally{lock.current=false;setBusy(false);}
  };
  if(!owner&&!pending)return null;
- return <section className="account-danger"><button className="button secondary full danger" onClick={()=>setOpen(v=>!v)} aria-expanded={open}>Hesabı ve oyun verilerini sil</button>{open&&<><p>Bu profildeki bölümler, yıldızlar, albümler, Arena puanı ve arkadaş bağlantıları kalıcı olarak silinir. Diğer oyuncuların maç sonuçlarında adın kaldırılır. Bu işlem geri alınamaz.</p>{kind==='native'&&<p>Yalnız Kelime Teneffüsü profili silinir. ChatGPT hesabın silinmez.</p>}{pending?.erased?<p role="status">Oyun verilerin silindi. Üyelik hesabının kapanışını tamamla.</p>:<><label><input type="checkbox" checked={confirmed} disabled={busy} onChange={e=>setConfirmed(e.target.checked)}/><span>Bu profilin kayıtlarının kalıcı olarak silineceğini anladım.</span></label></>}{needsEmail&&<>{kind!=='email'&&<label>Bağlı e-posta<input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} disabled={busy}/></label>}<label>Şifrenle doğrula<input type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} disabled={busy}/></label></>}{error&&<p role="alert">{error}</p>}<button className="button secondary full danger" disabled={busy||!pending&&(!confirmed||needsEmail&&!password)} onClick={()=>void erase()}>{busy?'İşlem sürüyor…':pending?'Silme işlemini kontrol et':'Kalıcı olarak sil'}</button></>}</section>;
+ const close=()=>{
+  if(lock.current)return;
+  setOpen(false);
+  setConfirmed(false);
+  setPassword('');
+  setEmail('');
+  setError('');
+ };
+ return <section className="account-danger">
+  <button type="button" className="button secondary full danger" onClick={()=>setOpen(true)} aria-haspopup="dialog">Hesabı ve oyun verilerini sil</button>
+  {open&&<Modal title="Hesap silme" className="game-tools-modal account-erasure" onClose={close} footer={<>
+   <button type="button" className="button secondary full" disabled={busy} onClick={close}>Vazgeç</button>
+   <button type="button" className="button full danger" disabled={busy||!pending&&(!confirmed||needsEmail&&!password)} onClick={()=>void erase()}>
+    {busy?'İşlem sürüyor…':pending?'Silme işlemini kontrol et':'Kalıcı olarak sil'}
+   </button>
+  </>}>
+   <div className="account-danger">
+    <p>Bu profildeki bölümler, yıldızlar, albümler, Arena puanı ve arkadaş bağlantıları kalıcı olarak silinir. Diğer oyuncuların maç sonuçlarında adın kaldırılır. Bu işlem geri alınamaz.</p>
+    {kind==='native'&&<p>Yalnız Kelime Teneffüsü profili silinir. ChatGPT hesabın silinmez.</p>}
+    {pending?.erased?<p role="status">Oyun verilerin silindi. Üyelik hesabının kapanışını tamamla.</p>:<label>
+     <input type="checkbox" checked={confirmed} disabled={busy} onChange={e=>setConfirmed(e.target.checked)}/>
+     <span>Bu profilin kayıtlarının kalıcı olarak silineceğini anladım.</span>
+    </label>}
+    {needsEmail&&<>
+     {kind!=='email'&&<label>Bağlı e-posta<input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} disabled={busy}/></label>}
+     <label>Şifrenle doğrula<input type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} disabled={busy}/></label>
+    </>}
+    {error&&<p role="alert">{error}</p>}
+   </div>
+  </Modal>}
+ </section>;
 }

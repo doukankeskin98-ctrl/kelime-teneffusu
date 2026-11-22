@@ -16,11 +16,11 @@ const memory=()=>{const values=new Map<string,string>();return {getItem:(key:str
 describe('truthful chapter card progress',()=>{
  it('shows a real partial count, then completion, stars and best elapsed time',()=>{
   const partial=cardProgress(save(2),chapter.spec),done=cardProgress(save(100,35,1),chapter.spec);
-  assert.deepEqual(chapterCardCopy(partial,'ready',chapter.spec),{kind:'continue',action:'Kaldığın yerden',detail:'2/4 kelime bulundu'});assert.equal(done.stars,2);assert.equal(chapterCardCopy(done,'ready',chapter.spec).action,'Bir daha keşfet');assert.match(chapterCardCopy(done,'ready',chapter.spec).detail,/2 yıldız/);assert.match(chapterCardCopy(done,'ready',chapter.spec).detail,/35/);
+  assert.deepEqual(chapterCardCopy(partial,'ready',chapter.spec),{kind:'continue',action:'Kaldığın yerden',detail:'2/4 kelime bulundu'});assert.equal(done.stars,2);assert.equal(chapterCardCopy(done,'ready',chapter.spec).action,'Tekrar oyna');assert.match(chapterCardCopy(done,'ready',chapter.spec).detail,/2 yıldız/);assert.match(chapterCardCopy(done,'ready',chapter.spec).detail,/35/);
  });
  it('does not call an unavailable or still-loading cloud record a fresh or completed game',()=>{
   for(const state of ['loading','offline','error'] as const){assert.equal(chapterCardCopy(undefined,state,chapter.spec).kind,'unknown');assert.equal(chapterCardCopy(undefined,state,chapter.spec).action,'Keşfi aç');}
-  assert.equal(chapterCardCopy(cardProgress(save(0),chapter.spec),'ready',chapter.spec).action,'Keşfe başla');assert.equal(chapterCardCopy(cardProgress(save(0),chapter.spec),'loading',chapter.spec).action,'Keşfi aç');
+  assert.equal(chapterCardCopy(cardProgress(save(0),chapter.spec),'ready',chapter.spec).action,'Bölüme başla');assert.equal(chapterCardCopy(cardProgress(save(0),chapter.spec),'loading',chapter.spec).action,'Keşfi aç');
  });
  it('rejects unknown target IDs and nonfinite data and derives stars from actual completion and hints',()=>{
   assert.equal(parseCardProgress({foundIds:['forged'],elapsed:1,hints:0},chapter.spec),null);assert.equal(parseCardProgress({foundIds:[],elapsed:NaN,hints:0},chapter.spec),null);

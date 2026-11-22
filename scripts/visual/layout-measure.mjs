@@ -21,6 +21,8 @@ export function capturePlayLayout() {
   const cells = [...board.querySelectorAll('[data-cell]')].map(rect);
   return {width:innerWidth,height:innerHeight,scrollHeight:document.scrollingElement.scrollHeight,
     scrollWidth:document.documentElement.scrollWidth,board:rect(board),rack:rack?rect(rack):null,
+    stage:rect(screen.querySelector('.board-stage')),topic:rect(screen.querySelector('.target-topic')??screen.querySelector('.targets-panel')),
+    letterPx:parseFloat(getComputedStyle(board.querySelector('[data-cell]')).fontSize),
     cell:cells.length?Math.min(...cells.map(c => Math.min(c.width,c.height))):0,words,targets,controls};
 }
 

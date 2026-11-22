@@ -41,6 +41,7 @@ function readResult() {
     panel: bounds(content),
     buttonAccessible: visibleAtCenter(button),
     medalDiameter: box(select(bonus ? '.bonus-discovery-medal' : '.result-world-medallion')).width,
+    labels:[...dialog.querySelectorAll('.result-shortcuts button>small')].map(e=>({text:e.textContent,...bounds(e),visible:visibleAtCenter(e)})),
     pieces: pieces.map(e => ({text: e.innerText, ...bounds(e), visible: visibleAtCenter(e)})),
   };
 }
@@ -76,6 +77,7 @@ export async function verifyResultLayout(page, scene, out) {
       await page.screenshot(path.join(out, context + '.png'));
       assert.ok(result.buttonAccessible, context + ' continue action');
       assert.ok(result.button.bottom <= height - bottom + 1, context + ' action inside safe area');
+      for(const label of result.labels)assert.ok(label.visible&&label.bottom<=height-bottom+1,context+' shortcut label clipped: '+label.text);
       assert.ok(result.pieces.length >= 2, context + ' visible reward');
       for (const piece of result.pieces) {
         assert.ok(piece.visible && piece.top >= result.panel.top - 1 && piece.bottom <= result.panel.bottom + 1,

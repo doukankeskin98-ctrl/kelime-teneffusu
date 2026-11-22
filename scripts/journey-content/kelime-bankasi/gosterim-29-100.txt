@@ -1,0 +1,6 @@
+# Yalnız ürün sahibine gösterim için (19 Kasım 2026). Oyuna GİRMEZ; ilgili dilim gelince bu kategoriler yeniden yazılır.
+# --- deneme kategorileri (ürün sahibine gösterim için) ---
+@dunya 05 lezzetler | Tarçın Sokağı
+05 | Sofranın lezzetleri | ÇAY KEK REÇEL HELVA SUCUK KAHVE TURŞU CACIK ÇORBA LOKUM TAHİN PEKMEZ KÜNEFE ZEYTİN KAYMAK PEYNİR
+@dunya 17 kiyi-liman | Limanda Sabah
+04 | Kıyıda bir mola | MARTI DALGA KÖPÜK YOSUN KOVA HAVLU ÇAKIL YENGEÇ MİDYE PLAJ MAYO GÖLGE ŞEMSİYE OLTA BALIK KUM

@@ -2,7 +2,7 @@ import {nearMissMessage} from '../lib/game/word-card.ts';
 import {journeyBoard,journeyById} from '../lib/game/content.ts';
 import {describe,it} from 'node:test';
 import assert from 'node:assert/strict';
-import {advanceGesture,CELL_HIT_RADIUS,earlyWordEnd,gestureTip} from '../lib/game/input-gesture.ts';
+import {advanceGesture,CELL_HIT_RADIUS,earlyWordEnd,gestureTip,touchReleaseWord} from '../lib/game/input-gesture.ts';
 import type {Cell} from '../lib/game/engine.ts';
 const center=(cell:Cell):Cell=>[cell[0]+.5,cell[1]+.5];
 const directions:Cell[]=[[0,1],[1,1],[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1]];
@@ -152,5 +152,46 @@ describe('useful misses do not award or expose masked answers',()=>{
   assert.equal(nearMissMessage(board,[1,8],[1,1],visible),'Tekrar dene.');
   assert.equal(nearMissMessage(board,[0,8],[0,1],[]),'Tekrar dene.');
   assert.equal(nearMissMessage(board,[0,8],[0,6],visible),'Tekrar dene.');
+ });
+});
+
+describe('touches starting near a letter edge',()=>{
+ const shape={rows:8,columns:6};
+ for(const direction of directions)it('selects the very next letter on a parallel swipe '+direction,()=>{
+  const start:Cell=[4,3],next:Cell=[start[0]+direction[0],start[1]+direction[1]];
+  for(const y of [.02,.98])for(const x of [.02,.98]){
+   const down:Cell=[start[0]+y,start[1]+x],point:Cell=[next[0]+y,next[1]+x];
+   for(const release of [false,true]){
+    assert.deepEqual(advanceGesture(start,start,null,point,shape,release,down),{cell:next,axis:direction});
+   }
+  }
+ });
+ it('does not turn finger jitter across a shared corner into a letter',()=>{
+  const start:Cell=[4,3],down:Cell=[4.98,3.98];
+  assert.deepEqual(advanceGesture(start,start,null,[4.99,4.01],shape,false,down),{cell:start,axis:null});
+ });
+});
+
+describe('bounded finger contact at both ends of PERSEUS',()=>{
+ const grid=['AİEİET','KAESRU','AYFULM','NOSEİA','IRASKY','PTNRŞÜ','AÖEERU','TKCPBŞ'].map(r=>[...r]);
+ const board={size:8,grid},word={id:'0.0',group:0,label:'PERSEUS',text:'PERSEUS'};
+ const p:Cell=[7,3],s:Cell=[1,3];
+ const adjacentP:Cell=[6,3],adjacentS:Cell=[2,3];
+ const down:Cell=[6.95,3.5],up:Cell=[2.05,3.5];
+ for(const reverse of [false,true])for(const missed of ['start','end','both'])it('recovers '+missed+' on '+(reverse?'reverse':'forward')+' release',()=>{
+  const a=missed==='end'?p:adjacentP,b=missed==='start'?s:adjacentS;
+  const startPoint=missed==='end'?center(p):down,endPoint=missed==='start'?center(s):up;
+  const result=reverse?touchReleaseWord(board,[word],[],b,a,endPoint,startPoint,.1):
+    touchReleaseWord(board,[word],[],a,b,startPoint,endPoint,.1);
+  assert.deepEqual(result,reverse?{a:s,b:p}:{a:p,b:s});
+ });
+ it('requires contact with both end cells and unique, eligible, unfound text',()=>{
+  assert.equal(touchReleaseWord(board,[word],[],adjacentP,adjacentS,center(adjacentP),center(adjacentS),.1),null);
+  assert.equal(touchReleaseWord(board,[word],[],p,[3,3],center(p),[3.03,3.5],.1),null);
+  assert.equal(touchReleaseWord(board,[],[],adjacentP,adjacentS,down,up,.1),null);
+  assert.equal(touchReleaseWord(board,[word],[{id:word.id,a:p,b:s}],adjacentP,adjacentS,down,up,.1),null);
+  const shorter={...word,id:'1.0',text:'PERSEU'};
+  assert.equal(touchReleaseWord(board,[word,shorter],[],adjacentP,adjacentS,down,up,.1),null);
+  assert.equal(touchReleaseWord(board,[word],[],adjacentP,adjacentS,[6.87,3.5],up,.1),null);
  });
 });

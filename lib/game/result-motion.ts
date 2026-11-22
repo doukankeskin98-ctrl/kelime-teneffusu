@@ -3,7 +3,7 @@ import {gameIsActive} from '../platform/runtime';
 import {animate, type AnimationSequence} from 'motion';
 
 /** A disposable presentation. Nothing here writes progress or delays navigation. */
-export function playResultSequence(root:HTMLElement){
+export function playResultSequence(root:HTMLElement,traceBoard=false){
  const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
  const reduced=()=>motion.matches||document.documentElement.dataset['reduceMotion']==='true';
  if(reduced()||document.hidden||!gameIsActive())return ()=>{};
@@ -22,12 +22,41 @@ export function playResultSequence(root:HTMLElement){
  if(!sequence.length)return ()=>{};
  const playback=animate(sequence);
  // CSS is the final state: cancellation immediately restores it, even mid-flight.
- const cancel=()=>playback.cancel();
+ const traces:HTMLElement[]=[];
+ let frame=0;
+ if(traceBoard&&piece)frame=requestAnimationFrame(()=>{
+  const dialog=root.closest('dialog'),medal=portrait?.closest('.result-world-medallion');
+  const board=document.querySelector('.chapter-play.is-celebrating .board-ink');
+  if(!dialog?.open||!board||!medal||reduced()||!gameIsActive())return;
+  const box=dialog.getBoundingClientRect(),dest=medal.getBoundingClientRect();
+  const x=dest.left+dest.width/2,y=dest.top+dest.height/2;
+  const paths=Array.from(board.querySelectorAll<SVGLineElement>('.found-stroke')).slice(-6);
+  for(const [i,line] of paths.entries()){
+   const matrix=line.getScreenCTM();
+   if(!matrix)continue;
+   const start=new DOMPoint(line.x2.baseVal.value,line.y2.baseVal.value).matrixTransform(matrix);
+   const trail=document.createElement('i');
+   trail.className='reward-light';trail.setAttribute('aria-hidden','true');
+   trail.style.setProperty('--flight-angle',Math.atan2(y-start.y,x-start.x)+'rad');
+   trail.style.left=start.x-box.left+'px';trail.style.top=start.y-box.top+'px';
+   dialog.appendChild(trail);traces.push(trail);
+   const flight=trail.animate([
+    {transform:'translate(-50%,-50%) scale(.65)',opacity:0},
+    {opacity:1,offset:.16},
+    {transform:`translate(calc(-50% + ${x-start.x}px),calc(-50% + ${y-start.y}px)) scale(.35)`,opacity:0}
+   ],{duration:620,delay:i*14,easing:'cubic-bezier(.35,.05,.65,1)',fill:'both'});
+   flight.onfinish=()=>trail.remove();
+  }
+ });
+ const cancel=()=>{if(frame)cancelAnimationFrame(frame);for(const trail of traces)trail.remove();playback.cancel();};
+ const dialog=root.closest?.('dialog');
+ const settle=(event:Event)=>{if(!(event.target as Element).closest('button,summary,a'))cancel();};
+ dialog?.addEventListener('pointerdown',settle);
  const stopActivity=observeGameActivity(document,window,gameIsActive,active=>{if(!active)cancel();});
  const preference=()=>{if(reduced())cancel();};
  const observer=new MutationObserver(preference);
  observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-reduce-motion']});
  window.addEventListener('blur',cancel);
  motion.addEventListener('change',preference);
- return()=>{cancel();observer.disconnect();stopActivity();window.removeEventListener('blur',cancel);motion.removeEventListener('change',preference);};
+ return()=>{cancel();dialog?.removeEventListener('pointerdown',settle);observer.disconnect();stopActivity();window.removeEventListener('blur',cancel);motion.removeEventListener('change',preference);};
 }

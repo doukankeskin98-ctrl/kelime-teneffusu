@@ -52,6 +52,7 @@ export default defineConfig(async ({ command }) => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    define: { __KT_RELEASED_WEB_JOURNEY__: "true" },
     environments: { client: { build: { target: "safari12", cssTarget: "safari12" } } },
     server: {
       ...(managedLinux

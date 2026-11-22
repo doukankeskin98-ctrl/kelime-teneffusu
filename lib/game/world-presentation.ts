@@ -1,3 +1,5 @@
+import {RULES_COPY} from './rules-copy.ts';
+import {AUTHORED_JOURNEY,isAuthoredRevision} from './authored-journey.ts';
 import {journeyRevision} from './journey-revisions.ts';
 import {horizonRouteForChapter} from './horizons-content.ts';
 import {discoveriesRouteForChapter} from './discoveries-content.ts';
@@ -37,13 +39,15 @@ export function worldChapter(id?:string,revision=1){
  const index=world.chapterIds.indexOf(chapter.id),bonus=chapter.id===expeditionBonusId(world);
  if(index<0&&!bonus)return null;
  const position=bonus?5:index;
- return {world,position,topic:revision===2||chapter.id.startsWith('ozgun-')?chapter.title:TOPICS[world.id]?.[position]??chapter.title,chapter};
+ return {world,position,topic:revision>1||chapter.id.startsWith('ozgun-')?chapter.title:TOPICS[world.id]?.[position]??chapter.title,chapter};
 }
 
 /** Fixed per chapter/group across resumes, devices and replays. Clues retain their own rules. */
 export function chapterVeils(id:string|undefined,targets:Target[],revision=1):Record<number,WordVeil>{
  const info=worldChapter(id,revision),veils:Record<number,WordVeil>={};
  if(!info||info.chapter.clues)return veils;
+ const authored=id&&isAuthoredRevision(id,revision)?AUTHORED_JOURNEY[id]:undefined;
+ if(authored)return Object.fromEntries(targets.map(t=>[t.group,authored.hiddenIds.includes(t.id)?'initial':'open']));
  // Teach directions before introducing concealed answers. Old saves/gates are untouched.
  if(info.world.id==='uzay')return Object.fromEntries(targets.map(t=>[t.group,'open' as const]));
  if(info.world.id==='turkiye'){
@@ -62,5 +66,5 @@ export function chapterVeils(id:string|undefined,targets:Target[],revision=1):Re
 }
 export function veilInstruction(veils:Record<number,WordVeil>){
  const modes=Object.values(veils);
- return modes.includes('hidden')?'Her yıldız saklı bir harf. Bölümün konusundan yola çık.':modes.includes('initial')?'Bazı kelimelerde yalnız ilk harf açık. Yıldızlar kalan harfler.':null;
+ return modes.includes('hidden')?RULES_COPY.hidden:modes.includes('initial')?RULES_COPY.initial:null;
 }

@@ -1,10 +1,11 @@
+import {needsFullCatalogue} from './progress-catalogue.ts';
 import {emptyProgress,readProgress,mergeProgress,type Progress} from './progress.ts';
 import {encodeProgress,progressBytes,sameProgress,ProgressFormatError} from './progress-codec.ts';
 import {COMPACT_PROGRESS_WRITES} from './progress-rollout.ts';
 import {GameError,type Database} from './server.ts';
 import {PROGRESS_MAX_BYTES} from './progress-limits.ts';
 export class ProgressUpgradeRequired extends GameError {constructor(){super('İlerlemen korunuyor. Devam etmek için oyunu güncelle.',409);}}
-const needsModern=(p:Progress)=>Object.keys(p.revisionSaves??{}).length>0||Object.values(p.saves).some(s=>s.revision===2);
+const needsModern=(p:Progress)=>Object.keys(p.revisionSaves??{}).length>0||Object.values(p.saves).some(s=>(s.revision??1)>1);
 export class CloudProgress {
  constructor(private db:Database,private clock:()=>number=Date.now,private maximumBytes=PROGRESS_MAX_BYTES,private compactWrites=COMPACT_PROGRESS_WRITES){}
  private fits(data:string){return progressBytes(data)<=Math.min(this.maximumBytes,PROGRESS_MAX_BYTES);}
@@ -12,20 +13,20 @@ export class CloudProgress {
   if(!this.fits(data))throw new GameError('Bulut kaydın korunuyor ancak şu an açılamıyor. Lütfen destek bölümünden bildir.',503);
   try{return readProgress(data);}catch{throw new GameError('Bulut kaydın okunamadı. Kaydın değiştirilmedi; lütfen destek bölümünden bildir.',503);}
  }
- private legacyGuard(progress:Progress,format:2|3){if(format===2&&(needsModern(progress)||progressBytes(JSON.stringify(progress))>PROGRESS_MAX_BYTES))throw new ProgressUpgradeRequired();}
- async read(userId:string,format:2|3=2){
+ private legacyGuard(progress:Progress,format:2|3,catalogue:number){if(catalogue<2&&needsFullCatalogue(progress))throw new ProgressUpgradeRequired();if(format===2&&(needsModern(progress)||progressBytes(JSON.stringify(progress))>PROGRESS_MAX_BYTES))throw new ProgressUpgradeRequired();}
+ async read(userId:string,format:2|3=2,catalogue=1){
   const row=await this.db.prepare('SELECT data,revision FROM campaign_saves WHERE user_id=?').bind(userId).first<{data:string;revision:number}>();
-  const progress=row?this.stored(row.data):emptyProgress();this.legacyGuard(progress,format);return {progress,revision:row?.revision??0};
+  const progress=row?this.stored(row.data):emptyProgress();this.legacyGuard(progress,format,catalogue);return {progress,revision:row?.revision??0};
  }
- async save(userId:string,raw:unknown,format:2|3=2){
+ async save(userId:string,raw:unknown,format:2|3=2,catalogue=1){
   const serialized=JSON.stringify(raw)??'null';
   if(!this.fits(serialized))throw new GameError('Kayıt eşitleme sınırına ulaşıldı. Mevcut bulut kaydın değiştirilmedi.',413);
   let incoming:Progress;try{incoming=readProgress(serialized);}catch{throw new GameError('Kayıt biçimi doğrulanamadı. Mevcut kayıt değiştirilmedi.',400);}
-  this.legacyGuard(incoming,format);
+  this.legacyGuard(incoming,format,catalogue);
   for(let attempt=0;attempt<6;attempt++){
    const row=await this.db.prepare('SELECT data,revision FROM campaign_saves WHERE user_id=?').bind(userId).first<{data:string;revision:number}>();
-   const previous=row?this.stored(row.data):emptyProgress();this.legacyGuard(previous,format);
-   const progress=mergeProgress(previous,incoming),useCompact=this.compactWrites||!!row&&JSON.parse(row.data).v===3;
+   const previous=row?this.stored(row.data):emptyProgress();this.legacyGuard(previous,format,catalogue);
+   const progress=mergeProgress(previous,incoming),useCompact=this.compactWrites||needsFullCatalogue(progress)&&progressBytes(JSON.stringify(progress))>this.maximumBytes||!!row&&JSON.parse(row.data).v===3;
    let compact:string,data:string;
    try{compact=encodeProgress(progress);if(!sameProgress(readProgress(compact),progress))throw new ProgressFormatError('lossy');data=useCompact?compact:encodeProgress(progress,2);}catch{throw new GameError('Kayıt dönüşümü doğrulanamadı veya kapasite doldu. Mevcut kayıt korunuyor.',413);}
    if(!this.fits(data))throw new GameError('Kayıtlar birleştirilirken eşitleme sınırına ulaşıldı. Mevcut bulut kaydın değiştirilmedi.',413);

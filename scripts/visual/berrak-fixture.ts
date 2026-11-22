@@ -1,8 +1,10 @@
+import type {Account} from '../../components/game/Pages.tsx';
 import {MAIN_JOURNEY} from '../../lib/game/main-journey.ts';
 import {journeyBoard} from '../../lib/game/content.ts';
 import {emptyProgress,cleanSave} from '../../lib/game/progress.ts';
 import {presentationBoard} from '../../lib/game/journey-presentation.ts';
 import {releaseCatalogue} from '../../lib/studio/releases.ts';
+import {chapterVeils,veilInstruction} from '../../lib/game/world-presentation.ts';
 import {projectBoard} from '../../lib/game/board-projection.ts';
 
 const progress={...emptyProgress(),sound:false,guideDone:true,tutorialDone:true,welcomedWorlds:['uzay','turkiye']};
@@ -21,4 +23,22 @@ const key='route:'+chapter.id,canonical=journeyBoard(chapter);
 const board=presentationBoard(canonical,key),view=projectBoard(board);
 const first=canonical.placements.find(word=>word.id===board.placements[0]!.id)!;
 progress.saves[key]=cleanSave({strokes:[first],hints:0,elapsed:3,complete:false,stars:0},canonical);
-console.log(JSON.stringify({progress,ordinaryFinale,catalogue:releaseCatalogue(0,Date.UTC(2026,10,18)),shape:view.shape,words:board.placements.map(w=>({...w,a:view.toView(w.a),b:view.toView(w.b)}))}));
+const concealedProgress={...emptyProgress(),sound:false,guideDone:true,tutorialDone:true};
+for(const {chapter} of MAIN_JOURNEY){
+ const board=journeyBoard(chapter);
+ if(veilInstruction(chapterVeils(chapter.id,board.targets,chapter.revision)))break;
+ concealedProgress.saves['route:'+chapter.id]=cleanSave({strokes:board.placements,hints:0,elapsed:20,complete:false,stars:0},board);
+}
+function chapterFinish(number:number){
+ const seed={...emptyProgress(),guideDone:true,tutorialDone:true,sound:false};
+ for(const {chapter} of MAIN_JOURNEY.slice(0,number-1)){
+  const board=journeyBoard(chapter);
+  seed.saves['route:'+chapter.id]=cleanSave({strokes:board.placements,hints:0,elapsed:20,complete:false,stars:0},board);
+ }
+ const chapter=MAIN_JOURNEY[number-1]!.chapter, key='route:'+chapter.id,board=journeyBoard(chapter);
+ seed.saves[key]=cleanSave({strokes:board.placements.slice(1),hints:0,elapsed:15,complete:false,stars:0},board);
+ const display=presentationBoard(board,key),view=projectBoard(display),word=display.placements.find(p=>p.id===board.placements[0]!.id)!;
+ return {number,seed,shape:view.shape,word:{a:view.toView(word.a),b:view.toView(word.b)}};
+}
+const guestAccount={authenticated:true,kind:'guest',profile:{id:'qa-daily',nickname:'Deneme'}} satisfies Account;
+console.log(JSON.stringify({progress,guestAccount,finishes:[3,6,9].map(chapterFinish),concealedProgress,ordinaryFinale,catalogue:releaseCatalogue(0,Date.UTC(2026,10,18)),shape:view.shape,words:board.placements.map(w=>({...w,a:view.toView(w.a),b:view.toView(w.b)}))}));

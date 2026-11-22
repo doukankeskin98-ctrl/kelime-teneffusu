@@ -35,6 +35,7 @@ export async function POST(request:Request){try{
  const data=await boundedJson(request,4096),game=await service(),id=typeof data['id']==='string'?data['id']:'';
  if((data['action']==='daily'||data['action']==='dailyClaim'||data['action']==='dailyHint')&&Object.hasOwn(data,'expectedOwnerId')&&data['expectedOwnerId']!==user.userId)return json({error:'Günlük oyunun hesabı değişti.',code:'DAILY_OWNER_CHANGED'},409);
  if(['enter','ready','start','claim','leave','next','rematch'].includes(String(data['action']))&&Object.hasOwn(data,'expectedOwnerId')&&data['expectedOwnerId']!==user.userId)return json({error:'Arena hesabın değişti. Güncel profilini kontrol et.',code:'ARENA_OWNER_CHANGED'},409);
+ if(data['action']==='rename'&&Object.hasOwn(data,'expectedOwnerId')&&data['expectedOwnerId']!==user.userId)return json({error:'Oyuncu hesabı değişti. Güncel profilini kontrol et.',code:'PROFILE_OWNER_CHANGED'},409);
  await rateLimit(env.DB!,'game:'+user.userId,180);
  switch(data['action']){
   case 'rename':return json(await game.rename(user.userId,data['name']));

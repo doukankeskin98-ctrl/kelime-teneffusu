@@ -1,5 +1,5 @@
 // Dependency-free driver for a local, headless Google Chrome (DevTools protocol).
-// Optional developer tooling: it is not part of CI and installs nothing.
+// Used by local visuals and the CI mobile contrast check.
 import {spawn} from 'node:child_process';
 import {existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -48,13 +48,32 @@ export async function launch({port = 9333} = {}) {
     pending.set(id, {resolve, reject});
     socket.send(JSON.stringify({id, method, params, ...(sessionId ? {sessionId} : {})}));
   });
-  const {targetId} = await send('Target.createTarget', {url: 'about:blank'});
+  let {targetId} = await send('Target.createTarget', {url: 'about:blank'});
+  let browserContextId;
+  const sessionOptions = new Map();
   session = (await send('Target.attachToTarget', {targetId, flatten: true})).sessionId;
-  const call = (method, params) => send(method, params, session);
+  const call = (method, params) => {
+    if (method.startsWith('Emulation.set') || method === 'Network.enable' || method === 'Network.setBlockedURLs') {
+      sessionOptions.set(method, params);
+    }
+    return send(method, params, session);
+  };
   await call('Page.enable');
   await call('Runtime.enable');
   return {
     errors,
+    send: call,
+    async freshContext() {
+      if (recording) throw new Error('Finish the recording before starting a new player');
+      if (browserContextId) await send('Target.disposeBrowserContext', {browserContextId});
+      else await send('Target.closeTarget', {targetId});
+      ({browserContextId} = await send('Target.createBrowserContext', {disposeOnDetach:true}));
+      ({targetId} = await send('Target.createTarget', {url:'about:blank', browserContextId}));
+      session = (await send('Target.attachToTarget', {targetId, flatten:true})).sessionId;
+      await call('Page.enable');
+      await call('Runtime.enable');
+      for (const [method, params] of sessionOptions) await send(method, params, session);
+    },
     async startRecording(directory){mkdirSync(directory,{recursive:true});recording={directory,frames:[]};await call('Page.startScreencast',{format:'jpeg',quality:85,everyNthFrame:1,maxWidth:430,maxHeight:932});},
     async stopRecording(){await call('Page.stopScreencast');const result=recording;recording=null;if(result)writeFileSync(path.join(result.directory,'frames.json'),JSON.stringify(result.frames));return result?.frames??[];},
     async key(key,code=key) {
@@ -85,7 +104,8 @@ export async function launch({port = 9333} = {}) {
     },
     async screenshot(file) {
       const {data} = await call('Page.captureScreenshot', {format: 'png'});
-      writeFileSync(file, Buffer.from(data, 'base64'));
+      if (file) writeFileSync(file, Buffer.from(data, 'base64'));
+      else return data;
     },
     async close() {
       try { await send('Browser.close'); } catch { /* already closed */ }

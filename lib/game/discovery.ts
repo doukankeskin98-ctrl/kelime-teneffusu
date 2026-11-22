@@ -1,3 +1,4 @@
+import {worldAlbumTitle} from './glossary.ts';
 import {playableJourney} from './journey-revisions.ts';
 import {HORIZON_ROUTES} from './horizons-content.ts';
 import {DISCOVERIES_ROUTES} from './discoveries-content.ts';
@@ -47,10 +48,12 @@ export function discoveryState(progress:Pick<Progress,'saves'>):ExpeditionState[
   const bonusUnlocked=unlocked&&done===chapters.length,bonusDone=chapterCredit(progress,bonus.id)?.complete===true;
   earned.push(bonusDone);
   const next=unlocked?(chapters.find((_,i)=>!earned[i])??(bonusUnlocked&&!bonusDone?bonus:null)):null;
-  states.push({expedition,chapters,bonus,done,pieces:earned.filter(Boolean).length,earned,unlocked,bonusUnlocked,complete:earned.every(Boolean),remaining:previous?Math.max(0,DISCOVERY_GATE-previous.done):0,previousTitle:previous?.expedition.title??null,next,nextPiece:next?expedition.pieces[[...chapters,bonus].findIndex(j=>j.id===next.id)]!:null,album:expedition.album??ALBUMS.find(a=>a.themeId===expedition.id)!});
+  states.push({expedition,chapters,bonus,done,pieces:earned.filter(Boolean).length,earned,unlocked,bonusUnlocked,complete:earned.every(Boolean),remaining:previous?Math.max(0,DISCOVERY_GATE-previous.done):0,previousTitle:previous?.expedition.title??null,next,nextPiece:next?expedition.pieces[[...chapters,bonus].findIndex(j=>j.id===next.id)]!:null,album:{...(expedition.album??ALBUMS.find(a=>a.themeId===expedition.id)!),title:worldAlbumTitle(expedition.title),description:'Altı bölümden altı parça.'}});
  }
  return states;
 }
+/** Presentation count; the historical theme-based badge metric remains unchanged. */
+export const completedWorldCount=(progress:Pick<Progress,'saves'>)=>discoveryState(progress).filter(world=>world.complete).length;
 export function recommendedExpedition(progress:Pick<Progress,'saves'>):ExpeditionState{
  const states=discoveryState(progress);
  return states.find(s=>s.unlocked&&s.next)??states[0]!;

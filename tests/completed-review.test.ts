@@ -73,7 +73,7 @@ describe('Mystery result return and completed review preserve achievements',()=>
  it('can reopen a dismissed result and reach next/back without changing time, hints, best or collection',()=>{
   const h=mystery();try{
    const before=JSON.stringify(h.value);assert.equal(h.has('Modal'),true);h.closeResult();assert.equal(h.has('Modal'),false);assert.equal(h.layout().props['readOnly'],true);assert.equal(h.layout().props['paused'],false);assert.equal(h.controls().props['completed'],true);
-   assert.match(text(h.layout().props['aside']),/Bağlantıyı tamamladın/);assert.doesNotMatch(text(h.layout().props['aside']),/Son kelime açıldı/);h.commit(0);h.tick(30);h.click('Sonucu göster');assert.equal(h.has('Modal'),true);h.click('Yeni bağlantı');assert.equal(h.next.length,1);h.click('Keşfe dön');assert.equal(h.back,1);assert.equal(JSON.stringify(h.value),before);
+   assert.match(text(h.layout().props['aside']),/Bağlantıyı tamamladın/);assert.doesNotMatch(text(h.layout().props['aside']),/Son kelime açıldı/);h.commit(0);h.tick(30);h.click('Sonucu göster');assert.equal(h.has('Modal'),true);h.click('Yeni bağlantı');assert.equal(h.next.length,1);h.click('Bölüme dön');assert.equal(h.back,1);assert.equal(JSON.stringify(h.value),before);
   }finally{h.close();}
  });
  it('does not stack help and result even if a queued result action arrives while help is open',()=>{

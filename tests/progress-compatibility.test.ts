@@ -99,7 +99,7 @@ describe('immutable content revisions and logical rewards',()=>{
   for(const save of [cleanSave(undefined,progressBoard(key)!),{...cleanSave(undefined,progressBoard(key)!),elapsed:5},{...cleanSave(undefined,progressBoard(key)!),hints:1},progress(1,30).saves[key]!]){
    const p=emptyProgress();p.saves[key]=save;assert.equal(playableJourney('ufuk-gok-1',p,true)?.revision,undefined);
   }
-  assert.equal(playableJourney('ufuk-gok-1',emptyProgress())?.revision,undefined);assert.equal(playableJourney('ufuk-gok-1',emptyProgress(),true)?.revision,2);
+  assert.equal(playableJourney('ufuk-gok-1',emptyProgress())?.revision,undefined);assert.equal(playableJourney('ufuk-gok-1',emptyProgress(),true)?.revision,3);
  });
  it('never unions same target IDs across revisions, preserves both histories and awards each logical chapter once',()=>{
   const old=progress(1,1),next=progress(2,2),merged=mergeProgress(old,next);

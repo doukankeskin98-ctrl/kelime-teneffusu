@@ -12,7 +12,7 @@ export function TrailResult({before,after}:{before:Progress;after:Progress}){
  const a=wordTrail(before),b=wordTrail(after),prior=weeklyStatus(before.weekly),weekly=weeklyStatus(after.weekly);
  const unlocked=b.earned.filter(r=>!a.earned.some(old=>old.id===r.id));
  // One secondary reward row, never two competing progress cards.
- if(weekly.count>prior.count&&(weekly.earned||!unlocked.length))return <div className="trail-result weekly-result" role="status"><Award size={22}/><span><b>{weekly.earned?'Haftanın hatırası kazanıldı':`Bu hafta · ${weekly.count}/${WEEKLY_TARGET} bölüm`}</b><small>{weekly.earned?'Profil · Başarımlar’da saklandı.':`${WEEKLY_TARGET-weekly.count} farklı bölüm daha tamamla, haftanın hatırasını kazan.`}</small></span></div>;
+ if(weekly.count>prior.count&&(weekly.earned||!unlocked.length))return <div className="trail-result weekly-result" role="status"><Award size={22}/><span><b>{weekly.earned?'Haftanın kartpostalı kazanıldı':`Bu hafta · ${weekly.count}/${WEEKLY_TARGET} bölüm`}</b><small>{weekly.earned?'Profil · Başarımlar’da saklandı.':`${WEEKLY_TARGET-weekly.count} farklı bölüm daha tamamla, haftanın kartpostalını kazan.`}</small></span></div>;
  if(b.words<=a.words)return null;
  return <div className="trail-result"><Sprout size={20}/><span>{unlocked.length?<><b>{unlocked.at(-1)!.title} rozeti açıldı</b><small>Profil · Başarımlar’da kullanabilirsin.</small></>:<><b>Sözcük Yolu · +{b.words-a.words} kelime</b><small>{b.next?`${b.next.title} için ${b.remaining} kaldı`:'Bütün rozetler tamamlandı.'}</small></>}</span></div>;
 }

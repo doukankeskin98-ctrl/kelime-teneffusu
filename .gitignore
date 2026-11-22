@@ -66,3 +66,8 @@ next-env.d.ts
 *.mobileprovision
 *.p12
 /mobile/artifacts/
+
+/dist-pilot/
+
+# Local visual evidence (uploaded separately by CI).
+/world-review.nosync/

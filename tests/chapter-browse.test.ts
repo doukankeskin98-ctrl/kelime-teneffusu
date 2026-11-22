@@ -136,7 +136,7 @@ describe('actual return UI wiring',()=>{
  it('reopens the selected Album date and its close control returns to the shelf',()=>{
   const h=harness('components/game/ReleaseAlbum.tsx',{'@/lib/studio/release-stamps':stamps,'./common':{Modal:'Modal'}});
   const tree=h.start(()=>h.exports['ReleaseAlbum']({pairs:stamps.releasePairs(chapters),values:{},status:'ready',initialSelectedDate:pair.date,renderCard:(c:PublishedChapter)=>c.spec.title}));
-  const modal=pick(tree,'Modal');assert.equal(modal.props['title'],stamps.releaseDateLabel(pair.date)+' keşifleri');modal.props['onClose']();assert.equal(nodes(h.paint()).some(n=>n.type==='Modal'),false);
+  const modal=pick(tree,'Modal');assert.equal(modal.props['title'],stamps.releaseDateLabel(pair.date)+' bölümleri');modal.props['onClose']();assert.equal(nodes(h.paint()).some(n=>n.type==='Modal'),false);
  });
  it('reopens only the same owner archive; a direct card does not open it',()=>{
   for(const owner of ['alice','bob']){
