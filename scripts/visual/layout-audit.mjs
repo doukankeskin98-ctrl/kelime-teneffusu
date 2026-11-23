@@ -9,6 +9,7 @@ import {createServer} from 'node:http';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {launch} from './chrome.mjs';
+import {seedProgress} from './seed-progress.mjs';
 import {checkAuthoredChapter} from './authored-chapter.mjs';
 import {checkTallBoard} from './tall-board-check.mjs';
 import {capturePlayLayout,journeyFrameProblems,layoutProblems} from './layout-measure.mjs';
@@ -33,7 +34,6 @@ const types = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css
   '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json', '.webmanifest': 'application/manifest+json'};
 const server = createServer((request, response) => {
   const name = decodeURIComponent(new URL(request.url, 'http://x').pathname);
-  if(name==='/__layout_seed'){response.writeHead(200,{'Content-Type':'text/html'});response.end('<!doctype html><title>Layout fixture</title>');return;}
   let file = path.join(site, path.normalize(name));
   if (!file.startsWith(site) || !existsSync(file) || statSync(file).isDirectory()) file = path.join(site, 'index.html');
   response.writeHead(200, {'Content-Type': types[path.extname(file)] ?? 'application/octet-stream'});
@@ -72,19 +72,13 @@ try {
   for (const [width, height] of sizes) {
     const safe = firstVisit||fixed ? {...insets[width+'x'+height],left:0,right:0} : undefined;
     await page.viewport(width,height,2,safe);
-    await page.goto(url+'__layout_seed',100);
-    await page.send('Storage.clearDataForOrigin',{origin:new URL(url).origin,storageTypes:'indexeddb'});
-    await page.evaluate(`localStorage.clear(); localStorage.setItem(${JSON.stringify(fixture.key)}, ${JSON.stringify(fixture.value)}); 'ok'`);
     const rows = [];
     for (const chapter of only ? fixture.chapters.filter(item => only.includes(item.number)) : fixture.chapters) {
+      const progress=JSON.parse(fixture.value);
       if(firstVisit){
-        await page.goto(url+'__layout_seed',80);
-        await page.send('Storage.clearDataForOrigin',{origin:new URL(url).origin,storageTypes:'indexeddb'});
-        const progress=JSON.parse(fixture.value);
         for(const item of fixture.chapters.slice(chapter.number-1)) delete progress.saves['route:'+item.id];
-        await page.evaluate('localStorage.setItem('+JSON.stringify(fixture.key)+','+JSON.stringify(JSON.stringify(progress))+')');
       }
-      await page.goto(url, 120);
+      await seedProgress(page,url,progress,120);
       const opened = await page.evaluate(open(chapter));
       if(process.env.EVIDENCE_DIR&&only)await page.screenshot(path.join(process.env.EVIDENCE_DIR,`layout-${width}-${chapter.number}.png`));
       const row={number:chapter.number,id:chapter.id,...(opened==='ok'?await page.evaluate(measure):{error:opened})};

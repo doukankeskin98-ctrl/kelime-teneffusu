@@ -25,8 +25,9 @@ function readFirstSession(){
  const cells=board?.querySelectorAll('[data-cell]')??[];
  const controls=Array.from(dock?.querySelectorAll('button')??[],button=>{
   const bounds=rect(button),center=[bounds.x+bounds.width/2,bounds.y+bounds.height/2];
+  const hit=document.elementFromPoint(...center);
   return {label:button.getAttribute('aria-label')||button.textContent.trim(),...bounds,center,
-   reachable:button.contains(document.elementFromPoint(...center))};
+   reachable:button.contains(hit),hit:hit?.tagName,transform:getComputedStyle(button).transform};
  });
  return {text:document.body.innerText,guide:guide?.innerText??null,guideTarget:guide?.querySelector('b')?.textContent,
   guidance:rect(guide?.querySelector('[role=status]')),badge:rect(dock?.querySelector('.hint-button>span')),
@@ -48,8 +49,9 @@ function assertPlayArea(start,current){
  assert.ok(current.board.bottom<=current.viewport);
  assert.ok(current.dockBottom<=current.viewport+1);
  for(const button of current.controls){
-  assert.ok(button.reachable&&button.height>=44,'Unreachable touch target: '+button.label);
-  assert.ok(button.width>=44,'Control is too narrow: '+button.label);
+  const detail=JSON.stringify(button);
+  assert.ok(button.reachable,'Touch target center is covered: '+detail);
+  assert.ok(button.height>=44&&button.width>=44,'Control is smaller than 44 px: '+detail);
  }
  if(current.guidance&&current.viewport<=740){
   const gap=(a,b)=>Math.max(a.x-b.x-b.width,b.x-a.x-a.width);

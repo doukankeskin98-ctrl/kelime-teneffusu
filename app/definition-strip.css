@@ -52,6 +52,9 @@ dialog.kt-window.definition-dialog{inset:max(58px,env(safe-area-inset-top)) 10px
  }
  .scenic-play[data-journey-frame] .definition-list{height:26px}
  .scenic-play[data-journey-frame] .definition-copy{font-size:clamp(15px,4.1vw,17px);line-height:1.12}
+ .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-copy{
+  width:100%;min-width:0;padding:0;font-family:var(--sans);
+ }
  .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-question{
   position:static;display:flex;justify-content:center;
  }
@@ -67,7 +70,7 @@ dialog.kt-window.definition-dialog{inset:max(58px,env(safe-area-inset-top)) 10px
  .scenic-play[data-journey-frame] .definition-list{height:22px}
  /* Give old sentence-length clues the full line; the ordinal has its own row. */
  .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-copy{
-  display:grid;justify-items:center;width:100%;padding:0;font-size:15px;font-weight:580;
+  display:grid;justify-items:center;row-gap:1px;font-size:15px;font-weight:580;
   line-height:1.12;letter-spacing:-.25px;
  }
  .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-copy>span:first-child{

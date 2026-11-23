@@ -83,6 +83,10 @@
 .scenic-play .play-controls :is(.hint-button,.turn-board):active:not(:disabled){
   transform:none;box-shadow:0 1px 0 var(--berrak-ui-dark,#5631cc);
 }
+/* A tap can leave :hover active on touch screens. Keep the hit target still. */
+@media (hover:none), (pointer:coarse){
+  .scenic-play .play-controls :is(.hint-button,.turn-board):hover:not(:disabled){transform:none}
+}
 .scenic-play .selection-bubble{padding:3px 16px}
 .scenic-play .selection-bubble,.scenic-play .play-praise{box-shadow:0 2px 0 var(--berrak-ui-dark,#5631cc)}
 .scenic-play .play-feedback-rail{z-index:1}
