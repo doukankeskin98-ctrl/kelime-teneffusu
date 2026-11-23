@@ -6,11 +6,12 @@
 //   VIEWS=430-safari CHROME_PORT=9472 ...   (her paralel işte farklı port ve OUT dizini)
 import {execFileSync} from 'node:child_process';
 import {existsSync,mkdirSync,readFileSync,renameSync,writeFileSync} from 'node:fs';
+import {createServer as createSocket} from 'node:net';
 import {preview} from 'vite';
 import path from 'node:path';
 import {launch} from './chrome.mjs';
 
-const out=path.resolve(process.env.OUT??'tahta-olcum');mkdirSync(out,{recursive:true});
+const out=path.resolve(process.env.OUT??'tahta-olcum');
 const all=process.env.LEVELS==='hepsi';
 const levels=all?Array.from({length:312},(_,i)=>i+1):(process.env.LEVELS??'1,4,5,28,69,70,118,12,60,93').split(',').map(Number);
 
@@ -123,6 +124,7 @@ if(process.env.YALNIZ_DEGERLENDIR){
  const selectedLevels=process.env.LEVELS ? levels : [...new Set(rows.map(r=>r.bolum))];
  process.exitCode=report(rows,selectedViews,selectedLevels,true)?1:0;
 }else{
+ mkdirSync(out,{recursive:true});
  const fx=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/tahta-fixture.ts','hepsi'],{encoding:'utf8',maxBuffer:8e6}));
  if(fx.ids.length!==312)throw new Error('Beklenen 312 bölüm bulunamadı.');
  const host=process.env.URL;
@@ -135,7 +137,13 @@ if(process.env.YALNIZ_DEGERLENDIR){
  try{
   if(!host)server=await preview({configFile:false,root,build:{outDir:root},preview:{host:'127.0.0.1',port:0},logLevel:'error'});
   const url=host??('http://127.0.0.1:'+server.httpServer.address().port+'/');
-  page=await launch({port:Number(process.env.CHROME_PORT??9471)});
+  // Use an OS-assigned port by default. An occupied explicit port must fail
+  // instead of attaching to an unrelated browser and closing it on exit.
+  const probe=createSocket();
+  await new Promise((ok,fail)=>{probe.once('error',fail);probe.listen(Number(process.env.CHROME_PORT??0),'127.0.0.1',ok);});
+  const port=probe.address().port;
+  await new Promise(ok=>probe.close(ok));
+  page=await launch({port});
   await page.reducedMotion(true);
   const metadata=await page.send('Browser.getVersion');
   writeFileSync(path.join(out,'tarayici.json'),JSON.stringify({browser:metadata.product,views,levels,build:host??root},null,2));
