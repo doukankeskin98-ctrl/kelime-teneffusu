@@ -280,5 +280,5 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
  .kt-header-progress i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6);box-shadow:0 0 1px #342b50}
  .kt-header-progress i[data-earned=true]{background:var(--gold,#ffca43)}
  .game-app .scenic-play[data-design-layout] .play-chapter-number{display:flex;align-items:center;gap:5px;font-size:21px;line-height:1.05}
- .game-app .scenic-play[data-design-layout] .play-chapter-number small{margin:0;font-size:11px}
+ .game-app .scenic-play[data-design-layout] .play-chapter-number small{margin:0;font-size:13px}
 }
