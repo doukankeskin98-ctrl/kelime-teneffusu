@@ -53,7 +53,8 @@ export async function checkTallBoard(page, sample, evidenceDir) {
   assert.equal(points.length,5,'TROYA path on displayed board');
   const box = "document.querySelector('.letter-board').getBoundingClientRect().toJSON()";
   const font = await page.evaluate("parseFloat(getComputedStyle(document.querySelector('[data-cell]')).fontSize)");
-  assert(sample.board.width >= .85*sample.width && font >= 21,'tall board and actual letter size');
+  assert(sample.board.width >= .85*sample.width && font >= 21,
+    `tall board on ${sample.width}px: ${sample.board.width}px wide, ${font}px letters`);
   const stationary = measured => {
     for (const key of ['left','top','width','height']) assert(Math.abs(measured[key]-sample.board[key])<=1,'board '+key);
   };
