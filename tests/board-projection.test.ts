@@ -27,6 +27,20 @@ test('chapter 5 removes twenty filler cells; saves, reverse finds, turns and fli
  assert.equal(JSON.stringify(source),before);
 });
 
+test('a tall saved journey fits a wide card with reversible word and hint coordinates',()=>{
+ const chapter=MAIN_JOURNEY[9]!.chapter;
+ const source=presentationBoard(journeyBoard(chapter),'route:'+chapter.id);
+ const portrait=projectBoard(source),wide=projectBoard(source,true);
+ assert.deepEqual(portrait.shape,{rows:11,columns:8});
+ assert.deepEqual(wide.shape,{rows:8,columns:11});
+ for(const target of source.targets)for(const path of wordSegments(source.grid,target.text)){
+  const a=wide.toView(path.a),b=wide.toView(path.b);
+  assert.equal(match(wide.board,a,b)?.id,target.id);
+  assert.deepEqual(wide.fromView(a),path.a);
+  assert.deepEqual(wide.fromView(b),path.b);
+ }
+});
+
 test('every main chapter keeps all accepted paths including alternate occurrences and has safe new neighbours',()=>{
  let compacted=0;
  for(const {chapter} of MAIN_JOURNEY){

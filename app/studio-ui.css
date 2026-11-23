@@ -170,18 +170,12 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
  .berrak-places .berrak-shortcut:nth-last-child(-n+2){right:2.54vw;left:auto}
  .berrak-landing .kt-postcard{position:fixed;inset:90.14svh 6.11vw auto;height:clamp(39px,12.72vw,52px);border-radius:18px;display:flex;align-items:center;padding:0 10px;gap:6px}
  .berrak-landing .kt-postcard .kt-meter{width:24.4vw;margin-left:auto}
- .game-app .scenic-play.quiet-play[data-design-layout]{
-  --topic-y:13.85svh;--board-y:calc(32.04svh - 11px);--tools-y:calc(70.42svh + 55px);--tool-size:clamp(44px,15.27vw,64px);
-  --frame-topic:clamp(23px,4svh,34px);--frame-list:calc(var(--board-y) - var(--topic-y) - var(--frame-topic) - 8px);
-  grid-template-rows:max(44px,calc(var(--topic-y) - var(--layout-origin))) calc(var(--board-y) - var(--topic-y)) calc(var(--tools-y) - var(--board-y)) var(--tool-size) minmax(0,1fr);
- }
- .game-app .scenic-play[data-design-layout] .viewport-targets .target-topic{height:var(--frame-topic);min-height:var(--frame-topic)}
  .game-app .scenic-play[data-design-layout] .play-controls{display:flex;align-items:center;justify-content:center;gap:clamp(12px,5.6vw,24px)!important}
  .game-app .scenic-play[data-design-layout] .play-controls:has(.journey-skip-reward){display:grid;grid-template-columns:repeat(2,var(--tool-size))}
  .game-app .scenic-play[data-design-layout] .play-controls:has(.journey-skip-reward) .turn-board{grid-area:1/1}
  .game-app .scenic-play[data-design-layout] .play-controls .journey-skip-reward{grid-area:1/2;justify-self:start;width:max-content;max-width:calc(50vw - var(--tool-size)/2)}
  .game-app .scenic-play[data-design-layout] .play-controls :is(.hint-button,.turn-board){width:var(--tool-size);height:var(--tool-size);padding:0}
- .game-app .scenic-play[data-design-layout] .kt-world-progress{position:fixed;inset:90.37svh 6.11vw auto;transform:none;visibility:visible;max-width:none;height:clamp(42px,13.23vw,54px);display:flex;padding:6px 12px;gap:8px;justify-content:start}
+ .game-app .scenic-play[data-design-layout] .kt-world-progress{position:fixed;inset:auto 6.11vw max(env(safe-area-inset-bottom),10px);transform:none;visibility:visible;max-width:none;height:clamp(42px,13.23vw,54px);display:flex;padding:6px 12px;gap:8px;justify-content:start}
  .game-app .scenic-play[data-design-layout] .kt-world-progress .scene-art{display:block;width:32px;height:32px}
  .game-app .scenic-play[data-design-layout] .kt-world-progress>span:last-child{margin-left:auto;gap:3px}
 }
@@ -189,9 +183,8 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
 @media(orientation:portrait) and (max-width:759px){
  .game-app .scenic-play[data-design-layout] .play-heading{position:relative}
  .game-app .scenic-play[data-design-layout] .game-settings-trigger{
-  position:absolute;top:calc(max(env(safe-area-inset-top),12.68svh - 48px) - var(--layout-origin));right:calc(3.56vw - (100vw - 100%)/2);margin:0;width:44px;height:44px
+  position:absolute;top:calc(50% - 22px);right:calc(3.56vw - (100vw - 100%)/2);margin:0;width:44px;height:44px
  }
- .game-app .scenic-play[data-design-layout] .viewport-targets.has-word-rack{width:94.91vw;margin-inline:auto}
 }
 
 .profile-window .progress-cloud-status .cloud-status{font:var(--t-callout);color:var(--ink-2)}
@@ -218,7 +211,6 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
  .berrak-landing .kt-postcard svg{width:20px;flex:none}
  .berrak-landing .kt-postcard .kt-meter{margin:0;flex:0 1 24.4vw;min-width:22px}
  .berrak-places .berrak-shortcut{gap:8px}
- .game-app .scenic-play[data-design-layout] .viewport-targets.has-word-rack>.target-rack{margin-top:0!important;height:calc(var(--frame-list) - 15px)}
  .game-app .scenic-play[data-design-layout] .kt-world-progress{padding:0 8px 0 18px;gap:6px;border-radius:26px}
  .game-app .scenic-play[data-design-layout] .kt-world-progress .scene-art{order:3;width:38px;height:38px;flex:none;border-radius:10px;outline:2px solid var(--gold)}
  .game-app .scenic-play[data-design-layout] .kt-world-name{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:700 14px var(--font)}
@@ -231,10 +223,7 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
  .kt-window .kt-row,.kt-window .kt-group :is(.game-disclosure-trigger,.setting-row,.comfort-setting){padding:8px;gap:8px}
  .berrak-places .berrak-shortcut{--shortcut:44px;gap:4px}
  .berrak-places .berrak-shortcut svg{width:28px;height:28px}
- .game-app .scenic-play[data-design-layout] .viewport-targets.has-word-rack>.target-rack{height:calc(var(--frame-list) - 3px)}
  .game-app .scenic-play[data-design-layout] .kt-world-progress{padding:0 6px 0 12px}
- .game-app .scenic-play[data-design-layout][data-authored-board] .letter-grid span{font-size:max(21px,var(--board-letter-size))}
- .game-app .scenic-play[data-design-layout] .viewport-targets.has-word-rack:has([data-authored-rack][data-target-count="12"]){width:calc(100vw - 10px)}
  .game-app .scenic-play[data-design-layout] .kt-world-name{min-width:0;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.05}
  .game-app .scenic-play[data-design-layout] .kt-world-progress .scene-art{width:30px;height:30px}
 }
@@ -270,7 +259,7 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
  .native-shell:has(.berrak-landing) .berrak-stars::before{inset:0}
  .native-shell:has(.berrak-landing) .berrak-stars::after{content:'';position:absolute;inset:-3px 0}
  .native-shell:has(.berrak-landing) .berrak-stars svg,.game-app .scenic-play[data-design-layout] .board-stars svg{box-sizing:border-box;width:28px;height:28px;padding:6px;flex:none}
- .game-app .scenic-play[data-design-layout] .board-stars{position:absolute;top:calc(max(env(safe-area-inset-top),12.68svh - 48px) - var(--layout-origin));left:calc(max(3.56vw,env(safe-area-inset-left)) - (100vw - 100%)/2);height:38px;min-height:38px;min-width:88px;padding:0 14px 0 6px;gap:6px;font:800 17px var(--font);font-variant-numeric:tabular-nums}
+ .game-app .scenic-play[data-design-layout] .board-stars{position:absolute;top:calc(50% - 19px);left:calc(max(3.56vw,env(safe-area-inset-left)) - (100vw - 100%)/2);height:38px;min-height:38px;min-width:88px;padding:0 14px 0 6px;gap:6px;font:800 17px var(--font);font-variant-numeric:tabular-nums}
 }
 @media(orientation:portrait) and (max-width:340px){
  .native-shell:has(.berrak-landing) .berrak-profile{top:var(--hud-top);width:44px;height:44px}
@@ -283,3 +272,13 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
 .arena-offline-window .kt-empty>span svg { width:46px; height:46px }
 @media(max-width:340px) { .arena-offline-window .kt-empty { margin-top:18px }
  }
+
+.kt-header-progress{display:none}
+@media (orientation:portrait) and (max-width:759px) and (max-height:799px){
+ .game-app .scenic-play[data-design-layout] .kt-world-progress{display:none}
+ .kt-header-progress{display:flex;position:absolute;top:calc(50% + 17px);left:50%;transform:translateX(-50%);gap:4px}
+ .kt-header-progress i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6);box-shadow:0 0 1px #342b50}
+ .kt-header-progress i[data-earned=true]{background:var(--gold,#ffca43)}
+ .game-app .scenic-play[data-design-layout] .play-chapter-number{display:flex;align-items:center;gap:5px;font-size:21px;line-height:1.05}
+ .game-app .scenic-play[data-design-layout] .play-chapter-number small{margin:0;font-size:11px}
+}

@@ -12,7 +12,7 @@ type Surface=Pick<Puzzle,'grid'|'size'|'targets'|'authored'>;
 
 /** Remove only lines unused by EVERY accepted answer. Canonical puzzle, saves and
  * network coordinates never change. The choice depends on content, not viewport. */
-export function projectBoard(source:Surface){
+export function projectBoard(source:Surface,wideForLongJourney=false){
  const all=Array.from({length:source.size},(_,i)=>i);
  const identity={board:source,shape:gridShape(source.grid),toView:(p:Cell):Cell=>[...p],fromView:(p:Cell):Cell=>[...p],compacted:false};
  if(source.authored||!source.targets.length)return identity;
@@ -23,7 +23,10 @@ export function projectBoard(source:Surface){
  const rows=all.filter(r=>usedRows.has(r)),cols=all.filter(c=>usedCols.has(c));
  // Keep enough search space and avoid a thin, very tall strip.
  if(Math.min(rows.length,cols.length)<6||Math.max(rows.length,cols.length)/Math.min(rows.length,cols.length)>1.4||rows.length*cols.length===source.size**2)return identity;
- const transpose=rows.length<cols.length;
+ // Legacy rounds can have eleven occupied lines. Use their long axis across
+ // the journey card so a saved board still fits between the rack and tools.
+ const useWide=wideForLongJourney&&Math.max(rows.length,cols.length)>9;
+ const transpose=useWide?rows.length>cols.length:rows.length<cols.length;
  const toView=(p:Cell):Cell=>transpose?[cols.indexOf(p[1]),rows.indexOf(p[0])]:[rows.indexOf(p[0]),cols.indexOf(p[1])];
  const fromView=(p:Cell):Cell=>transpose?[rows[p[1]]!,cols[p[0]]!]:[rows[p[0]]!,cols[p[1]]!];
  const grid=transpose?cols.map(c=>rows.map(r=>source.grid[r]![c]!)):rows.map(r=>cols.map(c=>source.grid[r]![c]!));

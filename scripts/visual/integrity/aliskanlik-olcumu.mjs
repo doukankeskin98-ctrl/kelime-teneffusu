@@ -20,10 +20,13 @@ if(mode==='karsilastir'){
  let A,B;try{A=JSON.parse(readFileSync(a,'utf8'));B=JSON.parse(readFileSync(b,'utf8'));}catch(e){console.log('GİRDİ HATASI: '+e.message);process.exit(1);}
  const ge=dogrula(A,'taban');if(ge.length){console.log('GİRDİ HATASI (taban geçersiz, karşılaştırma yapılmadı):\n '+ge.join('\n '));process.exit(1);}
  let bad=0;for(const x of dogrula(B,'yeni').filter(x=>/bozuk/.test(x))){console.log('BOZUK '+x);bad++;}
- const mid=r=>[r[0]+r[2]/2,r[1]+r[3]/2];
+ // The grid grows downward with the row count. §2f fixes its upper edge
+ // and its horizontal centre; button centres are still measured on both axes.
+ const fixedTop=process.argv.includes('--tahta-ustu');
+ const anchor=(r,k)=>[r[0]+r[2]/2,fixedTop&&k==='oyun.tahta'?r[1]:r[1]+r[3]/2];
  for(const [ekran,ctl] of Object.entries(A))for(const [ad,r] of Object.entries(ctl)){const q=B[ekran]?.[ad];const k=ekran+'.'+ad;
   if(!q){console.log(`YOK   ${k}`);bad++;continue;}
-  const [x1,y1]=mid(r),[x2,y2]=mid(q);const d=Math.hypot(x1-x2,y1-y2);
+  const [x1,y1]=anchor(r,k),[x2,y2]=anchor(q,k);const d=Math.hypot(x1-x2,y1-y2);
   if(d>4){if(IZIN.has(k)){console.log(`izinli ${k}: ${d.toFixed(0)} px`);continue;}console.log(`KAYDI ${k}: ${d.toFixed(0)} px (orta ${x1},${y1} → ${x2},${y2})`);bad++;}}
  console.log(`SONUÇ: ${bad} alışkanlık ihlali`);process.exit(bad?1:0);}
 const URL=process.env.KT_URL||'http://127.0.0.1:5191/';const W=+b||393,H=+c||852;

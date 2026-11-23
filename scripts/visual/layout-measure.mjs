@@ -19,14 +19,35 @@ export function capturePlayLayout() {
   const targets = [...screen.querySelectorAll('.target-focus-button,.clue-slot>button,.active-clue')].filter(visible).map(element=>({...named(element),minTouchHeight:44}));
   const controls = [...screen.querySelectorAll('.play-heading>button,.play-controls button,.solo-control-dock button,.duel-controls button,.sprint-footer button')].filter(visible).map(named);
   const cells = [...board.querySelectorAll('[data-cell]')].map(rect);
+  const stageElement=screen.querySelector('.board-stage'),stage=rect(stageElement);
+  const paper=getComputedStyle(stageElement,'::before');
+  const transform=paper.transform==='none'?null:new DOMMatrix(paper.transform);
+  const cardTop=stage.top+(parseFloat(paper.top)||0)+(transform?.m42??0);
   const definition = !!screen.querySelector('.definition-strip,.active-clue,.clue-slots');
   const frame = definition ? (screen.hasAttribute('data-authored-board') ? 'authoredDefinition' : 'definition')
     : screen.dataset.designLayout === 'journey' ? 'journey' : 'tall';
   return {frame,width:innerWidth,height:innerHeight,scrollHeight:document.scrollingElement.scrollHeight,
     scrollWidth:document.documentElement.scrollWidth,board:rect(board),rack:rack?rect(rack):null,
-    stage:rect(screen.querySelector('.board-stage')),topic:rect(screen.querySelector('.target-topic')??screen.querySelector('.targets-panel')),
+    stage,cardTop,header:rect(screen.querySelector('.play-heading')),panel:rect(screen.querySelector('.viewport-targets')),
+    topic:rect(screen.querySelector('.target-topic')??screen.querySelector('.targets-panel')),
     letterPx:parseFloat(getComputedStyle(board.querySelector('[data-cell]')).fontSize),
     cell:cells.length?Math.min(...cells.map(c => Math.min(c.width,c.height))):0,words,targets,controls};
+}
+
+// Validate the safe-area skeleton independently of the CSS. The previous
+// viewport-percentage snapshots used different anchors for each board type.
+export function journeyFrameProblems(row,safeTop,reference){
+  const dock=row.controls.find(control=>control.name.startsWith('İpucu'));
+  const errors=[];
+  const headHeight=row.height<620?40:46;
+  const panelHeight=Math.max(104,Math.min(124,4+row.width*.265));
+  if(Math.abs(row.header.top-(Math.max(8,safeTop)+6))>1||Math.abs(row.header.height-headHeight)>1)errors.push('başlık güvenli alanı');
+  const gap=row.panel.top-row.header.bottom;
+  if(gap<7.9||gap>14.1||Math.abs(row.panel.height-panelHeight)>1)errors.push('hedef paneli konumu veya yüksekliği');
+  if(row.cardTop<row.panel.bottom-1||!dock||dock.top<row.board.bottom+4-1)errors.push('tahta ve araç boşluğu');
+  const anchors=[row.panel.top,row.cardTop,dock?.top];
+  if(reference&&anchors.some((value,i)=>!Number.isFinite(value)||Math.abs(value-reference[i])>1))errors.push('bölümler arası konum değişti');
+  return {errors,anchors};
 }
 
 export function layoutProblems(sample) {

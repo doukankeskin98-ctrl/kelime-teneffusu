@@ -211,14 +211,24 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
 }
 @media (orientation:portrait) and (max-width:759px) {
   .game-app .scenic-play.quiet-play[data-journey-frame] {
-    --fixed-journey-frame:1;--tool-size:clamp(44px,7svh,56px);
-    --frame-topic:clamp(24px,3.5svh,32px);--base-list:clamp(45px,8.2svh,78px);--frame-list:calc(var(--base-list) + var(--list-extra,0px));
-    height:var(--play-height,95svh);min-height:0;display:grid!important;
-    grid-template-rows:44px calc(var(--frame-topic) + var(--frame-list)) minmax(0,1fr) var(--tool-size);
+    --fixed-journey-frame:1;
+    --tool-size:clamp(44px,15.27vw,64px);
+    --header-top:calc(max(env(safe-area-inset-top),8px) + 6px);
+    --head-h:46px;--head-gap:12px;
+    --panel-height:clamp(104px,calc(4px + 26.5vw),124px);
+    --column-w:94.91vw;
+    --paper-padding:10px;--paper-gap:8px;
+    --progress-h:clamp(42px,13.23vw,54px);
+    --bottom-reserve:calc(max(env(safe-area-inset-bottom),10px) + var(--progress-h) + 8px);
+    --frame-topic:clamp(24px,7.5vw,32px);--frame-list:calc(var(--panel-height) - var(--frame-topic));
+    height:var(--play-height,100dvh);min-height:0;display:grid!important;
+    grid-template-rows:calc(var(--header-top) - var(--layout-origin,0px) + var(--head-h) + var(--head-gap))
+      var(--panel-height) minmax(0,1fr) var(--tool-size) var(--bottom-reserve);
     align-content:stretch;gap:0!important;padding:0!important;
   }
   .game-app .scenic-play[data-journey-frame]>.play-heading {
-    grid-row:1;height:44px;min-height:44px;margin:0;padding:0!important;
+    grid-row:1;position:relative;align-self:start;height:var(--head-h);min-height:0;
+    margin:0;padding:0!important;translate:0 calc(var(--header-top) - var(--layout-origin,0px));
   }
   .game-app .scenic-play[data-journey-frame] :is(.play-columns,.board-panel) {display:contents!important}
   .game-app .scenic-play[data-journey-frame]>.play-hud {position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
@@ -241,18 +251,23 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
   .game-app .scenic-play[data-journey-frame] .board-stage {
     grid-row:3;display:grid;align-content:start;justify-items:center;
     height:auto!important;width:100%;min-height:0;min-width:0;margin:0;
-    background:transparent;border-radius:16px;
+    background:transparent;border-radius:0;padding:calc(var(--paper-gap) + var(--paper-padding)) 0 0;box-sizing:border-box;
   }
   .scenic-play[data-journey-frame]:not([data-result-phase=exit]) .board-stage::before {
-    content:'';position:absolute;inset:0 0 auto;height:var(--journey-paper-height,0);
-    border-radius:16px;background:var(--board-paper,#fff);pointer-events:none;
+    content:'';position:absolute;left:50%;top:var(--paper-gap);transform:translateX(-50%);
+    width:var(--column-w);height:calc(var(--journey-paper-height,0px) + 2 * var(--paper-padding));
+    border-radius:20px;background:var(--board-paper,#fff);pointer-events:none;
+    box-shadow:0 3px 0 rgba(20,62,79,.16),0 10px 28px rgba(20,30,60,.12);
   }
   .game-app .scenic-play[data-journey-frame] .board-scroll:not(.zoomed) {
     position:relative;
-    margin:0;align-self:start;box-shadow:none;border:0;padding:0;
+    margin:0;align-self:start;box-shadow:none;border:0;padding:0;border-radius:0;background:transparent;
+  }
+  .game-app .scenic-play[data-journey-frame] .board-stage .letter-board {
+    background:transparent!important;box-shadow:none!important;border:0;border-radius:0;
   }
   .game-app .scenic-play[data-journey-frame] .letter-grid span {
-    color:#111216;font-size:var(--board-letter-size);font-weight:800;
+    color:#111216;font-size:max(21px,var(--board-letter-size));font-weight:800;
   }
   .game-app .scenic-play[data-journey-frame] .solo-control-dock {
     position:relative;inset:auto;grid-row:4;align-self:center;width:100%;min-height:var(--tool-size);
@@ -303,12 +318,9 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
 @media (orientation:portrait) and (max-width:759px){
  /* Reclaim eight pixels of outer decoration; the safe areas and board size are preserved. */
  .game-app.journey-session:has([data-journey-frame]) {
-  padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(4px + env(safe-area-inset-bottom,0px));
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:0;
  }
- .game-app .scenic-play.quiet-play[data-journey-frame] {
-  grid-template-rows:44px calc(var(--frame-topic) + var(--frame-list) + 8px) minmax(0,1fr) var(--tool-size);
- }
- .game-app .scenic-play[data-journey-frame] .viewport-targets.has-word-rack>.target-rack {margin-top:4px!important}
+ .game-app .scenic-play[data-journey-frame] .viewport-targets.has-word-rack>.target-rack {margin-top:0!important}
  .game-app .scenic-play[data-journey-frame] .target-rack:not([data-authored-rack]) .word-tag{
   min-width:calc((100% - 56px)/5 + 1px)!important;
  }
@@ -321,11 +333,18 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
 @media (orientation:portrait) and (max-width:759px){
  .scenic-play[data-authored-board] .active-clue{touch-action:pan-y}
 }
-/* Extend the target card into the page gutter on the narrowest phones. */
-@media (orientation:portrait) and (max-width:340px){
- .game-app .scenic-play[data-authored-board] .targets-panel{margin-inline:-3px!important;width:auto}
+/* One column, including the 12-target rack and the definition strip. */
+@media (orientation:portrait) and (max-width:759px){
+ .game-app .scenic-play.quiet-play[data-journey-frame] .viewport-targets{
+  width:var(--column-w);max-width:none;position:relative;left:50%;transform:translateX(-50%);margin:0;
+ }
 }
-@media (orientation:portrait) and (max-width:380px) {
- /* Legacy definitions are longer. Share the topic and list rows with the
-    definition, leaving the board and hint button on their original lines. */
+@media (orientation:portrait) and (max-height:799px) and (max-width:759px){
+ .game-app .scenic-play.quiet-play[data-journey-frame]{--bottom-reserve:14px}
+}
+@media (orientation:portrait) and (max-height:619px) and (max-width:759px){
+ .game-app .scenic-play.quiet-play[data-journey-frame]{--head-h:40px;--head-gap:10px;--tool-size:44px;--paper-padding:8px;--paper-gap:6px}
+}
+@media (orientation:portrait) and (max-width:340px){
+ .game-app .scenic-play.quiet-play[data-journey-frame]:has([data-authored-rack][data-target-count="12"]){--column-w:calc(100vw - 10px)}
 }

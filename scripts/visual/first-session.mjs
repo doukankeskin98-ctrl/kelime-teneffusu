@@ -20,6 +20,8 @@ function readFirstSession(){
   const {x,y,width,height,bottom}=element.getBoundingClientRect();
   return {x,y,width,height,bottom};
  };
+ const stage=board?.closest('.board-stage');
+ const cardTop=stage?rect(stage).y+parseFloat(getComputedStyle(stage,'::before').top):null;
  const cells=board?.querySelectorAll('[data-cell]')??[];
  const controls=Array.from(dock?.querySelectorAll('button')??[],button=>{
   const bounds=rect(button),center=[bounds.x+bounds.width/2,bounds.y+bounds.height/2];
@@ -28,7 +30,8 @@ function readFirstSession(){
  });
  return {text:document.body.innerText,guide:guide?.innerText??null,guideTarget:guide?.querySelector('b')?.textContent,
   guidance:rect(guide?.querySelector('[role=status]')),badge:rect(dock?.querySelector('.hint-button>span')),
-  board:rect(board),stage:rect(board?.closest('.board-stage')),cornerCells:[rect(cells[0]),rect(cells[cells.length-1])],
+  board:rect(board),stage:rect(stage),cardTop,cornerCells:[rect(cells[0]),rect(cells[cells.length-1])],
+  panel:rect(document.querySelector('.viewport-targets')),dock:rect(dock),
   controls,overflow:document.documentElement.scrollWidth>innerWidth,dockBottom:rect(dock)?.bottom,
   headingOutline:heading?getComputedStyle(heading).outlineStyle:null,viewport:innerHeight};
 }
@@ -85,19 +88,28 @@ try{
    assert.ok(start.controls.some(b=>b.label==='İlk oyun rehberini kapat'));
    assert.ok(firstWord.controls.some(b=>b.label==='Tahtayı döndür'));
    for(const screen of [start,accepted,firstWord])assertPlayArea(start,screen);
-   // The square opening board fills whichever axis reaches the approved control gutter first.
-   const gutter={320:14,375:18,393:24,430:24}[width];
-   const side=Math.min(start.stage.width,Math.round(start.stage.height-gutter));
-   assert.equal(start.board.width,side,'First chapter uses the entire fitted width');
-   assert.equal(start.board.height,side,'First chapter keeps square cells');
-   assert.ok(Math.abs(start.board.x-(start.stage.x+(start.stage.width-side)/2))<=1,'First chapter is horizontally centred');
+   // The panel and board now share one column. Check visible geometry
+   // independently of the sizing function and of the old percentage-based gutter.
+   const side=start.board.width;
+   const sideRoom=(start.panel.width-side)/2;
+   const bottomRoom=start.dock.y-start.board.bottom;
+   const sideLimit=width===320?22:16;
+   assert.ok(sideRoom>=6&&bottomRoom>=10,'First chapter keeps its inside margin and tool clearance');
+   assert.ok(sideRoom<=sideLimit||bottomRoom<=2*sideLimit,'First chapter fills its limiting axis');
+   assert.ok(Math.abs(start.board.height-side)<=1,'First chapter keeps square cells');
+   assert.ok(Math.abs(start.board.x-(start.panel.x+sideRoom))<=1,'First chapter is horizontally centred');
    assert.equal(finish.headingOutline,'none','Programmatic heading focus must not draw a frame');
    await page.key('Tab');
    const focus=await page.evaluate(`({tag:document.activeElement.tagName,label:document.activeElement.getAttribute('aria-label'),outline:getComputedStyle(document.activeElement).outlineStyle})`);
    assert.equal(focus.tag,'BUTTON');assert.notEqual(focus.outline,'none','Keyboard controls keep their visible focus');
   }
   await page.evaluate(`document.querySelector('dialog[open] .modal-actions .primary').click()`);await sleep(500);const next=await capture('next',width);
-  if(!before){assert.equal(next.guide,null);assert.match(next.text,/Bölüm\s+2\b/iu);}
+  if(!before){
+   assert.equal(next.guide,null);assert.match(next.text,/Bölüm\s+2\b/iu);
+   for(const [element,first,second] of [['target panel',firstWord.panel.y,next.panel.y],['board card',firstWord.cardTop,next.cardTop],['tools',firstWord.dock.y,next.dock.y]]){
+    assert.ok(Math.abs(first-second)<=1,`Continuing from chapter 1 to 2 moved the ${element}: ${first} → ${second}`);
+   }
+  }
   report.push({width,height,home,start,hint,miss,accepted,firstWord,finish,next});
  }
  writeFileSync(path.join(out,`${before?'before':'after'}-first-session.json`),JSON.stringify({report,errors:page.errors},null,2));console.log(JSON.stringify(report.map(r=>({width:r.width,startGuide:r.start.guide,afterFirst:r.firstWord.guide,board:r.firstWord.board,nextGuide:r.next.guide,overflow:r.start.overflow}))));

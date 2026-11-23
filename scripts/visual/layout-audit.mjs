@@ -11,7 +11,7 @@ import {fileURLToPath} from 'node:url';
 import {launch} from './chrome.mjs';
 import {checkAuthoredChapter} from './authored-chapter.mjs';
 import {checkTallBoard} from './tall-board-check.mjs';
-import {capturePlayLayout,layoutProblems} from './layout-measure.mjs';
+import {capturePlayLayout,journeyFrameProblems,layoutProblems} from './layout-measure.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const site = process.env.KT_LAYOUT_BUILD ?? path.join(root, 'dist-mobile');
@@ -59,6 +59,8 @@ const open = chapter => `(async () => {
   button.click();
   if(!await until(()=>document.querySelector('.letter-board') && document.querySelector('.play-chapter-number')?.textContent.match(/\\d+/)?.[0]===String(${chapter.number})))return 'açılan bölüm doğrulanamadı';
   await document.fonts.ready;
+  const header=document.querySelector('.play-heading');
+  await Promise.allSettled(header.getAnimations().filter(a=>Number.isFinite(a.effect?.getComputedTiming().endTime)).map(a=>a.finished));
   let last='',stable=0;for(let i=0;i<20&&stable<3;i++){const b=document.querySelector('.letter-board')?.getBoundingClientRect(),now=JSON.stringify(b?[b.x,b.y,b.width,b.height]:null);stable=now===last?stable+1:0;last=now;await wait(40);}
   return 'ok';
 })()`;
@@ -89,10 +91,8 @@ try {
       if(pilot&&opened==='ok'){
         try{
          const seam=row.rack.top-row.topic.bottom, clearance=row.board.top-row.rack.bottom;
-         // Normal and definition headings share an edge with their card. Tall boards use a distinct header.
-         const expectedSeam=row.frame==='tall'?4:0;
-         const minClearance=row.frame==='authoredDefinition'?2:4;
-         if(Math.abs(seam-expectedSeam)>0.1||clearance<minClearance-0.1)throw new Error('Bant/liste/tahta aralığı: '+JSON.stringify({frame:row.frame,seam,clearance}));
+         // The category band meets the target list; the card follows below.
+         if(Math.abs(seam)>0.1||clearance<4)throw new Error('Bant/liste/tahta aralığı: '+JSON.stringify({frame:row.frame,seam,clearance}));
          await checkAuthoredChapter(page,chapter.number,width,process.env.EVIDENCE_DIR);
         }
         catch(error){failures++;console.error('Pilot kontrolü',width,chapter.number,error.message);}
@@ -103,28 +103,19 @@ try {
       rows.push(row);
     }
     if(fixed){
-      // Approved 0.58.1 safe-area frames: topic top, board stage top and hint top (CSS px).
-      // Independent anchors also catch a shift affecting every chapter of the same kind.
-      const frames={
-        320:{journey:[78.66,170.97,454.95],tall:[64,142.56,518],definition:[62,211,518],authoredDefinition:[62,159,518]},
-        375:{journey:[92.38,202.69,524.67],tall:[64,150.69,614.31],definition:[62,211,614.31],authoredDefinition:[62,166,614.31]},
-        393:{journey:[118,261.97,654.95],tall:[103,220.81,756],definition:[101,255.81,756],authoredDefinition:[101,220.81,756]},
-        430:{journey:[129.08,287.59,711.28],tall:[103,229,836],definition:[101,258,836],authoredDefinition:[101,229,836]},
-      }[width];
+      let reference;
       for(const row of rows.filter(row=>row.stage)){
-        const dock=row.controls.find(control=>control.name.startsWith('İpucu'));
-        const reference=frames?.[row.frame];
-        const actual=[row.topic.top,row.stage.top,dock?.top];
-        if(!dock||!reference||actual.some((v,i)=>Math.abs(v-reference[i])>1)||dock.top<row.board.bottom-1) {
-          failures++;console.log('Sabit düzen ihlali',width,row.number,JSON.stringify({frame:row.frame,reference,actual,bottom:row.board.bottom}));
+        const {errors,anchors}=journeyFrameProblems(row,safe.top,reference);
+        reference??=anchors;
+        if(errors.length){
+          failures++;
+          console.log('Sabit düzen ihlali',width,row.number,errors.join(', '),JSON.stringify({reference,anchors,header:row.header,panel:row.panel}));
         }
         if(row.number===10&&width===320){
-          // The saved 8×11 board and the new 8×9 board have distinct signed-off frames.
-          // Check the original minimum for existing players and the actual draft bounds for the new board.
-          const dimensionsOK=pilot
-            ? row.frame==='journey'&&Math.abs(row.board.width-240)<=1&&Math.abs(row.board.height-270)<=1
-            : row.frame==='tall'&&row.board.width>=272;
-          if(!dimensionsOK||row.letterPx<21){failures++;console.log('10. bölüm okuma alanı',row.frame,row.board.width,row.board.height,row.letterPx);}
+          // The saved tall board remains wide enough to trace TROYA. The new
+          // 8-column board must fill the single card, including its side insets.
+          const minimumWidth=pilot?row.panel.width-44:.85*width;
+          if(row.board.width<minimumWidth-.1||row.letterPx<21){failures++;console.log('10. bölüm okuma alanı',row.board.width,row.letterPx);}
         }
       }
     }

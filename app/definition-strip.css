@@ -1,4 +1,4 @@
-.definition-strip{--tile-w:26px;--tile-h:30px;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:4px;align-content:stretch;width:100%;height:calc(var(--frame-list,80px) + 8px);padding:6px 6px 8px;background:white;color:#191630;border-radius:0 0 18px 18px;box-sizing:border-box;touch-action:pan-y}
+.definition-strip{--tile-w:26px;--tile-h:30px;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:4px;align-content:stretch;width:100%;height:var(--frame-list,80px);padding:6px 6px 8px;background:white;color:#191630;border-radius:0 0 18px 18px;box-sizing:border-box;touch-action:pan-y}
 .definition-question,.definition-answer{display:grid;align-items:center;min-width:0;min-height:0}
 .definition-question{grid-template-columns:36px minmax(0,1fr) 36px}
 .definition-question button,.definition-list{display:grid;place-items:center;padding:0;border:0;border-radius:12px;background:transparent;color:#5030a1;height:40px;width:36px;cursor:pointer}
@@ -25,8 +25,8 @@
 @media(prefers-reduced-motion:no-preference){html:not([data-reduce-motion=true]) .definition-letter[data-animate=true]{animation:definition-pop 240ms var(--letter-delay) both}html:not([data-reduce-motion=true]) .definition-copy{animation:definition-slide 260ms ease-out}html:not([data-reduce-motion=true]) .definition-question[data-miss]{animation:definition-miss 180ms linear}}
 @keyframes definition-pop{50%{transform:scale(1.12)}}@keyframes definition-slide{from{transform:translateX(24px);opacity:0}}@keyframes definition-miss{20%,60%{transform:translateX(6px)}40%,80%{transform:translateX(-6px)}}
 
-@media(max-width:700px){.game-app .scenic-play[data-journey-frame] .has-definition-rack{margin-top:-2px;overflow:visible}.game-app .scenic-play[data-journey-frame] .has-definition-rack .target-topic{border-radius:18px 18px 0 0}.definition-question{position:relative}.definition-question button{align-self:center}.definition-question strong{margin:0}}
-@media(max-width:340px){.game-app .scenic-play[data-journey-frame] .has-definition-rack{margin-inline:3px;width:calc(100% - 6px)}}
+@media(max-width:700px){.game-app .scenic-play[data-journey-frame] .has-definition-rack{overflow:visible}.game-app .scenic-play[data-journey-frame] .has-definition-rack .target-topic{border-radius:18px 18px 0 0}.definition-question{position:relative}.definition-question button{align-self:center}.definition-question strong{margin:0}}
+
 dialog.kt-window.definition-dialog{inset:max(58px,env(safe-area-inset-top)) 10px max(18px,env(safe-area-inset-bottom))}.definition-dialog .kt-head{height:58px}.definition-dialog .kt-body{padding:10px 12px}.definition-dialog .kt-body>p{margin:0 8px 8px;font:var(--t-callout);color:var(--ink-2)}
 @media(max-width:340px){dialog.kt-window.definition-dialog{inset:max(46px,env(safe-area-inset-top)) 8px max(10px,env(safe-area-inset-bottom));width:calc(100% - 16px)}.definition-dialog .kt-head{height:50px}.definition-option{padding:7px 6px}}
 @media(min-width:341px) and (max-width:380px){.definition-strip{padding:3px 6px 4px;gap:2px;--tile-h:24px}.definition-list{height:26px}}
@@ -38,9 +38,31 @@ dialog.kt-window.definition-dialog{inset:max(58px,env(safe-area-inset-top)) 10px
 /* The original catalogue contains full-sentence clues; reserve their reading
    space for the whole round so changing a clue never moves the board. */
 @media(orientation:portrait) and (max-width:759px){
- .game-app .scenic-play.quiet-play[data-journey-frame]:not([data-authored-board]):has(.definition-strip){--frame-list:115px}
  .scenic-play:not([data-authored-board]) .definition-strip{padding-block:2px;row-gap:2px}
  .scenic-play:not([data-authored-board]) .definition-copy{line-height:1.12;text-wrap:wrap}
  .scenic-play:not([data-authored-board]) .definition-copy>span:first-child{vertical-align:middle}
 
+}
+
+/* Keep the prompt and the concealed answer inside the same fixed panel. The
+   arrows on older, sentence-length definitions use the two ends of the band. */
+@media (orientation:portrait) and (max-width:759px){
+ .scenic-play[data-journey-frame] .definition-strip{
+  --tile-h:24px;padding:2px 5px 4px;gap:2px;
+ }
+ .scenic-play[data-journey-frame] .definition-list{height:26px}
+ .scenic-play[data-journey-frame] .definition-copy{font-size:clamp(15px,4.1vw,17px);line-height:1.12}
+ .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-question{
+  position:static;display:flex;justify-content:center;
+ }
+ .scenic-play[data-journey-frame]:not([data-authored-board]) .has-definition-rack .target-topic{padding-inline:32px!important}
+ .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-question button{
+  position:absolute;top:0;z-index:2;width:32px;height:var(--frame-topic);color:white;
+ }
+ .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-question button:first-child{left:0}
+ .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-question button:last-child{right:0}
+}
+@media (orientation:portrait) and (max-width:340px){
+ .scenic-play[data-journey-frame] .definition-strip{--tile-h:21px;padding:2px 4px}
+ .scenic-play[data-journey-frame] .definition-list{height:22px}
 }

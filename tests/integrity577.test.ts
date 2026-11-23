@@ -74,6 +74,12 @@ it('integrity tools reject vacuous runs and malformed inputs before opening Chro
   const baseline=JSON.parse(readFileSync('scripts/visual/integrity/aliskanlik-0.57.6-393.json','utf8'));
   writeFileSync(join(dir,'base.json'),JSON.stringify(baseline));writeFileSync(join(dir,'same.json'),JSON.stringify(baseline));
   const result=tool('aliskanlik-olcumu',['karsilastir',join(dir,'base.json'),join(dir,'same.json')]);assert.equal(result.status,0,result.stdout+result.stderr);
+  // A different row count can change height but never the top anchor or horizontal centre.
+  const taller=structuredClone(baseline);taller.oyun.tahta[3]+=40;
+  const compareCard=()=>tool('aliskanlik-olcumu',['karsilastir',join(dir,'base.json'),join(dir,'same.json'),'--tahta-ustu']);
+  writeFileSync(join(dir,'same.json'),JSON.stringify(taller));assert.equal(compareCard().status,0);
+  taller.oyun.tahta[1]+=5;writeFileSync(join(dir,'same.json'),JSON.stringify(taller));assert.equal(compareCard().status,1);
+  taller.oyun.tahta[1]-=5;taller.oyun.tahta[0]+=5;writeFileSync(join(dir,'same.json'),JSON.stringify(taller));assert.equal(compareCard().status,1);
   writeFileSync(join(dir,'same.json'),'{}');assert.notEqual(tool('aliskanlik-olcumu',['karsilastir',join(dir,'base.json'),join(dir,'same.json')]).status,0);
  }finally{rmSync(dir,{recursive:true,force:true});}
 });

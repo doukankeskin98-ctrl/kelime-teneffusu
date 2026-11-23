@@ -17,10 +17,10 @@ try{
  if(only!=='persistence'){
   // Owner-approved screen targets. Home shortcuts use the union of the icon and caption.
   // Result controls retain their 0.57.6 reference centers.
-  const designs=JSON.parse(readFileSync(new URL('./controls-design-0581.json',import.meta.url),'utf8'));
+  const designs=JSON.parse(readFileSync(new URL('./controls-design-0582.json',import.meta.url),'utf8'));
   const baseline=path.join(out,'design-reference.json');
   writeFileSync(baseline,JSON.stringify(designs[width]));
-  await run('aliskanlik-olcumu',['karsilastir',baseline,path.join(out,'controls.json')]);
+  await run('aliskanlik-olcumu',['karsilastir',baseline,path.join(out,'controls.json'),'--tahta-ustu']);
  }
  if(width===393&&only!=='controls')await run('kayit-kaliciligi',[path.join(out,'persistence.json'),'2','1000','duzgun','--kapi','duzgun']);
  console.log(`Integrity ${width}: passed`);

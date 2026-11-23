@@ -4,7 +4,7 @@ import path from 'node:path';
 import {tmpdir} from 'node:os';
 import {mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import {launch} from './integrity/cdp.mjs';
-import {capturePlayLayout, layoutProblems} from './layout-measure.mjs';
+import {capturePlayLayout, journeyFrameProblems, layoutProblems} from './layout-measure.mjs';
 
 const subset = process.argv[2]?.split(',').map(Number);
 const numbers = subset ?? Array.from({length:312}, (_, i) => i+1);
@@ -46,7 +46,7 @@ async function inspect(number, published) {
       const rects=[...range.getClientRects()],row=strip.querySelector('.definition-question').getBoundingClientRect(),answer=strip.querySelector('.definition-answer'),tiles=[...answer.querySelectorAll('.definition-letter')];
       const group=Number(answer.dataset.wordGroup),spoken=strip.querySelector('[role=status]').textContent.includes(tiles.length+' harf');
       const clip=rects.some(r=>r.right>row.right+1||r.left<row.left-1||r.top<strip.getBoundingClientRect().top||r.bottom>tiles[0].getBoundingClientRect().top+1);
-      definitions.push({text:text.textContent,group,spoken,clipped:!rects.length||!tiles.length||clip,lines:rects.length});
+      definitions.push({text:text.textContent,group,spoken,clipped:!rects.length||!tiles.length||clip,lines:rects.length,font:parseFloat(getComputedStyle(text).fontSize)});
       if(!ordered&&index<total-1){strip.querySelector('[aria-label="Sonraki tanım"]').click();await frame();}
     }
     selectionWorks=definitions.length>0&&(ordered||new Set(definitions.map(d=>d.group)).size===total);
@@ -94,8 +94,8 @@ try{
   for(const [w,h] of sizes){
     await browser.viewport(w,h,1);
     await browser.send('Emulation.setSafeAreaInsetsOverride',{insets:{top:w<=375?20:59,bottom:w<=375?0:34,left:0,right:0}});
+    let frameReference;
     for(const published of [true,false]){
-      const origins=new Map();
       for(const n of numbers){
         const v=await browser.eval('window.inspectChapter('+n+','+published+')');
         const issues=layoutProblems(v);
@@ -107,11 +107,12 @@ try{
           for(const d of v.definitions){
             if(d.clipped)issues.push('clue clipped: '+d.text);
             if(!d.spoken)issues.push('missing spoken length: '+d.text);
+            if(w===320&&d.font!==undefined&&(d.font<15||(!published&&d.lines>2)))issues.push('narrow definition typography: '+d.text);
           }
           if(!v.selectionWorks)issues.push('clue selection');
-          if(!origins.has(v.frameKind))origins.set(v.frameKind,[v.stage.top,v.controls.at(-1)?.top]);
-          const origin=origins.get(v.frameKind);
-          if(Math.abs(origin[0]-v.stage.top)>1||Math.abs(origin[1]-v.controls.at(-1)?.top)>1)issues.push('unstable frame');
+          const {errors,anchors}=journeyFrameProblems(v,w<=375?20:59,frameReference);
+          frameReference??=anchors;
+          issues.push(...errors);
         }
         all.push({w,n,published,board:v.board,stageTop:v.stage?.top,topic:v.topic,rack:v.rack,clueRect:v.targets?.at(-1),tools:v.controls,...(subset?{words:v.words}:{}),clues:v.definitions,gap:v.gap,edge:v.edge,issues});
         if(issues.length){

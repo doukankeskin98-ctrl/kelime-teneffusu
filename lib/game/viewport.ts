@@ -74,25 +74,20 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:BoardSh
   if(!zoom&&screen.dataset?.['journeyFrame']&&view.getComputedStyle(screen).getPropertyValue('--fixed-journey-frame').trim()==='1'&&(!view.visualViewport||view.visualViewport.scale===1)){
    const client=view.visualViewport;
    const offset=Math.max(0,screen.getBoundingClientRect().top-(client?.offsetTop??0));
-   const container=screen.closest<HTMLElement>('.game-app,.main-content');
-   const bottom=container?pixels(view.getComputedStyle(container).paddingBottom):8;
-   const available=Math.floor((client?.height??view.innerHeight)-offset-bottom-2);
-   const designLayout=screen.dataset['designLayout']==='journey';
+   const available=Math.floor((client?.height??view.innerHeight)-offset);
    let changed=set(screen,'--play-height',available+'px');
-   if(designLayout)changed=set(screen,'--layout-origin',offset+'px')||changed;
+   changed=set(screen,'--layout-origin',offset+'px')||changed;
    screen.style.removeProperty('min-height');stage.style.removeProperty('height');stage.style.removeProperty('flex');
-   // Budget against the tallest released board so the header and tools keep one
-   // position throughout a session. Reclaim only pixels left below that board.
-   const fullStage = stage.clientHeight + pixels(screen.style.getPropertyValue('--list-extra'));
-   const maxRatio = screen.hasAttribute('data-authored-board') ? 8/7 : 11/8;
-   const spare = Math.max(0, Math.floor(fullStage - stage.clientWidth * maxRatio));
-   const targetRack = view.innerWidth <= 340 ? 63 : view.innerWidth <= 380 ? 70 : view.innerWidth <= 410 ? 80 : 86;
-   const baseRack = Math.max(45, Math.min(78, view.innerHeight * .082));
-   const extra = Math.min(spare, Math.max(0, targetRack - baseRack));
-   changed=set(screen,'--list-extra',extra+'px')||changed;
-   const margin=designLayout?Math.max(14,Math.min(24,view.innerHeight*.0352-6)):0;
-   const width=fittedBoardSize(stage.clientWidth,stage.clientHeight-margin,cells);
    const {rows,columns}=dimensions(cells);
+   const frame=view.getComputedStyle(stage);
+   const pad=pixels(frame.getPropertyValue('--paper-padding'));
+   const gap=pixels(frame.getPropertyValue('--paper-gap'));
+   const panel=screen.querySelector<HTMLElement>('.viewport-targets');
+   const paperWidth=panel?.getBoundingClientRect().width||stage.clientWidth;
+   // clientHeight is rounded; the dock and pseudo-element use fractional CSS
+   // pixels. Leave one pixel beyond the required four at their closest point.
+   const room=stage.clientHeight-gap-2*pad-5;
+   const width=Math.floor(Math.min(paperWidth-2*pad,room*columns/rows));
    changed=set(stage,'--journey-paper-height',Math.round(width*rows/columns)+'px')||changed;
    changed=set(screen,'--fitted-board',width+'px')||changed;
    screen.setAttribute('data-fit','contained');
