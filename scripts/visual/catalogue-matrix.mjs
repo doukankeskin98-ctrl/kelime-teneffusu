@@ -1,6 +1,7 @@
 import {build, preview} from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import {mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import {launch} from './integrity/cdp.mjs';
@@ -137,3 +138,18 @@ try{
   writeFileSync(path.join(out,'issues.json'),JSON.stringify(failures));
 }
 if(failures.length||all.length!==numbers.length*sizes.length*2)process.exitCode=1;
+
+// The CI catalogue shard also exercises actual chapter entry. The two taller
+// device profiles have separate Safari viewports with browser chrome visible.
+if(!subset && process.env.GITHUB_ACTIONS==='true'){
+  const profiles=new Map([[320,'320'],[375,'375-se'],[393,'393-safari,393-uygulama'],[430,'430-safari,430-uygulama']]);
+  const requested=sizes.map(([width])=>{
+    const profile=profiles.get(width);
+    if(!profile)throw new Error('Unknown board-card width: '+width);
+    return profile;
+  });
+  execFileSync(process.execPath,['scripts/visual/tahta-yerlesim-olcumu.mjs'],{
+    stdio:'inherit',
+    env:{...process.env,LEVELS:'hepsi',VIEWS:requested.join(','),OUT:path.join(out,'board-card')},
+  });
+}

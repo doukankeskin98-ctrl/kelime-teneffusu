@@ -19,15 +19,6 @@ jobs:
     strategy:
       matrix:
         sizes: ['320x568', '375x667', '393x852', '430x932']
-        include:
-          - sizes: 320x568
-            card_views: '320'
-          - sizes: 375x667
-            card_views: 375-se
-          - sizes: 393x852
-            card_views: 393-safari,393-uygulama
-          - sizes: 430x932
-            card_views: 430-safari,430-uygulama
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -43,12 +34,6 @@ jobs:
           SIZES: ${{ matrix.sizes }}
           EVIDENCE_DIR: ${{ runner.temp }}/journey/released
       - run: pnpm journey:pilot:build
-      - name: Check the board card in all 312 authored chapters
-        run: node scripts/visual/tahta-yerlesim-olcumu.mjs
-        env:
-          LEVELS: hepsi
-          VIEWS: ${{ matrix.card_views }}
-          OUT: ${{ runner.temp }}/journey/board-card
       - name: Check both complete catalogues and every riddle definition
         run: node scripts/visual/catalogue-matrix.mjs
         env:
