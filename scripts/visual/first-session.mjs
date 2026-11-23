@@ -85,7 +85,12 @@ try{
    assert.ok(start.controls.some(b=>b.label==='İlk oyun rehberini kapat'));
    assert.ok(firstWord.controls.some(b=>b.label==='Tahtayı döndür'));
    for(const screen of [start,accepted,firstWord])assertPlayArea(start,screen);
-   assert.equal(start.board.width,start.stage.width,'The first chapter should use the full board width at these viewports');
+   // The square opening board fills whichever axis reaches the approved control gutter first.
+   const gutter={320:14,375:18,393:24,430:24}[width];
+   const side=Math.min(start.stage.width,Math.round(start.stage.height-gutter));
+   assert.equal(start.board.width,side,'First chapter uses the entire fitted width');
+   assert.equal(start.board.height,side,'First chapter keeps square cells');
+   assert.ok(Math.abs(start.board.x-(start.stage.x+(start.stage.width-side)/2))<=1,'First chapter is horizontally centred');
    assert.equal(finish.headingOutline,'none','Programmatic heading focus must not draw a frame');
    await page.key('Tab');
    const focus=await page.evaluate(`({tag:document.activeElement.tagName,label:document.activeElement.getAttribute('aria-label'),outline:getComputedStyle(document.activeElement).outlineStyle})`);

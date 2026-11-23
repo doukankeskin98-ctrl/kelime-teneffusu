@@ -74,7 +74,7 @@ dialog.kt-window{position:fixed;inset:max(env(safe-area-inset-top),min(66px,8dvh
 .kt-window[open],.kt-page{display:flex;flex-direction:column}
 dialog.kt-small{inset:0;width:min(440px,calc(100% - 48px));height:fit-content;max-height:calc(100dvh - 48px);margin:auto}
 .kt-window::backdrop{background:var(--scrim);backdrop-filter:blur(7px)}
-.kt-head{position:relative;flex:none;height:64px;display:grid;place-items:center;padding:0 54px;background:linear-gradient(#8b62ff,var(--ui) 45%,#6236e6);box-shadow:inset 0 -3px 0 rgba(42,27,110,.35)}
+.kt-head{position:relative;flex:none;height:64px;display:grid;place-items:center;padding:0 54px;background:linear-gradient(#7444e4,#693bd7 45%,#5730ca);box-shadow:inset 0 -3px 0 rgba(42,27,110,.35)}
 .kt-head h2,.kt-head h1{color:white;font:var(--t-title);text-align:center;text-transform:uppercase;letter-spacing:.04em;margin:0;text-shadow:0 2px rgba(42,27,110,.45)}
 .kt-head button{position:absolute;right:12px;top:12px;width:40px;height:40px;min-width:40px;min-height:40px;display:grid;place-items:center;border-radius:50%;background:white;color:var(--ui-ink);border:0;box-shadow:0 3px 0 rgba(42,27,110,.35)}
 .kt-body{padding:18px 16px 16px;overflow:auto;overscroll-behavior:contain;min-height:0;flex:1}
