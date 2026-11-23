@@ -47,7 +47,10 @@ async function inspect(number, published) {
       const rects=[...range.getClientRects()],row=strip.querySelector('.definition-question').getBoundingClientRect(),answer=strip.querySelector('.definition-answer'),tiles=[...answer.querySelectorAll('.definition-letter')];
       const group=Number(answer.dataset.wordGroup),spoken=strip.querySelector('[role=status]').textContent.includes(tiles.length+' harf');
       const clip=rects.some(r=>r.right>row.right+1||r.left<row.left-1||r.top<strip.getBoundingClientRect().top||r.bottom>tiles[0].getBoundingClientRect().top+1);
-      definitions.push({text:text.textContent,group,spoken,clipped:!rects.length||!tiles.length||clip,lines:rects.length,font:parseFloat(getComputedStyle(text).fontSize)});
+      const ordinal=strip.querySelector('.definition-copy>span:first-child').getBoundingClientRect();
+      const numberClipped=ordinal.top<strip.getBoundingClientRect().top-1||ordinal.bottom>tiles[0].getBoundingClientRect().top+1||
+        rects.some(r=>Math.min(r.right,ordinal.right)-Math.max(r.left,ordinal.left)>1&&Math.min(r.bottom,ordinal.bottom)-Math.max(r.top,ordinal.top)>2);
+      definitions.push({text:text.textContent,group,spoken,clipped:!rects.length||!tiles.length||clip||numberClipped,lines:rects.length,font:parseFloat(getComputedStyle(text).fontSize)});
       if(!ordered&&index<total-1){strip.querySelector('[aria-label="Sonraki tanım"]').click();await frame();}
     }
     selectionWorks=definitions.length>0&&(ordered||new Set(definitions.map(d=>d.group)).size===total);
@@ -108,7 +111,7 @@ try{
           for(const d of v.definitions){
             if(d.clipped)issues.push('clue clipped: '+d.text);
             if(!d.spoken)issues.push('missing spoken length: '+d.text);
-            if(w===320&&d.font!==undefined&&(d.font<15||(!published&&d.lines>2)))issues.push('narrow definition typography: '+d.text);
+            if(w===320&&d.font!==undefined&&(d.font<15||d.lines>2))issues.push('narrow definition typography: '+d.text);
           }
           if(!v.selectionWorks)issues.push('clue selection');
           const {errors,anchors}=journeyFrameProblems(v,w<=375?20:59,frameReference);

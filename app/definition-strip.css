@@ -65,4 +65,12 @@ dialog.kt-window.definition-dialog{inset:max(58px,env(safe-area-inset-top)) 10px
 @media (orientation:portrait) and (max-width:340px){
  .scenic-play[data-journey-frame] .definition-strip{--tile-h:21px;padding:2px 4px}
  .scenic-play[data-journey-frame] .definition-list{height:22px}
+ /* Give old sentence-length clues the full line; the ordinal has its own row. */
+ .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-copy{
+  display:grid;justify-items:center;width:100%;padding:0;font-size:15px;font-weight:580;
+  line-height:1.12;letter-spacing:-.25px;
+ }
+ .scenic-play[data-journey-frame]:not([data-authored-board]) .definition-copy>span:first-child{
+  width:16px;height:16px;margin:0;letter-spacing:normal;
+ }
 }
