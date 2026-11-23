@@ -182,7 +182,7 @@ if(process.env.YALNIZ_DEGERLENDIR){
       const deadline=performance.now()+6500;
       let clicked=false;
       do{
-       const button=document.querySelector('.stage-play');
+       const button=document.querySelector('.app-shell[data-ready=true] .main-area:not([inert]) .stage-play');
        if(!clicked && button?.getAttribute('aria-label')?.startsWith('Bölüm '+number+' ·')){button.click();clicked=true;}
        const dialog=document.querySelector('dialog[open]');
        const accept=dialog&&[...dialog.querySelectorAll('button')].find(b=>/Anladım|Başla|Tamam/.test(b.textContent));
