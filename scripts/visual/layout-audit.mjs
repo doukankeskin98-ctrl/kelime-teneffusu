@@ -67,7 +67,7 @@ const open = chapter => `(async () => {
 const measure = '('+capturePlayLayout.toString()+')()';
 
 let failures = 0;
-const page = await launch({port:Number(process.env.KT_LAYOUT_PORT ?? 9333)});
+const page = await launch({port:Number(process.env.KT_LAYOUT_PORT ?? 0)});
 try {
   for (const [width, height] of sizes) {
     const safe = firstVisit||fixed ? {...insets[width+'x'+height],left:0,right:0} : undefined;

@@ -14,19 +14,41 @@ const CANDIDATES = [
 
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-export async function launch({port = 9333} = {}) {
+export async function launch({port = 0} = {}) {
   const chrome = CANDIDATES.find(candidate => existsSync(candidate));
   if (!chrome) throw new Error('Chrome bulunamadı. CHROME_PATH ile yolunu ver.');
   const profile = mkdtempSync(path.join(tmpdir(), 'kt-visual-'));
-  const child = spawn(chrome, ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
-    '--no-first-run', '--no-default-browser-check', '--disable-extensions', '--hide-scrollbars', '--mute-audio', 'about:blank'], {stdio: 'ignore'});
-  let info;
-  for (let attempt = 0; attempt < 60 && !info; attempt++) {
-    try { info = await (await fetch(`http://127.0.0.1:${port}/json/version`)).json(); } catch { await sleep(250); }
+  const args = ['--headless=new', '--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${port}`,
+    `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-extensions',
+    '--hide-scrollbars', '--mute-audio', ...(process.platform==='linux'?['--disable-dev-shm-usage']:[]), 'about:blank'];
+  const child = spawn(chrome, args, {stdio:['ignore','ignore','pipe']});
+  let startupLog='', socket;
+  try {
+    // Only connect to the endpoint announced by this browser. Parallel runs can
+    // use port zero, and a port occupied by someone else cannot pass readiness.
+    const endpoint=await new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>finish(new Error('no DevTools endpoint')),15000);
+      const fail=error=>finish(error);
+      const exited=(code,signal)=>finish(new Error('Chrome exited: '+(signal??code)));
+      function log(chunk){
+        startupLog=(startupLog+chunk).slice(-4000);
+        const match=startupLog.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:\d+\/devtools\/browser\/[a-z0-9-]+)/i);
+        if(match)finish(null,match[1]);
+      }
+      function finish(error,url){
+        clearTimeout(timer);child.off('error',fail);child.off('exit',exited);child.stderr.off('data',log);
+        child.stderr.resume();
+        if(error)reject(error);else resolve(url);
+      }
+      child.once('error',fail);child.once('exit',exited);child.stderr.on('data',log);
+    });
+    socket=new WebSocket(endpoint);
+    await new Promise((resolve,reject)=>{socket.onopen=resolve;socket.onerror=reject;});
+  } catch(error) {
+    if(child.exitCode===null && child.signalCode===null)child.kill();
+    rmSync(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});
+    throw new Error('Chrome başlatılamadı: '+error.message+' '+startupLog.slice(-1400));
   }
-  if (!info) { child.kill(); throw new Error('Chrome başlatılamadı.'); }
-  const socket = new WebSocket(info.webSocketDebuggerUrl);
-  await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
   let nextId = 0;
   const pending = new Map(), errors = [];
   let session = '', recording=null;
