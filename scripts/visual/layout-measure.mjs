@@ -12,8 +12,8 @@ export function capturePlayLayout() {
     return css.display !== 'none' && css.visibility !== 'hidden' && b.width > 0 && b.height > 0;
   };
   const named = element => ({...rect(element), name:element.getAttribute('aria-label') || element.textContent?.trim() || element.className});
-  const rack = screen.querySelector('.target-rack,.clue-slots');
-  const words = [...screen.querySelectorAll('.target-rack .target-letters,.clue-slots .target-letters')].filter(visible).map(word => ({
+  const rack = screen.querySelector('.target-rack,.definition-strip,.clue-slots');
+  const words = [...screen.querySelectorAll('.target-rack .target-letters,.clue-slots .target-letters,.definition-answer .definition-letters')].filter(visible).map(word => ({
     ...named(word), letters:[...word.children].filter(letter => !letter.classList.contains('target-space')).map(named),
   }));
   const targets = [...screen.querySelectorAll('.target-focus-button,.clue-slot>button,.active-clue')].filter(visible).map(element=>({...named(element),minTouchHeight:44}));

@@ -1,3 +1,4 @@
+import {newerDefinitionNote,type DefinitionNote} from './definition-notes.ts';
 import {parseProgressEnvelope,sameProgress,ProgressFormatError} from './progress-codec.ts';
 import {journeyRevision,savedRevision} from './journey-revisions.ts';
 import {cleanWeekly,mergeWeekly,type WeeklyProgress} from './weekly-reward.ts';
@@ -10,6 +11,7 @@ import {BONUS_WORDS,cleanBonusSave,mergeBonusSave,type BonusSave} from './journe
 import {MECHANIC_GUIDES,WORD_TRAIL,type MechanicGuideId} from './journey-flow.ts';
 export interface SavedLevel {revision?:2|3;strokes:Stroke[];elapsed:number;hints:number;complete:boolean;stars:number}
 export interface Progress {
+ definitionNotes?:Record<string,DefinitionNote>;
  revisionSaves?:Record<string,Record<string,SavedLevel>>;
  ambience?:boolean;weekly?:WeeklyProgress;
  bonuses?:Record<string,BonusSave>;welcomedWorlds?:string[];mechanicGuides?:MechanicGuideId[];trailBadge?:string;
@@ -32,6 +34,29 @@ function resolveProgressBoard(key:string,revision:number):Puzzle|null {
  if(key.startsWith('mystery:')){const m=MYSTERIES.find(m=>'mystery:'+m.id===key);return m?mysteryBoard(m):null;}
  const [themeId,raw]=key.split('.'),level=Number(raw);
  return themeId&&THEMES.some(t=>t.id===themeId)&&Number.isInteger(level)&&level>=0&&level<6?makePuzzle(themeId,level,hash(`campaign-v2:${themeId}:${level}`)):null;
+}
+// Optional envelope metadata. The six-field v3 level tuple stays readable by older clients.
+function validDefinitionNotes(notes:unknown,saves:Progress['saves'],history:Progress['revisionSaves']){
+ if(!notes||typeof notes!=='object'||Array.isArray(notes))return undefined;
+ const clean:Record<string,DefinitionNote>={};
+ for(const [id,raw] of Object.entries(notes)){
+  const split=id.lastIndexOf(':r'),key=id.slice(0,split),revision=Number(id.slice(split+2));
+  if(split<0||!key.startsWith('route:')||![1,2,3].includes(revision)||id!==key+':r'+revision)continue;
+  const primary=saves[key],save=primary&&savedRevision(primary)===revision?primary:history?.[key]?.[revision];
+  if(!save||save.complete||!raw||typeof raw!=='object')continue;
+  const note=raw as DefinitionNote,chapter=journeyRevision(key.slice(6),revision),clues=chapter?.clues;
+  const groups=chapter?.words.length??0;
+  if(!clues||!Number.isSafeInteger(note.hints)||note.hints<0||note.hints>save.hints)continue;
+  if(note.selected!==null&&(!Number.isInteger(note.selected)||note.selected<0||note.selected>=groups))continue;
+  if(!note.reveals||typeof note.reveals!=='object'||Array.isArray(note.reveals))continue;
+  const reveals=Object.entries(note.reveals);
+  if(reveals.some(([g,n])=>String(Number(g))!==g||!Number.isInteger(Number(g))||Number(g)<0||Number(g)>=groups||!Number.isInteger(n)||n<1||n>3))continue;
+  if(reveals.reduce((sum,[,n])=>sum+n,0)>note.hints)continue;
+  const updated=note.updated??0;
+  if(!Number.isSafeInteger(updated)||updated<0)continue;
+  clean[id]={selected:note.selected,hints:note.hints,reveals:Object.fromEntries(reveals),updated};
+ }
+ return Object.keys(clean).length?clean:undefined;
 }
 export function loadProgress(raw:string|null):Progress {
  try{return raw?readProgress(raw):emptyProgress();}catch{return emptyProgress();}
@@ -67,7 +92,8 @@ export function normalizeProgress(value:unknown,strict=false):Progress {
   const welcomedWorlds=Array.isArray(r.welcomedWorlds)?[...new Set(r.welcomedWorlds.filter(x=>typeof x==='string'&&Object.prototype.hasOwnProperty.call(BONUS_WORDS,x)))].sort():[];
   const mechanicGuides=Array.isArray(r.mechanicGuides)?MECHANIC_GUIDES.filter(x=>r.mechanicGuides!.includes(x)):[];
   const weekly=cleanWeekly(r.weekly);
-  return {...(Object.keys(revisionSaves).length?{revisionSaves}:{}),...(weekly?{weekly}:{}),...(typeof r.ambience==='boolean'?{ambience:r.ambience}:{}),...(Object.keys(bonuses).length?{bonuses}:{}),...(welcomedWorlds.length?{welcomedWorlds}:{}),...(mechanicGuides.length?{mechanicGuides}:{}),...(WORD_TRAIL.some(t=>t.id===r.trailBadge)?{trailBadge:r.trailBadge}:{}),...(r.guideDone===true?{guideDone:true as const}:{}),...(boardColor(r.boardColor)?{boardColor:boardColor(r.boardColor)}:{}),v:2,saves,sound:r.sound===true,zoom:r.zoom===true,days,last,haptics:r.haptics===true,contrast:r.contrast===true,palette:r.palette==='ocean'||r.palette==='orchid'?r.palette:'classic',tutorialDone:r.tutorialDone===true,analytics:r.analytics===true,mysteries:Array.isArray(r.mysteries)?[...new Set(r.mysteries.filter(x=>MYSTERIES.some(m=>m.id===x)))]:[]};
+  const definitionNotes=validDefinitionNotes(r.definitionNotes,saves,revisionSaves);
+  return {...(definitionNotes?{definitionNotes}:{}),...(Object.keys(revisionSaves).length?{revisionSaves}:{}),...(weekly?{weekly}:{}),...(typeof r.ambience==='boolean'?{ambience:r.ambience}:{}),...(Object.keys(bonuses).length?{bonuses}:{}),...(welcomedWorlds.length?{welcomedWorlds}:{}),...(mechanicGuides.length?{mechanicGuides}:{}),...(WORD_TRAIL.some(t=>t.id===r.trailBadge)?{trailBadge:r.trailBadge}:{}),...(r.guideDone===true?{guideDone:true as const}:{}),...(boardColor(r.boardColor)?{boardColor:boardColor(r.boardColor)}:{}),v:2,saves,sound:r.sound===true,zoom:r.zoom===true,days,last,haptics:r.haptics===true,contrast:r.contrast===true,palette:r.palette==='ocean'||r.palette==='orchid'?r.palette:'classic',tutorialDone:r.tutorialDone===true,analytics:r.analytics===true,mysteries:Array.isArray(r.mysteries)?[...new Set(r.mysteries.filter(x=>MYSTERIES.some(m=>m.id===x)))]:[]};
 }
 export function cleanSave(raw:SavedLevel|undefined,board:Pick<Puzzle,'size'|'grid'|'targets'>):SavedLevel {
  const strokes:Stroke[]=[];
@@ -97,7 +123,11 @@ export function mergeProgress(server:Progress,local:Progress):Progress {
  const bonuses={...server.bonuses};for(const [id,save] of Object.entries(local.bonuses??{}))bonuses[id]=bonuses[id]?mergeBonusSave(bonuses[id]!,save):save;
  const welcomedWorlds=[...new Set([...(server.welcomedWorlds??[]),...(local.welcomedWorlds??[])])].sort(),mechanicGuides=MECHANIC_GUIDES.filter(x=>server.mechanicGuides?.includes(x)||local.mechanicGuides?.includes(x));
  const weekly=mergeWeekly(server.weekly,local.weekly);
- return {...(server.ambience!==undefined?{ambience:server.ambience}:{}),...(server.guideDone||local.guideDone?{guideDone:true as const}:{}),...(server.boardColor?{boardColor:server.boardColor}:{}),...local,...(weekly?{weekly}:{}),...(Object.keys(bonuses).length?{bonuses}:{}),...(welcomedWorlds.length?{welcomedWorlds}:{}),...(mechanicGuides.length?{mechanicGuides}:{}),last:local.last??server.last,saves,...(Object.keys(revisionSaves).length?{revisionSaves}:{}),days:[...new Set([...server.days,...local.days])].sort().slice(-3660),tutorialDone:server.tutorialDone||local.tutorialDone,mysteries:[...new Set([...server.mysteries,...local.mysteries])]};
+ const candidates={...server.definitionNotes};
+ for(const [id,note] of Object.entries(local.definitionNotes??{}))candidates[id]=newerDefinitionNote(candidates[id],note)!;
+ const definitionNotes=validDefinitionNotes(candidates,saves,revisionSaves);
+ const preferences={...local};delete preferences.definitionNotes;
+ return {...(server.ambience!==undefined?{ambience:server.ambience}:{}),...(server.guideDone||local.guideDone?{guideDone:true as const}:{}),...(server.boardColor?{boardColor:server.boardColor}:{}),...preferences,...(definitionNotes?{definitionNotes}:{}),...(weekly?{weekly}:{}),...(Object.keys(bonuses).length?{bonuses}:{}),...(welcomedWorlds.length?{welcomedWorlds}:{}),...(mechanicGuides.length?{mechanicGuides}:{}),last:local.last??server.last,saves,...(Object.keys(revisionSaves).length?{revisionSaves}:{}),days:[...new Set([...server.days,...local.days])].sort().slice(-3660),tutorialDone:server.tutorialDone||local.tutorialDone,mysteries:[...new Set([...server.mysteries,...local.mysteries])]};
 }
 export function streak(days:string[],today:string):number {const unique=new Set(days);const date=new Date(today+'T12:00:00Z');if(!unique.has(today))date.setUTCDate(date.getUTCDate()-1);let count=0;while(unique.has(date.toISOString().slice(0,10))){count++;date.setUTCDate(date.getUTCDate()-1);}return count;}
 export function collectionStats(p:Progress){
@@ -110,4 +140,19 @@ export function collectionStats(p:Progress){
   if(theme&&THEMES.some(t=>t.id===theme))worlds.add(originalThemeId(theme));
  }
  return {completed:credits.size,stars:[...credits.values()].reduce((n,s)=>n+s.stars,0),worlds:worlds.size};
+}
+
+/** Count a multi-part answer only when all of its strokes are discovered. */
+export function foundWordCount(saves:Progress['saves']){
+ const counts=new Map<string,number>();
+ for(const [key,save] of Object.entries(saves)){
+  if(!save.strokes.length)continue;
+  const board=progressBoard(key,savedRevision(save));if(!board)continue;
+  const found=new Set(save.strokes.map(s=>s.id)),groups=new Set(board.targets.map(t=>t.group));
+  for(const target of board.targets)if(!found.has(target.id))groups.delete(target.group);
+  const replacement=key.startsWith('route:')?CHAPTER_REPLACEMENTS[key.slice(6)]:undefined;
+  const canonical=replacement?'route:'+replacement:key;
+  counts.set(canonical,Math.max(groups.size,counts.get(canonical)??0));
+ }
+ return [...counts.values()].reduce((sum,n)=>sum+n,0);
 }

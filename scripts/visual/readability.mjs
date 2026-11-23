@@ -15,7 +15,7 @@ mkdirSync(dir,{recursive:true});
 const fx=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/veteran-save.ts'],{encoding:'utf8'}));
 const save=JSON.parse(fx.value);
 for(const c of fx.chapters.slice(120))delete save.saves['route:'+c.id];
-const frozenBuild=mkdtempSync(path.join(tmpdir(),'kt-menu-build-'));cpSync('dist-mobile',frozenBuild,{recursive:true});
+const frozenBuild=mkdtempSync(path.join(tmpdir(),'kt-menu-build-'));cpSync(process.env.KT_LAYOUT_BUILD??'dist-mobile',frozenBuild,{recursive:true});
 const server=await preview({configFile:false,build:{outDir:frozenBuild},preview:{host:'127.0.0.1',port:0},logLevel:'error'});
 const url='http://127.0.0.1:'+server.httpServer.address().port;
 const metrics={};
@@ -30,7 +30,7 @@ function clickText(label) {
     const re=new RegExp(${JSON.stringify(label)},'i');
     const root=[...document.querySelectorAll('dialog[open]')].at(-1)??document;
     const el=[...root.querySelectorAll('button,a,[role=button],summary')].find(e=>e.checkVisibility()&&
-      (re.test(e.getAttribute('aria-label')||'')||re.test(e.innerText.trim())));
+      (re.test(e.getAttribute('aria-label')||'')||re.test(e.innerText.trim())||re.test(e.innerText.trim().toLocaleLowerCase('tr'))||re.test((e.textContent||'').trim())));
     if(!el)return false;
     el.scrollIntoView({block:'nearest'});el.click();return true;
   })()`);

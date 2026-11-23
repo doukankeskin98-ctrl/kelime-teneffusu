@@ -1,13 +1,13 @@
 'use client';
 import {RULES_COPY} from '@/lib/game/rules-copy';
-import {SectionHeading} from './SectionHeading';
+import {Window,Button,Tile,RowGroup,Row} from '../ui/GameUI';
 import {PlayerSafety} from './PlayerSafety';
 import {inviteLink,shareMessage,shareSucceeded} from '@/lib/platform/sharing';
 import {useResultPresentation} from './useResultPresentation';
 import {startArenaClock} from '@/lib/game/arena-clock';
 import {gameIsActive} from '@/lib/platform/runtime';
 import {useEffect,useRef,useState} from 'react';
-import {ArrowRight,Check,Clock,Copy,Link2,LoaderCircle,Radio,RefreshCw,Share2,ShieldCheck,Star,Swords,Trophy,Users,Volume2,VolumeX,WifiOff,ZoomIn} from 'lucide-react';
+import {ArrowRight,Check,Clock,Copy,Link2,LoaderCircle,Puzzle as PuzzleIcon,Radio,RefreshCw,Share2,ShieldCheck,Star,Swords,Trophy,Users,Volume2,VolumeX,WifiOff,ZoomIn} from 'lucide-react';
 import {findTheme} from '@/lib/game/catalog';
 import {goldenId,match,timeLabel,type Cell,type Stroke} from '@/lib/game/engine';
 import type {Progress} from '@/lib/game/progress';
@@ -21,7 +21,7 @@ import {useLiveRoom} from './useLiveRoom';
 const CompassIcon=()=> <Radio size={19}/>;
 const roundLabel=(kind?:string)=>kind==='clue'?'Bilmeceli tur':'Normal kelime turu';
 
-export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practice,onPlaying,onChallenge,onFriends}:{authenticated:boolean;ownerId?:string;onLogin:()=>void;progress:Progress;onProgress:(p:Progress)=>void;practice:()=>void;onPlaying?:(playing:boolean)=>void;onChallenge?:()=>void;onFriends?:()=>void}){
+export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practice,onHome,onPlaying,onChallenge,onFriends}:{authenticated:boolean;ownerId?:string;onLogin:()=>void;progress:Progress;onProgress:(p:Progress)=>void;practice:()=>void;onHome?:()=>void;onPlaying?:(playing:boolean)=>void;onChallenge?:()=>void;onFriends?:()=>void}){
  const [online,setOnline]=useState(true);
  useEffect(()=>{const change=()=>setOnline(typeof navigator==='undefined'||navigator.onLine);change();window.addEventListener('online',change);window.addEventListener('offline',change);return ()=>{window.removeEventListener('online',change);window.removeEventListener('offline',change);};},[]);
  const [room,setRoom]=useState<RoomView|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[code,setCode]=useState(''),[now,setNow]=useState(Date.now()),[preview,setPreview]=useState(''),[leaving,setLeaving]=useState(false),[share,setShare]=useState(''),[rules,setRules]=useState(false),[joinedAt,setJoinedAt]=useState(Date.now()),[pending,setPending]=useState<Stroke|null>(null),[review,setReview]=useState(false),[ranking,setRanking]=useState(false),[previousResult,setPreviousResult]=useState(false),[seriesOpen,setSeriesOpen]=useState(false);
@@ -30,7 +30,7 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
  const [riddles,setRiddles]=useState(false);
  useEffect(()=>{try{setRiddles(localStorage.getItem(preferenceKey)==='on');}catch{setRiddles(false);}},[preferenceKey]);
  const toggleRiddles=()=>{const next=!riddles;setRiddles(next);try{localStorage.setItem(preferenceKey,next?'on':'off');}catch{}};
- const roundPreference=<button type="button" className="arena-round-preference" role="switch" aria-checked={riddles} disabled={busy} onClick={toggleRiddles}><span><b>Araya bilmece ekle</b><small>{riddles?'İlk maç kelimeler, sonraki bilmece.':'Kelimeleri gör, tahtada bul.'}</small></span><i className={'switch'+(riddles?' on':'')} aria-hidden="true"/></button>;
+ const roundPreference=<button type="button" className="arena-round-preference" role="switch" aria-checked={riddles} disabled={busy} onClick={toggleRiddles}><span className="kt-icon" aria-hidden="true"><PuzzleIcon/></span><span><b>Araya bilmece ekle</b><small>{riddles?'Önce kelime, sonra bilmece.':'Kelimeyi gör ve çiz.'}</small></span><i className={'switch'+(riddles?' on':'')} aria-hidden="true"/></button>;
  const [hubPanel,setHubPanel]=useState<'friend'|'rules'|'rankings'|null>(null);
  useEffect(()=>{if(room)setHubPanel(null);},[room?.id]);
  const actionLock=useRef(false),epoch=useRef(0);
@@ -42,12 +42,14 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
  useEffect(()=>{const previous=soundRound.current;soundRound.current={key:soundKey,phase:soundPhase};if(!previous||previous.key!==soundKey)return;if(previous.phase==='countdown'&&soundPhase==='playing')chime('start');if(previous.phase!=='finished'&&soundPhase==='finished')chime(room?.winner===room?.you.id?'complete':'finish');},[soundKey,soundPhase]);
  const context=()=>({epoch:epoch.current,id:currentRoom.current?.id??null,round:currentRoom.current?.round??null});
  const isCurrent=(stamp:ReturnType<typeof context>)=>mounted.current&&stamp.epoch===epoch.current&&stamp.id===(currentRoom.current?.id??null)&&stamp.round===(currentRoom.current?.round??null);
+ const [lastMatch,setLastMatch]=useState<{score:number;round:number}|null>(null);
  const accept=(next:RoomView|null,allowSwitch=false)=>{
   const old=currentRoom.current;
   if(!mounted.current||next&&ownerId&&next.you.id!==ownerId)return;
   if(!allowSwitch&&(!old||!next||old.id!==next.id))return;
   if(old&&next&&old.id===next.id&&(next.revision<old.revision||(next.revision===old.revision&&next.serverNow<old.serverNow)))return;
   if(next&&old?.id===next.id&&old.round===next.round&&old.phase==='active'&&next.phase==='finished'&&!result.wasPrepared()&&!ranking&&!rules&&!leaving)result.prepare(next.you.strokes.length>old.you.strokes.length);
+  if(next?.phase==='finished')setLastMatch({score:next.you.score,round:next.round});
   if(next){offset.current=next.serverNow-Date.now();setNow(next.serverNow);}if(next&&(next.phase==='active'||next.phase==='finished')){setSeriesOpen(false);setPreviousResult(false);}currentRoom.current=next;setRoom(next);
  };
  const recover=async()=>{const stamp=context();try{const next=await arenaRequest(signal=>getApi<RoomView|null>('?action=room',signal));if(isCurrent(stamp)){accept(next,true);setError('');}}catch(e){if(isCurrent(stamp))setError((e as Error).message);}};
@@ -101,22 +103,22 @@ export function Arena({authenticated,ownerId,onLogin,progress,onProgress,practic
   actionLock.current=true;const stamp=context();setBusy(true);setPending({id:target.id,a,b});setError('');chime();
   try{const next=await arenaRequest(signal=>api<RoomView>('claim',{id:room.id,round:room.round,expectedOwnerId:room.you.id,a,b},signal));if(!isCurrent(stamp))return;accept(next);if(currentRoom.current?.you.strokes.some(s=>s.id===target.id))setPreview('Bir kelime daha!');}catch(e){if(isCurrent(stamp)){result.skip();setError((e as Error).message);}}finally{actionLock.current=false;if(mounted.current){setBusy(false);setPending(null);}}
  };
- if(!room)return <section className="arena-stage" aria-labelledby="arena-title">
-  <div className="arena-stage-art" aria-hidden="true"><SceneArt scene="stadium" eager/><div/></div>
-  <SectionHeading id="arena-title" className="arena-stage-heading" title="Arena" detail="120 saniye. Her maç yeni kelimeler."/>
-  <div className="arena-stage-emblem" aria-hidden="true"><Swords size={64}/><i/><i/></div>
-  <div className="arena-stage-dock">{!online&&<p className="arena-offline-note" role="status"><WifiOff size={18}/><span>Arena için internet bağlantısı gerekiyor.</span><button className="text-button" onClick={practice}>Solo oyna</button></p>}
-   <button className="stage-play" disabled={busy||!online} onClick={authenticated?()=>void run('enter',{kind:'quick',mode:'group',roundPolicy:riddles?'mixed':'words'}):onLogin}>{busy?<LoaderCircle className="spin" size={22}/>:<Swords size={22}/>}<span>Hızlı eşleş<small>Açık grup · 2 veya daha fazla oyuncu</small></span><ArrowRight size={21}/></button>
-   {roundPreference}
-   <button className="arena-friend-action" disabled={busy||!online} onClick={()=>setHubPanel('friend')}><Users size={23}/><span>Arkadaşlarınla oyna<small>Oda oluştur veya kodla katıl</small></span><ArrowRight size={20}/></button>
-   {error&&<p className="error-box" role="alert">{error}</p>}
-   <div className="arena-secondary-actions"><button disabled={busy||!online} onClick={authenticated?()=>void run('enter',{kind:'quick'}):onLogin}><ShieldCheck size={17}/>Dereceli düello</button><button onClick={()=>setHubPanel('rankings')}><Trophy size={17}/>Sıralama</button><button onClick={()=>setHubPanel('rules')}><Clock size={17}/>Kurallar</button></div>
-   <div className="arena-social-actions">{onChallenge&&<button onClick={onChallenge}><CompassIcon/><span>Meydan okuma<small>Farklı saatlerde aynı bulmaca</small></span><ArrowRight size={16}/></button>}{onFriends&&<button onClick={onFriends}><Users size={19}/><span>Arkadaşlarım</span><ArrowRight size={16}/></button>}</div>
+ if(!room)return <><div className="arena-stage-art" aria-hidden="true"><SceneArt scene="stadium" eager/></div><Window title="Arena" className="arena-window" onClose={onHome??practice}>
+  <Button className="arena-quick" kind="play" disabled={busy||!online} onClick={authenticated?()=>void run('enter',{kind:'quick',mode:'group',roundPolicy:riddles?'mixed':'words'}):onLogin}>Hızlı eşleş<small>2+ oyuncu · 120 saniye · herkes aynı tahtada</small></Button>
+  {roundPreference}
+  <div className="kt-tiles">
+   <Tile title="Arkadaşlarınla oyna" note="Oda kur ya da kodla katıl" icon={<Users/>} tone="blue" disabled={busy||!online} onClick={()=>setHubPanel('friend')}/>
+   <Tile title="Dereceli düello" note="Bire bir yarış" icon={<ShieldCheck/>} tone="gold" disabled={busy||!online} onClick={authenticated?()=>void run('enter',{kind:'quick'}):onLogin}/>
   </div>
+  <div className="kt-arena-pills">{onChallenge&&<button onClick={onChallenge}><CompassIcon/>Meydan okuma</button>}<button onClick={()=>setHubPanel('rankings')}><Trophy/>Sıralama</button><button onClick={()=>setHubPanel('rules')}><Clock/>Kurallar</button></div>
+  {lastMatch&&<RowGroup title="Son maç"><Row icon={<Trophy/>} title={'Maç '+lastMatch.round} note={lastMatch.score+' puan'}/></RowGroup>}
+  {onFriends&&<RowGroup><Row icon={<Users/>} title="Arkadaşlarım" onClick={onFriends}/></RowGroup>}
+  {!online&&<p role="status">Arena için internet bağlantısı gerekiyor. <button onClick={practice}>Solo oyna</button></p>}
+  {error&&<p className="error-box" role="alert">{error}</p>}
   {hubPanel==='friend'&&<Modal className="game-tools-modal game-library-sheet arena-entry-sheet" title="Arkadaşlarınla oyna" onClose={()=>setHubPanel(null)}><div className="room-entry-sheet"><p>Odanı oluştur, davet bağlantısını arkadaşlarınla paylaş.</p><button className="button primary full" disabled={busy||!online} onClick={authenticated?()=>void run('enter',{kind:'friend',mode:'group',roundPolicy:riddles?'mixed':'words'}):()=>{setHubPanel(null);onLogin();}}><Link2 size={19}/>{busy?'Oda hazırlanıyor…':'Özel oda oluştur'}</button><div className="or-line"><span>veya oda koduyla katıl</span></div><form onSubmit={e=>{e.preventDefault();if(!online)return;if(!authenticated){setHubPanel(null);onLogin();return;}void run('enter',{kind:'friend',code});}}><label htmlFor="room-code">Oda kodu</label><div className="input-action"><input id="room-code" placeholder="8 karakter" maxLength={8} autoCapitalize="characters" autoComplete="off" value={code} onChange={e=>setCode(e.target.value.toUpperCase().replace(/[^A-HJ-NP-Z2-9]/g,''))}/><button className="icon-button" type="submit" aria-label="Odaya katıl" disabled={code.length!==8||busy||!online}><ArrowRight/></button></div></form><p className="muted">Herkes hazır olduğunda oda sahibi başlatır. Özel maçlar derece puanını değiştirmez.</p>{error&&<p className="error-box" role="alert">{error}</p>}</div></Modal>}
   {hubPanel==='rankings'&&<Modal className="game-tools-modal game-library-sheet arena-rankings-sheet" title="Derece sıralaması" onClose={()=>setHubPanel(null)} footer={<button className="button primary full" onClick={()=>setHubPanel(null)}>Arena’ya dön</button>}><p className="arena-result-next">Dereceli düelloların genel sıralaması. Oda maçlarının puanları bu listeyi değiştirmez.</p><Rankings/></Modal>}
   {hubPanel==='rules'&&<Modal className="game-tools-modal game-library-sheet" title="Arena kuralları" onClose={()=>setHubPanel(null)}><p>Herkes aynı bulmacaya aynı anda başlar. 120 saniyede kelimeleri bul.</p><p>{RULES_COPY.masked}</p><p>İşaretli Altın Kelime, açık olduğu sırada iki kat puan verir. İpucu ve satın alınan avantaj yok.</p><p>Hızlı grup ve özel oda maçları dereceyi değiştirmez. Dereceli düello iki kişiyle oynanır.</p><button className="button primary full" onClick={()=>setHubPanel(null)}>Anladım</button></Modal>}
- </section>;
+ </Window></>;
  const people=room.players??[{...room.you,count:room.you.strokes.length,online:true,left:false,rank:1},...(room.opponent?[{...room.opponent,id:'opponent',left:false,rank:2}]:[])];
  const group=room.mode==='group',members=people.filter(p=>!p.left),host=room.hostId===room.you.id,allReady=members.length>=2&&members.every(p=>p.ready);
  if(room.phase==='waiting'||room.phase==='ready'||room.phase==='cancelled')return <><GameScene scene="stadium"/><section className="arena-room-lobby">

@@ -112,21 +112,11 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 .play-settings-details summary{min-height:48px;display:list-item;align-content:center;cursor:pointer;color:#fff6de;font-size:15px;font-weight:650;padding:12px 6px;box-sizing:border-box}
 .play-settings-details .play-comfort-settings{border:0;margin:0;padding:0}
 .game-tools-modal .play-settings-details .play-tools-sheet{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px}
-.extra-games-details{margin:20px 0 10px;border-block:1px solid #d8e4d540}
-.extra-games-details>summary{min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#fff6de;font-size:16px;font-weight:650;cursor:pointer;list-style:none}
-.extra-games-details>summary::-webkit-details-marker{display:none}
-.extra-games-details[open]>summary>svg{transform:rotate(180deg)}
-.extra-games-details .event-menu{margin:0 0 12px}
-.extra-games .extra-games-menu{display:flex;flex-direction:column;gap:12px}
-.extra-games .extra-games-menu>button{min-height:80px}
 .short-games-menu button{background:#fff9e9;color:#213e35;box-shadow:none;min-height:84px}
 .short-games-menu small{color:#50665a;line-height:1.5}
 .arena-wait-alternative{width:100%;max-width:440px;margin:8px auto 16px;padding-top:12px;border-top:1px solid #d8e4d540}
 .arena-wait-alternative p{font-size:14px;line-height:1.5;color:#e2ebdf;margin-bottom:10px}
 .arena-room-actions .arena-wait-alternative>.button.secondary{color:#193e37;background:#fff6df;border-color:#b8c7ac;font-weight:750}
-.reward-total{display:flex;align-items:center;justify-content:center;gap:12px;color:#ffe0a0;font-size:38px;margin:8px 0 18px}
-.reward-info p,.reward-info dd{font-size:15px;line-height:1.6;color:#e3ebdf}
-.reward-info dl{margin:20px 0}.reward-info dl>div{margin-bottom:16px}.reward-info dt{font-weight:750;color:#fff6de;margin-bottom:4px}.reward-info dd{margin:0}
 
 .solo-control-dock{display:flex;flex-direction:column;width:100%}
 @media(max-width:759px) and (max-height:720px){

@@ -5,6 +5,7 @@ import {capacityProbe,catalogueQuality} from '../scripts/content-quality-model.t
 import {emptyProgress,readProgress,progressBoard,cleanSave,mergeProgress,collectionStats} from '../lib/game/progress.ts';
 import {encodeProgress,parseProgressEnvelope,sameProgress,ProgressFormatError} from '../lib/game/progress-codec.ts';
 import {progressStorageKeys,readStoredProgress,writeStoredProgress,shadowProgress} from '../lib/game/progress-storage.ts';
+import {ProgressSync} from '../lib/game/progress-sync.ts';
 import {CloudProgress,ProgressUpgradeRequired} from '../lib/game/cloud.ts';
 import {COMPACT_PROGRESS_WRITES,CONTENT_REVISION_TWO} from '../lib/game/progress-rollout.ts';
 import {JOURNEY_REVISION_TWO,playableJourney,journeyRevision,journeyPresentationKey,revisionSave} from '../lib/game/journey-revisions.ts';
@@ -142,4 +143,55 @@ it('new players receive sound and haptics while existing explicit or missing pre
   const old=readProgress(JSON.stringify({v:2,saves:{},...prefs}));
   assert.equal(old.sound,'sound' in prefs&&prefs.sound===true);assert.equal(old.haptics,'haptics' in prefs&&prefs.haptics===true);
  }
+});
+
+describe('partial riddle across devices',()=>{
+ const chapter='route:ufuk-gok-3', noteKey=chapter+':r3';
+ function pending(){
+  const p=emptyProgress(),board=progressBoard(chapter,3)!;
+  p.saves[chapter]=cleanSave({revision:3,strokes:board.placements.slice(0,1),elapsed:14,hints:1,complete:false,stars:0},board);
+  p.definitionNotes={[noteKey]:{selected:4,reveals:{3:1},hints:1,updated:20}};
+  return p;
+ }
+ it('restores selection and a revealed letter through the cloud for the same owner',async()=>{
+  const f=fixture();try{
+   const cloud=new CloudProgress(f.db,f.clock,256000,true),a=pending();
+   assert.equal(JSON.parse(encodeProgress(a)).saves[chapter].length,6);
+   await cloud.save('device-owner',JSON.parse(encodeProgress(a)),3,2);
+   const b=readProgress(encodeProgress((await cloud.read('device-owner',3,2)).progress));
+   assert.deepEqual(b.definitionNotes,a.definitionNotes);assert.deepEqual(b.saves,a.saves);
+   assert.equal((await cloud.read('another-owner',3,2)).progress.definitionNotes,undefined);
+   const older={...a};delete older.definitionNotes;
+   await cloud.save('device-owner',older,3,2);
+   assert.deepEqual((await cloud.read('device-owner',3,2)).progress.definitionNotes,a.definitionNotes);
+  }finally{f.sqlite.close();}
+ });
+ it('syncs two independent client stores and preserves choices across an offline retry',async()=>{
+  const f=fixture(),cloud=new CloudProgress(f.db,f.clock,256000,true),owner='same-player';
+  const client=()=>{
+   let state=emptyProgress(),online=true;
+   const sync=new ProgressSync({owner,storage:storage(),online:()=>online,read:()=>state,write:value=>{state=value;},status:()=>{},
+    load:async()=>(await cloud.read(owner,3,2)).progress,
+    save:async value=>(await cloud.save(owner,JSON.parse(encodeProgress(value)),3,2)).progress});
+   return {sync,read:()=>state,replace:(value:typeof state)=>{state=value;sync.changed(value);},network:(value:boolean)=>{online=value;}};
+  };
+  const first=client(),second=client();
+  try{
+   await first.sync.connect();const run=pending();first.replace(run);await first.sync.flush();
+   await second.sync.connect();assert.deepEqual(second.read().saves,run.saves);assert.deepEqual(second.read().definitionNotes,run.definitionNotes);
+   second.network(false);const choice={...run,definitionNotes:{[noteKey]:{...run.definitionNotes![noteKey]!,selected:5,updated:23}}};
+   second.replace(choice);await second.sync.flush();second.network(true);await second.sync.flush();
+   const reopened=client();try{await reopened.sync.connect();assert.deepEqual(reopened.read().definitionNotes,choice.definitionNotes);}finally{reopened.sync.dispose();}
+  }finally{first.sync.dispose();second.sync.dispose();f.sqlite.close();}
+ });
+ it('merges newer choices, drops malformed optional hints and clears the note on completion',()=>{
+  const a=pending(),b=pending();b.definitionNotes![noteKey]={selected:6,hints:1,reveals:{3:1},updated:22};
+  for(const [s,l] of [[a,b],[b,a]] as const)assert.deepEqual(mergeProgress(s,l).definitionNotes,b.definitionNotes);
+  b.definitionNotes![noteKey]!.reveals={2:2,3:1};
+  assert.equal(readProgress(encodeProgress(b)).definitionNotes,undefined);
+  const board=progressBoard(chapter,3)!;
+  b.saves[chapter]=cleanSave({...b.saves[chapter]!,strokes:board.placements},board);
+  const result=mergeProgress(a,b);
+  assert.equal(result.saves[chapter]?.complete,true);assert.equal(result.definitionNotes,undefined);
+ });
 });

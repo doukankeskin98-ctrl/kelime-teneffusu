@@ -46,7 +46,7 @@ def inspect_screen(name, metrics, directory):
             for issue in inspect_text(row, image, scale):
                 yield f"{name} · {row['t']} · {issue}"
     for control in metrics['btns']:
-        width, height = control['r'][2:]
+        width, height = control.get('hit', control['r'])[2:]
         if control['t'] and not control['cell'] and min(width, height) < 44:
             yield f"{name} · {control['t']} · dokunma alanı {width}×{height}"
 

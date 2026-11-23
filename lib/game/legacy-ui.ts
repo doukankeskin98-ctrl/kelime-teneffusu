@@ -25,6 +25,7 @@ export function openGameDialog(dialog:HTMLDialogElement,onClose:()=>void,view:Vi
  doc.body.style.overflow='hidden';
  const fit=()=>{
   if(disposed)return;
+  if(dialog.dataset?.['layout']==='viewport'){dialog.style.setProperty('--visible-height',(view.visualViewport?.height||view.innerHeight)+'px');return;}
   const viewport=view.visualViewport,height=viewport?.height||view.innerHeight,css=view.getComputedStyle(dialog);
   const inset=(name:string)=>Math.max(0,Number.parseFloat(css.getPropertyValue(name))||0);
   const top=inset('--dialog-safe-top'),bottom=inset('--dialog-safe-bottom'),safeHeight=Math.max(0,height-top-bottom);

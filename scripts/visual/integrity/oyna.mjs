@@ -1,8 +1,9 @@
 import {sleep} from './cdp.mjs';
+import {AUTHORED_JOURNEY} from '../../../lib/game/authored-journey-data.ts';
 // Tahtayı DOM'dan okur, listedeki kelimeleri 8 yönde bulur ve dokunmatik kaydırmayla çizer
 export const STATE=`(()=>{const cells=[...document.querySelectorAll('[data-cell]')].map(e=>{const [r,c]=e.dataset.cell.split(',').map(Number);const b=e.getBoundingClientRect();return {r,c,ch:e.innerText.trim(),x:b.left+b.width/2,y:b.top+b.height/2}});
  if(!cells.length)return null;const top=Math.min(...cells.map(c=>c.y));
- const words=[...document.querySelectorAll('.word-tag')].map(e=>({t:[...e.querySelectorAll('[data-target-letter]')].map(x=>x.textContent===' '||x.textContent===''?' ':(x.textContent.trim()||'✱')).join(''),al:e.getAttribute('aria-label')||'',found:!/aranıyor/.test(e.getAttribute('aria-label')||'')}));
+ const words=[...document.querySelectorAll('.word-tag')].map(e=>({group:Number(e.dataset.wordGroup),t:[...e.querySelectorAll('[data-target-letter]')].map(x=>x.textContent===' '||x.textContent===''?' ':(x.textContent.trim()||'✱')).join(''),al:e.getAttribute('aria-label')||'',found:!/aranıyor/.test(e.getAttribute('aria-label')||'')}));
  return {cells,words}})()`;
 const D=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
 export function locate(st,word){const g={};for(const c of st.cells)g[c.r+','+c.c]=c;const L=[...word];
@@ -11,7 +12,20 @@ export async function drag(page,a,b,steps=10){
  const tp=(type,x,y)=>page.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x,y,id:1}]});
  await tp('touchStart',a.x,a.y);for(let i=1;i<=steps;i++){await sleep(16);await tp('touchMove',a.x+(b.x-a.x)*i/steps,a.y+(b.y-a.y)*i/steps);}await sleep(30);await tp('touchEnd');}
 export async function solve(page,{shot,delay=700,limit=99}={}){const st=await page.eval(STATE);if(!st)return {err:'tahta yok'};
- const done=[];let n=0;for(const w of st.words.filter(w=>!w.found)){if(n>=limit)break;const j=w.t.replace(/ /g,'');let parts=locate(st,j)?[j]:w.t.includes(' ')?w.t.split(' '):null;if(!parts){for(let i=3;i<=j.length-3;i++)if(locate(st,j.slice(0,i))&&locate(st,j.slice(i))){parts=[j.slice(0,i),j.slice(i)];break;}}parts=parts||[j];for(const part of parts){const p=locate(st,part);if(!p){done.push({w:part,bulunamadi:true});continue;}await drag(page,p[0],p[1]);await sleep(delay);n++;done.push({w:part});if(shot)await shot(n);}}
+ // For a concealed authored answer its displayed stars match many decoy paths.
+ // Use the reviewed board fixture only after the complete visible grid matches.
+ const grid=[];
+ for(const cell of st.cells){grid[cell.r]??=[];grid[cell.r][cell.c]=cell.ch;}
+ const gridKey=grid.map(row=>row.join('')).join('|');
+ const authored=Object.values(AUTHORED_JOURNEY).find(level=>level.grid.join('|')===gridKey);
+ const done=[];let n=0;
+ for(const w of st.words.filter(w=>!w.found)){
+  if(n>=limit)break;
+  const target=/[✱*•·_]/u.test(w.t)?authored?.placements[w.group]?.[0]??w.t:w.t;
+  const j=target.replace(/ /g,'');let parts=locate(st,j)?[j]:target.includes(' ')?target.split(' '):null;
+  if(!parts){for(let i=3;i<=j.length-3;i++)if(locate(st,j.slice(0,i))&&locate(st,j.slice(i))){parts=[j.slice(0,i),j.slice(i)];break;}}
+  parts=parts||[j];
+  for(const part of parts){const p=locate(st,part);if(!p){done.push({w:part,bulunamadi:true});continue;}await drag(page,p[0],p[1]);await sleep(delay);n++;done.push({w:part});if(shot)await shot(n);}}
  return {words:st.words.map(w=>w.t),done};}
 // Bonus turu: hedef kelimenin tahtadaki bütün geçişlerini bulur ve çizer. Sayaç "x / y" okunur.
 export const BONUS=`(()=>{const h=document.querySelector('[aria-label^="Hedef kelime:"]');if(!h)return null;const sp=[...document.querySelectorAll('span')].map(e=>e.textContent.trim()).find(t=>/^\\d+ \\/ \\d+$/.test(t));const [x,y]=(sp||'').split(' / ').map(Number);return {word:h.getAttribute('aria-label').replace(/^Hedef kelime:\\s*/,''),found:x,total:y}})()`;

@@ -7,5 +7,10 @@
     "metin": "Diğer",
     "ekran": "13-destek",
     "gerekce": "Destek raporundaki sorun turu kategorisi; ana ekran Oyunlar kisayolundan farkli anlam tasir. Yalniz bu ekran icin gecerlidir."
+  },
+  {
+    "metin": "ROTA",
+    "ekran": "24-kisa-oyunlar",
+    "gerekce": "Rüzgâr Limanı bonusunda aranacak cevap kelimesidir. Navigasyondaki dünya adı için kullanılan bir arayüz etiketi değildir."
   }
 ]

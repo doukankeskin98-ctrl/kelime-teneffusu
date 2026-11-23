@@ -48,6 +48,7 @@
 @import "./berrak.css";
 @import "./berrak-board.css";
 @import "./berrak-result.css";
+@import "./studio-ui.css";
+@import "./definition-strip.css";
 
 /* Entry-only notice; never covers an active competition board. */
-.arena-offline-note{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--scene-text,#fff);font-size:14px;line-height:1.4;margin:0 0 8px}.arena-offline-note span{flex:1;min-width:150px}.arena-offline-note .text-button{min-height:44px;color:inherit}

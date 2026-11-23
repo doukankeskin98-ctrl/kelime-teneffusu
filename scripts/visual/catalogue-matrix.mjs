@@ -35,7 +35,23 @@ async function inspect(number, published) {
   const definitions=[];
   const clue=document.querySelector('.active-clue');
   let selectionWorks=true;
-  if(clue){
+  const strip=document.querySelector('.definition-strip');
+  if(strip){
+    const frame=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const total=Number(strip.dataset.targets),ordered=!!strip.dataset.ordered;
+    // A warm device may remember the last definition from an earlier sample.
+    for(let step=0;!ordered&&step<total&&!strip.querySelector('[aria-label="Önceki tanım"]').disabled;step++){strip.querySelector('[aria-label="Önceki tanım"]').click();await frame();}
+    for(let index=0;index<(ordered?1:total);index++){
+      const text=strip.querySelector('.definition-text'),range=document.createRange();range.selectNodeContents(text);
+      const rects=[...range.getClientRects()],row=strip.querySelector('.definition-question').getBoundingClientRect(),answer=strip.querySelector('.definition-answer'),tiles=[...answer.querySelectorAll('.definition-letter')];
+      const group=Number(answer.dataset.wordGroup),spoken=strip.querySelector('[role=status]').textContent.includes(tiles.length+' harf');
+      const clip=rects.some(r=>r.right>row.right+1||r.left<row.left-1||r.top<strip.getBoundingClientRect().top||r.bottom>tiles[0].getBoundingClientRect().top+1);
+      definitions.push({text:text.textContent,group,spoken,clipped:!rects.length||!tiles.length||clip,lines:rects.length});
+      if(!ordered&&index<total-1){strip.querySelector('[aria-label="Sonraki tanım"]').click();await frame();}
+    }
+    selectionWorks=definitions.length>0&&(ordered||new Set(definitions.map(d=>d.group)).size===total);
+    if(!ordered&&total>1){strip.querySelector('.definition-list').click();await frame();const options=[...document.querySelectorAll('dialog[open] .definition-option')];options[1]?.click();await frame();selectionWorks=selectionWorks&&options.length===total&&strip.querySelector('.definition-copy>span').textContent==='2'&&!document.querySelector('dialog.definition-dialog[open]');}
+  }else if(clue){
     const slots=[...document.querySelectorAll('.clue-slot')], ordered=clue.closest('[aria-label="Hikâye adımları"]');
     const frame=()=>new Promise(requestAnimationFrame);
     for(let i=0;i<(ordered?1:slots.length);i++){
@@ -63,7 +79,7 @@ async function inspect(number, published) {
       selectionWorks=selectionWorks&&!!pick&&slots[1].classList.contains('is-focus-target')&&!document.querySelector('dialog[open]');
     }
   }
-  return {...layout,gap:gaps.length?Math.min(...gaps):null,edge:edges.length?Math.min(...edges):null,
+  return {...layout,frameKind:document.querySelector('.scenic-play')?.dataset.designLayout??(strip?'definition':'classic'),gap:gaps.length?Math.min(...gaps):null,edge:edges.length?Math.min(...edges):null,
     definitions,selectionWorks,authored:!!document.querySelector('[data-authored-board]')};
 }
 let browser,server;
@@ -72,13 +88,14 @@ try{
   await build(conf);
   server=await preview({...conf,preview:{host:'127.0.0.1',port:0}});
   browser=await launch({port:subset?19656:19652});
+  await browser.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
   await browser.goto('http://127.0.0.1:'+server.httpServer.address().port);
   await browser.eval('window.measure='+capturePlayLayout.toString()+';window.inspectChapter='+inspect.toString()+';true');
   for(const [w,h] of sizes){
     await browser.viewport(w,h,1);
     await browser.send('Emulation.setSafeAreaInsetsOverride',{insets:{top:w<=375?20:59,bottom:w<=375?0:34,left:0,right:0}});
     for(const published of [true,false]){
-      let origin;
+      const origins=new Map();
       for(const n of numbers){
         const v=await browser.eval('window.inspectChapter('+n+','+published+')');
         const issues=layoutProblems(v);
@@ -92,7 +109,8 @@ try{
             if(!d.spoken)issues.push('missing spoken length: '+d.text);
           }
           if(!v.selectionWorks)issues.push('clue selection');
-          origin??=[v.stage.top,v.controls.at(-1)?.top];
+          if(!origins.has(v.frameKind))origins.set(v.frameKind,[v.stage.top,v.controls.at(-1)?.top]);
+          const origin=origins.get(v.frameKind);
           if(Math.abs(origin[0]-v.stage.top)>1||Math.abs(origin[1]-v.controls.at(-1)?.top)>1)issues.push('unstable frame');
         }
         all.push({w,n,published,board:v.board,stageTop:v.stage?.top,topic:v.topic,rack:v.rack,clueRect:v.targets?.at(-1),tools:v.controls,...(subset?{words:v.words}:{}),clues:v.definitions,gap:v.gap,edge:v.edge,issues});

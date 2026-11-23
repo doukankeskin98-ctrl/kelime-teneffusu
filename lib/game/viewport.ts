@@ -77,7 +77,9 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:BoardSh
    const container=screen.closest<HTMLElement>('.game-app,.main-content');
    const bottom=container?pixels(view.getComputedStyle(container).paddingBottom):8;
    const available=Math.floor((client?.height??view.innerHeight)-offset-bottom-2);
+   const designLayout=screen.dataset['designLayout']==='journey';
    let changed=set(screen,'--play-height',available+'px');
+   if(designLayout)changed=set(screen,'--layout-origin',offset+'px')||changed;
    screen.style.removeProperty('min-height');stage.style.removeProperty('height');stage.style.removeProperty('flex');
    // Budget against the tallest released board so the header and tools keep one
    // position throughout a session. Reclaim only pixels left below that board.
@@ -88,7 +90,8 @@ export function attachPlayFit(screen:HTMLElement,stage:HTMLElement,cells:BoardSh
    const baseRack = Math.max(45, Math.min(78, view.innerHeight * .082));
    const extra = Math.min(spare, Math.max(0, targetRack - baseRack));
    changed=set(screen,'--list-extra',extra+'px')||changed;
-   const width=fittedBoardSize(stage.clientWidth,stage.clientHeight,cells);
+   const margin=designLayout?Math.max(14,Math.min(24,view.innerHeight*.0352-6)):0;
+   const width=fittedBoardSize(stage.clientWidth,stage.clientHeight-margin,cells);
    const {rows,columns}=dimensions(cells);
    changed=set(stage,'--journey-paper-height',Math.round(width*rows/columns)+'px')||changed;
    changed=set(screen,'--fitted-board',width+'px')||changed;

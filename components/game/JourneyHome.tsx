@@ -2,7 +2,10 @@
 import {GAME_TERMS} from '@/lib/game/glossary';
 import {LIVING_STORIES} from '@/lib/game/story-content';
 import {BookOpen,CalendarDays,Gamepad2,Swords} from 'lucide-react';
-import type {Progress} from '@/lib/game/progress';
+import {AUTHORED_JOURNEY,isAuthoredRevision} from '@/lib/game/authored-journey';
+import {weeklyStatus,WEEKLY_TARGET} from '@/lib/game/weekly-reward';
+import {Chip,Meter} from '../ui/GameUI';
+import {streak,type Progress} from '@/lib/game/progress';
 import {mainJourneyChapters,mainJourneyState} from '@/lib/game/main-journey';
 import {istanbulDay} from '@/lib/game/engine';
 import {worldChapter} from '@/lib/game/world-presentation';
@@ -23,6 +26,8 @@ export function JourneyHome({progress,onPlay,onExplore,onDetails,onDaily,onArena
  const play=(item:typeof chapters[number])=>{if(!item.unlocked)return;onPlay({themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(item.complete?{practice:true}:{})});};
  const earned=goal?.state.earned??Array.from({length:6},()=>!current);
  const pieces=earned.filter(Boolean).length;
+ const today=istanbulDay(),run=streak(progress.days,today),week=weeklyStatus(progress.weekly,today);
+ const tier=current&&isAuthoredRevision(current.chapter.id,current.chapter.revision)?AUTHORED_JOURNEY[current.chapter.id]?.tier:undefined;
  const shortcuts=[
   {label:'Günlük',name:'Günlük bulmaca',icon:CalendarDays,action:onDaily,fresh:!progress.days.includes(istanbulDay())},
   {label:'Albüm',name:'Albümlerim',icon:BookOpen,action:onAlbums},
@@ -38,15 +43,16 @@ export function JourneyHome({progress,onPlay,onExplore,onDetails,onDaily,onArena
     <b>{pieces}/6</b><small>Bölüm</small>
    </button>
    {shortcuts.map(({label,name,icon:Icon,action,fresh})=><button type="button" key={label} className="berrak-shortcut" onClick={action} aria-label={name}>
-    <span><Icon aria-hidden="true"/>{fresh&&<i aria-hidden="true"/>}</span><b>{label}</b>
+    <span><Icon aria-hidden="true"/>{fresh&&<i aria-hidden="true"/>}</span><b>{label}</b>{label==='Günlük'&&run>0&&<em className="kt-day-count">{run} gün</em>}
    </button>)}
   </div>
   <div className="berrak-enter">
    {story?<><button className="stage-play" onClick={playStory}>{storySave?'Devam et':'Oyna'}</button><button className="berrak-story-return" onClick={()=>onViewChange?.('journey')}>Bölüm yolculuğuna dön</button></>
     :current&&goal?<button className="stage-play" aria-label={`Bölüm ${current.number} · ${worldChapter(current.chapter.id,current.chapter.revision)?.topic??current.chapter.title} · ${state.continuing?'Devam et':'Oyna'}`} onClick={()=>play(chapters.find(c=>c.chapter.id===current.chapter.id)!)}>
-      {(current.chapter.revision??1)>1&&current.chapter.difficulty==='Ustalık'&&<small className="berrak-tag">Zor</small>}{current.chapter.clues&&<small className="berrak-tag">Bilmece</small>}Bölüm {current.number}
+      {(tier==='zor'||tier==='final')&&<Chip tone="hard">ZOR</Chip>}{current.chapter.clues&&<small className="berrak-tag">Bilmece</small>}Bölüm {current.number}
      </button>
     :<><p>{state.total} bölüm tamamlandı</p><button className="stage-play" onClick={onDetails}>Bölümleri aç</button></>}
   </div>
+  {week.week&&<div className="kt-postcard"><BookOpen aria-hidden="true"/><b>Haftanın kartpostalı</b><Meter label="Haftalık kartpostal" value={week.count} total={WEEKLY_TARGET}/><span>{week.count}/{WEEKLY_TARGET}</span></div>}
  </section>;
 }

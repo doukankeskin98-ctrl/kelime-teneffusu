@@ -1,3 +1,4 @@
+import {testGameUi} from './render-game-ui.ts';
 import * as authoredJourney from '../lib/game/authored-journey.ts';
 import * as playPraise from '../lib/game/play-praise.ts';
 import * as journeyRevisions from '../lib/game/journey-revisions.ts';
@@ -48,7 +49,7 @@ type Slot={value?:any;ref?:{current:any};deps?:unknown[];cleanup?:()=>void};
 const walk=(v:any):Node[]=>Array.isArray(v)?v.flatMap(walk):v&&typeof v==='object'?[v,...['children','aside','footer','headerAction'].flatMap(k=>walk(v.props?.[k]))]:[];
 const text=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';
 const visible=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(visible).join(''):v&&typeof v==='object'&&v.props?.['aria-hidden']!==true&&v.props?.['style']?.visibility!=='hidden'?visible(v.props?.['children']):'';
-const jsx=(type:any,props:Record<string,unknown>,key?:unknown):any=>{if(props?.['className']==='play-praise')(props['ref'] as {current:unknown}).current??={hidden:true,firstElementChild:{textContent:''}};return typeof type==='function'&&type.name==='GameToolsSheet'?type(props):({type,props,key});},icons=new Proxy({},{get:(_t,k)=>String(k)});
+const jsx=(type:any,props:Record<string,unknown>,key?:unknown):any=>{if(props?.['className']==='play-praise')(props['ref'] as {current:unknown}).current??={hidden:true,firstElementChild:{textContent:''}};return typeof type==='function'&&['GameToolsSheet','Tile','Row','RowGroup','Button'].includes(type.name)?type(props):({type,props,key});},icons=new Proxy({},{get:(_t,k)=>String(k)});
 function deferred<T>(){let resolve!:(r:T)=>void;const promise=new Promise<T>(yes=>{resolve=yes;});return{promise,resolve};}
 function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown,storageValues?:Map<string,string>){
  const exports:Record<string,any>={},slots:Slot[]=[],effects:(()=>void)[]=[],intervals=new Map<number,()=>void>(),timeouts=new Map<number,()=>void>(),deadlines=new Map<number,number>(),frames=new Map<number,()=>void>(),document=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},body:{style:{overflow:''}}});
@@ -135,7 +136,7 @@ describe('rotated live layout keeps the original puzzle authoritative',()=>{
 });
 function openWords(words:any){const h=view('components/game/common.tsx');h.start('BoardWords',{words});h.find('button').props['onClick']();h.paint();return h;}
 const commonStubs={PlayLayout:'PlayLayout',PlayControls:'PlayControls',MatchTools:'MatchTools',WordList:'WordList',Modal:'Modal',Help:'Help',useChime:()=>()=>{}};
-const modules={'@/lib/game/original-content':await import('../lib/game/original-content.ts'),'@/lib/game/challenge-state':challengeState,'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
+const modules={'@/lib/game/definition-notes':await import('../lib/game/definition-notes.ts'),'../ui/GameUI':testGameUi(jsx),'@/lib/game/original-content':await import('../lib/game/original-content.ts'),'@/lib/game/challenge-state':challengeState,'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},'@/lib/game/catalog':await import('../lib/game/catalog.ts'),'@/lib/game/content':content,'@/lib/game/engine':engine,'@/lib/game/progress':progress,'@/lib/game/achievement-view':achievementView,'@/lib/game/word-feedback':wordFeedback,'@/lib/game/word-card':goalWordCard,'@/lib/game/discovery':discovery,'@/lib/game/sprint':sprint,'@/lib/game/main-journey':mainJourney,'@/lib/game/telemetry':{track(){}}};
 
 describe('near-board word access uses confirmed, visible list data',()=>{
  it('defaults an enlarged board to drawing and offers explicit reversible panning outside the board',()=>{
@@ -716,15 +717,15 @@ it('first riddle guide blocks time and selection until understood',async()=>{
  }finally{h.close();}
 });
 
-it('preserves all side-game destinations beneath three primary choices and returns from bonus to short games',()=>{
+it('opens all six game tiles, bonus rounds, practice and extra chapters from the game library',()=>{
  const h=view('components/game/Pages.tsx',modules),calls:any[]=[];
  const props={library:true,progress:familiarProgress(),releases:[],onDetails(){},onSprint:()=>calls.push('sprint'),setTheme:(x:any)=>calls.push(x),openSolo:(x:any)=>calls.push(x),setNav:(x:any)=>calls.push(x),classic(){},onMystery:(x:any)=>calls.push(x),onChallenge(){},onExtra(){}};
- const click=(label:string)=>{const n=walk(h.tree).find(n=>n.type==='button'&&text(n).startsWith(label));assert(n,label);n.props['onClick']();h.paint();};
+ const click=(label:string)=>{const n=walk(h.tree).find(n=>n.type==='button'&&(text(n).trim().startsWith(label)||text(n).includes(label)));assert(n,label);n.props['onClick']();h.paint();};
  try{
-  h.start('Explore',props);const primary=walk(h.tree).find(n=>n.props['className']==='event-menu extra-games-menu')!;assert.equal(walk(primary).filter(n=>n.type==='button').length,3);
-  click('Günlük bulmaca');assert.equal(calls.pop(),'gunluk');click('Kısa oyunlar');assert.equal(h.find('Modal').props['title'],'Kısa oyunlar');click('Hızlı tur');assert.equal(calls.pop(),'sprint');click('Bonus turları');assert.equal(h.find('Modal').props['title'],'Bonus turları');h.find('Modal').props['onClose']();h.paint();assert.equal(h.find('Modal').props['title'],'Kısa oyunlar');h.find('Modal').props['onClose']();h.paint();
+  h.start('Explore',props);const primary=walk(h.tree).find(n=>n.props['className']==='kt-tiles')!;assert.equal(walk(primary).filter(n=>n.type==='button').length,6);
+  click('Günlük bulmaca');assert.equal(calls.pop(),'gunluk');click('Hızlı tur');assert.equal(calls.pop(),'sprint');click('Bonus turları');assert.equal(h.find('Modal').props['title'],'Bonus turları');h.find('Modal').props['onClose']();h.paint();assert.equal(walk(h.tree).some(n=>n.type==='Modal'),false);
   for(const label of ['Hikâyeler','İpucu avı','Serbest oyun','Ek bölümler']){click(label);assert.equal(h.find('Modal').props['title'],label);h.find('Modal').props['onClose']();h.paint();}
-  click('Gizli tema');assert.equal(calls.pop(),content.MYSTERIES[0]!.id);click('Çizerek alıştırma yap');assert.equal(calls.pop().tutorial,true);
+  click('Gizli tema');assert.equal(calls.pop(),content.MYSTERIES[0]!.id);click('Alıştırma');assert.equal(calls.pop().tutorial,true);
  }finally{h.close();}
 });
 it('keeps solo notices in the footer before, during and after a hint without changing the puzzle',()=>{

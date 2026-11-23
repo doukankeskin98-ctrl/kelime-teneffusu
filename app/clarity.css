@@ -3,7 +3,6 @@
 .native-shell .native-topbar{height:calc(var(--shell-bar-height) + var(--shell-safe-top));min-height:calc(var(--shell-bar-height) + var(--shell-safe-top));padding:calc(7px + var(--shell-safe-top)) max(14px,env(safe-area-inset-right,0px)) 7px max(14px,env(safe-area-inset-left,0px));gap:8px}
 .native-scene .main-content{padding-bottom:calc(72px + var(--shell-safe-bottom))}
 .native-scene .native-topbar{background:linear-gradient(#0b293bd9,#0b293b00);color:#fff9e9}
-.native-shell .arena-stage{min-height:calc(100vh - var(--shell-bar-height) - 72px - var(--shell-safe-top) - var(--shell-safe-bottom));min-height:calc(100svh - var(--shell-bar-height) - 72px - var(--shell-safe-top) - var(--shell-safe-bottom))}
 
 /* Actual glyphs own the weight: legacy child rules must not make them lighter. */
 .scenic-play .letter-grid>span,.game-app .scenic-play .letter-grid>span{font-family:var(--sans);font-weight:800;color:var(--board-ink,#142f2c);text-shadow:none}
@@ -42,12 +41,10 @@
 .native-shell .collection-stage .discovery-album-card h3{color:#fff5df;font-size:21px;line-height:1.25;margin:10px 0}
 .native-shell .collection-stage .discovery-album-card p{color:#d1e0d8;font-size:13px;line-height:1.5}
 .collection-stage .discovery-album-card small{color:#d1e0d8}.collection-stage .discovery-album-card small>span{color:#f1d89f}
-.collection-stage .album-piece-dots i{background:#0e303b;color:#b8cdc4;border-color:#cbdcce40}.collection-stage .album-piece-dots i.earned{background:#558367;color:#fff4d1;border-color:#a9c391}
-.collection-stage .collection-player{border-color:#dce8db40;margin:18px 0 26px}.collection-stage .collection-player>summary,.collection-stage .collection-stats>summary{color:#e3ece3;min-height:54px;font-size:14px}
-.collection-stage .collection-player .profile-header{background:#173e49;color:#fff5df}.collection-stage .profile-header h2{color:inherit}.collection-stage .auth-profile-handle,.collection-stage .progress-cloud-status{color:#d1e0d8}
-.collection-stage .stat-cards>div,.collection-stage .league-card,.collection-stage .account-settings{background:#173e49;border-color:#cbdcce40;color:#fff5df}
-.collection-stage .stat-cards b,.collection-stage .stat-cards span,.collection-stage .league-card b,.collection-stage .league-card strong,.collection-stage .account-settings h2,.collection-stage .account-settings p,.collection-stage .account-settings label{color:inherit}
-.collection-stage .league-card small,.collection-stage .auth-account small{color:#d1e0d8}.collection-stage .account-settings .text-button{color:#f1d89f}
+.collection-stage .album-piece-dots i{background:#0e303b;color:#b8cdc4;border-color:#cbdcce40}.collection-stage .album-piece-dots i.earned{background:#558367;color:#fff4d1;border-color:#a9c391}.collection-stage .auth-profile-handle,.collection-stage .progress-cloud-status{color:#d1e0d8}
+.collection-stage .account-settings{background:#173e49;border-color:#cbdcce40;color:#fff5df}
+.collection-stage .account-settings h2,.collection-stage .account-settings p,.collection-stage .account-settings label{color:inherit}
+.collection-stage .auth-account small{color:#d1e0d8}.collection-stage .account-settings .text-button{color:#f1d89f}
 .collection-stage .story-collection-heading h2{color:#fff5df}.collection-stage .story-collection-heading p{color:#d1e0d8}.collection-stage .story-collection-heading>span{background:#173e49;color:#f1d89f}
 .native-shell .collection-stage .story-card{background:#173e49;border:1px solid #cbdcce40;border-radius:16px;color:#fff5df;box-shadow:none}
 .collection-stage .story-card-copy h3{color:#fff5df}.collection-stage .story-card-copy p,.collection-stage .story-card-copy small{color:#d1e0d8}.collection-stage .story-card-copy>span{color:#f1d89f}
@@ -63,4 +60,4 @@
 .collection-stage .release-album-card .release-stamp p,.collection-stage .release-album-card .release-stamp small{color:#d1e0d8}
 .collection-stage .release-album-card .release-stamp .eyebrow,.collection-stage .release-album-card .release-stamp-art,.collection-stage .release-album-card .release-stamp-loading{color:#f1d89f}
 .collection-stage .button.secondary{background:#e8eedf;color:#234a3e;border-color:#c3d4bd}
-.collection-stage .stat-cards svg,.collection-stage .league-card>svg,.collection-stage .account-settings h2>svg{color:#efd495}
+.collection-stage .account-settings h2>svg{color:#efd495}

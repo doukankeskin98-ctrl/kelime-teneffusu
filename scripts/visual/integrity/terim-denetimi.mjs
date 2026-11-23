@@ -15,7 +15,7 @@ const args=process.argv.slice(2);const opt=k=>{const i=args.indexOf(k);if(i<0)re
 const KAYNAK=opt('--kaynak'),YOL=opt('--yolculuk'),RAPOR=opt('--icerik-raporu');
 if(args.length!==2||args.some(a=>a.startsWith('--'))||!['320','393'].includes(args[1]))throw new Error('Ölçüm klasörü, 320/393 ve geçerli seçenekler gerekli');
 const [dir,W]=args;
-const ZORUNLU=['01-ana','02-yolculugum','03-52-dunya','04-albumlerim','05-album-parca','06-profil','07-basarimlar','08-yildiz-bilgi','09-ayarlar','10-ses-duzeyi','11-diger-ayarlar','11b-erisilebilirlik','11c-tahta-renkleri','11d-kullanim-verileri','12-nasil-oynanir','13-destek','14-gizlilik','15-gunluk','16-arena','17-arena-kurallar','18-arena-siralama','19-arena-arkadas','20-arena-hizli','21-arena-meydan','22-arkadaslarim','23-diger-oyunlar','24-kisa-oyunlar','25-hikayeler','26-diger-bulmacalar','27-cizerek','28-oyun-121','29-oyun-menu','30-ipucu','31-profil-olustur'];
+const ZORUNLU=['01-ana','02-yolculugum','03-52-dunya','04-albumlerim','05-album-parca','06-profil','07-basarimlar','08-yildiz-bilgi','09-ayarlar','10-ses-duzeyi','11-profil-yolculuk','11b-erisilebilirlik','11c-tahta-renkleri','11d-kullanim-verileri','12-nasil-oynanir','13-destek','14-gizlilik','15-gunluk','16-arena','17-arena-kurallar','18-arena-siralama','19-arena-arkadas','20-arena-hizli','21-arena-meydan','22-arkadaslarim','23-diger-oyunlar','24-kisa-oyunlar','25-hikayeler','26-diger-bulmacalar','27-cizerek','28-oyun-121','29-oyun-menu','30-ipucu','31-profil-olustur'];
 // [desen, gerekçe, yalnız şu ekranlarda (isteğe bağlı)]
 const KURAL=[
  [/(?<!\p{L})ke(?:şif(?:ler\p{L}*)?|şf(?:i(?:ni?n?|ne|nde|n)?|e))(?!\p{L})/iu,'"keşif" bölüm anlamında kullanılmaz; "bölüm" / "ek bölüm" de'],

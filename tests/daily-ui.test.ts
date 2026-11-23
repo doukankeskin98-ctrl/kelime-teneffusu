@@ -209,10 +209,15 @@ it('simple settings keep detail, support and guest account deletion reachable wi
  const p=progress.emptyProgress();p.guideDone=true;const h=await app(undefined,{query:'',initial:p});
  const click=(label:string)=>{const n=nodes(h.tree).find(n=>n.type==='button'&&n.props['aria-label']===label);assert(n,label);n.props['onClick']();h.paint();};
  try{
-  const original=JSON.stringify(h.find('Explore').props['progress']);click('Ayarları aç');assert.equal(h.find('Modal').props['className'],'settings-home');
-  h.find('SettingsHome').props['onMore']();h.paint();assert.equal(h.find('Modal').props['title'],'Diğer ayarlar');assert(h.find('GameSettings'));h.find('Modal').props['footer'].props['onClick']();h.paint();
-  h.find('SettingsHome').props['onSupport']();h.paint();assert(h.find('SupportReport'));h.find('Modal').props['footer'].props['onClick']();h.paint();
-  h.find('SettingsHome').props['onPrivacy']();h.paint();assert.equal(h.find('DeleteAccount').props['owner'],'alice');assert.equal(h.find('DeleteAccount').props['kind'],'guest');assert(h.find('PrivacyInfo'));h.find('Modal').props['onClose']();h.paint();
+  const original=JSON.stringify(h.find('Explore').props['progress']);click('Ayarları aç');assert.equal(h.find('Window').props['className'],'preferences-window');
+  const settingsSource=readFileSync('components/game/SettingsHome.tsx','utf8');
+  for(const section of ['usage','appearance'])assert(settingsSource.includes(`<GameSettings {...settings} section="${section}"`));
+  h.find('SettingsHome').props['onSupport']();h.paint();assert(h.find('SupportReport'));h.find('Window').props['footer'].props['onClick']();h.paint();
+  h.find('SettingsHome').props['onPrivacy']();h.paint();assert.equal(h.find('DeleteAccount').props['owner'],'alice');assert.equal(h.find('DeleteAccount').props['kind'],'guest');const privacy=h.find('PrivacyInfo');
+  assert.equal(privacy.props['analytics'],false);
+  privacy.props['onAnalytics'](true);h.paint();assert.equal(h.find('PrivacyInfo').props['analytics'],true);
+  h.find('PrivacyInfo').props['onAnalytics'](false);h.paint();
+  h.find('Window').props['onClose']();h.paint();
   assert.equal(JSON.stringify(h.find('Explore').props['progress']),original);click('Ayarları aç');assert(h.find('SettingsHome'));h.find('SettingsHome').props['onHelp']();h.paint();assert(h.find('Help'));
  }finally{h.close();}
 });

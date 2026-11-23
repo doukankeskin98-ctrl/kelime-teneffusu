@@ -7,7 +7,7 @@ import {tmpdir} from 'node:os';import path from 'node:path';import {preview} fro
 import {launch,sleep} from '../chrome.mjs';
 const fixtures=JSON.parse(execFileSync(process.execPath,['--experimental-strip-types','--experimental-transform-types','--no-warnings','scripts/visual/integrity/chapter-fixtures.mts'],{encoding:'utf8'}));
 const out=path.resolve(process.env.EVIDENCE_DIR??'outputs/integrity/chapters');mkdirSync(out,{recursive:true});
-const build=mkdtempSync(path.join(tmpdir(),'kt-chapter-build-'));cpSync('dist-mobile',build,{recursive:true});
+const build=mkdtempSync(path.join(tmpdir(),'kt-chapter-build-'));cpSync(process.env.KT_LAYOUT_BUILD??'dist-mobile',build,{recursive:true});
 const server=await preview({configFile:false,build:{outDir:build},preview:{host:'127.0.0.1',port:0},logLevel:'error'});
 let page;const report=[];const url='http://127.0.0.1:'+server.httpServer.address().port;
 async function until(expr){for(let i=0;i<100;i++){if(await page.evaluate(expr))return;await sleep(40);}throw Error(expr);}

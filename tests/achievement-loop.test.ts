@@ -25,6 +25,8 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import * as achievement from '../lib/game/achievement-view.ts';
 import * as engine from '../lib/game/engine.ts';
 import {JOURNEYS,JOURNEY_BONUSES,journeyById,journeyBoard} from '../lib/game/content.ts';
+import * as progressModule from '../lib/game/progress.ts';
+import * as authoredModule from '../lib/game/authored-journey.ts';
 import {emptyProgress,cleanSave,type Progress} from '../lib/game/progress.ts';
 import {discoveryRewards,nextJourneyAfter} from '../lib/game/discovery.ts';
 import {nextDiscovery} from '../lib/game/next-discovery.ts';
@@ -104,7 +106,8 @@ describe('real home and victory markup',()=>{
 // New home/result render actual collection pieces; these assertions are not pixel QA.
 const riddleShelf=component('components/game/RiddleShelf.tsx',{});
 const scene=component('components/game/JourneyScene.tsx',{});
-const numberedHome=component('components/game/JourneyHome.tsx',{'./JourneyScene':scene,'./WorldArt':art,'./AchievementLoop':loop,'./RiddleShelf':riddleShelf,'./StoryExperience':{StoryShelf:()=>null}});
+const ui=component('components/ui/GameUI.tsx',{});
+const numberedHome=component('components/game/JourneyHome.tsx',{'../ui/GameUI':ui,'@/lib/game/progress':progressModule,'@/lib/game/authored-journey':authoredModule,'./JourneyScene':scene,'./WorldArt':art,'./AchievementLoop':loop,'./RiddleShelf':riddleShelf,'./StoryExperience':{StoryShelf:()=>null}});
 const numberedResult=component('components/game/JourneyResult.tsx',{'./Discovery':collection,'./AchievementLoop':loop});
 describe('numbered journey home and real result',()=>{
  it('shows one primary action and chapter access without duplicate menu shortcuts',()=>{

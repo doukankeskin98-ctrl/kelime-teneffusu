@@ -74,17 +74,10 @@ html[data-reduce-motion=true] .berrak-landing .stage-play,.native-shell:has(dial
 .native-shell.scene-subpage .main-content{padding-bottom:max(20px,env(safe-area-inset-bottom))}
 .native-shell .native-topbar:has(+.main-content .arena-stage){background:transparent}
 .native-shell.native-profil,.auth-action-page{background:#f3f1fa;color:var(--berrak-ink)}
-.native-shell .arena-stage-art>div,.scene-subpage .subpage-scenery>div{background:linear-gradient(#19182e77,#211e3866 42%,#1d1833ef)}
-.native-shell .arena-stage-heading h1,.native-shell .subpage-heading h1{color:white}
-.native-shell .arena-stage-emblem>svg{color:var(--berrak-gold)}
-.native-shell .arena-stage-dock .stage-play,
+.scene-subpage .subpage-scenery>div{background:linear-gradient(#19182e77,#211e3866 42%,#1d1833ef)}
+.native-shell .subpage-heading h1{color:white}
 :is(.native-shell,.game-app,.auth-action-page) .button.primary{border:0;border-radius:26px;background:var(--berrak-cta);color:white;box-shadow:0 3px 0 #095529;font-weight:800}
-.native-shell .arena-stage-dock .stage-play span small{color:white}
 :is(.native-shell,.game-app,.auth-action-page) :is(.button.secondary,.button.gold){border:0;border-radius:24px;background:var(--berrak-ui);box-shadow:0 3px 0 var(--berrak-ui-dark);color:white;font-weight:750}
-.native-shell .arena-stage-dock :is(.arena-friend-action,.arena-social-actions button,.arena-secondary-actions button){border:1px solid #ffffff50;color:var(--berrak-ink);background:var(--berrak-hud);border-radius:16px;text-shadow:none}
-.native-shell .arena-stage-dock :is(.arena-friend-action,.arena-social-actions button,.arena-secondary-actions button) svg{color:var(--berrak-ui)}
-.native-shell .arena-stage-dock :is(.arena-friend-action,.arena-social-actions button) small{color:var(--berrak-muted)}
-.native-shell .arena-social-actions,.native-shell .arena-secondary-actions{gap:8px}
 .native-shell :is(.subpage-heading,.arena-room-heading)>p{color:#f8f5ff}
 :is(.native-shell,.game-app,.auth-action-page){
  --ink:var(--berrak-ink);--muted:var(--berrak-muted);--green:var(--berrak-ui);--green-dark:var(--berrak-ui-dark);
@@ -99,13 +92,13 @@ html[data-reduce-motion=true] .berrak-landing .stage-play,.native-shell:has(dial
 .native-shell :is(.daily-rules,.week-dots,.friend-card,.invite-ticket,.daily-week,.profile-header,.social-toolbar,.rival-rank) svg{color:var(--berrak-ui)}
 .native-shell .week-dots .done,.native-shell .social-tabs button.active{background:var(--berrak-ui);color:white}
 .native-shell .week-dots .done svg{color:white}
-.native-shell .extra-games .event-menu button,.game-dialog.game-tools-modal .event-menu button{
+.game-dialog.game-tools-modal .event-menu button{
  padding:12px 14px;min-height:58px;color:var(--berrak-ink);background:var(--berrak-surface);border:1px solid var(--berrak-line);border-radius:16px;box-shadow:none
 }
-.native-shell .extra-games .event-menu,.game-dialog.game-tools-modal .event-menu{display:grid;gap:8px;border:0}
-.native-shell .extra-games .event-menu svg,.game-dialog.game-tools-modal .event-menu svg{color:var(--berrak-ui)}
-.native-shell .extra-games .event-menu b,.game-dialog.game-tools-modal .event-menu b{color:var(--berrak-ink)}
-.native-shell .extra-games .event-menu small,.game-dialog.game-tools-modal .event-menu small{color:var(--berrak-muted);font-size:13px}
+.game-dialog.game-tools-modal .event-menu{display:grid;gap:8px;border:0}
+.game-dialog.game-tools-modal .event-menu svg{color:var(--berrak-ui)}
+.game-dialog.game-tools-modal .event-menu b{color:var(--berrak-ink)}
+.game-dialog.game-tools-modal .event-menu small{color:var(--berrak-muted);font-size:13px}
 .native-shell .arena-room-lobby{background:var(--berrak-deep);color:white;border-color:var(--berrak-line)}
 .native-shell .arena-room-actions{background:var(--berrak-deep)}
 .native-shell .arena-roster>*,.native-shell .match-standings li,.native-shell .arena-room-summary{background:#332952;color:white;border-color:#695a86}
@@ -153,20 +146,19 @@ html[data-reduce-motion=true] .berrak-landing .stage-play,.native-shell:has(dial
 
 .native-shell .game-boot,.game-app .published-play-loading{background:var(--berrak-deep);color:white}
 :is(.game-dialog,.native-shell,.game-app,.auth-action-page) :focus-visible{outline:3px solid var(--berrak-ui);outline-offset:2px}
-dialog.modal.game-dialog.game-tools-modal,dialog.modal.game-dialog.settings-home{
+dialog.modal.game-dialog.game-tools-modal{
  color:var(--berrak-ink);background:var(--berrak-surface);border:1px solid var(--berrak-line);border-radius:22px;box-shadow:0 15px 48px #130e314d;
  --ink:var(--berrak-ink);--muted:var(--berrak-muted);--surface:var(--berrak-surface);--green:var(--berrak-ui);
 }
 dialog.modal.game-dialog::backdrop{background:rgba(21,17,42,.67)}
-dialog.modal.game-dialog.game-tools-modal .modal-head,dialog.modal.game-dialog.settings-home .modal-head{border-color:var(--berrak-line)}
-dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) .modal-head h2{color:var(--berrak-ink);text-shadow:none}
-dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) .modal-head .icon-button{background:var(--berrak-wash);color:var(--berrak-ui-dark);border:none;box-shadow:none}
-dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) :is(.setting-row,.comfort-setting,.game-disclosure-trigger,.settings-links button,.game-settings label,.settings-group summary,.settings-main-actions,.tools-context,.reward-total,.support-report,.privacy-copy,.blocked-players,.game-note,.support-kinds legend){color:var(--berrak-ink);border-color:var(--berrak-line);text-shadow:none}
+dialog.modal.game-dialog.game-tools-modal .modal-head{border-color:var(--berrak-line)}
+dialog.modal.game-dialog.game-tools-modal .modal-head h2{color:var(--berrak-ink);text-shadow:none}
+dialog.modal.game-dialog.game-tools-modal .modal-head .icon-button{background:var(--berrak-wash);color:var(--berrak-ui-dark);border:none;box-shadow:none}
+dialog.modal.game-dialog.game-tools-modal :is(.setting-row,.comfort-setting,.game-disclosure-trigger,.settings-links button,.game-settings label,.settings-group summary,.settings-main-actions,.tools-context,.reward-total,.support-report,.privacy-copy,.blocked-players,.game-note,.support-kinds legend){color:var(--berrak-ink);border-color:var(--berrak-line);text-shadow:none}
 dialog.modal.game-dialog :is(.game-settings,.settings-home-content,.settings-links) :is(small,em,p,.settings-version){color:var(--berrak-muted);font-size:13px}
 dialog.modal.game-dialog :is(.setting-row,.comfort-setting,.settings-links button)>svg{color:var(--berrak-ui)}
 dialog.modal.game-dialog :is(.setting-row,.comfort-setting) .switch{background:#777e90;border-color:#6d7588}
 dialog.modal.game-dialog :is(.setting-row,.comfort-setting)[aria-checked=true] .switch,dialog.modal.game-dialog .game-settings .switch.on{background:var(--berrak-ui);border-color:var(--berrak-ui-dark)}
-dialog.modal.game-dialog .settings-links button{min-height:44px}
 dialog.modal.game-dialog.game-tools-modal .play-tools-sheet>button,dialog.modal.game-dialog :is(.free-theme-list,.free-level-list,.support-kinds,.chapter-source-switch,.profile-entry) button,dialog.modal.game-dialog .palette-options button{
  color:var(--berrak-ink);background:var(--berrak-wash);border:1px solid var(--berrak-line);border-radius:14px
 }
@@ -187,9 +179,9 @@ dialog.modal.game-dialog .journey-map-dots i.earned,dialog.modal.game-dialog .al
 .auth-action-page .brand-mark,.auth-panel .brand-mark,.game-dialog .auth-tabs .selected{background:var(--berrak-ui);color:white}
 
 /* Every sheet keeps a solid reading surface, including sheets opened from a scene. */
-dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) .modal-head{background:var(--berrak-ui);border-bottom:0}
-dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) .modal-head h2{color:white}
-dialog.modal.game-dialog:is(.game-tools-modal,.settings-home) .modal-head .icon-button{background:white;color:var(--berrak-ui-dark)}
+dialog.modal.game-dialog.game-tools-modal .modal-head{background:var(--berrak-ui);border-bottom:0}
+dialog.modal.game-dialog.game-tools-modal .modal-head h2{color:white}
+dialog.modal.game-dialog.game-tools-modal .modal-head .icon-button{background:white;color:var(--berrak-ui-dark)}
 dialog.modal.game-dialog.game-tools-modal .journey-map-world .journey-map-world-copy{background:linear-gradient(#21183355,#211833e8 64%);color:white}
 dialog.modal.game-dialog.game-tools-modal .journey-map-world-copy :is(strong,span,small){color:white}
 dialog.modal.game-dialog.arena-entry-sheet .room-entry-sheet :is(p,label,small,.join-divider){color:var(--berrak-muted)}
@@ -198,14 +190,10 @@ dialog.modal.game-dialog.arena-entry-sheet .arena-round-preference .switch{backg
 dialog.modal.game-dialog.arena-entry-sheet .arena-round-preference .switch.on{background:var(--berrak-ui)}
 .native-shell .collection-stage-art>div{background:linear-gradient(#231d40aa,#231d40ed 50%,var(--berrak-deep))}
 .native-shell .collection-stage .collection-heading :is(h1,p){color:white}
-.native-shell .collection-tabs button{color:white;border:1px solid #ffffff63}
-.native-shell .collection-tabs button[aria-selected=true]{color:white;background:var(--berrak-ui);border-color:var(--berrak-ui)}
-.native-shell .collection-stage .collection-player :is(.profile-header,.account-settings,.stat-cards>div,.league-card),
 .native-shell .collection-stage .achievement-row>div{background:var(--berrak-surface);border:1px solid var(--berrak-line);color:var(--berrak-ink)}
-.native-shell .collection-stage .collection-player :is(.profile-rank,.auth-profile-handle,.progress-cloud-status,.stat-cards span,.account-settings p,.league-card small){color:var(--berrak-muted)}
 .native-shell .collection-stage .achievement-row>div.earned{background:var(--berrak-wash);color:var(--berrak-ui-dark);border-color:var(--berrak-line)}
 
-@media(min-height:750px) and (orientation:portrait){
+@media(min-height:750px) and (min-width:760px) and (orientation:portrait){
  .berrak-orbit{position:relative;top:-4.8svh}
  .berrak-shortcut{position:relative;top:-1.2svh}
  .berrak-enter{position:relative;top:-7.8svh}
@@ -215,9 +203,7 @@ dialog.modal.game-dialog.game-tools-modal .journey-albums .discovery-album-card,
 dialog.modal.game-dialog.game-tools-modal .journey-albums .release-album-card{color:var(--berrak-ink);background:var(--berrak-surface);border-color:var(--berrak-line)}
 dialog.modal.game-dialog.game-tools-modal .journey-albums :is(.discovery-album-card,.release-album-card) :is(h3,b,strong){color:var(--berrak-ink)}
 dialog.modal.game-dialog.game-tools-modal .journey-albums :is(.discovery-album-card,.release-album-card) :is(p,small,.eyebrow,.text-button,time){color:var(--berrak-muted)}
-dialog.modal.game-dialog.game-tools-modal .support-report>label,.native-shell .collection-stage .collection-player .profile-header h2{color:var(--berrak-ink)}
-.native-shell .collection-stage .collection-stats .stat-cards svg{color:var(--berrak-ui)}
-.native-shell .collection-stage .collection-player .progress-cloud-status{color:var(--berrak-muted)}
+dialog.modal.game-dialog.game-tools-modal .support-report>label{color:var(--berrak-ink)}
 
 .game-app:has(.sprint-intro){background:var(--berrak-wash)}
 .game-app .sprint-intro{color:var(--berrak-ink)}
@@ -237,12 +223,6 @@ dialog.modal.game-dialog.game-tools-modal .support-report>label,.native-shell .c
 .game-app .scenic-outcome.scene-result:not(.berrak-result) .modal-head{background:transparent}
 .game-app .scenic-outcome.scene-result:not(.berrak-result) .modal-head h2{color:var(--berrak-gold)}
 .game-app .scenic-outcome.scene-result:not(.berrak-result) .modal-actions{background:var(--berrak-deep)}
-
-dialog.modal.game-dialog.settings-home{padding:0;overflow:hidden}
-dialog.modal.game-dialog.settings-home>.modal-head{position:relative;display:flex;align-items:center;justify-content:flex-start;min-height:60px;margin:0;padding:8px 64px 8px 18px}
-dialog.modal.game-dialog.settings-home>.modal-head h2{font-size:24px;text-align:start}
-dialog.modal.game-dialog.settings-home>.modal-head .icon-button{right:8px;top:50%;transform:translateY(-50%)}
-dialog.modal.game-dialog.settings-home>.modal-content{padding:16px;overflow:auto}
 
 .install-setting{margin-top:12px}
 .install-setting p{color:var(--berrak-muted);margin:8px 0 0;line-height:1.45}
@@ -285,31 +265,26 @@ dialog.modal.game-dialog .game-settings :is(.palette-options button,.sound-previ
 }
 .native-shell .section-heading h1 {margin:0;color:white;font:800 clamp(26px,7vw,34px)/1.12 var(--berrak-font)}
 .native-shell .section-heading p {margin:5px 0 0;color:#fff;font-size:15px;line-height:1.35;text-shadow:0 1px 4px #191228}
-.native-shell .arena-stage-dock .arena-round-preference,.game-dialog .room-entry-sheet .arena-round-preference {
+.game-dialog .room-entry-sheet .arena-round-preference {
   padding:10px 14px;min-height:48px;border:1px solid var(--berrak-line);border-radius:var(--berrak-radius);
   background:var(--berrak-surface);box-shadow:0 3px 0 #201d4818;text-shadow:none;
 }
 :is(.arena-stage-dock,.room-entry-sheet) .arena-round-preference b {color:var(--berrak-ink)}
 :is(.arena-stage-dock,.room-entry-sheet) .arena-round-preference small {color:var(--berrak-muted)}
 .native-shell .progress-cloud-status .cloud-status {background:var(--berrak-surface);color:var(--berrak-muted);border-radius:12px;padding:8px 12px;opacity:1}
-dialog.modal.game-dialog .settings-links button>span {flex:1}
-dialog.modal.game-dialog.settings-home .settings-main-actions {margin-top:12px}
-dialog.modal.game-dialog:is(.settings-home,.game-tools-modal) .button.primary {
+dialog.modal.game-dialog.game-tools-modal .button.primary {
   background:var(--berrak-ui-dark);color:white;border:0;box-shadow:0 3px 0 #382278;
 }
 dialog.modal.game-dialog.arena-rankings-sheet :is(.arena-result-next,.ranking-empty,p,small) {color:var(--berrak-muted)}
 dialog.modal.game-dialog.arena-rankings-sheet .rankings {background:var(--berrak-surface);color:var(--berrak-ink);box-shadow:none}
 dialog.modal.game-dialog.arena-rankings-sheet .rankings .section-title {display:none}
 
-.native-shell.native-profil.native-scene .main-content,
-.native-shell .main-content > .arena-stage:has(> .section-heading) {padding-top:12px;padding-inline:20px}
+.native-shell.native-profil.native-scene .main-content {padding-top:12px;padding-inline:20px}
 @media(max-width:380px){
- .native-shell.native-profil.native-scene .main-content,
- .native-shell .main-content > .arena-stage:has(> .section-heading) {padding-inline:14px}
+ .native-shell.native-profil.native-scene .main-content {padding-inline:14px}
 }
 @media(min-width:760px){
- .native-shell.native-profil.native-scene .main-content,
- .native-shell .main-content > .arena-stage:has(> .section-heading) {padding-top:24px}
+ .native-shell.native-profil.native-scene .main-content {padding-top:24px}
 }
 .native-shell :is(.friends-page,.profile-page,.daily-studio-copy) .button.primary:not([data-start-play]) {
  background:var(--berrak-ui-dark);color:white;box-shadow:0 3px 0 #382278;
@@ -345,11 +320,9 @@ dialog.modal.game-dialog.game-tools-modal.help-sheet .button.primary:not(:last-c
 .native-shell .challenge-create-card .button.primary:disabled {
  background:#e1e3ec; color:#454d60; border-color:#a3a8b7; box-shadow:none; opacity:1;
 }
-dialog.modal.game-dialog.reward-info .modal-content > p,
 dialog.modal.game-dialog.album-detail-sheet p.collection-dialog-intro {
  color:var(--berrak-muted);
 }
-dialog.modal.game-dialog.reward-info .modal-content dt {color:var(--berrak-ink)}
 dialog.modal.game-dialog .journey-map-dots > span {font-size:13px}
 dialog.modal.game-dialog.game-tools-modal .journey-map-world-copy .journey-map-dots .now {
  color:var(--berrak-gold-ink); background:var(--berrak-gold);
@@ -382,25 +355,17 @@ dialog.modal.game-dialog.game-tools-modal :is(
  .challenge-create-copy label > small,.social-mode-grid small,.social-empty > small) {font-size:13px}
 .native-shell :is(input,textarea):not([type=checkbox]):not([type=range]),
 dialog.modal.game-dialog :is(input,textarea):not([type=checkbox]):not([type=range]) {font-size:16px}
-dialog.modal.game-dialog.game-tools-modal .account-danger .button.danger,
-dialog.modal.game-dialog.account-erasure .button.danger {
- background:white; color:var(--berrak-danger); border:1px solid var(--berrak-danger);
-}
-dialog.modal.game-dialog.account-erasure .button.danger:not(:disabled) {background:var(--berrak-danger);color:white}
-dialog.modal.game-dialog.account-erasure .button.danger:disabled {
- background:#e1e3ec; color:#454d60; border-color:#a3a8b7; opacity:1;
-}
 
 .berrak-orbit {background:radial-gradient(rgba(38,32,60,.82),rgba(22,18,42,.85))}
 .berrak-orbit svg {pointer-events:none}
 dialog.modal.game-dialog.album-detail-sheet .collection-piece-list small {color:var(--berrak-muted)}
 
 /* Bütünlük: shared controls, stable panel origin and readable selection rows. */
-dialog.modal.game-dialog:is(.game-tools-modal,.settings-home):not(.scene-result){
+dialog.modal.game-dialog.game-tools-modal:not(.scene-result){
  margin:0 auto;inset:calc(env(safe-area-inset-top,0px) + 16px) 0 auto;transform:none;
  max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 32px);
 }
-dialog.modal.game-dialog:is(.game-tools-modal,.settings-home)>.modal-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;}
+dialog.modal.game-dialog.game-tools-modal>.modal-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;}
 dialog.modal.game-dialog :is(.setting-row,.comfort-setting,.game-disclosure-trigger,.settings-links button){padding-inline:16px;gap:12px;min-height:52px;font-size:17px;font-weight:600;}
 dialog.modal.game-dialog :is(.setting-row,.comfort-setting) b{font-size:17px;font-weight:600;}
 dialog.modal.game-dialog :is(.comfort-setting,.setting-row)[aria-checked=true] .switch::after{transform:translateX(20px)}
@@ -424,8 +389,6 @@ dialog.modal.game-dialog :is(.comfort-setting,.setting-row)[aria-checked=true] .
 /* Labels may grow; the four established shortcut centres must not move. */
 .berrak-shortcut[aria-label="Oyunlar"]{width:max(var(--shortcut),51px);min-width:var(--shortcut);grid-template-columns:minmax(0,1fr)}
 .berrak-shortcut>b{white-space:nowrap}
-
-dialog.modal.game-dialog.settings-home .sound-slider-row label{font-size:16px;line-height:1.4}
 .native-shell .option-picker-trigger:disabled{opacity:1;color:var(--berrak-muted);background:var(--berrak-wash)}
 
 dialog.modal.game-dialog:is(.settings-home,.settings-sheet)>.modal-head h2{font-size:22px;font-weight:800;}

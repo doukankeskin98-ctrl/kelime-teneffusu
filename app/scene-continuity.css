@@ -37,9 +37,8 @@
 .scene-subpage .recent-challenge{background:#fff9e9;color:#213e35;border:0;box-shadow:none;gap:10px}.scene-subpage .recent-challenge>span:nth-child(2){min-width:0;flex:1}.scene-subpage .recent-challenge small{font-size:12px}.scene-subpage .recent-challenge strong{font-size:14px;white-space:nowrap}
 .scene-subpage .daily-studio-card{display:block;overflow:hidden}.scene-subpage .daily-studio-copy h2{margin:12px 0}.scene-subpage .daily-studio-copy .button{width:100%;min-height:50px}.scene-subpage .block-note{font-size:13px;line-height:1.5;color:#50665a}
 .scene-subpage .daily-week{margin:18px 0 26px;padding:18px;gap:15px;flex-wrap:wrap}.scene-subpage .daily-week small{font-size:12px;color:#50665a}.scene-subpage .week-dots{gap:7px}
-.scene-subpage .extra-games{width:100%;max-width:none;margin:0;padding:0}
 .scene-subpage .event-menu{border-top:1px solid #d4e2d740}.scene-subpage .event-menu button{color:#f4f3df;background:transparent;border:0;border-bottom:1px solid #d4e2d740;border-radius:0;box-shadow:none;padding:17px 4px;min-height:78px}
-.scene-subpage .event-menu button>svg{color:#f1d38e;width:24px;flex-shrink:0}.scene-subpage .event-menu b{font-size:17px}.scene-subpage .event-menu small{color:#c9ddd4;font-size:13px;line-height:1.4}.scene-subpage .extra-games>.text-button{color:#f5dda4;margin-top:18px;min-height:48px}
+.scene-subpage .event-menu button>svg{color:#f1d38e;width:24px;flex-shrink:0}.scene-subpage .event-menu b{font-size:17px}.scene-subpage .event-menu small{color:#c9ddd4;font-size:13px;line-height:1.4}
 .scene-subpage .error-box{color:#702d25;background:#ffede6}.scene-subpage .success-box{color:#204c38;background:#e3f0df}
 .scene-subpage .game-note{color:#3b594b;background:#edf1e4;font-size:13px}.scene-subpage .game-note p{font-size:13px;line-height:1.5}
 .scene-subpage .modal{color:var(--ink)}
@@ -50,13 +49,13 @@
 .auth-panel .auth-remember,.auth-panel .auth-forgot,.auth-panel .auth-legal,.auth-panel .auth-footer,.auth-panel .auth-note{font-size:13px!important;line-height:1.5}
 .native-shell .comfort-setting small,.native-shell .stage-play small{font-size:12px}
 @media(max-width:380px){.scene-subpage .main-content{padding-inline:14px}.scene-subpage .social-mode-grid{grid-template-columns:1fr}.scene-subpage .social-tabs button{font-size:12px}.scene-subpage .challenge-create-copy,.scene-subpage .friend-card,.scene-subpage .daily-studio-copy{padding:16px}.subpage-heading h1{font-size:27px}.first-play-guide{min-height:64px}}
-@media(min-width:760px){.scene-subpage .main-content{padding-top:24px}.scene-subpage .challenge-create-grid{grid-template-columns:1fr 1fr}.scene-subpage .extra-games-menu{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}}
+@media(min-width:760px){.scene-subpage .main-content{padding-top:24px}.scene-subpage .challenge-create-grid{grid-template-columns:1fr 1fr}}
 
 .auth-panel .auth-options label,.auth-panel .auth-options .text-button,.auth-panel .auth-verify .text-button{font-size:14px;min-height:44px}
 .auth-panel .auth-field label{font-size:14px;color:#415b4d}.auth-panel .auth-field>small,.auth-panel .auth-privacy{font-size:12px!important;color:#586c5d}
 .auth-panel .auth-error,.auth-panel .auth-notice{font-size:14px;line-height:1.5}.auth-panel .auth-tabs button{min-height:44px;font-size:15px}.auth-panel .auth-field input{font-size:16px}
 
-.safety-trigger{width:44px;min-width:44px;height:44px}.team-list li{flex-wrap:wrap}.arena-roster li{position:relative;padding-right:50px}.arena-roster li>.safety-trigger{position:absolute;right:2px;top:50%;transform:translateY(-50%)}.blocked-players li{display:flex;align-items:center;justify-content:space-between;gap:12px}.blocked-players li span{overflow-wrap:anywhere}.blocked-players .text-button{min-height:44px;flex-shrink:0}.account-danger{margin-top:24px;border-top:1px solid #becabb;padding-top:20px}.account-danger .danger{color:#913928;border-color:#b76d5b}.account-danger p{font-size:14px;line-height:1.6}.account-danger label{display:flex;align-items:flex-start;gap:10px;line-height:1.5}.account-danger input[type=checkbox]{width:22px;min-height:22px;flex-shrink:0}
+.safety-trigger{width:44px;min-width:44px;height:44px}.team-list li{flex-wrap:wrap}.arena-roster li{position:relative;padding-right:50px}.arena-roster li>.safety-trigger{position:absolute;right:2px;top:50%;transform:translateY(-50%)}.blocked-players li{display:flex;align-items:center;justify-content:space-between;gap:12px}.blocked-players li span{overflow-wrap:anywhere}.blocked-players .text-button{min-height:44px;flex-shrink:0}
 
 .privacy-copy h3{font-size:18px;margin:22px 0 8px}.privacy-copy p{font-size:15px;line-height:1.65;color:#415b4d}.privacy-copy h3:first-child{margin-top:0}
 

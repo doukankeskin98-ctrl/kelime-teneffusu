@@ -71,10 +71,26 @@ export function menuMetrics() {
           (/hidden|clip/.test(css.overflowY) && css.webkitLineClamp!=='none' && el.scrollHeight>el.clientHeight+2)});
     }
   }
-  for(const el of document.querySelectorAll('button,a[href],[role=button],summary,[role=tab],input,select')){
+  const controlSelector='button,a[href],[role=button],summary,[role=tab],input,select';
+  function touchBox(el,box){
+    if(box.width>=44&&box.height>=44)return rect(box);
+    // Test a centered 44 pt square against the browser's actual hit map. This also
+    // detects overlapping neighbors and clipped pseudo-elements on compact buttons.
+    const left=box.left+(box.width-44)/2,top=box.top+(box.height-44)/2;
+    if(left<0||top<0||left+44>vw||top+44>vh)return rect(box);
+    for(let y=0;y<44;y++)for(let x=0;x<44;x++){
+      const hit=document.elementFromPoint(left+x+.5,top+y+.5);
+      if(hit?.closest(controlSelector)!==el)return rect(box);
+    }
+    for(const dx of [.25,22,43.75])for(const dy of [.25,22,43.75]){
+      if(document.elementFromPoint(left+dx,top+dy)?.closest(controlSelector)!==el)return rect(box);
+    }
+    return [left,top,44,44];
+  }
+  for(const el of document.querySelectorAll(controlSelector)){
     const box=el.getBoundingClientRect(),css=style(el);
     if(!visible(el)||!samplePoints(el,box).length)continue;
-    btns.push({t:(el.getAttribute('aria-label')||el.innerText||el.value||'').trim().slice(0,36),r:rect(box),bg:css.backgroundColor,
+    btns.push({t:(el.getAttribute('aria-label')||el.innerText||el.value||'').trim().slice(0,36),r:rect(box),hit:touchBox(el,box),bg:css.backgroundColor,
       bgi:css.backgroundImage==='none'?'':css.backgroundImage,bd:css.borderTopWidth+' '+css.borderTopColor,
       rad:css.borderTopLeftRadius,fs:css.fontSize,fw:css.fontWeight,cell:!!el.closest('[data-cell]')});
   }

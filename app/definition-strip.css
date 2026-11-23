@@ -1,0 +1,42 @@
+.definition-strip{--tile-w:26px;--tile-h:30px;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:4px;align-content:stretch;width:100%;height:calc(var(--frame-list,80px) + 8px);padding:6px 6px 8px;background:white;color:#191630;border-radius:0 0 18px 18px;box-sizing:border-box;touch-action:pan-y}
+.definition-question,.definition-answer{display:grid;align-items:center;min-width:0;min-height:0}
+.definition-question{grid-template-columns:36px minmax(0,1fr) 36px}
+.definition-question button,.definition-list{display:grid;place-items:center;padding:0;border:0;border-radius:12px;background:transparent;color:#5030a1;height:40px;width:36px;cursor:pointer}
+.definition-question button:disabled{opacity:.36;cursor:default}
+.definition-question svg,.definition-list svg{width:20px;height:20px}
+.definition-copy{font:650 17px/21px var(--font,-apple-system,system-ui,sans-serif);padding:0 2px;text-wrap:balance;text-align:center;color:#201a36}
+.definition-copy>span:first-child,.definition-number{display:inline-grid;place-items:center;width:22px;height:22px;margin-inline-end:7px;vertical-align:2px;border-radius:50%;background:#7445ee;color:white;font:800 13px/1 var(--font,-apple-system,system-ui,sans-serif)}
+.definition-answer{grid-template-columns:62px minmax(0,1fr) 40px;gap:4px}
+.definition-count{justify-self:start;height:26px;background:#f0ebff;color:#4e2cb4;font:800 13px/1 var(--font,-apple-system,system-ui,sans-serif);padding:0 9px 0 7px;border-radius:30px;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.definition-count svg{width:13px;height:13px}
+.definition-letters{display:flex;justify-content:center;gap:3px}
+.definition-letter{box-sizing:border-box;width:var(--tile-w);height:var(--tile-h);border-radius:7px;border:1.5px solid #d9cffa;background:#f4f1fc;color:#685780;font:700 calc(var(--tile-h)*.55)/1 var(--font,-apple-system,system-ui,sans-serif);display:grid;place-items:center}
+.definition-letter[data-state=hint]{background:#fff3d1;color:#704b00;border-color:#edb228;box-shadow:0 2px #b27a0c}
+.definition-letter[data-state=found]{background:#17803f;color:white;border-color:#17803f;box-shadow:0 2px #0e5c2c}
+.definition-list{justify-self:end;width:38px;height:34px;background:#eee9ff}
+.definition-strip[data-success]{outline:2px solid #17803f;outline-offset:-2px}.definition-strip[data-success] .definition-copy{color:#126733}
+.definition-dialog .modal-content{min-height:0;overflow:auto}.definition-dialog .modal-content>p{margin:0 0 10px;color:#534c65;font-size:15px}
+.definition-option{display:grid;width:100%;grid-template-columns:30px 1fr;text-align:left;align-items:start;gap:10px;padding:10px 8px;border:0;border-top:1px solid #ddd8ed;background:white;color:#211c34}
+.definition-option[aria-current=true]{background:#f0ebff;border-radius:14px}.definition-number{width:30px;height:30px;background:#eee9ff;color:#4e2cb4}.definition-number[data-done]{background:#17803f;color:white}.definition-number svg{width:18px}
+.definition-option strong{display:block;font:600 16px/1.3 var(--font,-apple-system,system-ui,sans-serif)}.definition-option b{display:block;margin-top:6px;color:#126733}
+.definition-option .definition-letters{--tile-w:20px;--tile-h:23px;justify-content:start;margin-top:6px}
+.definition-band-tag{display:inline-block;vertical-align:middle;padding:3px 6px;margin-inline-end:8px;background:#ffffff33;border-radius:20px;color:white;font:800 11px/1 var(--font,-apple-system,system-ui,sans-serif)}
+@media(max-width:340px){.definition-strip{--tile-w:19px;--tile-h:21px;padding:3px 4px 5px;gap:2px}.definition-question{grid-template-columns:28px minmax(0,1fr) 28px}.definition-question button{width:28px;height:36px}.definition-copy{font-size:16px;line-height:18px}.definition-copy>span:first-child{width:20px;height:20px;margin-right:5px}.definition-answer{grid-template-columns:54px minmax(0,1fr) 34px}.definition-count{height:21px;padding:0 7px 0 5px}.definition-list{width:34px;height:24px}.definition-letters{gap:2px}}
+@media(prefers-reduced-motion:no-preference){html:not([data-reduce-motion=true]) .definition-letter[data-animate=true]{animation:definition-pop 240ms var(--letter-delay) both}html:not([data-reduce-motion=true]) .definition-copy{animation:definition-slide 260ms ease-out}html:not([data-reduce-motion=true]) .definition-question[data-miss]{animation:definition-miss 180ms linear}}
+@keyframes definition-pop{50%{transform:scale(1.12)}}@keyframes definition-slide{from{transform:translateX(24px);opacity:0}}@keyframes definition-miss{20%,60%{transform:translateX(6px)}40%,80%{transform:translateX(-6px)}}
+
+@media(max-width:700px){.game-app .scenic-play[data-journey-frame] .has-definition-rack{margin-top:-2px;overflow:visible}.game-app .scenic-play[data-journey-frame] .has-definition-rack .target-topic{border-radius:18px 18px 0 0}.definition-question{position:relative}.definition-question button{align-self:center}.definition-question strong{margin:0}}
+@media(max-width:340px){.game-app .scenic-play[data-journey-frame] .has-definition-rack{margin-inline:3px;width:calc(100% - 6px)}}
+dialog.kt-window.definition-dialog{inset:max(58px,env(safe-area-inset-top)) 10px max(18px,env(safe-area-inset-bottom))}.definition-dialog .kt-head{height:58px}.definition-dialog .kt-body{padding:10px 12px}.definition-dialog .kt-body>p{margin:0 8px 8px;font:var(--t-callout);color:var(--ink-2)}
+@media(max-width:340px){dialog.kt-window.definition-dialog{inset:max(46px,env(safe-area-inset-top)) 8px max(10px,env(safe-area-inset-bottom));width:calc(100% - 16px)}.definition-dialog .kt-head{height:50px}.definition-option{padding:7px 6px}}
+@media(min-width:341px) and (max-width:380px){.definition-strip{padding:3px 6px 4px;gap:2px;--tile-h:24px}.definition-list{height:26px}}
+.definition-option b{font:800 15px/1 var(--font);letter-spacing:.06em}
+.definition-dialog .kt-head{justify-content:start;padding-inline:20px 54px}.definition-dialog .kt-head h2{text-transform:none;letter-spacing:normal;text-align:start}.definition-dialog .kt-body>p{padding:2px 8px 4px;margin:0 0 4px}.definition-option[aria-current=true]+.definition-option{border-top-color:transparent}
+@keyframes definition-found-tile{0%{background:#f4f1fc;border-color:#d9cffa;color:#685780;transform:scale(1)}55%{transform:scale(1.12)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:no-preference){html:not([data-reduce-motion=true]) .definition-letter[data-animate=true]{animation-name:definition-found-tile}}
+
+/* The original catalogue contains full-sentence clues; reserve their reading
+   space for the whole round so changing a clue never moves the board. */
+@media(orientation:portrait) and (max-width:759px){
+ .game-app .scenic-play.quiet-play[data-journey-frame]:not([data-authored-board]):has(.definition-strip){--frame-list:115px}
+}
