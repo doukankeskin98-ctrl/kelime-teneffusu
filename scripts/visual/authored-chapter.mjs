@@ -52,7 +52,17 @@ export async function checkAuthoredChapter(page,number,width,out){
   if(index<level.placements.length-1){
    let done=false;
    for(let i=0;i<20&&!done;i++){
-    done=await page.evaluate(`document.querySelector('[data-word-group="${index}"]')?.getAttribute('aria-label')?.includes('bulundu')`);
+    if(level.clues){
+     const confirmation=await page.evaluate(`(()=>{
+       const answer=document.querySelector('.definition-strip[data-success] .definition-answer');
+       if(!answer)return null;
+       return {word:[...answer.querySelectorAll('[data-state=found]')].map(tile=>tile.textContent).join(''),
+         count:answer.querySelector('.definition-count')?.textContent};
+     })()`);
+     done=confirmation?.word===word&&confirmation.count===`${index+1}/${level.placements.length}`;
+    }else{
+     done=await page.evaluate(`document.querySelector('[data-word-group="${index}"]')?.getAttribute('aria-label')?.includes('bulundu')`);
+    }
     if(!done)await sleep(45);
    }
    assert(done,`chapter ${number} word ${word}`);

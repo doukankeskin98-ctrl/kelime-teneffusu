@@ -88,7 +88,11 @@ try {
       const row={number:chapter.number,id:chapter.id,...(opened==='ok'?await page.evaluate(measure):{error:opened})};
       if(pilot&&opened==='ok'){
         try{
-         if(row.rack.top-row.topic.bottom<3.9||row.board.top-row.rack.bottom<3.9)throw new Error('Bant/liste/tahta aralığı 4 pikselden az: '+JSON.stringify([row.rack.top-row.topic.bottom,row.board.top-row.rack.bottom]));
+         const seam=row.rack.top-row.topic.bottom, clearance=row.board.top-row.rack.bottom;
+         // Normal and definition headings share an edge with their card. Tall boards use a distinct header.
+         const expectedSeam=row.frame==='tall'?4:0;
+         const minClearance=row.frame==='authoredDefinition'?2:4;
+         if(Math.abs(seam-expectedSeam)>0.1||clearance<minClearance-0.1)throw new Error('Bant/liste/tahta aralığı: '+JSON.stringify({frame:row.frame,seam,clearance}));
          await checkAuthoredChapter(page,chapter.number,width,process.env.EVIDENCE_DIR);
         }
         catch(error){failures++;console.error('Pilot kontrolü',width,chapter.number,error.message);}
@@ -99,12 +103,20 @@ try {
       rows.push(row);
     }
     if(fixed){
-      const first=rows.find(row=>row.stage);
+      // Approved 0.58.1 safe-area frames: topic top, board stage top and hint top (CSS px).
+      // Independent anchors also catch a shift affecting every chapter of the same kind.
+      const frames={
+        320:{journey:[78.66,170.97,454.95],tall:[64,142.56,518],definition:[62,211,518],authoredDefinition:[62,159,518]},
+        375:{journey:[92.38,202.69,524.67],tall:[64,150.69,614.31],definition:[62,211,614.31],authoredDefinition:[62,166,614.31]},
+        393:{journey:[118,261.97,654.95],tall:[103,220.81,756],definition:[101,255.81,756],authoredDefinition:[101,220.81,756]},
+        430:{journey:[129.08,287.59,711.28],tall:[103,229,836],definition:[101,258,836],authoredDefinition:[101,229,836]},
+      }[width];
       for(const row of rows.filter(row=>row.stage)){
         const dock=row.controls.find(control=>control.name.startsWith('İpucu'));
-        const firstDock=first.controls.find(control=>control.name.startsWith('İpucu'));
-        if(!dock||!firstDock||Math.abs(row.stage.top-first.stage.top)>1||Math.abs(row.topic.top-first.topic.top)>1||Math.abs(dock.top-firstDock.top)>1||dock.top<row.board.bottom-1) {
-          failures++;console.log('Sabit düzen ihlali',width,row.number,JSON.stringify([row.topic.top,row.stage.top,dock?.top,row.board.bottom]));
+        const reference=frames?.[row.frame];
+        const actual=[row.topic.top,row.stage.top,dock?.top];
+        if(!dock||!reference||actual.some((v,i)=>Math.abs(v-reference[i])>1)||dock.top<row.board.bottom-1) {
+          failures++;console.log('Sabit düzen ihlali',width,row.number,JSON.stringify({frame:row.frame,reference,actual,bottom:row.board.bottom}));
         }
         if(row.number===10&&width===320&&(row.board.width<272||row.letterPx<21)){failures++;console.log('Uzun tahta sınırı',row.board.width,row.letterPx);}
       }

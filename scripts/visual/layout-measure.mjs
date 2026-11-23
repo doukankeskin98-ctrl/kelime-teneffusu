@@ -19,7 +19,10 @@ export function capturePlayLayout() {
   const targets = [...screen.querySelectorAll('.target-focus-button,.clue-slot>button,.active-clue')].filter(visible).map(element=>({...named(element),minTouchHeight:44}));
   const controls = [...screen.querySelectorAll('.play-heading>button,.play-controls button,.solo-control-dock button,.duel-controls button,.sprint-footer button')].filter(visible).map(named);
   const cells = [...board.querySelectorAll('[data-cell]')].map(rect);
-  return {width:innerWidth,height:innerHeight,scrollHeight:document.scrollingElement.scrollHeight,
+  const definition = !!screen.querySelector('.definition-strip,.active-clue,.clue-slots');
+  const frame = definition ? (screen.hasAttribute('data-authored-board') ? 'authoredDefinition' : 'definition')
+    : screen.dataset.designLayout === 'journey' ? 'journey' : 'tall';
+  return {frame,width:innerWidth,height:innerHeight,scrollHeight:document.scrollingElement.scrollHeight,
     scrollWidth:document.documentElement.scrollWidth,board:rect(board),rack:rack?rect(rack):null,
     stage:rect(screen.querySelector('.board-stage')),topic:rect(screen.querySelector('.target-topic')??screen.querySelector('.targets-panel')),
     letterPx:parseFloat(getComputedStyle(board.querySelector('[data-cell]')).fontSize),

@@ -140,6 +140,16 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
 .preferences-window>.kt-foot:has(>.kt-foot-links)>.kt-btn{font-size:16px;background:white;color:var(--ui-ink);border:2px solid var(--line);box-shadow:var(--press-white)}
 .preferences-window>.kt-foot:has(>.kt-foot-links) .kt-version{font:500 13px var(--font)}
 .preferences-window .comfort-setting small,.preferences-window .sound-slider-row label,.profile-window .cloud-status{font-size:14px;color:var(--ink-2)}
+/* Keep nested settings and achievement labels readable on the light window. */
+.preferences-window .game-settings :is(.sound-preview,.palette-options button):disabled {
+  opacity:1;color:var(--ink-2);background:var(--surface-2);border-color:var(--line)
+}
+.preferences-window .palette-options button:disabled :is(b,small),.kt-confirm .kt-erasure-copy label span {color:var(--ink-2)}
+.profile-window .word-trail li button.text-button {color:var(--ui-ink);background:var(--ui-tint)}
+.profile-window .achievement-row>div {opacity:1;color:var(--ink);background:var(--surface-2);border-color:var(--line)}
+.profile-window .achievement-row>div.earned {background:var(--ui-tint);color:var(--ui-ink)}
+.profile-window .achievement-row>div b {color:inherit}
+.profile-window .achievement-row>div small {color:var(--ink-2)}
 .kt-window .kt-btn:disabled,.preferences-window .support-report button:disabled{opacity:1;background:#e6e2f0;color:#4d455f}
 .profile-window :is(.weekly-keepsakes,.word-trail){background:var(--surface-2);color:var(--ink)}
 .profile-window :is(.weekly-keepsakes,.word-trail) :is(h2,h3,strong,b,summary){color:var(--ink)}

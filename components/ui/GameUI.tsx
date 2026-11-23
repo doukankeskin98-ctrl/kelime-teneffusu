@@ -4,14 +4,14 @@ import {ChevronRight,X} from 'lucide-react';
 import {openGameDialog} from '@/lib/game/legacy-ui';
 
 type Children={children:ReactNode};
-type WindowProps=Children&{title:string;onClose:()=>void;footer?:ReactNode;compact?:boolean;className?:string};
-export function Window({title,onClose,children,footer,compact=false,className=''}:WindowProps){
+type WindowProps=Children&{title:string;onClose:()=>void;footer?:ReactNode;compact?:boolean;visuallyHiddenTitle?:boolean;className?:string};
+export function Window({title,onClose,children,footer,compact=false,visuallyHiddenTitle=false,className=''}:WindowProps){
  const ref=useRef<HTMLDialogElement>(null),heading=useRef<HTMLHeadingElement>(null),id=useId(),close=useRef(onClose);
  useLayoutEffect(()=>{close.current=onClose;},[onClose]);
  useLayoutEffect(()=>{if(!ref.current)return;return openGameDialog(ref.current,()=>close.current(),window);},[]);
  useLayoutEffect(()=>{heading.current?.focus({preventScroll:true});},[title]);
  return <dialog data-layout="viewport" className={'kt-window'+(compact?' kt-small':'')+' '+className} ref={ref} aria-labelledby={id} onCancel={event=>{event.preventDefault();onClose();}}>
-  <header className="kt-head"><h2 id={id} tabIndex={-1} ref={heading}>{title}</h2><button type="button" onClick={onClose} aria-label="Kapat"><X/></button></header>
+  <header className="kt-head"><h2 id={id} className={visuallyHiddenTitle?'sr-only':undefined} tabIndex={-1} ref={heading}>{title}</h2><button type="button" onClick={onClose} aria-label="Kapat"><X/></button></header>
   <div className="kt-body">{children}</div>{footer&&<footer className="kt-foot">{footer}</footer>}
  </dialog>;
 }
@@ -32,4 +32,4 @@ export function Segmented<T extends string>({label,items,value,onChange}:{label:
  return <div className="kt-segments" role="tablist" aria-label={label}>{items.map(({id,label:caption},i)=><button key={id} id={'collection-tab-'+id} type="button" role="tab" tabIndex={id===value?0:-1} aria-selected={id===value} aria-controls={'collection-panel-'+id} onClick={()=>onChange(id)} onKeyDown={e=>{const k=e.key;if(!['Home','End','ArrowLeft','ArrowRight'].includes(k))return;e.preventDefault();const next=k==='Home'?0:k==='End'?items.length-1:(i+(k==='ArrowLeft'?-1:1)+items.length)%items.length;onChange(items[next]!.id);e.currentTarget?.parentElement?.querySelectorAll('button')[next]?.focus();}}>{caption}</button>)}</div>;
 }
 export function EmptyState({icon,title,children}:{icon:ReactNode;title:string}&Children){return <section className="kt-empty"><span aria-hidden="true">{icon}</span><h3>{title}</h3>{children}</section>;}
-export function ConfirmDialog(props:WindowProps){return <Window {...props} compact className={'kt-confirm '+(props.className??'')}/>;}
+export function ConfirmDialog(props:WindowProps){return <Window {...props} compact visuallyHiddenTitle className={'kt-confirm '+(props.className??'')}/>;}

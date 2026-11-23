@@ -21,11 +21,14 @@ export async function measureDialogText(page,selector='dialog[open]') {
    if(range.getBoundingClientRect().width>1)add(element,range,node.textContent.trim());
   }
   for(const field of dialog.querySelectorAll('textarea,input:not([type=checkbox]):not([type=radio]):not([type=range])')) {
-   add(field,null,field.value||field.placeholder,field.value?null:'::placeholder');
+   const selected = document.activeElement===field && field.value && field.selectionStart===0 && field.selectionEnd===field.value.length;
+   add(field,null,field.value||field.placeholder,selected?'::selection':field.value?null:'::placeholder');
   }
   window.__contrastItems=items;
   const mask=document.createElement('style');mask.id='contrast-mask';
   mask.textContent=${JSON.stringify(selector + ',' + selector + ' *,' + selector + ' ::placeholder')}+'{-webkit-text-fill-color:transparent!important;text-shadow:none!important;caret-color:transparent!important}';
+  // Keep the native selection highlight and hide its glyphs for background sampling.
+  mask.textContent+=${JSON.stringify(selector+' textarea::selection,'+selector+' input::selection')}+'{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important}';
   document.head.append(mask);
   return items.length;
  })()`);
