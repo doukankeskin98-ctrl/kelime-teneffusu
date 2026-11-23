@@ -233,6 +233,7 @@ dialog.kt-window{max-height:calc(var(--visible-height,100dvh) - 24px)}
  .berrak-places .berrak-shortcut svg{width:28px;height:28px}
  .game-app .scenic-play[data-design-layout] .viewport-targets.has-word-rack>.target-rack{height:calc(var(--frame-list) - 3px)}
  .game-app .scenic-play[data-design-layout] .kt-world-progress{padding:0 6px 0 12px}
+ .game-app .scenic-play[data-design-layout][data-authored-board] .letter-grid span{font-size:max(21px,var(--board-letter-size))}
  .game-app .scenic-play[data-design-layout] .viewport-targets.has-word-rack:has([data-authored-rack][data-target-count="12"]){width:calc(100vw - 10px)}
  .game-app .scenic-play[data-design-layout] .kt-world-name{min-width:0;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.05}
  .game-app .scenic-play[data-design-layout] .kt-world-progress .scene-art{width:30px;height:30px}

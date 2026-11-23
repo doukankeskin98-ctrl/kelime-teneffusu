@@ -118,7 +118,14 @@ try {
         if(!dock||!reference||actual.some((v,i)=>Math.abs(v-reference[i])>1)||dock.top<row.board.bottom-1) {
           failures++;console.log('Sabit düzen ihlali',width,row.number,JSON.stringify({frame:row.frame,reference,actual,bottom:row.board.bottom}));
         }
-        if(row.number===10&&width===320&&(row.board.width<272||row.letterPx<21)){failures++;console.log('Uzun tahta sınırı',row.board.width,row.letterPx);}
+        if(row.number===10&&width===320){
+          // The saved 8×11 board and the new 8×9 board have distinct signed-off frames.
+          // Check the original minimum for existing players and the actual draft bounds for the new board.
+          const dimensionsOK=pilot
+            ? row.frame==='journey'&&Math.abs(row.board.width-240)<=1&&Math.abs(row.board.height-270)<=1
+            : row.frame==='tall'&&row.board.width>=272;
+          if(!dimensionsOK||row.letterPx<21){failures++;console.log('10. bölüm okuma alanı',row.frame,row.board.width,row.board.height,row.letterPx);}
+        }
       }
     }
     if(process.env.EVIDENCE_DIR){mkdirSync(process.env.EVIDENCE_DIR,{recursive:true});writeFileSync(path.join(process.env.EVIDENCE_DIR,`layout-${width}.json`),JSON.stringify(rows,null,2));}
