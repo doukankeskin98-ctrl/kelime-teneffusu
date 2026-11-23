@@ -39,4 +39,8 @@ dialog.kt-window.definition-dialog{inset:max(58px,env(safe-area-inset-top)) 10px
    space for the whole round so changing a clue never moves the board. */
 @media(orientation:portrait) and (max-width:759px){
  .game-app .scenic-play.quiet-play[data-journey-frame]:not([data-authored-board]):has(.definition-strip){--frame-list:115px}
+ .scenic-play:not([data-authored-board]) .definition-strip{padding-block:2px;row-gap:2px}
+ .scenic-play:not([data-authored-board]) .definition-copy{line-height:1.12;text-wrap:wrap}
+ .scenic-play:not([data-authored-board]) .definition-copy>span:first-child{vertical-align:middle}
+
 }
