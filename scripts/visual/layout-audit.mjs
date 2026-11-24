@@ -67,34 +67,54 @@ const open = chapter => `(async () => {
 const measure = '('+capturePlayLayout.toString()+')()';
 
 let failures = 0;
-const page = await launch({port:Number(process.env.KT_LAYOUT_PORT ?? 0)});
+const chapters = only ? fixture.chapters.filter(item => only.includes(item.number)) : fixture.chapters;
+const useTwoBrowsers = process.env.KT_LAYOUT_WORKERS === '2' ||
+  (process.env.GITHUB_ACTIONS === 'true' && !process.env.KT_LAYOUT_PORT && chapters.length >= 20);
+async function measureChapters(page, batch, width, height, safe) {
+  await page.viewport(width,height,2,safe);
+  const rows = [];
+  for (const chapter of batch) {
+    const progress=JSON.parse(fixture.value);
+    if(firstVisit){
+      for(const item of fixture.chapters.slice(chapter.number-1)) delete progress.saves['route:'+item.id];
+    }
+    await seedProgress(page,url,progress,120);
+    const opened = await page.evaluate(open(chapter));
+    if(process.env.EVIDENCE_DIR&&only)await page.screenshot(path.join(process.env.EVIDENCE_DIR,`layout-${width}-${chapter.number}.png`));
+    const row={number:chapter.number,id:chapter.id,...(opened==='ok'?await page.evaluate(measure):{error:opened})};
+    if(pilot&&opened==='ok'){
+      try{
+       const seam=row.rack.top-row.topic.bottom, clearance=row.board.top-row.rack.bottom;
+       // The category band meets the target list; the card follows below.
+       if(Math.abs(seam)>0.1||clearance<4)throw new Error('Bant/liste/tahta aralığı: '+JSON.stringify({frame:row.frame,seam,clearance}));
+       await checkAuthoredChapter(page,chapter.number,width,process.env.EVIDENCE_DIR);
+      }
+      catch(error){failures++;console.error('Pilot kontrolü',width,chapter.number,error.message);}
+    }
+    if(!pilot && firstVisit && opened==='ok' && chapter.number===10){
+      row.touch=await checkTallBoard(page,row,process.env.EVIDENCE_DIR);
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+
+const browsers = [];
 try {
+  browsers.push(await launch({port:Number(process.env.KT_LAYOUT_PORT ?? 0)}));
+  if (useTwoBrowsers) browsers.push(await launch());
   for (const [width, height] of sizes) {
     const safe = firstVisit||fixed ? {...insets[width+'x'+height],left:0,right:0} : undefined;
-    await page.viewport(width,height,2,safe);
-    const rows = [];
-    for (const chapter of only ? fixture.chapters.filter(item => only.includes(item.number)) : fixture.chapters) {
-      const progress=JSON.parse(fixture.value);
-      if(firstVisit){
-        for(const item of fixture.chapters.slice(chapter.number-1)) delete progress.saves['route:'+item.id];
-      }
-      await seedProgress(page,url,progress,120);
-      const opened = await page.evaluate(open(chapter));
-      if(process.env.EVIDENCE_DIR&&only)await page.screenshot(path.join(process.env.EVIDENCE_DIR,`layout-${width}-${chapter.number}.png`));
-      const row={number:chapter.number,id:chapter.id,...(opened==='ok'?await page.evaluate(measure):{error:opened})};
-      if(pilot&&opened==='ok'){
-        try{
-         const seam=row.rack.top-row.topic.bottom, clearance=row.board.top-row.rack.bottom;
-         // The category band meets the target list; the card follows below.
-         if(Math.abs(seam)>0.1||clearance<4)throw new Error('Bant/liste/tahta aralığı: '+JSON.stringify({frame:row.frame,seam,clearance}));
-         await checkAuthoredChapter(page,chapter.number,width,process.env.EVIDENCE_DIR);
-        }
-        catch(error){failures++;console.error('Pilot kontrolü',width,chapter.number,error.message);}
-      }
-      if(!pilot && firstVisit && opened==='ok' && chapter.number===10){
-        row.touch=await checkTallBoard(page,row,process.env.EVIDENCE_DIR);
-      }
-      rows.push(row);
+    // Independent players can run alongside each other. Compare every chapter
+    // together afterwards so both batches use the same fixed-frame reference.
+    const batches = browsers.map((page,index) =>
+      measureChapters(page,chapters.filter((_,i)=>i%browsers.length===index),width,height,safe));
+    const runs = await Promise.allSettled(batches);
+    const failed = runs.find(run => run.status === 'rejected');
+    if (failed) throw failed.reason;
+    const rows = runs.flatMap(run => run.value).sort((a,b)=>a.number-b.number);
+    if (rows.length !== chapters.length || rows.some((row,i)=>row.id !== chapters[i].id)) {
+      throw new Error('Ölçülen bölümler katalogla eşleşmedi.');
     }
     if(fixed){
       let reference;
@@ -120,9 +140,10 @@ try {
     for (const row of bad) console.log(' ', JSON.stringify(row));
     failures += bad.length;
   }
-  if (page.errors.length) { console.log('Sayfa hataları:', page.errors.slice(0, 5)); failures += page.errors.length; }
+  const errors = browsers.flatMap(page => page.errors);
+  if (errors.length) { console.log('Sayfa hataları:', errors.slice(0,5)); failures += errors.length; }
 } finally {
-  await page.close();
+  await Promise.all(browsers.map(page => page.close()));
   server.close();
 }
 process.exitCode = failures ? 1 : 0;
