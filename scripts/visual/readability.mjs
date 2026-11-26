@@ -36,7 +36,7 @@ function clickText(label) {
   })()`);
 }
 try {
-  page=await launch({port:Number(process.env.CHROME_PORT??(9400+width))});
+  page=await launch({port:Number(process.env.CHROME_PORT??0)});
   await page.send('Network.enable');
   await page.send('Network.setBlockedURLs',{urls:['https://*','wss://*']});
   await page.send('Page.addScriptToEvaluateOnNewDocument',{source:`if(!sessionStorage.getItem('seed')){localStorage.setItem(${JSON.stringify(fx.key)},${JSON.stringify(JSON.stringify(save))});sessionStorage.setItem('seed','1');}`});

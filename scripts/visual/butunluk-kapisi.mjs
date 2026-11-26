@@ -71,7 +71,7 @@ const AUDIT=`(()=>{const root=[...document.querySelectorAll('dialog[open]')].pop
  }:null;
  return {settings,typeSamples,buttonSamples,surface:root.dataset.ktSurface??null,context:root.dataset.ktContext??null,dialog:!![...document.querySelectorAll('dialog[open]')].pop(),toggles,heads,rings,buttons,gaps,empties,sizes:sizes.length,overflowX}})()`;
 
-const page=await launch({port:Number(process.env.CHROME_PORT??9531)});
+const page=await launch({port:Number(process.env.CHROME_PORT??0)});
 const rows=[],errors=[];
 async function fresh(v){await page.viewport(v.w,v.h,2,v.insets);await page.freshContext();
  const {identifier}=await page.send('Page.addScriptToEvaluateOnNewDocument',{source:`if(window===top)localStorage.setItem(${JSON.stringify(fx.key)},${JSON.stringify(JSON.stringify(fx.progress))});`});

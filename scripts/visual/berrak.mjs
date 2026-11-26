@@ -32,7 +32,7 @@ const server=createServer((req,res)=>{
  res.writeHead(200,{'Content-Type':types[path.extname(f)]??'application/octet-stream'});createReadStream(f).pipe(res);
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-const page=await launch({port:Number(process.env.CHROME_PORT??9457)}),url='http://127.0.0.1:'+server.address().port,records=[];
+const page=await launch({port:Number(process.env.CHROME_PORT??0)}),url='http://127.0.0.1:'+server.address().port,records=[];
 async function click(selector){assert(await page.evaluate(`(()=>{const b=document.querySelector(${JSON.stringify(selector)});if(!b)return false;b.click();return true;})()`),selector);await sleep(180);}
 async function textButton(label){
  assert(await page.evaluate(`(()=>{const b=[...document.querySelectorAll('dialog[open] button,main button')].find(b=>b.getClientRects().length&&b.textContent.trim().startsWith(${JSON.stringify(label)}));if(!b)return false;b.click();return true;})()`),label);await sleep(190);
@@ -100,8 +100,8 @@ async function verifyReadableDialogs(width){
   return rows.filter(row=>!row.pass).map(row=>name+': '+row.text+' ('+row.ratio+')');
  }
  const failures=[];
- for(const [name,title] of polish?[]:[['privacy','Gizlilik ve hesap'],['support','Destek']]){
-  await home();await click('[aria-label="Ayarları aç"]');await textButton(title);
+ for(const [name,entry,title] of polish?[]:[['privacy','Gizlilik ve veriler','Gizlilik ve hesap'],['support','Destek','Destek']]){
+  await home();await click('[aria-label="Ayarları aç"]');await textButton(entry);
   failures.push(...await inspect(name,title));
   if(name==='support'){
    await page.evaluate(`(()=>{const field=document.querySelector('#support-detail');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(field,'Deneme sırasında ipucu düğmesine dokundum.');field.dispatchEvent(new Event('input',{bubbles:true}));})()`);
@@ -126,7 +126,7 @@ async function verifyReadableDialogs(width){
   await textButton('Başla');
   failures.push(...await inspect('daily-guide','Bugünün ortak tahtası'));
   if(polish)return;
-  await home();await click('[aria-label="Ayarları aç"]');await textButton('Gizlilik ve hesap');
+  await home();await click('[aria-label="Ayarları aç"]');await textButton('Gizlilik ve veriler');
   await waitFor("!!document.querySelector('.kt-danger-zone button[aria-haspopup=dialog]')");
   await click('.kt-danger-zone button[aria-haspopup=dialog]');
   failures.push(...await inspect('privacy-account','Her şey silinsin mi?'));
@@ -210,13 +210,17 @@ async function recordPlayMoments(width){
 async function settingsContrast(width){
  await home();await click('[aria-label="Ayarları aç"]');await textButton('Ses düzeyi');
  const sound=await measureDialogText(page);await shot(width,'sound-level');await textButton('Ses düzeyi');
- await waitFor("!!document.querySelector('.preferences-window .game-disclosure-trigger')");
- for(const title of ['Erişilebilirlik','Tahta ve çizgi renkleri','Kullanım verileri'])await textButton(title);
+ await waitFor("!!document.querySelector('[data-kt-surface=settings] .game-disclosure-trigger')");
+ for(const title of ['Erişilebilirlik','Tahta ve çizgi renkleri'])await textButton(title);
  await shot(width,'more-settings-open');
  const settings=await measureDialogText(page);
+ await textButton('Gizlilik ve veriler');
+ await waitFor("document.querySelector('dialog[open] h2')?.textContent==='Gizlilik ve hesap' && !!document.querySelector('dialog[open] [role=switch]')");
+ const privacy=await measureDialogText(page);
+ assert(privacy.some(r=>r.text.includes('İyileştirmeye yardım et')),'Usage preference must remain visible');
  await home();await click('[aria-label="Oyuncu profilini aç"]');await click('#collection-tab-achievements');
  await shot(width,'achievements');const achievements=await measureDialogText(page,'#collection-panel-achievements');
- const rows=[...sound,...settings,...achievements];writeFileSync(path.join(out,width+'-settings-achievements.json'),JSON.stringify(rows,null,2));
+ const rows=[...sound,...settings,...privacy,...achievements];writeFileSync(path.join(out,width+'-settings-achievements.json'),JSON.stringify(rows,null,2));
  if(!baseline)assert.deepEqual(rows.filter(r=>!r.pass).map(r=>[r.text,r.ratio]),[],'Settings and achievements');
 }
 async function verifyChapterTransitions(width){
@@ -247,8 +251,8 @@ async function verifySideScreens(width){
  for(const [selector,name] of [['.berrak-orbit','map'],['[aria-label="Albümlerim"]','album'],['[aria-label="Ayarları aç"]','settings']]){
   await click(selector);await shot(width,name);
   if(!baseline&&name==='settings'){
-   assert.equal(await page.evaluate("document.querySelectorAll('.preferences-window .kt-foot .kt-primary').length"),1);
-   assert(await page.evaluate("[...document.querySelectorAll('.preferences-window .kt-row')].some(b=>b.textContent==='Destek')"));
+   assert.deepEqual(await page.evaluate("[...document.querySelectorAll('[data-kt-surface=settings][data-kt-context=home] .kt-foot .kt-btn')].map(b=>b.textContent.trim())"),['Yolculuğa dön']);
+   assert(await page.evaluate("[...document.querySelectorAll('[data-kt-surface=settings] .kt-foot-links button')].some(b=>b.textContent.trim()==='Destek')"));
    await textButton('Destek');await waitFor("!!document.querySelector('.support-kinds')");
   }
   if(name==='album'||name==='map'){
@@ -311,7 +315,7 @@ try{
     await click(selector);await shot(w,name);
     if(name==='map'){await click('.journey-map-world.is-current');await shot(w,'map-chapters');}
     if(name==='profile'){await click('#collection-tab-achievements');await shot(w,'achievements');await click('#collection-tab-profile');await textButton('Profil oluştur');await shot(w,'identity');}
-    if(name==='settings'){await textButton('Gizlilik ve hesap');await shot(w,'privacy');await textButton('Ayarlara dön');await textButton('Erişilebilirlik');await shot(w,'settings-more');await textButton('Destek');await shot(w,'support');}
+    if(name==='settings'){await textButton('Gizlilik ve veriler');await shot(w,'privacy');await textButton('Ayarlara dön');await textButton('Erişilebilirlik');await shot(w,'settings-more');await textButton('Destek');await shot(w,'support');}
     if(name==='arena'){await textButton('Arkadaşlarınla oyna');await shot(w,'arena-room-entry');await click('dialog[open] .modal-head button');await textButton('Meydan oku');await shot(w,'challenge');}
     if(name==='other'){await shot(w,'short-games');await textButton('Bonus turları');await shot(w,'bonus-library');await click('dialog[open] .modal-head button');await textButton('Hızlı tur');await shot(w,'sprint-intro');}
     await home();

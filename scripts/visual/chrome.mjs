@@ -1,7 +1,7 @@
 // Dependency-free driver for a local, headless Google Chrome (DevTools protocol).
 // Used by local visuals and the CI mobile contrast check.
 import {spawn} from 'node:child_process';
-import {existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
+import {existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 
@@ -28,6 +28,18 @@ export async function launch({port = 0} = {}) {
     // use port zero, and a port occupied by someone else cannot pass readiness.
     const endpoint=await new Promise((resolve,reject)=>{
       const timer=setTimeout(()=>finish(new Error('no DevTools endpoint')),15000);
+      // With port zero Chrome also publishes its endpoint in the fresh profile.
+      // Some runners omit or buffer the corresponding stderr announcement.
+      const portFile=path.join(profile,'DevToolsActivePort');
+      const poll=port===0?setInterval(()=>{
+        try{
+          const match=/^(\d+)\r?\n(\/devtools\/browser\/[a-z\d-]{36})\s*$/i.exec(readFileSync(portFile,'utf8'));
+          if(match && Number(match[1])>0 && Number(match[1])<=65535)
+            finish(null,'ws://127.0.0.1:'+match[1]+match[2]);
+        }catch(error){
+          if(error.code!=='ENOENT')finish(error);
+        }
+      },80):undefined;
       const fail=error=>finish(error);
       const exited=(code,signal)=>finish(new Error('Chrome exited: '+(signal??code)));
       function log(chunk){
@@ -36,7 +48,7 @@ export async function launch({port = 0} = {}) {
         if(match)finish(null,match[1]);
       }
       function finish(error,url){
-        clearTimeout(timer);child.off('error',fail);child.off('exit',exited);child.stderr.off('data',log);
+        clearTimeout(timer);clearInterval(poll);child.off('error',fail);child.off('exit',exited);child.stderr.off('data',log);
         child.stderr.resume();
         if(error)reject(error);else resolve(url);
       }
