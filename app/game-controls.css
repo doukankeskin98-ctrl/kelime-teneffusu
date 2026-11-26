@@ -1,5 +1,4 @@
-/* Shared interaction surfaces. Layout, iconography and board projection stay with
-   their owners. Selection uses an inset ring so adjacent rows keep the same size. */
+/* Shared button roles keep a stable size when selected. */
 #kelime-oyunu {
   --control-ink: #352756;
   --control-ui: #5738c7;
@@ -50,6 +49,8 @@
   border-radius:0;
   color:var(--control-ui);
 }
+  & .journey-skip-reward {background:var(--berrak-ui);color:white}
+  & .free-theme-list b {background:var(--control-soft);color:var(--ink)}
   & .berrak-shortcut {color:white}
   & .berrak-stars {color:var(--control-ink)}
   & .berrak-orbit {border-radius:50%;background:rgba(35,26,55,.78);color:white;text-shadow:none}
@@ -84,7 +85,7 @@
   & :is(.profile-window,.game-library-sheet) :is(b,strong) {font-size:17px}
   & :is(.profile-window,.game-library-sheet) :is(p,label,li,button) {font-size:15px}
   & :is(.profile-window,.game-library-sheet) :is(small,time,em,.eyebrow,span,i) {font-size:13px}
-  & .kt-profile-avatar, & .kt-stats strong {font-size:26px}
+  & .profile-window .kt-profile-avatar, & .kt-stats strong {font-size:26px}
   & .game-library-sheet .published-chapter-card>.world-art {object-fit:contain}
 }
 

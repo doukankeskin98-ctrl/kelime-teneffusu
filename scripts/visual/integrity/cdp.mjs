@@ -10,7 +10,7 @@ export async function launch({port=9333,profile,reuse=false}={}){
  const ownedProfile=!profile;
  if(!profile)profile=freshProfile();
  else if(!reuse&&existsSync(profile))throw new Error('Profil klasörü zaten var: '+profile+' — temiz başlangıç için yeni klasör ver ya da reuse:true kullan');
- const p=spawn(CH,['--headless=new',...(process.platform==='linux'?['--no-sandbox','--disable-dev-shm-usage']:[]),'--remote-debugging-port='+port,'--user-data-dir='+profile,'--no-first-run','--no-default-browser-check','--hide-scrollbars','--mute-audio','about:blank'],{stdio:'ignore'});
+ const p=spawn(CH,['--headless=new','--disable-background-networking','--disable-component-update',...(process.platform==='darwin'?['--use-mock-keychain']:[]),...(process.platform==='linux'?['--no-sandbox','--disable-dev-shm-usage']:[]),'--remote-debugging-port='+port,'--user-data-dir='+profile,'--no-first-run','--no-default-browser-check','--hide-scrollbars','--mute-audio','about:blank'],{stdio:['ignore','ignore','pipe']});
  const stopped=()=>p.exitCode!==null||p.signalCode!==null;
  const stop=async()=>{
   if(!stopped())p.kill('SIGKILL');
@@ -19,8 +19,20 @@ export async function launch({port=9333,profile,reuse=false}={}){
  };
  const clean=()=>{if(ownedProfile&&stopped())rmSync(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});};
  try{
- let ws;for(let i=0;i<80&&!ws;i++){try{const l=await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();const t=l.find(x=>x.type==='page');if(t)ws=t.webSocketDebuggerUrl;}catch{}if(!ws)await sleep(250);}
- if(!ws){throw new Error('Chrome hata ayıklama bağlantısı kurulamadı (port '+port+')');}
+ // Read the endpoint announced by this child so a busy port can never attach
+ // the test to another running Chrome instance.
+ const ownEndpoint=await new Promise((resolve,reject)=>{
+  let log='';
+  const finish=(value,error)=>{clearTimeout(timer);p.stderr.off('data',onData);p.off('exit',onExit);error?reject(error):resolve(value);};
+  const onExit=()=>finish(null,new Error('Test Chrome exited before publishing its endpoint'));
+  const onData=chunk=>{log=(log+chunk).slice(-4096);const found=log.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:\d+\/devtools\/browser\/[a-z\d-]+)/i);if(found)finish(found[1]);};
+  const timer=setTimeout(()=>finish(null,new Error('Chrome did not publish its endpoint')),15000);
+  p.stderr.on('data',onData);p.once('exit',onExit);
+ });
+ p.stderr.resume();
+ let ws;const host=new URL(ownEndpoint).host;
+ for(let i=0;i<80&&!ws;i++){try{const l=await (await fetch('http://'+host+'/json/list')).json();const t=l.find(x=>x.type==='page');if(t)ws=t.webSocketDebuggerUrl;}catch{}if(!ws)await sleep(250);}
+ if(!ws)throw Error('Test page endpoint missing');
  const sock=new WebSocket(ws);await new Promise((r,j)=>{sock.onopen=r;sock.onerror=()=>j(new Error('WebSocket açılamadı'));});let id=0;const pend=new Map();
  sock.onmessage=e=>{const m=JSON.parse(e.data);if(m.id&&pend.has(m.id)){const {res,rej}=pend.get(m.id);pend.delete(m.id);if(m.error)rej(new Error(m.error.message));else res(m.result);}};
  const send=(method,params={})=>new Promise((res,rej)=>{const i=++id;const t=setTimeout(()=>{pend.delete(i);rej(new Error('CDP timeout: '+method));},15000);pend.set(i,{res:value=>{clearTimeout(t);res(value);},rej:error=>{clearTimeout(t);rej(error);}});sock.send(JSON.stringify({id:i,method,params}));});
@@ -43,7 +55,9 @@ export async function launch({port=9333,profile,reuse=false}={}){
      if(sock.readyState!==WebSocket.OPEN)throw new Error('Chrome disconnected before the normal close request');
      // Chrome can close the debugging socket before acknowledging Browser.close.
      // The child process exit below is the completion signal for this command.
-     sock.send(JSON.stringify({id:++id,method:'Browser.close'}));
+     const owner=new WebSocket(ownEndpoint);
+     await new Promise((resolve,reject)=>{owner.onopen=resolve;owner.onerror=()=>reject(Error('Owned browser endpoint unavailable'));});
+     owner.send(JSON.stringify({id:1,method:'Browser.close'}));
     }else{
      p.kill(kind);
     }

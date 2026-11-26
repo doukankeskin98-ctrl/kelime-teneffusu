@@ -18,7 +18,15 @@ export function BonusRound({worldId,progress,onProgress,onBack,onHome,onContinue
  const [save,setSave]=useState(()=>{const old=cleanBonusSave(worldId,progress.bonuses?.[worldId]);return old&&!old.finished?old:freshBonus((old?.attempt??0)+1,old?.best??0);});
  const background=useRef(false),current=useRef(save),running=useRef(false),at=useRef(0),[started,setStarted]=useState(false),[paused,setPaused]=useState(false),[help,setHelp]=useState(false),[tools,setTools]=useState(false),toolsOpen=useRef(false),resumeAfterTools=useRef(false),[preview,setPreview]=useState(''),[message,setMessage]=useState(''),[review,setReview]=useState(false);
  const result=useResultPresentation(save.finished,worldId+':'+save.attempt),chime=useChime(progress.sound,progress.haptics);
- const publish=(next:BonusSave)=>{const previous=current.current;current.current=next;setSave(next);onProgress(p=>({...p,bonuses:{...p.bonuses,[worldId]:p.bonuses?.[worldId]?mergeBonusSave(p.bonuses[worldId]!,next):next}}));if(next.finished&&!previous.finished){running.current=false;chime('finish');}};
+ const publish=(next:BonusSave)=>{
+  const previous=current.current;
+  current.current=next;
+  setSave(next);
+  // The live clock keeps its precision. Stored checkpoints use whole milliseconds.
+  const checkpoint={...next,elapsed:Math.floor(next.elapsed)};
+  onProgress(p=>({...p,bonuses:{...p.bonuses,[worldId]:p.bonuses?.[worldId]?mergeBonusSave(p.bonuses[worldId]!,checkpoint):checkpoint}}));
+  if(next.finished&&!previous.finished){running.current=false;chime('finish');}
+ };
  const tick=()=>{if(!running.current)return current.current;const now=performance.now(),next=advanceBonus(current.current,now-at.current);at.current=now;const previous=current.current;
   if(next.finished&&!previous.finished)result.prepare(false);
   if(next.finished||Math.floor(next.elapsed/1000)!==Math.floor(previous.elapsed/1000))publish(next);else current.current=next;

@@ -18,44 +18,77 @@ export async function launch({port = 0} = {}) {
   const chrome = CANDIDATES.find(candidate => existsSync(candidate));
   if (!chrome) throw new Error('Chrome bulunamadı. CHROME_PATH ile yolunu ver.');
   const profile = mkdtempSync(path.join(tmpdir(), 'kt-visual-'));
-  const args = ['--headless=new', '--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${port}`,
+  // CI runners can buffer Chrome's startup diagnostic. A private pipe connects
+  // directly to the browser we spawned and needs no discoverable TCP listener.
+  const pipe = process.platform === 'linux' || process.env.KT_CHROME_PIPE === '1';
+  const args = ['--headless=new', ...(pipe?['--remote-debugging-pipe']:[]), '--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${port}`,
     `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-extensions',
-    '--hide-scrollbars', '--mute-audio', ...(process.platform==='linux'?['--disable-dev-shm-usage']:[]), 'about:blank'];
-  const child = spawn(chrome, args, {stdio:['ignore','ignore','pipe']});
+    '--disable-background-networking', '--disable-component-update', '--hide-scrollbars', '--mute-audio', ...(process.platform==='linux'?['--disable-dev-shm-usage']:[]), 'about:blank'];
+  const child = spawn(chrome, args, {stdio:pipe?['ignore','ignore','pipe','pipe','pipe']:['ignore','ignore','pipe']});
   let startupLog='', socket;
   try {
     // Only connect to the endpoint announced by this browser. Parallel runs can
     // use port zero, and a port occupied by someone else cannot pass readiness.
-    const endpoint=await new Promise((resolve,reject)=>{
-      const timer=setTimeout(()=>finish(new Error('no DevTools endpoint')),15000);
-      // With port zero Chrome also publishes its endpoint in the fresh profile.
-      // Some runners omit or buffer the corresponding stderr announcement.
-      const portFile=path.join(profile,'DevToolsActivePort');
-      const poll=port===0?setInterval(()=>{
-        try{
-          const match=/^(\d+)\r?\n(\/devtools\/browser\/[a-z\d-]{36})\s*$/i.exec(readFileSync(portFile,'utf8'));
-          if(match && Number(match[1])>0 && Number(match[1])<=65535)
-            finish(null,'ws://127.0.0.1:'+match[1]+match[2]);
-        }catch(error){
-          if(error.code!=='ENOENT')finish(error);
+    if (pipe) {
+      const input=child.stdio[3], output=child.stdio[4];
+      let buffer='';
+      output.setEncoding('utf8');
+      socket={send:message=>input.write(message+'\0')};
+      output.on('data',chunk=>{
+        buffer+=chunk;
+        let end;
+        while((end=buffer.indexOf('\0'))>=0){
+          const data=buffer.slice(0,end);
+          buffer=buffer.slice(end+1);
+          if(data)socket.onmessage?.({data});
         }
-      },80):undefined;
-      const fail=error=>finish(error);
-      const exited=(code,signal)=>finish(new Error('Chrome exited: '+(signal??code)));
-      function log(chunk){
-        startupLog=(startupLog+chunk).slice(-4000);
-        const match=startupLog.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:\d+\/devtools\/browser\/[a-z0-9-]+)/i);
-        if(match)finish(null,match[1]);
-      }
-      function finish(error,url){
-        clearTimeout(timer);clearInterval(poll);child.off('error',fail);child.off('exit',exited);child.stderr.off('data',log);
-        child.stderr.resume();
-        if(error)reject(error);else resolve(url);
-      }
-      child.once('error',fail);child.once('exit',exited);child.stderr.on('data',log);
-    });
-    socket=new WebSocket(endpoint);
-    await new Promise((resolve,reject)=>{socket.onopen=resolve;socket.onerror=reject;});
+      });
+      child.stderr.on('data',chunk=>{startupLog=(startupLog+chunk).slice(-4000);});
+      await new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>finish(new Error('Chrome pipe did not answer')),15000);
+        const exited=()=>finish(new Error('Chrome exited during startup'));
+        function finish(error){
+          clearTimeout(timer);child.off('exit',exited);child.off('error',finish);
+          input.off('error',finish);socket.onmessage=undefined;
+          if(error)reject(error);else resolve();
+        }
+        child.once('exit',exited);child.once('error',finish);input.once('error',finish);
+        socket.onmessage=event=>{if(JSON.parse(event.data).id===0)finish();};
+        socket.send(JSON.stringify({id:0,method:'Browser.getVersion'}));
+      });
+      input.on('error',()=>{}); // A normal Browser.close can close the pipe first.
+    } else {
+      const endpoint=await new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>finish(new Error('no DevTools endpoint')),15000);
+        // With port zero Chrome also publishes its endpoint in the fresh profile.
+        // Some runners omit or buffer the corresponding stderr announcement.
+        const portFile=path.join(profile,'DevToolsActivePort');
+        const poll=port===0?setInterval(()=>{
+          try{
+            const match=/^(\d+)\r?\n(\/devtools\/browser\/[a-z\d-]{36})\s*$/i.exec(readFileSync(portFile,'utf8'));
+            if(match && Number(match[1])>0 && Number(match[1])<=65535)
+              finish(null,'ws://127.0.0.1:'+match[1]+match[2]);
+          }catch(error){
+            if(error.code!=='ENOENT')finish(error);
+          }
+        },80):undefined;
+        const fail=error=>finish(error);
+        const exited=(code,signal)=>finish(new Error('Chrome exited: '+(signal??code)));
+        function log(chunk){
+          startupLog=(startupLog+chunk).slice(-4000);
+          const match=startupLog.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:\d+\/devtools\/browser\/[a-z0-9-]+)/i);
+          if(match)finish(null,match[1]);
+        }
+        function finish(error,url){
+          clearTimeout(timer);clearInterval(poll);child.off('error',fail);child.off('exit',exited);child.stderr.off('data',log);
+          child.stderr.resume();
+          if(error)reject(error);else resolve(url);
+        }
+        child.once('error',fail);child.once('exit',exited);child.stderr.on('data',log);
+      });
+      socket=new WebSocket(endpoint);
+      await new Promise((resolve,reject)=>{socket.onopen=resolve;socket.onerror=reject;});
+    }
   } catch(error) {
     if(child.exitCode===null && child.signalCode===null)child.kill();
     rmSync(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});
@@ -63,6 +96,10 @@ export async function launch({port = 0} = {}) {
   }
   let nextId = 0;
   const pending = new Map(), errors = [];
+  child.once('exit',()=>{
+    for(const command of pending.values())command.reject(new Error('Chrome closed'));
+    pending.clear();
+  });
   let session = '', recording=null;
   socket.onmessage = event => {
     const message = JSON.parse(event.data);

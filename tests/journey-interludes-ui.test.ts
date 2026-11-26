@@ -35,6 +35,28 @@ it('rapid duplicate claims count once and the deadline wins without waiting for 
 it('last placement completes once; result/review/replay preserve best and never alter main saves',()=>{
  const r=round();try{const before=JSON.stringify(r.value.saves);r.start();bonus.bonusBoard('uzay').placements.forEach((_,i)=>r.claim(i));r.h.flush();assert.equal(r.h.find('Modal').props['title'],'Hepsini buldun!');r.h.click('Tahtayı incele');assert(r.h.find('PlayLayout').props['readOnly']);r.h.click('Sonucu göster');r.h.click('Tekrar dene');r.h.click('Bonusu başlat');r.claim(0);assert.equal(r.value.bonuses!['uzay']!.attempt,2);assert.equal(r.value.bonuses!['uzay']!.found.length,1);assert.equal(r.value.bonuses!['uzay']!.best,bonus.bonusBoard('uzay').targets.length);assert.equal(JSON.stringify(r.value.saves),before);}finally{r.h.close();}
 });
+it('keeps fractional clock precision during play and restores whole-millisecond bonus checkpoints',()=>{
+ const r=round();
+ try{
+  r.start();
+  r.h.time(1000.75);
+  r.claim(0);
+  r.h.time(0.5);
+  r.claim(1);
+  const saved=r.value.bonuses!['uzay']!;
+  assert.equal(saved.elapsed,1001);
+  assert.equal(saved.found.length,2);
+  assert.deepEqual(bonus.cleanBonusSave('uzay',JSON.parse(JSON.stringify(saved))),saved);
+  const restored=round(r.value);
+  try{
+   restored.h.click('Bonusa devam et');
+   restored.h.time(1000.5);
+   restored.claim(2);
+   assert.equal(restored.value.bonuses!['uzay']!.elapsed,2001);
+   assert.equal(restored.value.bonuses!['uzay']!.found.length,3);
+  }finally{restored.h.close();}
+ }finally{r.h.close();}
+});
 it('near-time remote completion stops play instead of pooling two devices',()=>{
  const r=round();try{r.start();r.h.time(1000);r.claim(0);const finished=bonus.cleanBonusSave('uzay',{attempt:1,elapsed:900,found:bonus.bonusBoard('uzay').targets.map(t=>t.id)})!;r.h.update({progress:{...r.value,bonuses:{uzay:finished}}});r.h.flush();assert(r.h.find('PlayLayout').props['readOnly']);const count=r.writes.length;r.claim(1);assert.equal(r.writes.length,count);}finally{r.h.close();}
 });

@@ -180,12 +180,13 @@ async function recordPlayMoments(width){
     watch.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});setTimeout(()=>watch.disconnect(),2900);
    })()`);
    await draw(f.word,undefined,f.shape);await waitFor("!!document.querySelector('dialog[open] .result-continue')");await sleep(820);
-   const result=await page.evaluate("({dialogMs:Math.round(window.__finishTimes.dialog-window.__finishTimes.word),lights:window.__lightCount,confetti:!!document.querySelector('dialog .celebration-particles'),stars:document.querySelector('.result-stars-total')?.innerText})");
+   const result=await page.evaluate("({dialogMs:Math.round(window.__finishTimes.dialog-window.__finishTimes.word),lights:window.__lightCount,confetti:!!document.querySelector('dialog .celebration-particles'),stars:document.querySelector('.result-stars-total .result-star-gain')?.textContent,total:document.querySelector('.result-stars-total [data-star-value]')?.textContent})");
    records.push({width,number,reduced,...result});
    if(!baseline){
     assert.equal(result.lights>0,!reduced,'light reaches a newly earned piece');
     assert.equal(result.confetti,number===6&&!reduced,'special celebration for world finale');
-    assert.equal(result.stars,'+3');
+    assert.equal(result.stars,reduced?undefined:'+3');
+    assert.equal(Number(result.total),Object.values(f.seed.saves).reduce((sum,save)=>sum+save.stars,3));
     assert(result.dialogMs>=0&&result.dialogMs<=2600,JSON.stringify(result));
    }
    if(number===3){
@@ -276,7 +277,11 @@ async function verifySideScreens(width){
   assert(await page.evaluate("!!document.querySelector('.bonus-session .board-stars')"));
  }
  await click('.bonus-ready .stage-play');await shot(width,'bonus-playing');
- for(const placement of bonus.placements)await draw(placement,undefined,bonus.shape);
+ for(const [index,placement] of bonus.placements.entries()){
+  await draw(placement,undefined,bonus.shape);
+  await waitFor(`Number(document.querySelector('.bonus-discoveries')?.getAttribute('aria-valuenow'))===${index+1} || !!document.querySelector('.bonus-outcome .result-continue')`);
+  assert.equal(await page.evaluate("!!document.querySelector('.save-warning')"),false,'bonus checkpoints must stay writable throughout play');
+ }
  await waitFor("!!document.querySelector('.bonus-outcome .result-continue')");await sleep(450);await shot(width,'bonus-result');
  if(!baseline){
   assert.equal(await page.evaluate("document.querySelector('.result-continue').innerText.trim().toLocaleLowerCase('tr')"),'devam et');
