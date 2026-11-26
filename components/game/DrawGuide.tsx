@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,type CSSProperties} from 'react';
+import {useEffect,useLayoutEffect,useRef,type CSSProperties} from 'react';
 import {dimensions,type BoardShape} from '@/lib/game/board-projection';
 import type {Cell} from '@/lib/game/engine';
 import {gameIsActive} from '@/lib/platform/runtime';
@@ -13,9 +13,20 @@ export function DrawGuide({size,a,b}:{size:BoardShape;a:Cell;b:Cell}){
   visible();document.addEventListener('visibilitychange',visible);window.addEventListener('pagehide',hide);window.addEventListener('blur',hide);window.addEventListener('focus',visible);window.addEventListener('pageshow',visible);
   return ()=>{document.removeEventListener('visibilitychange',visible);window.removeEventListener('pagehide',hide);window.removeEventListener('blur',hide);window.removeEventListener('focus',visible);window.removeEventListener('pageshow',visible);};
  },[]);
+ const dx=(b[1]-a[1])/columns,dy=(b[0]-a[0])/rows;
+ useLayoutEffect(()=>{
+  const guide=ref.current;if(!guide)return;
+  const measure=()=>{
+   guide.style.setProperty('--guide-dx',dx*guide.clientWidth+'px');
+   guide.style.setProperty('--guide-dy',dy*guide.clientHeight+'px');
+  };
+  measure();
+  if(typeof ResizeObserver==='function'){const observer=new ResizeObserver(measure);observer.observe(guide);return ()=>observer.disconnect();}
+  window.addEventListener('resize',measure);return ()=>window.removeEventListener('resize',measure);
+ },[dx,dy]);
  const inward=(cell:Cell)=>Math.atan2(rows/2-cell[0]-.5,columns/2-cell[1]-.5)*180/Math.PI-45;
  const start=inward(a),delta=((inward(b)-start+540)%360)-180;
- const style={'--guide-turn-start':`${start}deg`,'--guide-turn-end':`${start+delta}deg`,'--guide-x':`${(a[1]+.5)/columns*100}%`,'--guide-y':`${(a[0]+.5)/rows*100}%`,'--guide-dx':`${(b[1]-a[1])/columns*100}%`,'--guide-dy':`${(b[0]-a[0])/rows*100}%`} as CSSProperties;
+ const style={'--guide-turn-start':`${start}deg`,'--guide-turn-end':`${start+delta}deg`,'--guide-x':`${(a[1]+.5)/columns*100}%`,'--guide-y':`${(a[0]+.5)/rows*100}%`} as CSSProperties;
  return <div ref={ref} className="draw-guide" aria-hidden="true" style={style}>
   <svg className="draw-guide-path" viewBox={`0 0 ${columns} ${rows}`}><line x1={a[1]+.5} y1={a[0]+.5} x2={b[1]+.5} y2={b[0]+.5} pathLength="1" strokeWidth=".48" strokeLinecap="round"/><circle cx={a[1]+.5} cy={a[0]+.5} r=".38"/></svg>
   <div className="draw-guide-traveller"><svg className="draw-guide-hand" viewBox="-9 -5 42 48"><circle className="draw-guide-touch" cx="0" cy="3" r="8"/><path d="M-3 22V3a3 3 0 0 1 6 0v14-4a3 3 0 0 1 6 0v3-1a3 3 0 0 1 6 0v3a3 3 0 0 1 6 0v10c0 6-3 10-5 12H4c-3-3-5-6-7-9l-5-7a3 3 0 0 1 5-4l4 5"/></svg></div>

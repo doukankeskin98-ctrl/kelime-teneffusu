@@ -1,0 +1,88 @@
+/* Timed bonus rounds and their in-board start panel. */
+.bonus-dashboard{
+ display:grid;grid-template-columns:minmax(0,1fr) 36px 50px;grid-template-rows:auto 52px;
+ align-items:center;gap:0 10px;overflow:hidden;border-radius:16px;
+ background:var(--berrak-surface);color:var(--berrak-ink);box-shadow:0 3px 0 #14233a33;
+}
+.bonus-target{grid-column:1/-1;grid-row:1;padding:5px 12px;text-align:center;background:var(--berrak-ui);color:white}
+.bonus-target h1{margin:0;color:inherit;font:800 clamp(18px,5vw,23px)/1.15 var(--sans);letter-spacing:.04em}
+.bonus-dial{position:relative;grid-column:3;grid-row:2;width:44px;height:44px;display:grid;place-content:center;text-align:center;color:var(--berrak-ink)}
+.bonus-dial svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.bonus-dial circle{stroke:var(--berrak-line);stroke-width:5;fill:none}
+.bonus-dial .bonus-time-remaining{stroke:var(--berrak-ui);stroke-linecap:round}
+.bonus-dial b{font-size:18px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums}
+.bonus-dial small{font-size:10px;line-height:1;color:inherit}
+.bonus-dial.urgent{color:#922e21}.bonus-dial.urgent .bonus-time-remaining{stroke:#b5422f}
+.bonus-discoveries{position:relative;isolation:isolate;overflow:hidden;grid-column:1;grid-row:2;margin-left:14px;border-radius:10px;background:var(--berrak-wash);color:var(--berrak-ink);font-size:14px;line-height:20px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.bonus-discoveries i{position:absolute;inset:0;z-index:-1;background:var(--berrak-gold);transform-origin:left;transition:transform 180ms ease-out}
+.bonus-notice{position:absolute;z-index:2;top:100%;left:50%;transform:translateX(-50%);width:max-content;max-width:100%;margin:0;padding:3px 9px;text-align:center;border-radius:10px;background:var(--berrak-deep);color:white;font-size:13px;line-height:1.25;pointer-events:none}
+.bonus-notice:empty{padding:0}
+.bonus-session .play-hud{padding-bottom:0}
+.bonus-ready{position:absolute;inset:0;z-index:10;display:grid;place-items:center;padding:12px;background:#14233a42;border-radius:17px;color:var(--berrak-ink)}
+.bonus-ready>div{width:min(100%,290px);max-height:100%;overflow:auto;text-align:center;background:var(--berrak-surface);border-radius:18px;padding:18px 16px;box-shadow:0 8px 24px #14233a4d}
+.bonus-ready h2{font-size:24px;line-height:1.2;color:inherit;margin:0 0 10px}
+.bonus-ready p{font-size:16px;line-height:1.45;color:inherit;margin:0 0 8px}
+.bonus-ready .bonus-ready-rule{font-size:14px;color:var(--berrak-muted);margin-bottom:14px}
+.bonus-ready .button.stage-play{display:flex;width:100%;justify-content:center;align-items:center;gap:8px;min-height:48px;font-size:19px}
+.bonus-ready .text-button{font-size:14px;line-height:1.3;min-height:44px;color:var(--berrak-ui-dark);margin-top:4px}
+.bonus-discovery-medal{position:relative;width:190px;height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:22px auto 20px;color:#ffe3a2}
+.bonus-discovery-medal svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.bonus-discovery-medal circle{fill:none;stroke:#56777a;stroke-width:10;stroke-linecap:round}
+.bonus-discovery-medal .bonus-medal-fill{stroke:#f4d080}
+.bonus-discovery-medal b{font-size:64px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums}
+.bonus-discovery-medal small{font-size:26px;color:#e0ecdf}
+.bonus-discovery-medal>span{font-size:16px;margin-top:8px;color:#e0ecdf}
+.bonus-result-word{text-align:center;font-size:25px;letter-spacing:.06em;font-weight:800;color:#fff1bd;margin:0 0 12px}
+@media(max-height:650px){.bonus-ready{padding:12px}.bonus-ready h2{font-size:21px;margin-bottom:8px}.bonus-ready p{font-size:14px}.bonus-ready .bonus-ready-rule{margin-bottom:14px}.bonus-ready .text-button{margin-top:6px}.bonus-discovery-medal{width:150px;height:150px;margin:12px auto}.bonus-discovery-medal b{font-size:48px}}
+@media(prefers-reduced-motion:reduce){.bonus-discoveries i{transition:none}}
+:root[data-reduce-motion=true] .bonus-discoveries i{transition:none}
+
+/* Keep the match board, live score and clock below the device cutout. */
+.native-shell.arena-session .main-content.arena-is-playing{max-width:1120px;margin-inline:auto;padding:calc(8px + env(safe-area-inset-top,0px)) calc(8px + env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) calc(8px + env(safe-area-inset-left,0px))}
+.competition-hud{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;min-height:54px;padding:6px 12px;border:1px solid #fff9df35;border-radius:16px;background:#123e4ae8;color:#fff8e5;font-variant-numeric:tabular-nums}
+.competition-hud span{display:block;font-size:11px;line-height:16px;color:#d6e4dc;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.competition-hud strong{display:block;font-size:20px;line-height:24px;font-weight:750;white-space:nowrap}
+.competition-player{min-width:0;text-align:left}.competition-clock{text-align:center;min-width:68px}.competition-clock strong{font-size:25px;line-height:28px}.competition-clock.urgent strong{color:#ffcf86}
+.competition-rank{text-align:right;color:inherit;border:0;background:none;padding:0;font:inherit;min-height:40px}
+.competition-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:20px;font-size:11px;line-height:16px;color:#fff8e5;padding:2px 8px;text-shadow:0 1px 3px #082631}
+.competition-meta:empty{display:none}
+.competition-meta:not(:empty){justify-content:center}
+#kelime-oyunu .competition-rank {background:transparent;color:inherit;text-align:end;border-radius:inherit}
+.bonus-session .targets-panel:empty{display:none}
+.bonus-session .board-stage{position:relative}
+#kelime-oyunu .bonus-ready .stage-play,
+#kelime-oyunu .scene-result button.result-continue{background:var(--control-play);color:white}
+.scene-result .result-continue{min-width:min(250px,100%);align-self:center}
+@media (max-width:360px) {
+ .competition-hud{padding-inline:8px;gap:6px}
+ .competition-hud strong{font-size:18px}
+ .competition-clock strong{font-size:23px}
+}
+/* These three HUDs take the full width, leaving the measured board to use the rest. */
+.viewport-play>.play-hud:has(>.competition-hud,>.game-status,>.bonus-dashboard){display:block;position:relative;flex:none}
+.scenic-play .game-status{display:flex;align-items:center;gap:12px;min-height:33px;margin:0;padding:5px 10px;border-radius:12px;background:var(--berrak-deep);color:white;font-variant-numeric:tabular-nums}
+.game-status span,.scenic-play .duel-controls>.text-button{display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.game-status .progress-track{flex:1;overflow:hidden;border-radius:8px;height:5px;background:var(--berrak-wash)}
+.game-status .progress-track i{display:block;height:100%;background:var(--berrak-gold)}
+.game-status small{font-size:11px}
+.native-shell .competition-hud{background:var(--berrak-deep);color:white;border-color:#8776a6}
+.competition-hud .competition-clock{border-radius:10px;background:var(--berrak-wash);color:var(--berrak-ui-dark)}
+.competition-clock span{color:var(--berrak-muted)}
+.competition-clock.urgent,.competition-clock.urgent strong{background:var(--berrak-gold);color:var(--berrak-ink)}
+.duel-controls .arena-rival-name{max-width:24ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scenic-play .duel-controls>.text-button{max-width:100%;min-height:44px;padding:4px 12px;font-size:14px}
+.modal.game-dialog.scenic-outcome.berrak-result.scene-result>.modal-actions{width:100%;grid-template-columns:minmax(0,1fr)}
+@media(max-width:700px){
+ .scenic-play:not([data-journey-frame]):has(.competition-hud,.game-status,.bonus-dashboard)>.play-heading{padding:4px 8px;min-height:54px}
+}
+/* Keep the live competitor shortcut in reach. Its label is present on every board. */
+#kelime-oyunu .scenic-play .duel-controls>.text-button{background:var(--berrak-surface);color:var(--berrak-ink);border-radius:24px}
+@media(max-width:780px) and (orientation:portrait){
+ .arena-is-playing .scenic-play .targets-panel>.golden-note{display:none}
+ .arena-is-playing .scenic-play .duel-controls{width:100%;justify-content:flex-start}
+}
+.bonus-outcome .bonus-discovery-medal{flex:none}
+/* The compact result content can shrink before its container query settles. */
+.berrak-result.bonus-outcome .bonus-discovery-medal {
+ width:clamp(120px,25svh,220px);height:clamp(120px,25svh,220px);
+}

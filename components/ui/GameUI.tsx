@@ -1,18 +1,48 @@
 'use client';
-import {useId,useLayoutEffect,useRef,type ButtonHTMLAttributes,type ReactNode,type Ref} from 'react';
-import {ChevronRight,Clock,Play,X} from 'lucide-react';
+import {useId,useLayoutEffect,useRef,type ButtonHTMLAttributes,type CSSProperties,type ReactNode,type Ref} from 'react';
+import {ChevronRight,Clock,House,Play,X} from 'lucide-react';
 import {openGameDialog} from '@/lib/game/legacy-ui';
 
 type Children={children:ReactNode};
-type WindowProps=Children&{title:string;onClose:()=>void;footer?:ReactNode;compact?:boolean;visuallyHiddenTitle?:boolean;className?:string;surface?:"arena"|"settings";context?:string};
-export function Window({title,onClose,children,footer,compact=false,visuallyHiddenTitle=false,className='',surface,context}:WindowProps){
- const ref=useRef<HTMLDialogElement>(null),heading=useRef<HTMLHeadingElement>(null),id=useId(),close=useRef(onClose);
+type WindowProps = Children & {
+ title: string;
+ onClose: () => void;
+ footer?: ReactNode;
+ compact?: boolean;
+ visuallyHiddenTitle?: boolean;
+ className?: string;
+ surface?: 'arena' | 'settings' | 'menu';
+ context?: string;
+ panelArt?: string;
+ scene?: { background: string; decoration?: ReactNode; leading?: ReactNode; home?: boolean };
+};
+export function Window({title,onClose,children,footer,compact=false,visuallyHiddenTitle=false,className='',surface='menu',context,scene,panelArt}:WindowProps){
+ const ref=useRef<HTMLDialogElement>(null), heading=useRef<HTMLHeadingElement>(null), id=useId();
+ const close=useRef(onClose);
  useLayoutEffect(()=>{close.current=onClose;},[onClose]);
- useLayoutEffect(()=>{if(!ref.current)return;return openGameDialog(ref.current,()=>close.current(),window);},[]);
+ useLayoutEffect(()=>{
+  if(ref.current) return openGameDialog(ref.current,()=>close.current(),window);
+ },[]);
  useLayoutEffect(()=>{heading.current?.focus({preventScroll:true});},[title]);
- return <dialog data-kt-surface={surface} data-kt-context={context} data-layout="viewport" className={'kt-window'+(compact?' kt-small':'')+' '+className} ref={ref} aria-labelledby={id} onCancel={event=>{event.preventDefault();onClose();}}>
-  <header className="kt-head"><h2 id={id} className={visuallyHiddenTitle?'sr-only':undefined} tabIndex={-1} ref={heading}>{title}</h2><button type="button" onClick={onClose} aria-label="Kapat"><X/></button></header>
-  <div className="kt-body">{children}</div>{footer&&<footer className="kt-foot">{footer}</footer>}
+ const frame=scene ? 'modal game-dialog scenic-outcome' : 'kt-window';
+ return <dialog ref={ref} aria-labelledby={id} aria-modal="true"
+   className={[frame,compact?'kt-small':'',className].filter(Boolean).join(' ')}
+   data-kt-surface={scene?undefined:surface} data-kt-context={context} data-layout={scene?undefined:'viewport'}
+   style={scene?{'--outcome-scene':scene.background} as CSSProperties:panelArt?{'--panel-art':`url("${panelArt}")`} as CSSProperties:undefined}
+   onCancel={event=>{event.preventDefault();event.stopPropagation();onClose();}}
+   onClick={event=>{
+    if(event.target!==event.currentTarget)return;
+    const box=event.currentTarget.getBoundingClientRect();
+    if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)onClose();
+   }}>
+  {scene?.decoration}
+  <header className={scene?'modal-head':'kt-head'}>
+   {scene?.leading}
+   <h2 id={id} className={visuallyHiddenTitle?'sr-only':undefined} tabIndex={-1} ref={heading}>{title}</h2>
+   <button type="button" className={scene?'icon-button':'kt-close'} onClick={onClose} aria-label={scene?.home?'Ana sayfa':'Kapat'}>{scene?.home?<House/>:<X/>}</button>
+  </header>
+  <div className={scene?'modal-content':'kt-body'}>{children}</div>
+  {footer&&<footer className={scene?'modal-actions':'kt-foot'} aria-label="İşlemler">{footer}</footer>}
  </dialog>;
 }
 export function Button({kind='primary',className='',...props}:ButtonHTMLAttributes<HTMLButtonElement>&{kind?:'primary'|'secondary'|'text'|'play'|'danger'}){

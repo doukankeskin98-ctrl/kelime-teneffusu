@@ -1,0 +1,47 @@
+/* Shared artwork crops keep card titles, progress and next actions in view. */
+.journey-map-worlds,.chapter-picker-grid,.story-card-grid,.discovery-album-grid,.published-chapter-grid,.release-album-grid {
+  display:grid;grid-template-columns:minmax(0,1fr);gap:12px;
+}
+.journey-map-heading,.story-collection-heading,.journey-albums .section-title,.discovery-album-card small {
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.journey-map-heading,.story-collection-heading {margin-bottom:12px}
+.journey-map-world,.chapter-world-cover,.story-card-art,.collection-scene {position:relative;overflow:hidden}
+.journey-map-world>.scene-art,.chapter-world-cover>.scene-art,.story-card-art>.scene-art,.collection-scene>.scene-art {
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+}
+.journey-map-world {min-height:130px;display:flex;align-items:flex-end;text-align:left;padding:0}
+.journey-map-world-copy,.chapter-world-cover>div {
+  isolation:isolate;position:relative;display:grid;align-content:end;min-height:inherit;width:100%;padding:16px;color:white;
+  background:linear-gradient(#19152e54,#19152ee8 42%,#18142ef5);
+}
+.journey-map-world-copy :is(small,strong,span),.chapter-world-cover span {color:white}
+.journey-map-world-copy strong {font-size:20px}
+.journey-map-chevron {position:absolute;right:12px;bottom:16px;color:white}
+.journey-map-dots,.album-piece-dots,.chapter-picker-grid button>span,.collection-ribbon,.collection-route-seal {display:flex;align-items:center;gap:5px}
+.journey-map-dots span,.album-piece-dots i {display:grid;place-items:center;min-width:22px;height:22px;border:1px solid;border-radius:50%;font-style:normal}
+.journey-map-dots .now,.album-piece-dots .earned {background:var(--berrak-gold);color:#34243b}
+.chapter-world-cover {min-height:90px;border-radius:16px}
+.chapter-picker-grid {margin:10px 0}
+.chapter-picker-grid>button {display:grid;grid-template-columns:45px 1fr auto;align-items:center;gap:8px;min-height:48px;padding:6px;text-align:left}
+.chapter-picker-grid button>span {justify-content:center;min-height:34px;border-radius:12px}
+.chapter-picker-grid button em {font-style:normal;font-weight:700}
+.chapter-picker-grid small span,.discovery-album-card small span {display:inline-flex;align-items:center}
+.discovery-album-card,.story-card,.published-chapter-card {overflow:hidden;padding:0;text-align:left}
+.collection-scene {aspect-ratio:2/1;background:var(--control-soft)}
+.collection-mosaic {position:absolute;inset:0;display:grid;grid-template:1fr 1fr / repeat(3,1fr)}
+.collection-mosaic span {display:grid;place-items:center}
+.collection-mosaic .covered {background:#eeebf5eb;color:var(--control-ink)}
+.collection-mosaic .revealed i,.collection-ribbon,.collection-route-seal,.story-card-number,.story-card-stars {background:white;padding:4px 8px;border-radius:8px;color:var(--control-ink)}
+.assembled .collection-mosaic {display:none}
+.collection-ribbon,.collection-route-seal,.story-card-stars {position:absolute;right:8px;bottom:8px}
+.discovery-album-card>div+div,.story-card-copy,.published-chapter-card>div,.release-album-card {display:grid;gap:8px;padding:12px}
+.collection-piece-list li {display:flex;align-items:center;gap:8px;padding:6px 0}
+.collection-piece-list small {display:block}
+.story-collection {margin:0;padding:0}
+.story-card-art {aspect-ratio:2.6}
+.story-card-number {position:absolute;top:8px;left:8px}
+.story-card-copy {position:relative;padding-right:32px}
+.story-card-copy>svg {position:absolute;right:10px;top:50%}
+.published-chapter-card>.theme-art,.published-chapter-card>.world-art {display:block;width:100%;height:90px}
+.release-album-card {border:1px solid var(--control-line);border-radius:16px}

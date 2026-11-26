@@ -1,6 +1,6 @@
 {
   "name": "kelime-teneffusu",
-  "version": "0.58.3",
+  "version": "0.58.4",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -24,6 +24,8 @@
     "lint:guard": "node scripts/lint-guard.mjs",
     "menu:readability": "node scripts/visual/readability.mjs",
     "menu:settings-arena": "KAPSAM=0.58.3 SURFACES_ONLY=1 node scripts/visual/butunluk-kapisi.mjs",
+    "menu:windows": "node scripts/visual/butunluk-kapisi.mjs",
+    "styles:check": "node scripts/verify-style-budget.mjs",
     "layout:audit": "pnpm mobile:build && node scripts/visual/layout-audit.mjs",
     "content:quality": "node --experimental-strip-types --experimental-transform-types scripts/check-editorial-quality.ts",
     "journey:local": "vite --config mobile/vite.config.ts --mode journey-pilot --host 127.0.0.1 --port 5175 --strictPort",

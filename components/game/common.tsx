@@ -8,8 +8,8 @@ import {SettingsWindow} from './SettingsHome';
 import {usePlaySettings} from './PlayPreferences';
 import '@/lib/game/browser-compat';
 import {wordCardCopy,wordListProgress,focusedWordGroup,compactWordRack,veiledText,type WordVeil} from '@/lib/game/word-card';
-import {useEffect,useLayoutEffect,useRef,useId,useState,useMemo,type ReactNode,type CSSProperties} from 'react';
-import {ArrowLeft,ArrowRight,Check,Lightbulb,ListChecks,LoaderCircle,X,Settings,House,Star} from 'lucide-react';
+import {useEffect,useLayoutEffect,useRef,useState,useMemo,type ReactNode,type CSSProperties} from 'react';
+import {ArrowLeft,ArrowRight,Check,Lightbulb,ListChecks,LoaderCircle,Settings,Star} from 'lucide-react';
 import {Board,strokeColor} from './Board';
 import {stopHapticSelection} from '@/lib/game/haptics';
 import {WordFeedback} from './WordFeedback';
@@ -21,7 +21,7 @@ import {sceneImage} from '@/lib/game/scene';
 import type {SceneKind} from '@/lib/game/scene';
 import {projectBoard,projectStrokes} from '@/lib/game/board-projection';
 import {boardView,viewCell,viewStrokes} from '@/lib/game/board-view';
-import {openGameDialog} from '@/lib/game/legacy-ui';
+import {Window} from '../ui/GameUI';
 import {attachPlayFit} from '@/lib/game/viewport';
 import {memberFetch} from '@/lib/auth/firebase-client';
 import type {Cell,Puzzle,Stroke} from '@/lib/game/engine';
@@ -31,7 +31,20 @@ export async function getApi<T>(query='',signal?:AbortSignal):Promise<T>{const r
 export async function socialApi<T>(action:string,data:Record<string,unknown>={},signal?:AbortSignal):Promise<T>{const res=await memberFetch('/api/social',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data}),signal});const value=await res.json();if(!res.ok)throw new Error(errorText(value));return value as T;}
 export async function getSocial<T>(query='',signal?:AbortSignal):Promise<T>{const res=await memberFetch('/api/social'+query,{signal});const data=await res.json();if(!res.ok)throw new Error(errorText(data));return data as T;}
 export {useChime} from './useGameSound';
-export function Modal({title,onClose,children,className='',footer,scene,resultStars,resultStarGain=0,focusTitleOnChange=false}:{resultStarGain?:number;resultStars?:number;focusTitleOnChange?:boolean;scene?:SceneKind;title:string;onClose:()=>void;children:ReactNode;className?:string;footer?:ReactNode}){const ref=useRef<HTMLDialogElement>(null),id=useId();useLayoutEffect(()=>{const d=ref.current;if(d){const close=openGameDialog(d,onClose,window);d.querySelector<HTMLElement>('.modal-head h2')?.focus({preventScroll:true});return close;}},[]);useEffect(()=>{if(focusTitleOnChange)ref.current?.querySelector<HTMLElement>('.modal-head h2')?.focus({preventScroll:true});},[title,focusTitleOnChange]);const plainSheet=!scene&&!className.includes('scene-result')&&!className.includes('game-tools-modal');return <dialog data-stable-top={!scene&&!className.includes('scene-result')?'true':undefined} className={'modal game-dialog'+(plainSheet?' game-tools-modal standard-sheet':'')+(!footer?' dialog-scrolls':'')+(className?' '+className:'')+(scene?' scenic-outcome':'')} style={scene?{'--outcome-scene':`url("${sceneImage(scene)}")`} as CSSProperties:undefined} ref={ref} onCancel={e=>{e.preventDefault();e.stopPropagation();onClose();}} onClick={e=>{if(e.target===ref.current){const bounds=e.currentTarget.getBoundingClientRect();if(e.clientX<bounds.left||e.clientX>bounds.right||e.clientY<bounds.top||e.clientY>bounds.bottom)onClose();}}} role="dialog" aria-modal="true" aria-labelledby={id}>{className.includes('celebration-outcome')&&(!className.includes('journey-outcome')||className.includes('milestone-outcome'))&&<Celebration grand={className.includes('milestone-outcome')}/>}<div className="modal-head">{resultStars!==undefined&&<StarTotal total={resultStars} gain={resultStarGain}/>}<h2 id={id} tabIndex={-1}>{title}</h2><button className="icon-button" aria-label={resultStars!==undefined?"Ana sayfa":"Kapat"} onClick={onClose}>{resultStars!==undefined?<House aria-hidden="true"/>:<X/>}</button></div>{footer?<><div className="modal-content">{children}</div><footer className="modal-actions" aria-label="İşlemler">{footer}</footer></>:plainSheet?<div className="modal-sheet-body">{children}</div>:children}</dialog>;}
+export function Modal({title,onClose,children,className='',footer,scene,resultStars,resultStarGain=0}:{
+ title:string; onClose:()=>void; children:ReactNode; className?:string; footer?:ReactNode;
+ resultStarGain?:number; resultStars?:number; scene?:SceneKind;
+}){
+ const celebrate=className.includes('celebration-outcome')&&(!className.includes('journey-outcome')||className.includes('milestone-outcome'));
+ const scoreboard=scene&&className.includes('arena-scoreboard')&&!className.includes('scene-result');
+ return <Window title={title} onClose={onClose} className={className} footer={footer}
+  panelArt={scoreboard?sceneImage(scene):undefined}
+  scene={scene&&!scoreboard?{background:`url("${sceneImage(scene)}")`,home:resultStars!==undefined,
+   leading:resultStars!==undefined?<StarTotal total={resultStars} gain={resultStarGain}/>:undefined,
+   decoration:celebrate?<Celebration grand={className.includes('milestone-outcome')}/>:undefined}:undefined}>
+  {children}
+ </Window>;
+}
 export interface WordListData {definition?:DefinitionState;veils?:Record<number,WordVeil>;board:Pick<Puzzle,'targets'>;strokes:Stroke[];golden?:string|null;clues?:Record<string,string>;focusedGroup?:number|null;onFocusGroup?:(group:number)=>void;activeOnly?:number|null}
 /** A read-only view. Opening it never pauses, selects or changes the board. */
 export function BoardWords({words}:{words:WordListData}){
@@ -212,7 +225,7 @@ export function PlayControls({settingsOnly=false,hideSettings=false,onHome,pause
  {completed&&(onSkipResult
   ? <button type="button" className="button journey-skip-reward" onClick={onSkipResult}>Sonuca geç<ArrowRight size={16} aria-hidden="true"/></button>
   : <span className="review-controls-label"><Check size={17}/>İnceleme</span>)}
- {onTurn&&<button className="turn-board" onClick={onTurn} disabled={paused||blocked} aria-label="Tahtayı döndür" aria-pressed={turned}><svg className="turn-board-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M12 8v12M16 8v12M8 12h12M8 16h12M4 12a10 10 0 0 1 17-5M21 3v4h-4M24 16a10 10 0 0 1-17 5M7 25v-4h4"/></svg></button>}
+ {onTurn&&<button className="turn-board" onClick={event=>{onTurn();event.currentTarget.closest('.viewport-play')?.querySelector<HTMLElement>('.letter-board')?.focus({preventScroll:true});}} disabled={paused||blocked} aria-label="Tahtayı döndür" aria-pressed={turned}><svg className="turn-board-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M12 8v12M16 8v12M8 12h12M8 16h12M4 12a10 10 0 0 1 17-5M21 3v4h-4M24 16a10 10 0 0 1-17 5M7 25v-4h4"/></svg></button>}
  {!hideSettings&&<button className="icon-button game-settings-trigger" onClick={open} aria-label="Ayarlar" aria-haspopup="dialog"><Settings aria-hidden="true"/></button>}</div>}{settingsOnly&&<button className="icon-button game-settings-trigger" onClick={open} aria-label="Ayarlar" aria-haspopup="dialog"><Settings aria-hidden="true"/></button>}
  {menu&&<GameToolsSheet onHome={onHome} onClose={close} sound={sound} onSound={onSound} zoom={zoom} onZoom={onZoom} onHelp={onHelp} finished={completed} timed={!canPause}/>}
  </>;

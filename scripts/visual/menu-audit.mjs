@@ -48,7 +48,7 @@ async function home(progress=fixture.progress) {
 }
 const rawOutput=path.join(out,process.env.METRICS||'metrics.json');
 const persist=()=>writeFileSync(rawOutput,JSON.stringify({surface:'Headless Chrome with mobile viewport and emulated safe area; synthetic save and local API fixture',records,errors:page.errors},null,2));
-const dismiss=()=>click('dialog[open] .modal-head button');
+const dismiss=()=>click('dialog[open] :is(.kt-head,.modal-head) button');
 const openLink=label=>click('[aria-label='+JSON.stringify(label)+']');
 let wd;
 async function shot(name,mandatory=''){

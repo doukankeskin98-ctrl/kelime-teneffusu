@@ -2,7 +2,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
-// 0.58.3 covers the shared settings lists and the Arena entry surface.
+// Every first-party screen shares the game components and their color sources.
 const kitRestrictions = [
   { selector: 'JSXOpeningElement[name.name="dialog"]', message: 'Use Window from GameUI.' },
   { selector: 'JSXAttribute[name.name="role"][value.value="switch"]', message: 'Use Toggle from GameUI.' },
@@ -38,23 +38,9 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: [
-      "components/game/SettingsHome.tsx", "components/game/GameSettings.tsx",
-      "components/game/SoundSettings.tsx", "components/game/DailyReminder.tsx",
-      "components/game/PrivacyInfo.tsx", "components/game/PlayPreferences.tsx",
-    ],
-    rules: { "no-restricted-syntax": ["error", ...kitRestrictions] },
-  },
-  {
-    files: ["components/game/Arena.tsx", "components/game/common.tsx"],
-    rules: {
-      "no-restricted-syntax": ["error", ...kitRestrictions.flatMap(rule =>
-        ['FunctionDeclaration[id.name="GameToolsSheet"]',
-         'VariableDeclarator[id.name="roundPreference"]',
-         'JSXElement:has(> JSXOpeningElement > JSXAttribute[name.name="surface"][value.value="arena"])'].map(parent => ({
-          ...rule, selector: parent + " " + rule.selector + ':not(JSXElement:has(> JSXOpeningElement[name.name="Modal"]) *)',
-        })))],
-    },
+    files: ["components/**/*.{ts,tsx}", "app/**/*.{ts,tsx}", "mobile/**/*.{ts,tsx}"],
+    ignores: ["components/ui/GameUI.tsx", "components/ui/art-palette.ts", "components/ui/theme-colors.ts"],
+    rules: {"no-restricted-syntax": ["error", ...kitRestrictions]},
   },
 ]);
 

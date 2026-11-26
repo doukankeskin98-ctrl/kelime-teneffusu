@@ -26,7 +26,7 @@ try {
   await page.evaluate("[...document.querySelectorAll('dialog button')].find(b => b.textContent.trim()==='Diğer ayarlar').click()");
   await waitFor("document.querySelector('dialog[open] .install-setting button')");
   assert.equal(await page.evaluate("document.querySelector('.install-setting button').textContent"), 'Ana ekrana ekle');
-  await page.evaluate("document.querySelector('dialog[open] .modal-head button').click()");
+  await page.evaluate("document.querySelector('dialog[open] :is(.kt-head,.modal-head) button').click()");
   await waitFor("!document.querySelector('dialog[open]')");
   const point = await page.evaluate(`(() => {
     const button = document.querySelector('.stage-play');

@@ -1,0 +1,16 @@
+.sprint-intro {width:min(100%,680px);margin:16px auto;padding:clamp(14px,4vw,24px);border-radius:22px;background:white;color:var(--ink)}
+.sprint-intro h1 {margin:10px 0;font-size:clamp(24px,8vw,36px)}
+.sprint-intro p {color:var(--muted)}
+:where(.page-enter,.kt-body,.modal-content) :is(input:not([type=checkbox]):not([type=range]),select,textarea){max-width:100%;min-height:44px;padding:9px 12px;border:1px solid #d1cadd;border-radius:12px;background:white;color:#29203e}
+.kt-body :is(ul,ol){margin-block:6px;padding-inline-start:20px}
+.modal[open]{position:fixed;inset:0;display:flex;flex-direction:column;min-width:0;max-width:calc(100vw - 20px);max-height:calc(100dvh - max(12px,env(safe-area-inset-top)) - max(12px,env(safe-area-inset-bottom)));margin:auto;width:min(100%,540px);padding:0;overflow:hidden;border:0;border-radius:24px;background:white;color:#211b32}
+.modal::backdrop{background:#160d319b}
+.modal-head,.modal-actions{flex:none;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px}.modal-head{position:relative;background:#6233d3;color:#fff}
+.modal-head h2{font-weight:800;font-size:22px;text-align:center}.modal-head .icon-button{position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+.modal-content{flex:1;min-height:0;min-width:0;overflow:auto;padding:16px}.modal-actions>button{flex:1}
+.scenic-outcome>.modal-content{text-align:center}
+.sprint-hud{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:14px;color:#252139;background:white;font-variant-numeric:tabular-nums}
+.sprint-intro-art{display:grid;place-items:center;min-height:108px;border-radius:16px;background:#f2ebff;color:#5629bc}
+.sprint-rules,.duel-controls,.arena-room-actions{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}
+.game-notices:empty,.board-access-note,.scenic-play .game-note{display:none}
+:where(.native-shell,.game-app) :is(button,a):active:not(:disabled){filter:brightness(.97)}

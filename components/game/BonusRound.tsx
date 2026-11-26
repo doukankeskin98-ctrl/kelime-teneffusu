@@ -88,7 +88,7 @@ export function BonusRound({worldId,progress,onProgress,onBack,onHome,onContinue
   </PlayLayout>
  </div>
  {tools&&<GameToolsSheet finished={save.finished} onClose={closeTools} onHome={back} sound={progress.sound} onSound={()=>{chime(progress.sound?'mute':'enable');onProgress(p=>({...p,sound:!p.sound}));}} onHelp={()=>{if(started)pause();setHelp(true);}}/>}
- {help&&<Modal className="game-tools-modal mechanic-guide" title="Bonus turu" onClose={()=>{setHelp(false);if(started)resume();}} footer={<button className="button primary full" onClick={()=>{setHelp(false);if(started)resume();}}>Oyuna dön</button>}><p>Tahtadaki {word} kelimelerini yatay, dikey, çapraz veya tersten bul. Her farklı çizgi yalnız bir kez sayılır.</p><p>Süre dolunca buldukların kaydedilir. Ara verdiğinde süre durur. İpucu veya puan cezası yok.</p></Modal>}
+ {help&&<Modal className="mechanic-guide" title="Bonus turu" onClose={()=>{setHelp(false);if(started)resume();}} footer={<button className="button primary full" onClick={()=>{setHelp(false);if(started)resume();}}>Oyuna dön</button>}><p>Tahtadaki {word} kelimelerini yatay, dikey, çapraz veya tersten bul. Her farklı çizgi yalnız bir kez sayılır.</p><p>Süre dolunca buldukların kaydedilir. Ara verdiğinde süre durur. İpucu veya puan cezası yok.</p></Modal>}
  {save.finished&&result.ready&&!review&&!help&&!tools&&<Modal scene={scene}
   className="scene-result celebration-outcome bonus-outcome berrak-result"
   title={save.found.length===board.targets.length?'Hepsini buldun!':'Bonus tamamlandı'}

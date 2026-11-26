@@ -33,7 +33,7 @@ export function ChapterPicker({progress,onPlay,onClose,worldId,onAlbums}:{progre
  const worlds=showAll?EXPEDITIONS:nearby;
  const play=(item:typeof chapters[number])=>{if(!item.unlocked)return;onClose();onPlay({themeId:item.chapter.themeId,level:0,journey:item.chapter.id,campaign:true,...(item.complete?{practice:true}:{})});};
  const next=items.find(item=>item.number===state.current?.number)??items.find(item=>item.unlocked&&!item.complete);
- return <Modal title={world?.title??'Yolculuğum'} className="chapter-picker game-library-sheet game-tools-modal journey-map" onClose={onClose} focusTitleOnChange><div className="journey-map-body">
+ return <Modal title={world?.title??'Yolculuğum'} className="chapter-picker game-library-sheet journey-map" onClose={onClose}><div className="journey-map-body">
   {world&&status?<>
    <button className="text-button journey-map-back" onClick={()=>setSelected(null)}><ChevronLeft size={18}/>Dünyalar</button>
    <section className={'chapter-picker-world'+(!status.unlocked?' is-locked':'')}>

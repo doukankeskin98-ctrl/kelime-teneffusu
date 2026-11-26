@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {ArrowLeft,Copy} from 'lucide-react';
+import {ArrowLeft,Copy,Info} from 'lucide-react';
+import {Group,Toggle} from '../ui/GameUI';
 import {version} from '@/package.json';
 import {isNativeGame} from '@/lib/platform/runtime';
 import {ISSUE_KINDS,supportDraft,type IssueKind} from '@/lib/platform/support';
@@ -25,7 +26,7 @@ export function SupportReport({onBack}:{onBack?:()=>void}){
   <fieldset className="support-kinds"><legend>Sorun türü</legend>{ISSUE_KINDS.map((item,i)=><button type="button" key={item} ref={i===0?category:undefined} aria-pressed={kind===item} onClick={()=>{setKind(item);setStatus('');}}>{item}</button>)}</fieldset>
   <label htmlFor="support-detail">Ne oldu?</label><textarea id="support-detail" value={detail} maxLength={1200} rows={4} placeholder="Örneğin: 15. bölümde çapraz kelimenin son harfine geldiğimde seçim tamamlanmadı." onChange={e=>{setDetail(e.target.value);setStatus('');}} aria-describedby="support-detail-note"/>
   <small id="support-detail-note">En az 10 karakter. Parola veya kişisel bilgi yazma.</small>
-  <button type="button" className="support-technical" role="switch" aria-checked={technical} onClick={()=>{setTechnical(!technical);setStatus('');}}><i className="switch" aria-hidden="true"/><span>Sürüm ve platform bilgisini ekle<small>{version} · {platform}</small></span></button>
+  <Group><Toggle icon={<Info/>} title="Sürüm ve platform bilgisini ekle" note={version+' · '+platform} checked={technical} onChange={value=>{setTechnical(value);setStatus('');}}/></Group>
   <button className="button primary full" disabled={busy||detail.trim().length<10} onClick={()=>void copy()}><Copy size={19}/>{busy?'Kopyalanıyor…':'Raporu kopyala'}</button>
   <p className="support-status" role="status">{status}</p>
   <button className="text-button support-preview-toggle" aria-expanded={showPreview} aria-controls="support-preview-panel" onClick={()=>setShowPreview(!showPreview)}>Rapor metnini {showPreview?'gizle':'gör'}</button><div id="support-preview-panel" hidden={!showPreview}><label htmlFor="support-preview" className="sr-only">Rapor metni</label><textarea ref={preview} id="support-preview" value={draft} readOnly rows={7}/></div>

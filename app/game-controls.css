@@ -1,0 +1,98 @@
+/* Shared interaction surfaces. Layout, iconography and board projection stay with
+   their owners. Selection uses an inset ring so adjacent rows keep the same size. */
+#kelime-oyunu {
+  --control-ink: #352756;
+  --control-ui: #5738c7;
+  --control-focus: #402296;
+  --control-line: #dcd5f0;
+  --control-soft: #f1edfc;
+  --control-play: linear-gradient(#167b47, #0e6841);
+  --control-danger: #b32740;
+  & :where(button,a.button,[role=button]) {
+  border-color: transparent;
+  border-radius: 18px;
+  border-width: 0;
+  background: white;
+  color: var(--control-ink);
+}
+  & :is(.kt-tile,.journey-map-world,.story-card,.published-chapter-card,
+ .discovery-album-card,.free-level-list button,.option-picker-list button,.free-theme-list button,
+ .chapter-source-switch button,.kt-segments button,.support-kinds button,
+ .palette-options button,.board-color-options button) {
+  background: var(--control-soft);
+  color: var(--control-ink);
+}
+  & :is([aria-pressed=true],[aria-selected=true],:where(.journey-map-world.is-current)) {
+  background:var(--control-soft);color:var(--control-ink);box-shadow:inset 3px 0 var(--control-ui);
+}
+  & :is(.kt-primary,:where(.button.primary,.button.gold)) {
+  background: var(--control-ui);
+  color: white;
+}
+  & :is(.stage-play,.kt-play,.kt-hero,.result-continue,.journey-map-play) {
+  background: var(--control-play);
+  color: white;
+}
+  & :is(.kt-danger,.button.danger) {background:var(--control-danger);color:white}
+  & :is(.kt-close,.icon-button,.berrak-round,.berrak-profile) {
+  background:white;
+  color:var(--control-ui);
+  border-radius:50%;
+}
+  & :is(.hint-button,.turn-board) {
+  background:var(--control-ui);
+  color:white;
+  border-radius:50%;
+}
+  & :is(.kt-row,.game-disclosure-trigger,.text-button,.kt-text,.kt-foot-links button,
+ .target-focus-button,.berrak-shortcut,.berrak-stars) {
+  background:transparent;
+  border-radius:0;
+  color:var(--control-ui);
+}
+  & .berrak-shortcut {color:white}
+  & .berrak-stars {color:var(--control-ink)}
+  & .berrak-orbit {border-radius:50%;background:rgba(35,26,55,.78);color:white;text-shadow:none}
+  & .berrak-orbit small {color:inherit}
+  & .berrak-orbit circle:not(.earned) {stroke:var(--control-line)}
+  & .kt-hero :is(b,small,i), & .stage-play :is(b,strong,span) {color:inherit}
+  & .berrak-profile {
+  isolation:isolate;
+}
+  & .berrak-profile::before {
+  content:"";position:absolute;inset:0;border-radius:50%;z-index:-1;
+  background:conic-gradient(var(--berrak-gold) 0 var(--album-fill),#c6bba3 var(--album-fill) 100%);
+}
+  & :where(button,a.button):disabled {
+  background:var(--control-soft);color:#56516a;opacity:1;box-shadow:none;text-shadow:none;cursor:default;
+}
+  & :is(input,textarea)::placeholder {color:#655e76;opacity:1}
+  & :is(.icon-button,.turn-board,.hint-button):disabled {background:white;color:#615970}
+  & .target-focus-button {background:transparent}
+  & .board-color-preview {color:#17203a}
+  & .kt-group > :not(:first-child) {border-top:0 solid transparent;box-shadow:inset 0 1px var(--control-line)}
+  & :is(button,a,input,textarea,select,[tabindex="0"]):focus-visible {
+  outline:3px solid var(--control-focus);outline-offset:-3px;
+}
+  & :is(h2,h3,time)[tabindex="-1"]:focus {outline:none;box-shadow:none}
+  & .kt-window > .kt-head h2 {
+  font:800 22px/1.1 var(--rounded);letter-spacing:.055em;text-align:center;text-transform:uppercase;color:white;
+}
+  & .kt-window :is(.published-chapters,.release-album-grid,.discovery-album-grid,.profile-window,
+ .word-trail) {font-size:15px}
+  & :is(.profile-window,.game-library-sheet) :is(h2,h3,h4) {font-size:22px}
+  & :is(.profile-window,.game-library-sheet) :is(b,strong) {font-size:17px}
+  & :is(.profile-window,.game-library-sheet) :is(p,label,li,button) {font-size:15px}
+  & :is(.profile-window,.game-library-sheet) :is(small,time,em,.eyebrow,span,i) {font-size:13px}
+  & .kt-profile-avatar, & .kt-stats strong {font-size:26px}
+  & .game-library-sheet .published-chapter-card>.world-art {object-fit:contain}
+}
+
+.kt-body :is(.palette-options,.board-color-options,.support-kinds,.free-theme-list) button,
+.kt-body :is(input[type=range],.game-disclosure-trigger) {min-height:44px;min-width:44px}
+.kt-body :is(.palette-options,.board-color-options,.support-kinds,.free-theme-list) {display:flex;gap:6px;flex-wrap:wrap}
+#kelime-oyunu {
+  & .settings-window .palette-options b {color:var(--control-ink)}
+  & :is(.first-play-guide .text-button,.arena-back.text-button) {background:white;color:var(--control-ui);border-radius:18px}
+}
+.social-empty {background:white;color:var(--control-ink);padding:18px;border-radius:18px;text-align:center}

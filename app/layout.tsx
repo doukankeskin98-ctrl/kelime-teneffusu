@@ -1,7 +1,8 @@
+import {launchBackground} from '@/components/ui/theme-colors';
 import type { Metadata } from "next";
 import "./game-styles.css";
 
-export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',themeColor:'#231d40'};
+export const viewport={width:'device-width',initialScale:1,viewportFit:'cover',themeColor:launchBackground};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kelime-teneffusu.healica.chatgpt.site"),

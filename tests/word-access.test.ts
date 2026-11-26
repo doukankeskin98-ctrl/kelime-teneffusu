@@ -186,7 +186,7 @@ describe('near-board word access uses confirmed, visible list data',()=>{
   }finally{h.close();}
  });
  it('routes X, Escape and backdrop to the same native Modal close callback',()=>{
-  const h=view('components/game/common.tsx');let closed=0,headingFocused=0;const heading={focus(options:{preventScroll:boolean}){assert.equal(options.preventScroll,true);headingFocused++;}};const dialog=Object.assign(new EventTarget(),{ownerDocument:h.document,style:{maxHeight:''},removeAttribute(){},querySelector(selector:string){assert.equal(selector,'.modal-head h2');return heading;},open:false,showModal(){this.open=true;},close(){this.open=false;},getBoundingClientRect:()=>({left:20,right:200,top:20,bottom:200})});h.start('Modal',{title:'Kelime listen',onClose:()=>closed++,children:null},false);h.find('dialog').props['ref'].current=dialog;h.paint();assert.equal(dialog.open,true);assert.equal(headingFocused,1);assert.equal(h.find('h2').props['tabIndex'],-1);assert.equal(h.document.body.style.overflow,'hidden');
+  const h=view('components/ui/GameUI.tsx');let closed=0,headingFocused=0;const heading={focus(options:{preventScroll:boolean}){assert.equal(options.preventScroll,true);headingFocused++;}};const dialog=Object.assign(new EventTarget(),{ownerDocument:h.document,style:{maxHeight:''},removeAttribute(){},querySelector(selector:string){assert.equal(selector,'.modal-head h2');return heading;},open:false,showModal(){this.open=true;},close(){this.open=false;},getBoundingClientRect:()=>({left:20,right:200,top:20,bottom:200})});h.start('Window',{title:'Kelime listen',onClose:()=>closed++,children:null},false);h.find('dialog').props['ref'].current=dialog;h.find('h2').props['ref'].current=heading;h.paint();assert.equal(dialog.open,true);assert.equal(headingFocused,1);assert.equal(h.find('h2').props['tabIndex'],-1);assert.equal(h.document.body.style.overflow,'hidden');
   const node=h.find('dialog');let prevented=false,stopped=false;
   node.props['onCancel']({preventDefault:()=>prevented=true,stopPropagation:()=>stopped=true});
   assert.equal(prevented,true);assert.equal(stopped,true,'Escape must close only the top dialog');h.find('button').props['onClick']();node.props['onClick']({target:dialog,currentTarget:dialog,clientX:0,clientY:0});node.props['onClick']({target:dialog,currentTarget:dialog,clientX:100,clientY:100});assert.equal(closed,3);h.close();assert.equal(dialog.open,false);assert.equal(h.document.body.style.overflow,'');
@@ -232,10 +232,18 @@ describe('caller wiring keeps timers, hidden targets and pending claims separate
 
 describe('achievement loop uses real Solo results and compact target access',()=>{
  it('keeps result actions outside the scrolling content and preserves native close callbacks',()=>{
-  let continued=0,closed=0;const h=view('components/game/common.tsx');try{
-   h.start('Modal',{title:'Keşif tamamlandı',className:'achievement-modal',children:jsx('p',{children:'Gerçek kazanım'}),footer:jsx('button',{children:'Sıradaki keşif',onClick:()=>continued++}),onClose:()=>closed++});
-   const body=walk(h.tree).find(n=>n.props['className']==='modal-content')!,footer=walk(h.tree).find(n=>n.type==='footer')!;assert.match(text(body),/Gerçek kazanım/);assert.doesNotMatch(text(body),/Sıradaki keşif/);assert.equal(footer.props['aria-label'],'İşlemler');walk(footer).find(n=>n.type==='button')!.props['onClick']();assert.equal(continued,1);assert.equal(closed,0);h.find('dialog').props['onCancel'](new Event('cancel',{cancelable:true}));assert.equal(closed,1);
-  }finally{h.close();}
+  for(const scene of [undefined,'court']){
+   let continued=0,closed=0;
+   const source=view('components/game/common.tsx'),h=view('components/ui/GameUI.tsx');
+   try{
+    source.start('Modal',{title:'Keşif tamamlandı',scene,className:'achievement-modal',children:jsx('p',{children:'Gerçek kazanım'}),footer:jsx('button',{children:'Sıradaki keşif',onClick:()=>continued++}),onClose:()=>closed++});
+    h.start('Window',source.tree.props);
+    const body=walk(h.tree).find(n=>n.props['className']===(scene?'modal-content':'kt-body'))!,footer=walk(h.tree).find(n=>n.type==='footer')!;
+    assert.match(text(body),/Gerçek kazanım/);assert.doesNotMatch(text(body),/Sıradaki keşif/);
+    assert.equal(footer.props['aria-label'],'İşlemler');walk(footer).find(n=>n.type==='button')!.props['onClick']();
+    assert.equal(continued,1);assert.equal(closed,0);h.find('dialog').props['onCancel'](new Event('cancel',{cancelable:true}));assert.equal(closed,1);
+   }finally{source.close();h.close();}
+  }
  });
  it('shows one confirmed inline list outside the board, with no duplicate popup',()=>{
   const pending=[content.TUTORIAL.placements[0]!],words={board:content.TUTORIAL,strokes:[]},h=shared({wordList:words,strokes:pending,inlineTargets:true,focused:true});try{

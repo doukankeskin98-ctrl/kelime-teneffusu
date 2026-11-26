@@ -1,26 +1,26 @@
-/* The board uses live measured geometry. Only the chrome above and below it
-   changes density on short phones; selection feedback always owns a row. */
 .scenic-play{
-  --selection:var(--berrak-ui,#7a4cff);
+  --selection:var(--berrak-ui);
   --tool-size:60px;
   --feedback-height:46px;
 }
 :is(.game-app,.main-content) .scenic-play .play-heading{
   background:transparent;border:0;border-radius:0;box-shadow:none;
 }
-.scenic-play.quiet-play .play-heading{
+.scenic-play.quiet-play {
+& .play-heading{
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);
   align-items:center;gap:6px;
 }
-.scenic-play.quiet-play .play-title{
+& .play-title{
   grid-column:2;display:grid;place-items:center;padding-left:0;text-align:center;
 }
-.scenic-play.quiet-play .play-chapter-number{
+& .play-chapter-number{
   position:relative;isolation:isolate;color:#fff;font-size:27px;line-height:1.03;
 }
-.scenic-play.quiet-play .play-chapter-number::before{
+& .play-chapter-number::before{
   content:'';position:absolute;z-index:-1;inset:-2px -10px;border-radius:12px;
   background:var(--berrak-plate);pointer-events:none;
+}
 }
 .play-chapter-number small{
   display:block;margin-bottom:2px;font:800 13px/1 var(--sans);
@@ -28,41 +28,46 @@
 }
 .board-stars{
   justify-self:start;display:inline-flex;align-items:center;gap:6px;height:36px;
-  max-width:100%;padding:0 10px 0 5px;background:var(--berrak-hud,#fff);
-  color:var(--berrak-ink,#14233a);border-radius:999px;font:800 16px/1 var(--sans);
+  max-width:100%;padding:0 10px 0 5px;background:var(--berrak-hud);
+  color:var(--berrak-ink);border-radius:999px;font:800 16px/1 var(--sans);
   box-shadow:0 3px 0 #14233a36;font-variant-numeric:tabular-nums;
 }
-.board-stars svg{width:25px;height:25px;padding:4px;background:var(--berrak-gold,#ffc83d);border-radius:50%;color:#fff;fill:currentColor}
+.board-stars svg{width:25px;height:25px;padding:4px;background:var(--berrak-gold);border-radius:50%;color:#fff;fill:currentColor}
 :is(.game-app,.main-content) .scenic-play .play-heading>.icon-button{
   display:inline-grid;place-items:center;flex:none;justify-self:end;
   min-width:44px;width:44px;height:44px;min-height:44px;
-  border:0;border-radius:50%;background:var(--berrak-hud,#fff);
-  color:var(--berrak-ink,#14233a);box-shadow:0 3px 0 #14233a36;
+  border:0;border-radius:50%;background:var(--berrak-hud);
+  color:var(--berrak-ink);box-shadow:0 3px 0 #14233a36;
 }
-.scenic-play .target-topic{
-  min-height:34px;padding:4px 8px;background:var(--berrak-ui,#7a4cff);
+.scenic-play {
+& .target-topic{
+  min-height:34px;padding:4px 8px;background:var(--berrak-ui);
 }
-.scenic-play .target-topic h1{
+& .target-topic h1{
   color:#fff;font:800 15px/1.2 var(--sans);
   text-transform:uppercase;letter-spacing:.06em;
 }
-.scenic-play .viewport-targets:has(.target-topic),.scenic-play .clue-targets{
-  background:var(--berrak-surface,#fff);border-radius:16px;
+& .viewport-targets:has(.target-topic), & .clue-targets{
+  background:var(--berrak-surface);border-radius:16px;
+}
 }
 .scenic-play .viewport-targets.has-word-rack .word-tag,.game-app .scenic-play .viewport-targets.has-word-rack .word-tag{
-  color:var(--berrak-ink,#14233a);font-family:var(--sans);
+  color:var(--berrak-ink);font-family:var(--sans);
 }
-.scenic-play .target-rack .word-tag.is-focus-target::after{background:var(--berrak-ui,#7a4cff)}
-.scenic-play .target-rack .word-tag.is-focus-target:not(:focus-within)::after{opacity:0}
-.scenic-play .clue-slot>button,.scenic-play .active-clue,.scenic-play .active-clue>svg{color:var(--berrak-ink,#14233a)}
-.scenic-play .clue-slot.is-focus-target>button{background:#eeeaff;box-shadow:inset 0 -2px var(--berrak-ui,#7a4cff)}
-.scenic-play .active-clue{border-color:#dcd9ed}
+.scenic-play {
+& .target-rack .word-tag.is-focus-target::after{background:var(--berrak-ui)}
+& .target-rack .word-tag.is-focus-target:not(:focus-within)::after{opacity:0}
+& .clue-slot>button, & .active-clue, & .active-clue>svg{color:var(--berrak-ink)}
+& .clue-slot.is-focus-target>button{box-shadow:inset 0 -2px var(--berrak-ui)}
+}
 .scenic-play .letter-grid span,.game-app .scenic-play .letter-grid span{
-  color:var(--berrak-ink,#14233a);font-family:var(--sans);font-weight:800;
+  color:var(--berrak-ink);font-family:var(--sans);font-weight:800;
 }
-.scenic-play .board-ink .active-stroke-outline{stroke:var(--selection);opacity:.2}
-.scenic-play .board-stage .letter-board{border:0;border-radius:18px}
-.scenic-play .board-scroll:not(.zoomed){border-radius:18px;box-shadow:0 4px 0 #14233a44}
+.scenic-play {
+& .board-ink .active-stroke-outline{stroke:var(--selection);opacity:.2}
+& .board-stage .letter-board{border:0;border-radius:18px}
+& .board-scroll:not(.zoomed){border-radius:18px;box-shadow:0 4px 0 #14233a44}
+}
 .scenic-play .play-controls,.game-app .scenic-play .play-controls{
   gap:clamp(14px,5vw,24px);min-height:var(--tool-size);height:auto;align-items:center;
 }
@@ -70,120 +75,126 @@
 :is(.game-app,.main-content) .scenic-play .play-controls .hint-button{
   display:inline-grid;place-items:center;position:relative;flex:0 0 var(--tool-size);
   width:var(--tool-size);min-width:var(--tool-size);max-width:none;height:var(--tool-size);
-  padding:0;border:0;border-radius:50%;background:var(--berrak-ui,#7a4cff);
-  color:white;box-shadow:0 4px 0 var(--berrak-ui-dark,#5631cc);font-size:16px;
+  padding:0;border:0;box-shadow:0 4px 0 var(--berrak-ui-dark);font-size:16px;
 }
-.scenic-play .play-controls .turn-board{order:-1}
-.scenic-play .play-controls :is(.turn-board,.hint-button)>svg{width:27px;height:27px}
-.scenic-play .play-controls .hint-button>span{
+.scenic-play {
+& .play-controls .turn-board{order:-1}
+& .play-controls :is(.turn-board,.hint-button)>svg{width:27px;height:27px}
+& .play-controls .hint-button>span{
   position:absolute;top:-4px;right:-5px;display:grid;place-items:center;min-width:24px;
-  height:24px;padding:0 3px;background:var(--berrak-gold,#ffc83d);color:var(--berrak-ink,#14233a);
+  height:24px;padding:0 3px;background:var(--berrak-gold);color:var(--berrak-ink);
   border:2px solid white;border-radius:999px;font:800 13px/1 var(--sans);
 }
-.scenic-play .play-controls :is(.hint-button,.turn-board):active:not(:disabled){
-  transform:none;box-shadow:0 1px 0 var(--berrak-ui-dark,#5631cc);
+& .play-controls :is(.hint-button,.turn-board):active:not(:disabled){
+  transform:none;box-shadow:0 1px 0 var(--berrak-ui-dark);
 }
-/* A tap can leave :hover active on touch screens. Keep the hit target still. */
+}
 @media (hover:none), (pointer:coarse){
   .scenic-play .play-controls :is(.hint-button,.turn-board):hover:not(:disabled){transform:none}
 }
-.scenic-play .selection-bubble{padding:3px 16px}
-.scenic-play .selection-bubble,.scenic-play .play-praise{box-shadow:0 2px 0 var(--berrak-ui-dark,#5631cc)}
-.scenic-play .play-feedback-rail{z-index:1}
-.scenic-play .first-play-guide,.scenic-play .first-play-guide>[role=status],
-.scenic-play .play-notice>span:not(:empty):not(.sr-only){background:#352854;color:white}
-.scenic-play .first-play-guide .text-button{min-width:44px;color:#fff;background:var(--berrak-ui-dark,#5631cc);border-radius:999px}
-.scenic-play .first-play-guide :is(b,span){color:white}
+.scenic-play {
+& .selection-bubble{padding:3px 16px}
+& .selection-bubble, & .play-praise{box-shadow:0 2px 0 var(--berrak-ui-dark)}
+& .play-feedback-rail{z-index:1}
+& .first-play-guide, & .first-play-guide>[role=status], & .play-notice>span:not(:empty):not(.sr-only){background:#352854;color:white}
+& .first-play-guide .text-button{min-width:44px;color:#fff;background:var(--berrak-ui-dark);border-radius:999px}
+& .first-play-guide :is(b,span){color:white}
+}
 @media(min-height:760px) and (orientation:portrait) and (max-width:1100px){
-  .scenic-play.quiet-play{padding-top:clamp(12px,calc(9svh - 38px),42px)}
-  .scenic-play .solo-control-dock{padding-top:12px}
+  .scenic-play {
+  &.quiet-play{padding-top:clamp(12px,calc(9svh - 38px),42px)}
+  & .solo-control-dock{padding-top:12px}
+}
 }
 @media(max-height:740px) and (orientation:portrait){
   .scenic-play{--tool-size:46px;--feedback-height:32px}
   .play-chapter-number small{font-size:13px}
   .scenic-play.quiet-play .play-chapter-number{font-size:24px}
-  .scenic-play .selection-bubble{font-size:18px;line-height:22px}
-  .scenic-play .play-praise strong{font-size:21px}
-  .scenic-play .target-topic{min-height:28px}
-  .scenic-play .solo-control-dock.has-first-play-guide .play-controls{width:auto}
+  .scenic-play {
+  & .selection-bubble{font-size:18px;line-height:22px}
+  & .play-praise strong{font-size:21px}
+  & .target-topic{min-height:28px}
+  & .solo-control-dock.has-first-play-guide .play-controls{width:auto}
+  }
 }
-/* Keep the board at its playing size when the first guide retires,
-   including tall phones whose top and bottom safe areas reduce the space. */
 @media(max-width:759px) and (orientation:portrait){
-  .scenic-play .solo-control-dock.has-first-play-guide{
+  .scenic-play {
+  & .solo-control-dock.has-first-play-guide{
     display:grid;grid-template-columns:var(--tool-size) minmax(0,1fr) auto;column-gap:14px;align-items:center;
   }
-  .scenic-play .has-first-play-guide>.play-controls{grid-area:1 / 1;justify-self:center;width:auto}
-  .scenic-play .has-first-play-guide>.first-play-guide{display:contents}
-  .scenic-play .has-first-play-guide>.first-play-guide>[role=status]{
+  & .has-first-play-guide>.play-controls{grid-area:1 / 1;justify-self:center;width:auto}
+  & .has-first-play-guide>.first-play-guide{display:contents}
+  & .has-first-play-guide>.first-play-guide>[role=status]{
     grid-area:1 / 2;display:block;margin:0;min-height:0;padding:4px 7px;border-radius:8px;
   }
-  .scenic-play .has-first-play-guide>.first-play-guide>.text-button{grid-area:1 / 3}
+  & .has-first-play-guide>.first-play-guide>.text-button{grid-area:1 / 3}
+  }
   html[data-left-handed=true] .scenic-play .solo-control-dock.has-first-play-guide{grid-template-columns:auto minmax(0,1fr) var(--tool-size)}
   html[data-left-handed=true] .scenic-play .has-first-play-guide>.play-controls{grid-column:3}
   html[data-left-handed=true] .scenic-play .has-first-play-guide>.first-play-guide>.text-button{grid-column:1}
 }
 @media(max-width:759px) and (max-height:740px) and (orientation:portrait){
-  .scenic-play .solo-control-dock:not(.has-first-play-guide){position:relative;justify-content:center}
-  .scenic-play .solo-control-dock:not(.has-first-play-guide)>.play-notice{
+  .scenic-play {
+  & .solo-control-dock:not(.has-first-play-guide){position:relative;justify-content:center}
+  & .solo-control-dock:not(.has-first-play-guide)>.play-notice{
     position:absolute;inset:100% 0 auto;width:100%;height:auto;min-height:0;
   }
 }
-
-@media(max-width:1100px) and (orientation:portrait){
- .game-app .scenic-play.quiet-play{--play-gap:0px;--rack-gap:2px}
- .game-app .scenic-play.quiet-play .play-hud:not(:has(.story-hud,.is-guidance,.has-notice,.first-play-guide)){--hud-gap:0px}
- .game-app .scenic-play.quiet-play .board-panel>.play-feedback-rail{margin-top:0}
 }
-
-/* Keep guidance in the player's sightline. The original live region announces once. */
-.scenic-play.chapter-play .solo-control-dock > .play-notice {
-  position:absolute!important;inset:0 auto auto 0!important;clip-path:inset(50%);
-  overflow:hidden;white-space:nowrap;width:1px!important;height:1px!important;
+@media(max-width:1100px) and (orientation:portrait){
+ .game-app .scenic-play {
+ &.quiet-play{--play-gap:0px;--rack-gap:2px}
+ &.quiet-play .play-hud:not(:has(.story-hud,.first-play-guide)){--hud-gap:0px}
+ &.quiet-play .board-panel>.play-feedback-rail{margin-top:0}
+  }
+}
+.scenic-play {
+&.chapter-play .solo-control-dock > .play-notice {
+  position:absolute;inset:0 auto auto 0;clip-path:inset(50%);
+  overflow:hidden;white-space:nowrap;width:1px;height:1px;
   min-height:0;margin:0;padding:0;pointer-events:none;
 }
-.scenic-play .board-action-notice{
+& .board-action-notice{
   position:absolute;inset:0;display:grid;place-items:center;margin:auto;
   width:fit-content;max-width:100%;padding:0 8px;border-radius:10px;
   color:white;background:var(--berrak-deep);text-align:center;font:700 13px/1.12 var(--sans);
 }
-.scenic-play.has-selection .board-action-notice,
-.scenic-play .play-feedback-rail:has(.play-praise:not([hidden])) .board-action-notice{visibility:hidden}
-.scenic-play .play-controls .journey-skip-reward{
-  background:var(--berrak-ui);color:white!important;border:0;box-shadow:var(--berrak-press);
+&.has-selection .board-action-notice, & .play-feedback-rail:has(.play-praise:not([hidden])) .board-action-notice{visibility:hidden}
+& .play-controls .journey-skip-reward{border:0;box-shadow:var(--berrak-press);
 }
-.scenic-play[data-tall-targets] .target-topic{position:relative}
-.scenic-play[data-tall-targets] .target-topic .play-feedback-rail{position:absolute;inset:0;height:100%;width:100%}
-.scenic-play[data-tall-targets].has-selection .target-topic h1,
-.scenic-play[data-tall-targets] .target-topic:has(.board-action-notice,.play-praise:not([hidden])) h1{opacity:0}
-
+&[data-tall-targets] .target-topic{position:relative}
+&[data-tall-targets] .target-topic .play-feedback-rail{position:absolute;inset:0;height:100%;width:100%}
+&[data-tall-targets].has-selection .target-topic h1, &[data-tall-targets] .target-topic:has(.board-action-notice,.play-praise:not([hidden])) h1{opacity:0}
+}
 @media(max-width:759px) and (orientation:portrait){
-  .game-app .scenic-play.quiet-play[data-tall-targets]{padding-top:0}
-  .game-app .scenic-play[data-tall-targets] .solo-control-dock{padding-top:0}
-  .game-app .scenic-play[data-tall-targets] .letter-grid span{font-size:max(20px,calc(var(--board-letter-size,18px)*1.12))}
-  .game-app .scenic-play.chapter-play .viewport-targets.has-word-rack .target-rack:is([data-target-count="5"],[data-target-count="6"]){
-    column-gap:clamp(9px,3vw,14px)!important;
+  .game-app .scenic-play {
+  &.quiet-play[data-tall-targets]{padding-top:0}
+  &[data-tall-targets] .solo-control-dock{padding-top:0}
+  &[data-tall-targets] .letter-grid span{font-size:max(20px,calc(var(--board-letter-size,18px)*1.12))}
+  &.chapter-play .viewport-targets.has-word-rack .target-rack:is([data-target-count="5"],[data-target-count="6"]){
+    column-gap:clamp(9px,3vw,14px);
+  }
   }
 }
-/* The old paper and line each dimmed the entire live selection. Keep the
-   established opacity of settled ink while compositing active ink at full strength. */
-.game-app .scenic-play .letter-board .board-ink {opacity:1}
-.game-app .scenic-play .letter-board .board-ink>g:not(.active-selection) {opacity:.73}
+.game-app .scenic-play {
+  & .letter-board .board-ink {opacity:1}
+  & .letter-board .board-ink>g:not(.active-selection) {opacity:.73}
+}
 [data-board-color]:not([data-board-color=white]) .game-app .scenic-play .letter-board .board-ink>g:not(.active-selection),
 .game-app[data-board-color]:not([data-board-color=white]) .scenic-play .letter-board .board-ink>g:not(.active-selection) {opacity:1}
-
-.game-app .scenic-play .active-selection[data-active=true] line:last-child {
+.game-app .scenic-play {
+& .active-selection[data-active=true] line:last-child {
   stroke:#6c3bcf;stroke-opacity:.94;opacity:1;
 }
-.game-app .scenic-play .letter-grid span.letter-selected {
-  color:#fff!important;text-shadow:none;transform:scale(1.08);
+& .letter-grid span.letter-selected {
+  --cell-ink:#fff;color:var(--cell-ink);text-shadow:none;transform:scale(1.08);
 }
-.game-app .scenic-play .letter-grid span.letter-selected::before {opacity:0}
+& .letter-grid span.letter-selected::before {opacity:0}
+}
 @media(prefers-reduced-motion:reduce) {
   .game-app .scenic-play .letter-grid span.letter-selected {transform:none}
 }
 html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-selected {transform:none}
-
 @media(prefers-reduced-motion:no-preference) {
   html:not([data-reduce-motion=true]) .word-tag[data-word-landing=true] [data-target-letter]::after {
     animation:word-line-settle 190ms ease-out both;
@@ -192,10 +203,6 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
     from {background:#7445ee;transform:scaleY(1.65)}
     to {background:currentColor;transform:scaleY(1)}
   }
-}
-
-/* The last word responds where the player is looking, before the score sheet. */
-@media (prefers-reduced-motion:no-preference) {
   html:not([data-reduce-motion=true]) .chapter-play[data-finishing] .finish-letter {
     animation:finish-letter-wave 240ms var(--wave-delay,0ms) ease-out both;
   }
@@ -205,16 +212,15 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
   html:not([data-reduce-motion=true]) .chapter-play[data-finishing] .target-topic h1 {opacity:0}
   @keyframes finish-letter-wave {0%,100%{transform:translateY(0)}45%{transform:translateY(-3px) scale(1.09)}}
   @keyframes finish-ink {0%,100%{stroke-width:.84}40%{stroke-width:1}}
-  @keyframes finish-praise {0%,100%{opacity:0;transform:scale(.98)}30%,65%{opacity:1;transform:scale(1)}}
 }
-
 .hint-picker .hint-choices {display:grid;gap:8px}
 .hint-picker .hint-choices button {
-  min-height:44px;padding:8px 14px;color:var(--berrak-ink);background:#fff;
-  border:1px solid #d6cdeb;border-radius:12px;font:700 16px/1.25 var(--sans);
+  min-height:44px;padding:8px 14px;
+  border:1px solid #d6cdeb;font:700 16px/1.25 var(--sans);
 }
 @media (orientation:portrait) and (max-width:759px) {
-  .game-app .scenic-play.quiet-play[data-journey-frame] {
+  .game-app .scenic-play {
+  &.quiet-play[data-journey-frame] {
     --fixed-journey-frame:1;
     --tool-size:clamp(44px,15.27vw,64px);
     --header-top:calc(max(env(safe-area-inset-top),8px) + 6px);
@@ -225,37 +231,41 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
     --progress-h:clamp(42px,13.23vw,54px);
     --bottom-reserve:calc(max(env(safe-area-inset-bottom),10px) + var(--progress-h) + 8px);
     --frame-topic:clamp(24px,7.5vw,32px);--frame-list:calc(var(--panel-height) - var(--frame-topic));
-    height:var(--play-height,100dvh);min-height:0;display:grid!important;
+    height:var(--play-height,100dvh);min-height:0;display:grid;
     grid-template-rows:calc(var(--header-top) - var(--layout-origin,0px) + var(--head-h) + var(--head-gap))
       var(--panel-height) minmax(0,1fr) var(--tool-size) var(--bottom-reserve);
-    align-content:stretch;gap:0!important;padding:0!important;
+    align-content:stretch;gap:0;padding:0;
   }
-  .game-app .scenic-play[data-journey-frame]>.play-heading {
+  &[data-journey-frame]>.play-heading {
     grid-row:1;position:relative;align-self:start;height:var(--head-h);min-height:0;
-    margin:0;padding:0!important;translate:0 calc(var(--header-top) - var(--layout-origin,0px));
+    margin:0;padding:0;translate:0 calc(var(--header-top) - var(--layout-origin,0px));
   }
-  .game-app .scenic-play[data-journey-frame] :is(.play-columns,.board-panel) {display:contents!important}
-  .game-app .scenic-play[data-journey-frame]>.play-hud {position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
-  .game-app .scenic-play[data-journey-frame] .targets-panel {grid-row:2;min-height:0;margin:0!important;padding:0!important}
-  .game-app .scenic-play[data-journey-frame] .viewport-targets {height:100%;margin:0;padding:0!important}
-  .game-app .scenic-play[data-journey-frame] .target-topic {
-    position:relative;min-height:0;height:var(--frame-topic);padding:0 6px!important;
+  &[data-journey-frame] :is(.play-columns,.board-panel) {display:contents}
+  &[data-journey-frame]>.play-hud {position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
+}
+  .game-app .scenic-play[data-journey-frame] {
+  & .targets-panel {grid-row:2;min-height:0;margin:0;padding:0}
+  & .viewport-targets {height:100%;margin:0;padding:0}
+  & .target-topic {
+    position:relative;min-height:0;height:var(--frame-topic);padding:0 6px;
   }
-  .game-app .scenic-play[data-journey-frame] .target-topic .play-feedback-rail {position:absolute;inset:0;height:100%;width:100%;margin:0}
+  & .target-topic .play-feedback-rail {position:absolute;inset:0;height:100%;width:100%;margin:0}
+  }
   .scenic-play[data-journey-frame].has-selection .target-topic h1,
   .scenic-play[data-journey-frame] .target-topic:has(.board-action-notice,.play-praise:not([hidden])) h1 {opacity:0}
-  .game-app .scenic-play[data-journey-frame] .target-rack {
-    min-height:0;height:var(--frame-list);padding:0 10px!important;gap:0 14px!important;
-    align-content:center;align-items:center;
+  .game-app .scenic-play[data-journey-frame] {
+  & .target-rack {
+    min-height:0;height:var(--frame-list);padding:0 10px;gap:0 14px;align-items:center;
   }
-  .game-app .scenic-play[data-journey-frame] .viewport-targets.has-word-rack .target-rack .word-tag {
-    flex:0 0 auto;min-width:0;min-height:0!important;margin:0!important;
-    font-size:var(--rack-type,14px)!important;line-height:1.05;
+  & .viewport-targets.has-word-rack .target-rack .word-tag {
+    flex:0 0 auto;min-width:0;min-height:0;margin:0;
+    font-size:var(--rack-type,14px);line-height:1.05;
   }
-  .game-app .scenic-play[data-journey-frame] .board-stage {
+  & .board-stage {
     grid-row:3;display:grid;align-content:start;justify-items:center;
-    height:auto!important;width:100%;min-height:0;min-width:0;margin:0;
+    height:auto;width:100%;min-height:0;min-width:0;margin:0;
     background:transparent;border-radius:0;padding:calc(var(--paper-gap) + var(--paper-padding)) 0 0;box-sizing:border-box;
+  }
   }
   .scenic-play[data-journey-frame]:not([data-result-phase=exit]) .board-stage::before {
     content:'';position:absolute;left:50%;top:var(--paper-gap);transform:translateX(-50%);
@@ -263,82 +273,76 @@ html[data-reduce-motion=true] .game-app .scenic-play .letter-grid span.letter-se
     border-radius:20px;background:var(--board-paper,#fff);pointer-events:none;
     box-shadow:0 3px 0 rgba(20,62,79,.16),0 10px 28px rgba(20,30,60,.12);
   }
-  .game-app .scenic-play[data-journey-frame] .board-scroll:not(.zoomed) {
+  .game-app .scenic-play[data-journey-frame] {
+  & .board-scroll:not(.zoomed) {
     position:relative;
     margin:0;align-self:start;box-shadow:none;border:0;padding:0;border-radius:0;background:transparent;
   }
-  .game-app .scenic-play[data-journey-frame] .board-stage .letter-board {
-    background:transparent!important;box-shadow:none!important;border:0;border-radius:0;
+  & .board-stage .letter-board {
+    background:transparent!important;box-shadow:none;border:0;border-radius:0;
   }
-  .game-app .scenic-play[data-journey-frame] .letter-grid span {
-    color:#111216;font-size:max(21px,var(--board-letter-size));font-weight:800;
+  & .letter-grid span {
+    color:var(--cell-ink,#111216);font-size:max(21px,var(--board-letter-size));font-weight:800;
   }
-  .game-app .scenic-play[data-journey-frame] .solo-control-dock {
+  & .solo-control-dock {
     position:relative;inset:auto;grid-row:4;align-self:center;width:100%;min-height:var(--tool-size);
-    margin:0!important;padding:0!important;
+    margin:0;padding:0;
   }
-  .game-app .scenic-play[data-journey-frame] .play-controls {min-height:var(--tool-size);padding:0!important;margin:0!important}
+  & .play-controls {min-height:var(--tool-size);padding:0;margin:0}
+  }
 }
 @media (max-width:340px) and (orientation:portrait) {
   .game-app .scenic-play[data-journey-frame] .viewport-targets[data-many] .target-rack {
-    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;justify-items:center;gap:0 14px!important;
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));justify-items:center;gap:0 14px;
   }
 }
 @media (orientation:portrait) and (max-width:759px) {
-  .game-app .scenic-play[data-journey-frame] .target-rack {align-content:space-evenly!important}
-  .game-app .scenic-play[data-journey-frame] .target-rack .word-tag :is([data-word-label],.target-letters,[data-target-letter]) {
+  .game-app .scenic-play[data-journey-frame] {
+  & .target-rack {align-content:space-evenly}
+  & .target-rack .word-tag :is([data-word-label],.target-letters,[data-target-letter]) {
     min-height:0;line-height:1.05;vertical-align:top;
   }
-  .game-app .scenic-play[data-journey-frame] .target-rack .word-tag :is([data-word-label],.target-letters) {white-space:nowrap}
+  & .target-rack .word-tag :is([data-word-label],.target-letters) {white-space:nowrap}
+  }
 }
-/* Keep the shared topic overlay and passive clue labels usable on a wide board, too. */
 @media (min-width:760px), (orientation:landscape) {
-  .scenic-play[data-journey-frame] .target-topic {position:relative}
-  .scenic-play[data-journey-frame] .target-topic .play-feedback-rail {position:absolute;inset:0;width:100%;height:100%;margin:0}
-  .scenic-play[data-journey-frame].has-selection .target-topic h1,
-  .scenic-play[data-journey-frame] .target-topic:has(.board-action-notice,.play-praise:not([hidden])) h1 {opacity:0}
+  .scenic-play[data-journey-frame] {
+  & .target-topic {position:relative}
+  & .target-topic .play-feedback-rail {position:absolute;inset:0;width:100%;height:100%;margin:0}
+  &.has-selection .target-topic h1, & .target-topic:has(.board-action-notice,.play-praise:not([hidden])) h1 {opacity:0}
+  }
 }
-
 @media (min-width:341px) { .scenic-play { --rack-type:15px } }
 @media (min-width:381px) { .scenic-play { --rack-type:17px } }
 @media (min-width:411px) { .scenic-play { --rack-type:18px } }
 @media (orientation:portrait) and (max-width:759px) {
-  .game-app .scenic-play.chapter-play[data-journey-frame] .viewport-targets.has-word-rack .target-rack {
-    column-gap:14px!important;align-content:space-evenly!important;
+  .game-app .scenic-play {
+  &.chapter-play[data-journey-frame] .viewport-targets.has-word-rack .target-rack {
+    column-gap:14px;align-content:space-evenly;
   }
-}
-
-@media (orientation:portrait) and (max-width:759px){
- .game-app .scenic-play[data-authored-board] .viewport-targets.has-word-rack .target-rack[data-authored-rack] {
-  display:flex!important;flex-flow:column nowrap!important;justify-content:space-evenly!important;align-items:stretch!important;gap:0!important;
+  &[data-authored-board] .viewport-targets.has-word-rack .target-rack[data-authored-rack] {
+  display:flex;flex-flow:column nowrap;justify-content:space-evenly;align-items:stretch;gap:0;
  }
+}
  .target-rack[data-authored-rack] .word-rack-row {display:flex;justify-content:center;align-items:center;column-gap:16px;min-width:0}
  .game-app .scenic-play[data-authored-board] .viewport-targets.has-word-rack .word-rack-row .word-tag {
-  flex:0 0 auto!important;min-width:0!important;width:max-content!important;max-width:none!important;padding:0!important;
+  flex:0 0 auto;min-width:0;width:max-content;max-width:none;padding:0;
  }
 }
 @media(min-width:760px),(orientation:landscape){.word-rack-row{display:contents}}
-
 @media (orientation:portrait) and (max-width:759px){
- /* Reclaim eight pixels of outer decoration; the safe areas and board size are preserved. */
  .game-app.journey-session:has([data-journey-frame]) {
   padding-top:env(safe-area-inset-top,0px);padding-bottom:0;
  }
- .game-app .scenic-play[data-journey-frame] .viewport-targets.has-word-rack>.target-rack {margin-top:0!important}
- .game-app .scenic-play[data-journey-frame] .target-rack:not([data-authored-rack]) .word-tag{
-  min-width:calc((100% - 56px)/5 + 1px)!important;
+ .game-app .scenic-play {
+  &[data-journey-frame] .viewport-targets.has-word-rack>.target-rack {margin-top:0}
+  &[data-journey-frame] .target-rack:not([data-authored-rack]) .word-tag{
+  min-width:calc((100% - 56px)/5 + 1px);
  }
+  &[data-authored-board] .target-rack[data-authored-rack] .word-rack-row {column-gap:14px}
+  &[data-authored-board] .target-rack[data-authored-rack] .word-tag [data-target-letter] {padding-inline:0;letter-spacing:0}
 }
-
-@media (orientation:portrait) and (max-width:759px) {
- .game-app .scenic-play[data-authored-board] .target-rack[data-authored-rack] .word-rack-row {column-gap:14px}
- .game-app .scenic-play[data-authored-board] .target-rack[data-authored-rack] .word-tag [data-target-letter] {padding-inline:0;letter-spacing:0}
-}
-@media (orientation:portrait) and (max-width:759px){
  .scenic-play[data-authored-board] .active-clue{touch-action:pan-y}
-}
-/* One column, including the 12-target rack and the definition strip. */
-@media (orientation:portrait) and (max-width:759px){
  .game-app .scenic-play.quiet-play[data-journey-frame] .viewport-targets{
   width:var(--column-w);max-width:none;position:relative;left:50%;transform:translateX(-50%);margin:0;
  }

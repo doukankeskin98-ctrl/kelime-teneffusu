@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import {fileURLToPath} from 'node:url';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
-const pilotVersion='0.58.3-pilot.1';
+const pilotVersion='0.58.4-pilot.1';
 
 export default defineConfig(({mode})=>{
  const pilot=mode==='journey-pilot';

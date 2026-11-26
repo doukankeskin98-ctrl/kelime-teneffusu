@@ -22,6 +22,7 @@ jobs:
       - name: Verify committed migration snapshot
         run: git diff --exit-code -- drizzle
       - run: pnpm content:check
+      - run: pnpm styles:check
       - run: pnpm lint:guard
       - run: pnpm typecheck
       - run: pnpm test
@@ -70,17 +71,6 @@ jobs:
       - run: pnpm mobile:build
       - name: First journey, control positions and normal-close persistence
         run: node scripts/visual/integrity/run-gate.mjs ${{ matrix.width }}
-      - name: Verify shared settings and Arena entry
-        env:
-          VIEWS: ${{ matrix.width == 320 && '320' || '393-uygulama,430-safari' }}
-          URL: http://127.0.0.1:5385/
-          OUT: outputs/integrity/settings-arena
-        run: |
-          node --experimental-transform-types scripts/visual/menu-fixture-server.mjs dist-mobile 5385 &
-          fixture_pid=$!
-          trap 'kill "$fixture_pid" 2>/dev/null || true' EXIT
-          curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 "$URL" --output /dev/null
-          pnpm menu:settings-arena
       - name: Every menu and agreed terminology
         run: |
           node scripts/visual/readability.mjs ${{ matrix.width }}
@@ -93,4 +83,38 @@ jobs:
         with:
           name: integrity-${{ matrix.width }}
           path: ${{ env.EVIDENCE_DIR }}
+          retention-days: 7
+
+  windows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        view: [320, 393-uygulama, 430-safari]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm mobile:build
+      - name: All 53 screens, touch and keyboard
+        env:
+          VIEWS: ${{ matrix.view }}
+          URL: http://127.0.0.1:5385/
+          OUT: outputs/windows
+        run: |
+          node --experimental-transform-types scripts/visual/menu-fixture-server.mjs dist-mobile 5385 &
+          fixture_pid=$!
+          trap 'kill "$fixture_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 "$URL" --output /dev/null
+          pnpm menu:windows
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-${{ matrix.view }}
+          path: outputs/windows
           retention-days: 7

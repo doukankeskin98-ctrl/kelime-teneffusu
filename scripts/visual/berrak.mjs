@@ -316,8 +316,8 @@ try{
     if(name==='map'){await click('.journey-map-world.is-current');await shot(w,'map-chapters');}
     if(name==='profile'){await click('#collection-tab-achievements');await shot(w,'achievements');await click('#collection-tab-profile');await textButton('Profil oluştur');await shot(w,'identity');}
     if(name==='settings'){await textButton('Gizlilik ve veriler');await shot(w,'privacy');await textButton('Ayarlara dön');await textButton('Erişilebilirlik');await shot(w,'settings-more');await textButton('Destek');await shot(w,'support');}
-    if(name==='arena'){await textButton('Arkadaşlarınla oyna');await shot(w,'arena-room-entry');await click('dialog[open] .modal-head button');await textButton('Meydan oku');await shot(w,'challenge');}
-    if(name==='other'){await shot(w,'short-games');await textButton('Bonus turları');await shot(w,'bonus-library');await click('dialog[open] .modal-head button');await textButton('Hızlı tur');await shot(w,'sprint-intro');}
+    if(name==='arena'){await textButton('Arkadaşlarınla oyna');await shot(w,'arena-room-entry');await click('dialog[open] :is(.kt-head,.modal-head) button');await textButton('Meydan oku');await shot(w,'challenge');}
+    if(name==='other'){await shot(w,'short-games');await textButton('Bonus turları');await shot(w,'bonus-library');await click('dialog[open] :is(.kt-head,.modal-head) button');await textButton('Hızlı tur');await shot(w,'sprint-intro');}
     await home();
    }
   }

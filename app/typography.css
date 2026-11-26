@@ -16,6 +16,6 @@
 }
 :root,.app-shell,.game-app{--sans:Teneffus,Arial,sans-serif;--serif:Teneffus,Arial,sans-serif;--font-heading:Teneffus,Arial,sans-serif}
 .app-shell,.game-app{font-family:var(--sans);font-synthesis:none;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
-.app-shell button,.app-shell input,.app-shell select,.game-app button,.game-app input,.game-app select{font-family:inherit}
-.app-shell h1,.app-shell h2,.app-shell h3,.game-app h1,.game-app h2,.game-app h3{font-family:var(--font-heading);font-weight:800;letter-spacing:-.035em}
+:is(.app-shell,.game-app) :is(button,input,select){font-family:inherit}
+:is(.app-shell,.game-app) :is(h1,h2,h3){font-family:var(--font-heading);font-weight:800;letter-spacing:-.035em}
 .game-app .letter-grid{font-family:var(--sans);font-weight:700;letter-spacing:0}

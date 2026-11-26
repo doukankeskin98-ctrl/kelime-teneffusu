@@ -81,7 +81,9 @@ async function tap(re){
  let p=await page.evaluate(findJS(re));
  for(let attempt=0;!p&&attempt<12;attempt++){await sleep(125);p=await page.evaluate(findJS(re));}
  if(!p)return false;await page.touch([p]);await sleep(450);
- for(let i=0;i<6;i++){const d=await page.evaluate(`(()=>{const b=[...document.querySelectorAll('dialog[open] button')].find(b=>/^Anladım/.test(b.textContent.trim()));const t=[...document.querySelectorAll('dialog[open]')].pop()?.textContent||'';if(b&&/Saklı kelime|nasıl çizilir|ipucu/i.test(t)){b.click();return 1}return 0})()`);if(!d)break;await sleep(300);}
+ // Only the first-visit mechanic guide is incidental to a catalogue path.
+ const guideButton=await page.evaluate(`(()=>{const top=[...document.querySelectorAll('dialog[open]')].pop();if(!top?.matches('.mechanic-guide'))return null;const b=[...top.querySelectorAll('button')].find(el=>el.textContent.trim()==='Anladım');if(!b)return null;const r=b.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()`);
+ if(guideButton){await page.touch([guideButton]);await sleep(300);}
  return true;}
 for(const v of VIEWS)for(const s of SCREENS){
  const tag=`${v.name} · ${s.ad}`;await fresh(v);let ok=true;
@@ -95,7 +97,9 @@ for(const v of VIEWS)for(const s of SCREENS){
    await page.send('CSS.forcePseudoState',{nodeId,forcedPseudoClasses:['focus','focus-visible']});
    const r=await page.evaluate(`(()=>{const e=document.querySelector('[data-kapi-odak]');const c=getComputedStyle(e);const v=(c.outlineStyle!=='none'&&parseFloat(c.outlineWidth)>0)||/0px 0px 0px [1-9]/.test(c.boxShadow);return v?e.tagName+' '+e.textContent.trim().slice(0,20):''})()`);
    await page.send('CSS.forcePseudoState',{nodeId,forcedPseudoClasses:[]});await page.evaluate(`document.querySelector('[data-kapi-odak]')?.removeAttribute('data-kapi-odak')`);return r||null;}catch(err){return 'ölçülemedi: '+String(err).slice(0,60)}})();
- const a=await page.evaluate(AUDIT);const file=`${v.name}-${s.ad.replace(/[^\p{L}\p{N}]+/gu,'_').slice(0,60)}.png`;await page.screenshot(path.join(out,file));
+ const a=await page.evaluate(AUDIT);
+ if(s.heading && (!a.dialog||a.heads[0]?.t!==s.heading))errors.push(tag+': beklenen başlık açılmadı ('+s.heading+')');
+ const file=`${v.name}-${s.ad.replace(/[^\p{L}\p{N}]+/gu,'_').slice(0,60)}.png`;await page.screenshot(path.join(out,file));
  // Her anahtar: ters çevir, ölç, geri çevir.
  const flipped=[];
  // Anahtarın yazısı durumla değişebilir (ör. Arena); eşleştirme sıradan ve adın ilk 16 harfinden yapılır.
@@ -142,5 +146,7 @@ if(process.env.KAPSAM==='0.58.3'){
  console.log('0.58.3', JSON.stringify(release));
  process.exitCode=release.errors.length?1:0;
 }else{
- process.exitCode=errors.length?1:0;
+ const full=!process.env.ONLY&&!process.env.SURFACES_ONLY;
+ const incomplete=full && (SCREENS.length!==53 || rows.filter(r=>r.ad).length!==VIEWS.length*SCREENS.length);
+ process.exitCode=errors.length||incomplete||(full&&release.errors.length)?1:0;
 }

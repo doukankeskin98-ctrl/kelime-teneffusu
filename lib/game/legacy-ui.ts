@@ -36,12 +36,13 @@ export function openGameDialog(dialog:HTMLDialogElement,onClose:()=>void,view:Vi
   dialog.style.top=((viewport?.offsetTop||0)+top+(dialog.dataset?.['stableTop']==='true'?16:Math.max(12,(safeHeight-outer)/2)))+'px';
  };
  const focusable=()=>Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]),a[href],input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])')).filter(node=>node.getClientRects().length>0);
- const key=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();onClose();}else if(e.key==='Tab'){
+ const key=(e:KeyboardEvent)=>{if(e.key==='Escape'&&!native){e.preventDefault();e.stopPropagation();onClose();}else if(e.key==='Tab'){
   e.stopPropagation();
   const items=focusable(),first=items[0],last=items[items.length-1];if(!first){e.preventDefault();dialog.focus();return;}
   if(e.shiftKey&&(doc.activeElement===first||!items.includes(doc.activeElement as HTMLElement))){e.preventDefault();last?.focus();}else if(!e.shiftKey&&(doc.activeElement===last||!items.includes(doc.activeElement as HTMLElement))){e.preventDefault();first.focus();}
  }};
- if(!native){dialog.addEventListener('keydown',key);dialog.tabIndex=-1;dialog.focus();}
+ dialog.addEventListener('keydown',key);
+ if(!native){dialog.tabIndex=-1;dialog.focus();}
  const observer=typeof view.ResizeObserver==='function'?new view.ResizeObserver(fit):null;observer?.observe(dialog);
  const mutation=typeof view.MutationObserver==='function'?new view.MutationObserver(fit):null;mutation?.observe(dialog,{subtree:true,childList:true,characterData:true});doc.fonts?.ready.then(fit);
  view.addEventListener('resize',fit);view.addEventListener('orientationchange',fit);view.visualViewport?.addEventListener('resize',fit);view.visualViewport?.addEventListener('scroll',fit);fit();

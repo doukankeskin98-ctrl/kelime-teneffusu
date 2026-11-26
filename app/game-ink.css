@@ -1,4 +1,3 @@
-/* One owner for permanent ink, pending ink and transient board feedback. */
 :root{--word-0:#ff729e;--word-1:#5cacf4;--word-2:#43cf8e;--word-3:#ffb44b;--word-4:#ff85dc;--word-5:#38cbd0;--word-6:#ff8f73;--word-7:#b7d953;--feedback-ink:#fffbed;--feedback-paper:var(--berrak-ui,#7a4cff);--feedback-height:46px;--feedback-enter:140ms;--feedback-life:1240ms;--ink-settle:180ms}
 [data-palette=ocean]{--word-0:#98cdd0;--word-1:#a6bed8;--word-2:#d6c58b;--word-3:#95b9ac;--word-4:#c3b4d3;--word-5:#aacbd6;--word-6:#dec8a7;--word-7:#a4bdc9}
 [data-palette=orchid]{--word-0:#d5b4cb;--word-1:#bba5d2;--word-2:#92c1b4;--word-3:#ddc391;--word-4:#acc0d6;--word-5:#d7acae;--word-6:#b6c291;--word-7:#9bc8c2}
@@ -34,3 +33,5 @@ html[data-reduce-motion=true] :is(.word-end-flash,.play-praise>i){display:none}
 @keyframes world-arrival{0%{opacity:0;transform:translateY(-12px)}15%,80%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-8px)}}
 @media(prefers-reduced-motion:reduce){.world-arrival{animation:none}}
 html[data-reduce-motion=true] .world-arrival{animation:none}
+.board-ink :is(.hint-guide,.hint-ring){stroke:#a94d2e}
+.board-ink .keyboard-cursor{stroke:#21574b}

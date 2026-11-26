@@ -1,0 +1,45 @@
+.auth-action-page {
+  min-height:100dvh; display:grid; place-items:center; padding:20px;
+}
+.auth-action-card { width:min(100%,460px); padding:clamp(20px,5vw,32px) }
+.auth-panel,.auth-action-card,.auth-verify,.auth-panel form,.auth-action-card form {
+  display:grid; gap:12px; overflow-wrap:anywhere;
+}
+.auth-welcome,.auth-action-card .brand,.auth-field label,.auth-options label,.auth-notice,.auth-privacy {
+  display:flex; align-items:center; gap:8px;
+}
+.auth-tabs,.auth-options,.studio-preview-controls,.content-studio .section-title {
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+}
+.auth-tabs button { flex:1; min-height:44px; border-radius:12px; background:var(--paper) }
+.auth-tabs .selected { background:var(--accent); color:white; font-weight:750 }
+.auth-field label,.studio-form label { font-weight:700 }
+.auth-field input,.studio-form :is(input,select,textarea) {
+  width:100%; min-width:0; min-height:46px; margin-top:4px; padding:9px 12px;
+  border:1px solid #aaa4ba; border-radius:10px; background:white; color:#222036; font-size:16px;
+}
+.auth-password { position:relative }
+.auth-field .auth-password input { padding-right:48px }
+.auth-password button { position:absolute; inset:4px 0 0 auto; width:46px; display:grid; place-items:center }
+.auth-options label { min-height:44px }
+.auth-options input { width:18px; height:18px; accent-color:var(--accent) }
+.auth-error,.studio-form .error-box { color:#882437; background:#fff0f1; padding:10px; border-radius:8px }
+.auth-notice,.studio-form .share-notice { background:#eaf4ef; color:#205639; padding:10px }
+.auth-privacy,.auth-description,.or-line { color:var(--muted) }
+.content-studio {
+  min-height:100dvh; padding:clamp(15px,4vw,40px) max(15px,calc((100% - 1060px)/2)); background:var(--paper);
+}
+.content-studio .section-intro { margin:14px 0 24px; max-width:68ch }
+.studio-columns,.studio-form { display:grid; gap:12px }
+.studio-columns { align-items:start }
+.studio-columns>section { min-width:0; padding:clamp(14px,3vw,24px); border:1px solid var(--line); border-radius:20px; background:white }
+.studio-form { gap:7px }
+.studio-form>label:not(:first-child) { margin-top:8px }
+.studio-form textarea { resize:vertical }
+.studio-number-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px }
+.content-studio .board-panel { gap:14px; overflow-wrap:anywhere }
+.content-studio .letter-board { border:1px solid var(--line); --board-letter-size:clamp(10px,calc(72cqw/var(--n)),28px) }
+.content-studio .game-note,.studio-preview-controls span { display:flex; align-items:center; gap:8px }
+@media (min-width:760px) {
+  .studio-columns { grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr); gap:20px }
+}
