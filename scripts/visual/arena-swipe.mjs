@@ -40,7 +40,11 @@ async function wait(expression) {
     if (value) return value;
     await sleep(100);
   }
-  const where=await page.evaluate("({url:location.pathname+location.search,text:document.body.innerText.slice(0,400)})");
+  const where=await page.evaluate(`(async()=>{
+    const response=await fetch('/api/game'),user=await response.json(),active=await (await fetch('/api/game?action=room')).json();
+    return {url:location.pathname+location.search,text:document.body.innerText.slice(0,350),
+      accountStatus:response.status,authenticated:!!user.authenticated,localRoom:active?.phase||null};
+  })()`);
   throw new Error('Arena check timed out: ' + expression.slice(0,100) + ' ' + JSON.stringify(where));
 }
 try {
@@ -50,8 +54,8 @@ try {
   await page.viewport(320,568,2,{top:0,bottom:0,left:0,right:0});
   const split = host.indexOf('=');
   await page.send('Network.setCookie', {name:host.slice(0,split), value:host.slice(split+1), url:origin, path:'/', secure:true, httpOnly:true, sameSite:'Lax'});
-  await page.goto(origin+'/?sekme=arena');
-  // The web entry can hydrate to the journey hub. Use its actual Arena shortcut.
+  await page.goto(origin+'/');
+  // Enter from the journey hub exactly as a player would, once their session is hydrated.
   const entry=await wait(`(()=>{if(document.querySelector('.letter-board'))return 'active';
     const root=document.querySelector('.native-shell[data-ready=true]');if(!root)return null;
     const link=[...root.querySelectorAll('button')].find(b=>(b.getAttribute('aria-label')||b.textContent).trim()==='Arena');

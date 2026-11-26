@@ -16,20 +16,28 @@ const CANDIDATES = [
 
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-export async function launch({port = 0} = {}) {
-  const chrome = CANDIDATES.find(candidate => existsSync(candidate));
-  if (!chrome) throw new Error('Chrome bulunamadı. CHROME_PATH ile yolunu ver.');
+// Only connection failures before any target is created qualify for CI recovery.
+class EndpointUnavailable extends Error {}
+
+async function startBrowser(chrome, port, hostedLinux, pipe, privateBus = false) {
   const profile = mkdtempSync(path.join(tmpdir(), 'kt-visual-'));
-  // Match the working integrity runner on hosted Linux. Chrome advertises its
-  // own loopback socket even when a distribution launcher does not pass CDP fds.
-  const hostedLinux = process.platform === 'linux' && process.env.GITHUB_ACTIONS === 'true';
-  const pipe = !hostedLinux && port === 0 && process.env.KT_CHROME_PIPE === '1';
+  const deadline = Date.now() + 15000;
+  const busAddress = 'unix:path=' + path.join(profile, 'session-bus');
+  const env = privateBus ? {...process.env, DBUS_SESSION_BUS_ADDRESS:busAddress} : process.env;
+  // A headless runner need not have a desktop session. Pin the fallback to its
+  // own Unix address, even on an image without dbus-daemon, to avoid autolaunch.
+  const bus = privateBus && existsSync('/usr/bin/dbus-daemon')
+    ? spawn('/usr/bin/dbus-daemon', ['--session','--nofork','--nopidfile','--address='+busAddress], {stdio:'ignore'})
+    : null;
+  bus?.on('error',error=>console.warn('Private test session bus:',error.message));
   const transport = pipe ? ['--remote-debugging-pipe'] : ['--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${port}`];
   const args = ['--headless=new', ...transport,
     `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-extensions',
     '--disable-background-networking', '--disable-component-update', '--hide-scrollbars', '--mute-audio',
     ...(process.platform==='linux'?['--disable-dev-shm-usage']:[]), ...(hostedLinux?['--no-sandbox']:[]), 'about:blank'];
-  const child = spawn(chrome, args, {stdio:pipe?['ignore','ignore','pipe','pipe','pipe']:['ignore','ignore','pipe']});
+  const child = spawn(chrome, args, {env,stdio:pipe?['ignore','ignore','pipe','pipe','pipe']:['ignore','ignore','pipe']});
+  const stopBus = () => { if(bus?.pid && bus.exitCode===null && bus.signalCode===null)bus.kill(); };
+  child.once('close',stopBus);
   let startupLog='', socket;
   try {
     // Only connect to the endpoint announced by this browser. Parallel runs can
@@ -58,13 +66,16 @@ export async function launch({port = 0} = {}) {
           if(error)reject(error);else resolve();
         }
         child.once('exit',exited);child.once('error',finish);input.once('error',finish);
-        socket.onmessage=event=>{if(JSON.parse(event.data).id===0)finish();};
+        socket.onmessage=event=>{
+          const reply=JSON.parse(event.data);
+          if(reply.id===0)finish(reply.error ? new Error(reply.error.message) : undefined);
+        };
         socket.send(JSON.stringify({id:0,method:'Browser.getVersion'}));
       });
       input.on('error',()=>{}); // A normal Browser.close can close the pipe first.
     } else {
       const endpoint=await new Promise((resolve,reject)=>{
-        const timer=setTimeout(()=>finish(new Error('no DevTools endpoint')),15000);
+        const timer=setTimeout(()=>finish(new EndpointUnavailable('no DevTools endpoint')),Math.max(0,deadline-Date.now()));
         // With port zero Chrome also publishes its endpoint in the fresh profile.
         // Some runners omit or buffer the corresponding stderr announcement.
         const portFile=path.join(profile,'DevToolsActivePort');
@@ -92,7 +103,19 @@ export async function launch({port = 0} = {}) {
         child.once('error',fail);child.once('exit',exited);child.stderr.on('data',log);
       });
       socket=new WebSocket(endpoint);
-      await new Promise((resolve,reject)=>{socket.onopen=resolve;socket.onerror=reject;});
+      await new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>finish(new EndpointUnavailable('DevTools socket did not answer')),Math.max(0,deadline-Date.now()));
+        function finish(error){
+          clearTimeout(timer);socket.onopen=null;socket.onerror=null;socket.onclose=null;socket.onmessage=null;
+          if(error)reject(error);else resolve();
+        }
+        socket.onopen=()=>{if(hostedLinux)socket.send(JSON.stringify({id:0,method:'Browser.getVersion'}));else finish();};
+        socket.onmessage=event=>{
+          const reply=JSON.parse(event.data);
+          if(reply.id===0)finish(reply.error ? new Error(reply.error.message) : undefined);
+        };
+        socket.onerror=socket.onclose=()=>finish(new EndpointUnavailable('DevTools socket unavailable'));
+      });
     }
   } catch(error) {
     if(child.pid && child.exitCode===null && child.signalCode===null){
@@ -100,9 +123,34 @@ export async function launch({port = 0} = {}) {
       child.kill('SIGKILL');
       await exited;
     }
+    stopBus();
     rmSync(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});
-    throw new Error('Chrome başlatılamadı: '+error.message+' '+startupLog.slice(-1400));
+    throw new Error('Chrome başlatılamadı: '+error.message+' '+startupLog.slice(-1400),{cause:error});
   }
+  return {profile,child,socket};
+}
+
+export async function launch({port = 0} = {}) {
+  const chrome = CANDIDATES.find(candidate => existsSync(candidate));
+  if (!chrome) throw new Error('Chrome bulunamadı. CHROME_PATH ile yolunu ver.');
+  const hostedLinux = process.platform === 'linux' && process.env.GITHUB_ACTIONS === 'true';
+  const pipe = !hostedLinux && port === 0 && process.env.KT_CHROME_PIPE === '1';
+  let browser;
+  try {
+    browser = await startBrowser(chrome,port,hostedLinux,pipe);
+  } catch(error) {
+    // An explicit TCP port is part of the caller's contract. Never hide a
+    // port conflict or retry a target command, navigation or test assertion.
+    if(!hostedLinux || port!==0 || !(error.cause instanceof EndpointUnavailable))throw error;
+    const direct = ['/opt/google/chrome/chrome','/usr/lib/chromium/chromium'].find(existsSync) ?? chrome;
+    console.warn('CI Chrome endpoint unavailable. Starting a fresh pipe-only test browser.');
+    try {
+      browser = await startBrowser(direct,0,hostedLinux,true,true);
+    } catch(recoveryError) {
+      throw new AggregateError([error,recoveryError],'CI Chrome failed on both the owned socket and the private pipe');
+    }
+  }
+  const {profile,child,socket}=browser;
   let nextId = 0;
   const pending = new Map(), errors = [];
   child.once('exit',()=>{

@@ -362,8 +362,6 @@ try{
  await db.prepare('UPDATE game_sessions SET expires=? WHERE user_id=?').bind(Date.now()-1000,target).run();
  check(!(await json('/api/game',{cookie:safetyCookies[1]})).authenticated,'an already expired guest session cannot be silently revived');
  // Deliberate isolated database failure verifies that the production route records a sanitized fault.
- await db.prepare('DROP TABLE ratings').run();await request('/api/game',{cookie:bCookie,expected:503});const fault=(await json('/api/admin?action=faults',owner)).rows[0];check(fault?.area==='game'&&fault.count===1&&fault.reviewed_count===0,'unexpected route failures create operational counters');check(!JSON.stringify(fault).includes(b.profile.id)&&!JSON.stringify(fault).includes('ratings'),'fault counters contain no identity or raw database error');await json('/api/admin',{...owner,method:'POST',body:{action:'reviewFault',day:fault.day,area:fault.area,code:fault.code}});check((await json('/api/admin?action=faults',owner)).rows[0].reviewed_count===1,'fault review is persisted');
- console.log(`${checks} production Worker HTTP checks passed with two legacy players, eight private-group and sixteen concurrent public-group sessions.`);
  if(process.argv.includes('--arena-swipe')){
   const endpoint=new URL(await mf.ready);
   endpoint.hostname='127.0.0.1';
@@ -372,4 +370,7 @@ try{
   });
   process.stdout.write(stdout);
  }
+
+ await db.prepare('DROP TABLE ratings').run();await request('/api/game',{cookie:bCookie,expected:503});const fault=(await json('/api/admin?action=faults',owner)).rows[0];check(fault?.area==='game'&&fault.count===1&&fault.reviewed_count===0,'unexpected route failures create operational counters');check(!JSON.stringify(fault).includes(b.profile.id)&&!JSON.stringify(fault).includes('ratings'),'fault counters contain no identity or raw database error');await json('/api/admin',{...owner,method:'POST',body:{action:'reviewFault',day:fault.day,area:fault.area,code:fault.code}});check((await json('/api/admin?action=faults',owner)).rows[0].reviewed_count===1,'fault review is persisted');
+ console.log(`${checks} production Worker HTTP checks passed with two legacy players, eight private-group and sixteen concurrent public-group sessions.`);
 }finally{await mf.dispose();}
