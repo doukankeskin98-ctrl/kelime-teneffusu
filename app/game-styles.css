@@ -52,3 +52,4 @@
 @import "./definition-strip.css";
 
 /* Entry-only notice; never covers an active competition board. */
+@import "./game-window.css";

@@ -47,7 +47,7 @@ const icons=new Proxy({},{get:(_t,key)=>String(key)}),jsx=(type:unknown,props:Re
 const compiled=(file:string)=>ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;
 function view(file:string,modules:Record<string,unknown>,globals:Record<string,unknown>={}){
  const slots:Slot[]=[],effects:(()=>void)[]=[],intervals=new Map<number,()=>void>(),exports:Record<string,any>={};let cursor=0,dirty=true,id=0,tree:any,render:()=>any,afterUnmount=0,mounted=true;
- const hooks={useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return[slot.value,(next:any)=>{if(!mounted)afterUnmount++;const value=typeof next==='function'?next(slot.value):next;if(!Object.is(value,slot.value)){slot.value=value;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useMemo(fn:()=>any,deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((v,i)=>!Object.is(v,slot.deps![i]))){slot.deps=deps;slot.value=fn();}return slot.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((v,i)=>!Object.is(v,slot.deps![i]))){slot.deps=deps;effects.push(()=>{slot.cleanup?.();const clean=fn();slot.cleanup=typeof clean==='function'?clean:undefined;});}}};
+ const hooks={useSyncExternalStore:(_subscribe:unknown,get:()=>unknown)=>get(),useState(initial:any){const slot=slots[cursor++]??={value:typeof initial==='function'?initial():initial};return[slot.value,(next:any)=>{if(!mounted)afterUnmount++;const value=typeof next==='function'?next(slot.value):next;if(!Object.is(value,slot.value)){slot.value=value;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useMemo(fn:()=>any,deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((v,i)=>!Object.is(v,slot.deps![i]))){slot.deps=deps;slot.value=fn();}return slot.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const slot=slots[cursor++]??={};if(!slot.deps||deps.some((v,i)=>!Object.is(v,slot.deps![i]))){slot.deps=deps;effects.push(()=>{slot.cleanup?.();const clean=fn();slot.cleanup=typeof clean==='function'?clean:undefined;});}}};
  modules={'@/lib/platform/activity':activity,'@/lib/platform/runtime':{gameIsActive:()=>true},'@/lib/game/main-journey':mainJourney,...modules};
  const context:vm.Context={exports,require:(name:string)=>name==='@/lib/game/authored-journey'?authoredJourney:name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/journey-presentation'?safePresentation:name==='@/lib/game/board-quality'?boardQuality:name==='@/lib/game/weekly-reward'?weeklyReward:name==='@/lib/game/discoveries-content'?discoveries:name==='./DeferredScreen'?{deferredGameScreen:(name:string)=>name==='BonusRound'?Object.assign(()=>null,{preload:()=>Promise.resolve()}):name}:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/navigation'?navigation:name==='@/lib/game/first-play'?firstPlay:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/menu-feedback'?{attachMenuFeedback:()=>()=>{}}:name==='./GameSettings'?{useComfort:()=>({comfort:{leftHanded:false,reduceMotion:false},change(){}}),GameSettings:'GameSettings'}:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddleContent:name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/daily-pending'?pending:modules[name]??new Proxy({},{get:(_t,key)=>String(key)}),window:Object.assign(new EventTarget(),{matchMedia:()=>({matches:true}),scrollTo(){}}),document:Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},getElementById:()=>null}),navigator:{onLine:true},sessionStorage:tabStorage(),localStorage:{getItem:()=>null,setItem(){}},performance:{now:()=>0},Date,URL,URLSearchParams,Event,Error,AbortController,crypto,setTimeout,clearTimeout,setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(id:number)=>intervals.delete(id),...globals};
  const resultHook:Record<string,unknown>={};vm.runInNewContext(compiled('components/game/useResultPresentation.ts'),{...context,exports:resultHook,require:(n:string)=>n==='react'?hooks:n==='@/lib/platform/runtime'?{gameIsActive:()=>true}:wordFeedback});modules['./useResultPresentation']=resultHook;
@@ -209,16 +209,21 @@ it('simple settings keep detail, support and guest account deletion reachable wi
  const p=progress.emptyProgress();p.guideDone=true;const h=await app(undefined,{query:'',initial:p});
  const click=(label:string)=>{const n=nodes(h.tree).find(n=>n.type==='button'&&n.props['aria-label']===label);assert(n,label);n.props['onClick']();h.paint();};
  try{
-  const original=JSON.stringify(h.find('Explore').props['progress']);click('Ayarları aç');assert.equal(h.find('Window').props['className'],'preferences-window');
-  const settingsSource=readFileSync('components/game/SettingsHome.tsx','utf8');
-  for(const section of ['usage','appearance'])assert(settingsSource.includes(`<GameSettings {...settings} section="${section}"`));
-  h.find('SettingsHome').props['onSupport']();h.paint();assert(h.find('SupportReport'));h.find('Window').props['footer'].props['onClick']();h.paint();
-  h.find('SettingsHome').props['onPrivacy']();h.paint();assert.equal(h.find('DeleteAccount').props['owner'],'alice');assert.equal(h.find('DeleteAccount').props['kind'],'guest');const privacy=h.find('PrivacyInfo');
-  assert.equal(privacy.props['analytics'],false);
-  privacy.props['onAnalytics'](true);h.paint();assert.equal(h.find('PrivacyInfo').props['analytics'],true);
-  h.find('PrivacyInfo').props['onAnalytics'](false);h.paint();
-  h.find('Window').props['onClose']();h.paint();
-  assert.equal(JSON.stringify(h.find('Explore').props['progress']),original);click('Ayarları aç');assert(h.find('SettingsHome'));h.find('SettingsHome').props['onHelp']();h.paint();assert(h.find('Help'));
+  const original=JSON.stringify(h.find('Explore').props['progress']);click('Ayarları aç');
+  const sheet=view('components/game/SettingsHome.tsx',{'@/lib/game/haptics':{hapticsAvailable:()=>false}},{document:{activeElement:null},HTMLElement:class{}});
+  try{
+   sheet.start(()=>sheet.exports['SettingsWindow'](h.find('SettingsWindow').props));
+   assert.equal(sheet.find('Window').props['surface'],'settings');
+   assert.deepEqual(nodes(sheet.tree).filter(n=>n.type==='Section').map(n=>n.props['title']),['Oyun','Görünüm','Yardım']);
+   const row=(title:string)=>nodes(sheet.tree).find(n=>n.props['title']===title)!;
+   nodes(sheet.tree).find(n=>n.type==='button'&&text(n)==='Destek')!.props['onClick']();sheet.paint();
+   assert(sheet.find('SupportReport'));sheet.find('Window').props['footer'].props['onClick']();sheet.paint();
+   row('Gizlilik ve veriler').props['onClick']();sheet.paint();
+   assert.equal(sheet.find('DeleteAccount').props['owner'],'alice');assert.equal(sheet.find('DeleteAccount').props['kind'],'guest');
+   for(const value of [true,false]){assert.equal(sheet.find('PrivacyInfo').props['analytics'],!value);sheet.find('PrivacyInfo').props['onAnalytics'](value);h.paint();sheet.change();}
+   sheet.find('Window').props['onClose']();sheet.paint();assert(row('Nasıl oynanır?'));
+   assert.equal(JSON.stringify(h.find('Explore').props['progress']),original);row('Nasıl oynanır?').props['onClick']();h.paint();assert(h.find('Help'));
+  }finally{sheet.close();}
  }finally{h.close();}
 });
 

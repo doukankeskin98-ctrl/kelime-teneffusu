@@ -1,16 +1,16 @@
 'use client';
 import {useId,useLayoutEffect,useRef,type ButtonHTMLAttributes,type ReactNode,type Ref} from 'react';
-import {ChevronRight,X} from 'lucide-react';
+import {ChevronRight,Clock,Play,X} from 'lucide-react';
 import {openGameDialog} from '@/lib/game/legacy-ui';
 
 type Children={children:ReactNode};
-type WindowProps=Children&{title:string;onClose:()=>void;footer?:ReactNode;compact?:boolean;visuallyHiddenTitle?:boolean;className?:string};
-export function Window({title,onClose,children,footer,compact=false,visuallyHiddenTitle=false,className=''}:WindowProps){
+type WindowProps=Children&{title:string;onClose:()=>void;footer?:ReactNode;compact?:boolean;visuallyHiddenTitle?:boolean;className?:string;surface?:"arena"|"settings";context?:string};
+export function Window({title,onClose,children,footer,compact=false,visuallyHiddenTitle=false,className='',surface,context}:WindowProps){
  const ref=useRef<HTMLDialogElement>(null),heading=useRef<HTMLHeadingElement>(null),id=useId(),close=useRef(onClose);
  useLayoutEffect(()=>{close.current=onClose;},[onClose]);
  useLayoutEffect(()=>{if(!ref.current)return;return openGameDialog(ref.current,()=>close.current(),window);},[]);
  useLayoutEffect(()=>{heading.current?.focus({preventScroll:true});},[title]);
- return <dialog data-layout="viewport" className={'kt-window'+(compact?' kt-small':'')+' '+className} ref={ref} aria-labelledby={id} onCancel={event=>{event.preventDefault();onClose();}}>
+ return <dialog data-kt-surface={surface} data-kt-context={context} data-layout="viewport" className={'kt-window'+(compact?' kt-small':'')+' '+className} ref={ref} aria-labelledby={id} onCancel={event=>{event.preventDefault();onClose();}}>
   <header className="kt-head"><h2 id={id} className={visuallyHiddenTitle?'sr-only':undefined} tabIndex={-1} ref={heading}>{title}</h2><button type="button" onClick={onClose} aria-label="Kapat"><X/></button></header>
   <div className="kt-body">{children}</div>{footer&&<footer className="kt-foot">{footer}</footer>}
  </dialog>;
@@ -18,7 +18,30 @@ export function Window({title,onClose,children,footer,compact=false,visuallyHidd
 export function Button({kind='primary',className='',...props}:ButtonHTMLAttributes<HTMLButtonElement>&{kind?:'primary'|'secondary'|'text'|'play'|'danger'}){
  return <button type="button" className={'kt-btn kt-'+kind+' '+className} {...props}/>;
 }
-export function RowGroup({title,children}:{title?:string}&Children){return <section className="kt-section">{title&&<h3>{title}</h3>}<div className="kt-group">{children}</div></section>;}
+export function Section({title,children}:{title?:string}&Children){
+ return <section className="kt-section">{title&&<h3>{title}</h3>}{children}</section>;
+}
+export function Group({children}:Children){return <div className="kt-group">{children}</div>;}
+export function RowGroup({title,children}:{title?:string}&Children){
+ return <Section title={title}><Group>{children}</Group></Section>;
+}
+
+type ToggleProps={icon:ReactNode;title:string;note?:string;checked:boolean;onChange:(checked:boolean)=>void;disabled?:boolean};
+export function Toggle({icon,title,note,checked,onChange,disabled}:ToggleProps){
+ return <button type="button" className="kt-row" role="switch" aria-checked={checked} disabled={disabled} onClick={()=>onChange(!checked)}>
+  <span className="kt-icon" aria-hidden="true">{icon}</span>
+  <span className="kt-label"><b>{title}</b>{note&&<small>{note}</small>}</span>
+  <i className="kt-toggle" aria-hidden="true"/>
+ </button>;
+}
+export function Notice({children,running=false}:Children&{running?:boolean}){
+ return <p className="kt-notice" data-running={running||undefined}><Clock aria-hidden="true"/>{children}</p>;
+}
+export function Hero({title,note,...props}:ButtonHTMLAttributes<HTMLButtonElement>&{title:string;note:string}){
+ return <button type="button" className="kt-hero" {...props}>
+  <span><b>{title}</b><small>{note}</small></span><i aria-hidden="true"><Play/></i>
+ </button>;
+}
 export function Row({icon,title,note,onClick,end,buttonRef}:{buttonRef?:Ref<HTMLButtonElement>;icon:ReactNode;title:string;note?:string;onClick?:()=>void;end?:ReactNode}){
  const content=<><span className="kt-icon" aria-hidden="true">{icon}</span><span className="kt-label"><b>{title}</b>{note&&<small>{note}</small>}</span>{end??(onClick&&<ChevronRight size={18} aria-hidden="true"/>)}</>;
  return onClick?<button type="button" className="kt-row" ref={buttonRef} onClick={onClick}>{content}</button>:<div className="kt-row">{content}</div>;

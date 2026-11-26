@@ -1,0 +1,127 @@
+/* Shared settings and Arena surfaces. The bottom actions stay outside the scrolling list. */
+dialog.kt-window[data-kt-surface] {
+  --ui: #5b2ee0;
+  --ui-ink: #3b1aa6;
+  --surface-2: #f3f0ff;
+  --line: #e2dbff;
+  --ink: #15131f;
+  --ink-2: #5d5a75;
+  --font: -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --rounded: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+  --t-row: 700 17px/1.2 var(--font);
+  --t-callout: 500 14px/1.3 var(--font);
+  --t-caption: 750 13px/1.2 var(--rounded);
+  --kit-control: 56px;
+  --kit-row: 64px;
+  inset: calc(env(safe-area-inset-top) + 16px) 12px auto;
+  width: min(540px, calc(100% - 24px));
+  height: fit-content;
+  max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px);
+  border-radius: 30px;
+  background: white;
+  box-shadow: 0 6px 0 rgba(46,20,136,.35), 0 30px 70px rgba(10,6,30,.45);
+}
+.kt-window[data-kt-surface]::backdrop {background:rgba(18,12,40,.52);backdrop-filter:blur(3px)}
+.kt-window[data-kt-surface] > .kt-head {
+  flex: 0 0 72px; height:72px; min-height:0;
+  background:linear-gradient(#7347ff,var(--ui));box-shadow:inset 0 -4px var(--ui-ink);
+}
+.kt-window[data-kt-surface] > .kt-head h2 {font:800 22px/1 var(--rounded);letter-spacing:.06em}
+.kt-window[data-kt-surface] > .kt-head h2:focus {outline:0;box-shadow:none}
+.kt-window[data-kt-surface] > .kt-head button {width:44px;height:44px;top:14px;right:14px;color:var(--ui)}
+.kt-window[data-kt-surface] > .kt-body {
+  display:flex;flex-direction:column;gap:18px;min-height:0;flex:0 1 auto;
+  overflow:auto;padding:18px 16px 12px;scroll-padding:10px;
+}
+.kt-window[data-kt-surface] > .kt-body > * {flex-shrink:0}
+.kt-window[data-kt-surface] .kt-body > div:empty {display:none}
+.kt-window[data-kt-surface] .kt-section {margin:0}
+.kt-window[data-kt-surface] .kt-section h3 {margin:0 6px 8px;font:var(--t-caption);letter-spacing:.12em;color:var(--ink-2)}
+.kt-window[data-kt-surface] .kt-group {border-radius:22px;background:var(--surface-2)}
+.kt-window[data-kt-surface] .kt-group :is(.kt-row,.game-disclosure-trigger) {
+  display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;
+  width:100%;min-height:var(--kit-row);text-align:start;margin:0;padding:10px 14px 10px 12px;
+  border:0;border-radius:0;color:var(--ink);background:transparent;box-shadow:none;
+}
+.kt-window[data-kt-surface] .kt-icon {
+  background:white;color:var(--ui);width:44px;height:44px;border-radius:13px;
+  display:grid;place-items:center;box-shadow:0 2px #e7e1ff;
+}
+.kt-window[data-kt-surface] .kt-icon svg {width:22px;height:22px;transform:none}
+.kt-window[data-kt-surface] .kt-label b {font:var(--t-row);color:var(--ink)}
+.kt-window[data-kt-surface] .kt-label small {font:var(--t-callout);color:var(--ink-2)}
+.kt-window[data-kt-surface] .kt-group > :not(:first-child) {border-top:1px solid var(--line)}
+.kt-window[data-kt-surface] .game-disclosure {margin:0;padding:0;border:0}
+.kt-window[data-kt-surface] .game-disclosure > div:not([hidden]) {padding:0 12px 12px;color:var(--ink-2);font:var(--t-callout)}
+.kt-window[data-kt-surface] .game-disclosure .game-disclosure-trigger > svg {color:var(--ink-2);width:20px;height:20px}
+.kt-row .kt-toggle {
+  display:block;position:relative;box-sizing:border-box;flex:none;width:52px;height:32px;
+  background:#d6d0ec;border:0;border-radius:99px;box-shadow:inset 0 2px 3px rgba(30,16,80,.18);
+}
+.kt-toggle::after {
+  content:"";position:absolute;left:3px;top:3px;width:26px;height:26px;border-radius:50%;
+  background:white;box-shadow:0 2px 4px rgba(20,10,60,.30);
+}
+.kt-row[aria-checked=true] > .kt-toggle {background:#5b2ee0}
+.kt-row[aria-checked=true] > .kt-toggle::after {left:23px}
+.kt-window[data-kt-surface] .kt-notice {margin:0;padding:12px 14px;display:flex;align-items:center;gap:10px;border-radius:16px;background:var(--surface-2);color:var(--ui-ink);font:600 14px/1.3 var(--font)}
+.kt-notice svg {width:20px;height:20px;flex:none}
+.kt-window[data-kt-surface] .kt-notice[data-running] {background:#fff4d6;color:#805300}
+.kt-window[data-kt-surface] > .kt-foot {flex:none;padding:12px 16px 18px;gap:6px}
+.kt-window[data-kt-surface] .kt-foot .kt-btn {
+  min-height:var(--kit-control);margin:0;padding:6px 10px;border:0;border-radius:18px;
+  font:800 18px/1.15 var(--rounded);white-space:nowrap;
+}
+.kt-window[data-kt-surface] .kt-foot .kt-secondary {background:white;color:var(--ui);box-shadow:inset 0 0 0 2px #e7e1ff,0 4px #e7e1ff}
+.kt-window[data-kt-surface] .kt-foot .kt-play {background:linear-gradient(#117b46,#106e40);color:white;text-shadow:0 2px #095233;box-shadow:0 5px #0f7a45}
+.kt-return-actions {display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:10px}
+.kt-window[data-kt-surface] .kt-foot-links {gap:16px;display:flex;justify-content:center}
+.kt-window[data-kt-surface] .kt-foot-links button {min-height:44px;font:700 14px var(--font);color:var(--ui);background:none;border:0}
+.kt-window[data-kt-surface] .kt-version {font:600 13px/1.3 var(--font);color:var(--ink-2)}
+.kt-window[data-kt-surface] :is(button,a,input):focus-visible {outline:3px solid var(--ui-ink);outline-offset:-3px}
+.kt-window[data-kt-surface] .kt-tiles {gap:12px}
+.kt-window[data-kt-surface] .kt-tile {
+  border:0;box-shadow:none;background:var(--surface-2);padding:14px;border-radius:22px;
+  display:flex;align-items:start;flex-direction:column;justify-content:start;text-align:start;
+}
+.kt-window[data-kt-surface] .kt-tile-art {width:44px;height:44px;border-radius:13px;background:white;color:var(--ui)}
+.kt-window[data-kt-surface] .kt-tile-art[data-tone=gold] {color:var(--gold-ink)}
+.kt-window[data-kt-surface] .kt-tile-art svg {width:22px;height:22px}
+.kt-window[data-kt-surface] .kt-tile b {font:var(--t-row);margin:10px 0 0}
+.kt-window[data-kt-surface] .kt-tile small {font:var(--t-callout);margin:3px 0 0}
+.kt-hero {
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;
+  min-height:92px;padding:16px 18px;text-align:start;color:white;border:0;border-radius:24px;
+  background:linear-gradient(#147b48,#106c40);box-shadow:0 5px #0f7a45;
+}
+.kt-hero b {display:block;font:900 26px/1.05 var(--rounded);text-transform:uppercase;letter-spacing:.02em;text-shadow:0 2px #095233}
+.kt-hero small {display:block;margin-top:6px;font:700 14px/1.3 var(--font);text-shadow:0 1px 2px #074629}
+.kt-hero i {width:54px;height:54px;display:grid;place-items:center;background:#ffffff38;border-radius:50%}
+.kt-hero i svg {width:28px;height:28px;fill:currentColor}
+.kt-hero:active:not(:disabled) {transform:translateY(2px)}
+.kt-hero:disabled {background:var(--line);color:var(--ink-2);box-shadow:none}
+.palette-swatches[data-palette-choice=classic]{--sw1:#e7bc59;--sw2:#83b7a2;--sw3:#c797bc}
+.palette-swatches[data-palette-choice=ocean]{--sw1:#94cacc;--sw2:#a6bbd2;--sw3:#d6c58b}
+.palette-swatches[data-palette-choice=orchid]{--sw1:#d5b4cb;--sw2:#bba5d2;--sw3:#92c1b4}
+.palette-swatches[data-palette-choice] i:nth-child(1){background:var(--sw1)}
+.palette-swatches[data-palette-choice] i:nth-child(2){background:var(--sw2)}
+.palette-swatches[data-palette-choice] i:nth-child(3){background:var(--sw3)}
+@media(max-width:340px) {
+  dialog.kt-window[data-kt-surface]:not(.kt-small):not(.definition-dialog) {inset:calc(env(safe-area-inset-top) + 10px) 8px auto;width:calc(100% - 16px);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px);--kit-control:52px;--kit-row:58px}
+  .kt-window[data-kt-surface] > .kt-body {padding:14px 12px 8px;gap:14px}
+  .kt-window[data-kt-surface] > .kt-foot {padding:10px 12px 14px}
+  .kt-window[data-kt-surface] .kt-group :is(.kt-row,.game-disclosure-trigger) {gap:9px}
+  .kt-return-actions {grid-template-columns:minmax(0,1fr) 52px}
+  .kt-return-actions .game-home-action span {display:none}
+  .kt-hero b {font-size:22px}
+}
+
+.settings-window .sound-options :is(label,output,small),
+.settings-window .board-color-settings :is(legend,p,b,small),
+.settings-window .palette-options :is(b,small) {font:var(--t-callout);color:var(--ink-2)}
+.settings-window .sound-options .sound-slider-row label {font:var(--t-callout);color:var(--ink)}
+.settings-window .board-color-preview {font:700 17px/1.15 var(--font)}
+.settings-window .palette-options button:disabled {opacity:1;background:var(--surface-2)}
+.settings-window .sound-preview:disabled {opacity:1;background:var(--line);color:var(--ink-2)}
+.settings-window .kt-icon svg {margin:0}
+.preferences-detail .support-report .button:disabled {opacity:1;color:var(--ink-2);background:var(--surface-2);box-shadow:none}

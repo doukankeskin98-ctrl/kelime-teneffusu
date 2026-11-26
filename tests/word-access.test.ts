@@ -50,12 +50,17 @@ const walk=(v:any):Node[]=>Array.isArray(v)?v.flatMap(walk):v&&typeof v==='objec
 const text=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(text).join(''):v&&typeof v==='object'?text(v.props?.['children']):'';
 const visible=(v:any):string=>typeof v==='string'||typeof v==='number'?String(v):Array.isArray(v)?v.map(visible).join(''):v&&typeof v==='object'&&v.props?.['aria-hidden']!==true&&v.props?.['style']?.visibility!=='hidden'?visible(v.props?.['children']):'';
 const jsx=(type:any,props:Record<string,unknown>,key?:unknown):any=>{if(props?.['className']==='play-praise')(props['ref'] as {current:unknown}).current??={hidden:true,firstElementChild:{textContent:''}};return typeof type==='function'&&['GameToolsSheet','Tile','Row','RowGroup','Button'].includes(type.name)?type(props):({type,props,key});},icons=new Proxy({},{get:(_t,k)=>String(k)});
+function openSettings(entry:Record<string,unknown>){
+ const h=view('components/game/SettingsHome.tsx',{'@/lib/game/haptics':{hapticsAvailable:()=>true}});
+ h.start('SettingsWindow',entry);
+ return h;
+}
 function deferred<T>(){let resolve!:(r:T)=>void;const promise=new Promise<T>(yes=>{resolve=yes;});return{promise,resolve};}
 function view(file:string,modules:Record<string,unknown>={},seedFirst?:unknown,storageValues?:Map<string,string>){
  const exports:Record<string,any>={},slots:Slot[]=[],effects:(()=>void)[]=[],intervals=new Map<number,()=>void>(),timeouts=new Map<number,()=>void>(),deadlines=new Map<number,number>(),frames=new Map<number,()=>void>(),document=Object.assign(new EventTarget(),{hidden:false,documentElement:{dataset:{}},body:{style:{overflow:''}}});
  let cursor=0,id=0,dirty=true,tree:any,render:()=>any,now=10000;
  const changed=(s:Slot,d:unknown[])=>!s.deps||s.deps.length!==d.length||d.some((v,i)=>!Object.is(v,s.deps![i]));
- const hooks={useState(initial:any){const i=cursor++,s=slots[i]??={value:i===0&&seedFirst!==undefined?seedFirst:typeof initial==='function'?initial():initial};return[s.value,(n:any)=>{const v=typeof n==='function'?n(s.value):n;if(!Object.is(v,s.value)){s.value=v;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useId(){return(slots[cursor++]??={value:'id-'+(++id)}).value;},useMemo(fn:()=>any,deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;s.value=fn();}return s.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;effects.push(()=>{s.cleanup?.();const clean=fn();s.cleanup=typeof clean==='function'?clean:undefined;});}},useReducer(reducer:any,arg:any,init:any){const [v,set]=hooks.useState(()=>init(arg));return[v,(event:any)=>set((s:any)=>reducer(s,event))];}};
+ const hooks={useSyncExternalStore:(_subscribe:unknown,get:()=>unknown)=>get(),useState(initial:any){const i=cursor++,s=slots[i]??={value:i===0&&seedFirst!==undefined?seedFirst:typeof initial==='function'?initial():initial};return[s.value,(n:any)=>{const v=typeof n==='function'?n(s.value):n;if(!Object.is(v,s.value)){s.value=v;dirty=true;}}];},useRef(initial:any){return(slots[cursor++]??={}).ref??={current:initial};},useId(){return(slots[cursor++]??={value:'id-'+(++id)}).value;},useMemo(fn:()=>any,deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;s.value=fn();}return s.value;},useEffect(fn:()=>void|(()=>void),deps:unknown[]){const s=slots[cursor++]??={};if(changed(s,deps)){s.deps=deps;effects.push(()=>{s.cleanup?.();const clean=fn();s.cleanup=typeof clean==='function'?clean:undefined;});}},useReducer(reducer:any,arg:any,init:any){const [v,set]=hooks.useState(()=>init(arg));return[v,(event:any)=>set((s:any)=>reducer(s,event))];}};
  class Clock extends Date{static override now(){return now;}}
  const source=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText+(file.endsWith('Sprint.tsx')?'\nexports.__SprintRun=SprintRun;':'');
  const context:vm.Context={exports,require:(name:string)=>name==='@/lib/game/authored-journey'?authoredJourney:name==='@/lib/game/journey-revisions'?journeyRevisions:name==='@/lib/game/progress-storage'?progressStorage:name==='@/lib/game/progress-codec'?progressCodec:name==='@/lib/game/board-projection'?projection:name==='@/lib/game/journey-presentation'?safePresentation:name==='@/lib/game/board-quality'?boardQuality:name==='@/lib/game/weekly-reward'?weeklyReward:name==='@/lib/game/horizons-content'?horizons:name==='@/lib/game/discoveries-content'?discoveries:name==='@/lib/game/arena-clock'?arenaClock:name==='@/lib/game/journey-flow'?journeyFlow:name==='@/lib/game/first-play'?firstPlay:name==='@/lib/game/navigation'?navigation:name==='./FirstPlayGuide'?{FirstPlayGuide:'FirstPlayGuide'}:name==='@/lib/game/nature-content'?nature:name==='@/lib/game/coast-content'?coast:name==='@/lib/game/world-presentation'?worldPresentation:name==='@/lib/game/scene'?scenePresentation:name==='@/lib/game/board-view'?boardPresentation:name==='@/lib/game/story-content'?stories:name==='@/lib/game/riddle-content'?riddles:name==='@/lib/game/everyday-content'?everydayContent:name==='react'?{...hooks,useLayoutEffect:hooks.useEffect}:name==='react/jsx-runtime'?{jsx,jsxs:jsx,Fragment:'Fragment'}:name==='lucide-react'?icons:name==='@/lib/game/legacy-ui'?legacyUI:name==='@/lib/game/word-card'?wordCard:name==='@/lib/game/viewport'?{fittedBoardSize,fitGameFrame}:name==='./Board'?{Board:'Board',strokeColor:()=> '#9ab37d'}:modules[name]??new Proxy({},{get:(_t,k)=>String(k)}),window:Object.assign(new EventTarget(),{innerHeight:640,getComputedStyle:()=>({getPropertyValue:()=>"0px"}),matchMedia:()=>({matches:false}),scrollTo(){}}),document,navigator:{onLine:true},localStorage:{getItem:(key:string)=>storageValues?.get(key)??null,setItem:(key:string,value:string)=>storageValues?.set(key,value)},location:{search:'',href:'https://test/',origin:'https://test'},history:{replaceState(){}},Date:Clock,Error,Event,URL,URLSearchParams,AbortController,crypto,performance:{now:()=>now},setTimeout:(fn:()=>void,ms=0)=>{timeouts.set(++id,fn);deadlines.set(id,now+ms);return id;},clearTimeout:(i:number)=>timeouts.delete(i),setInterval:(fn:()=>void)=>{intervals.set(++id,fn);return id;},clearInterval:(i:number)=>intervals.delete(i),requestAnimationFrame:(fn:()=>void)=>{frames.set(++id,fn);return id;},cancelAnimationFrame:(i:number)=>frames.delete(i)};
@@ -549,11 +554,16 @@ describe('world word veils survive every target surface and resume',()=>{
  it('tool menu pauses solo once, preserves an existing pause and never pauses a daily race',()=>{
   for(const initial of [false,true])for(const canPause of [false,true]){
    let paused=initial,toggles=0,zoom=0,sound=0,help=0;
-   const h=view('components/game/common.tsx'),props=()=>({paused,canPause,zoom:false,sound:false,hints:3,onPause(){paused=!paused;toggles++;},onZoom(){zoom++;},onSound(){sound++;},onHelp(){help++;},onHint(){}});
-   try{h.start('PlayControls',props());walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());assert.equal(paused,canPause?true:initial);
-    assert.equal(h.find('SoundSettings').props['enabled'],false);h.find('SoundSettings').props['onChange'](true);assert.equal(sound,1);
-    walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Büyük harf modu')!.props['onClick']();h.update('PlayControls',props());assert.equal(zoom,1);assert.equal(paused,initial);assert.equal(toggles,canPause&&!initial?2:0);
-    walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());walk(h.find('Modal')).find(n=>n.type==='button'&&text(n)==='Kurallar')!.props['onClick']();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
+   const preferences={settings:{progress:progress.emptyProgress(),onChange:(patch:{zoom?:boolean;sound?:boolean})=>{if(patch.zoom)zoom++;if(patch.sound)sound++;}}};
+   preferences.settings.progress.sound=false;
+   const h=view('components/game/common.tsx',{'./PlayPreferences':{usePlaySettings:()=>preferences}});
+   const props=()=>({paused,canPause,zoom:false,sound:false,hints:3,onPause(){paused=!paused;toggles++;},onZoom(){},onSound(){},onHelp(){help++;},onHint(){}});
+   const open=()=>{walk(h.tree).find(n=>n.props?.['aria-label']==='Ayarlar')!.props['onClick']();h.update('PlayControls',props());return openSettings(h.find('SettingsWindow').props);};
+   try{const startProps=props();h.start('PlayControls',startProps);const sheet=open();assert.equal(paused,canPause?true:initial);
+    assert.equal(sheet.find('SoundSettings').props['enabled'],false);sheet.find('SoundSettings').props['onChange'](true);assert.equal(sound,1);
+    sheet.find('AppearanceSettings').props['onChange']({zoom:true});assert.equal(zoom,1);sheet.find('Window').props['onClose']();sheet.close();h.update('PlayControls',props());
+    assert.equal(paused,initial);assert.equal(toggles,canPause&&!initial?2:0);
+    const reopened=open();walk(reopened.tree).find(n=>n.props?.['title']==='Nasıl oynanır?')!.props['onClick']();reopened.close();h.update('PlayControls',props());assert.equal(help,1);assert.equal(paused,initial);
    }finally{h.close();}
   }
  });
@@ -623,8 +633,19 @@ describe('result and play preference surfaces',()=>{
   try{assert.equal(h.find('MobileTargets').props['unavailable'],true);h.update('PlayLayout',{...base,readOnly:true,wordList:words,wordListUnavailable:true,celebrating:false});assert.equal(h.find('MobileTargets').props['unavailable'],false);}finally{h.close();}
  });
  it('timed tools expose comfort controls without pausing and disappear when the match ends',()=>{
-  const h=view('components/game/common.tsx');let sound=0;const props={sound:true,onSound:()=>sound++};
-  try{h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();assert.ok(h.find('PlayComfortSettings'));assert.match(text(h.tree),/Yarış süresi devam ediyor/);assert.equal(h.find('SoundSettings').props['enabled'],true);h.find('SoundSettings').props['onChange'](false);assert.equal(sound,1);h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();assert.ok(h.find('Modal'));assert.match(text(h.tree),/Tamamladığın tahta/);h.find('Modal').props['onClose']();h.paint();h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>typeof n.type==='function'&&n.type.name==='Modal'));}finally{h.close();}
+  let sound=0;
+  const prefs={settings:{progress:{...progress.emptyProgress(),sound:true},onChange:()=>sound++}};
+  const h=view('components/game/common.tsx',{'./PlayPreferences':{usePlaySettings:()=>prefs}});
+  const props={sound:true,onSound(){}};
+  try{
+   h.start('MatchTools',props);h.find('button').props['onClick']();h.paint();const sheet=openSettings(h.find('SettingsWindow').props);
+   assert.ok(sheet.find('AppearanceSettings'));assert.match(text(sheet.tree),/Yarış süresi devam ediyor/);
+   assert.equal(sheet.find('SoundSettings').props['enabled'],true);sheet.find('SoundSettings').props['onChange'](false);assert.equal(sound,1);sheet.close();
+   h.update('MatchTools',{...props,finished:true});assert(!walk(h.tree).some(n=>n.type==='SettingsWindow'));
+   h.update('MatchTools',{...props,finished:true,review:true});h.find('button').props['onClick']();h.paint();
+   const review=openSettings(h.find('SettingsWindow').props);assert.match(text(review.tree),/Tamamladığın tahta/);review.find('Window').props['onClose']();review.close();h.paint();
+   h.update('MatchTools',{...props,finished:false});assert(!walk(h.tree).some(n=>n.type==='SettingsWindow'));
+  }finally{h.close();}
  });
 });
 
@@ -634,8 +655,14 @@ describe('Solo explicit pause resumes without changing progress',()=>{
   try{const screen=walk(h.tree).find(n=>n.type==='section')!;assert(!screen.props['className'].includes('quiet-play'));assert(walk(h.tree).some(n=>n.props['aria-label']==='Geri'));assert(walk(h.tree).some(n=>n.props['role']==='timer'));assert.match(text(h.tree),/Günlük bulmaca/);}finally{h.close();}
  });
  it('leaving from Solo settings closes without resuming a clock the menu paused',()=>{
-  const h=view('components/game/common.tsx');let toggles=0,home=0;const props={settingsOnly:true,paused:false,onPause:()=>toggles++,zoom:false,onZoom(){},sound:false,onSound(){},hints:3,onHint(){},onHelp(){},onHome:()=>home++};
-  try{h.start('PlayControls',props);h.find('button').props['onClick']();h.paint();assert.equal(toggles,1);const exit=walk(h.tree).find(n=>n.type==='button'&&text(n)==='Ana sayfaya dön')!;assert(exit.props['className'].includes('secondary'));exit.props['onClick']();h.paint();assert.equal(home,1);assert.equal(toggles,1);}finally{h.close();}
+  let toggles=0,home=0;
+  const h=view('components/game/common.tsx',{'./PlayPreferences':{usePlaySettings:()=>({settings:{progress:progress.emptyProgress()}})}});
+  const props={settingsOnly:true,paused:false,onPause:()=>toggles++,zoom:false,onZoom(){},sound:false,onSound(){},hints:3,onHint(){},onHelp(){},onHome:()=>home++};
+  try{h.start('PlayControls',props);h.find('button').props['onClick']();h.paint();assert.equal(toggles,1);
+   const sheet=openSettings(h.find('SettingsWindow').props);
+   const exit=walk(sheet.tree).find(n=>n.props?.['aria-label']==='Ana ekran')!;assert.equal(exit.props['kind'],'secondary');exit.props['onClick']();sheet.close();h.paint();
+   assert.equal(home,1);assert.equal(toggles,1);
+  }finally{h.close();}
  });
  it('routes a pause resume through shared layout, stays running on duplicate callback, and protects help',()=>{
   const h=view('components/game/Solo.tsx',{...modules,'./common':commonStubs});const p=familiarProgress();

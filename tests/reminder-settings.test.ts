@@ -1,3 +1,4 @@
+import {testGameUi} from './render-game-ui.ts';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -11,8 +12,8 @@ interface Slot{value?:unknown;current?:unknown;done?:boolean;cleanup?:()=>void}
 function harness(){
  let cursor=0,tree:unknown,dirty=true,writes=0;const slots:Slot[]=[],effects:(()=>void)[]=[],reads:((value:unknown)=>void)[]=[],changes:((value:unknown)=>void)[]=[],window=new EventTarget();
  const hooks={useState(value:unknown){const slot=slots[cursor++]??={value};return[slot.value,(v:unknown)=>{writes++;slot.value=v;dirty=true;}];},useRef(value:unknown){return slots[cursor++]??={current:value};},useEffect(fn:()=>void|(()=>void)){const slot=slots[cursor++]??={};if(!slot.done){slot.done=true;effects.push(()=>{const cleanup=fn();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;});}}};
- const exports:Record<string,(props:object)=>unknown>={},jsx=(type:unknown,props:Record<string,unknown>)=>({type,props});
- vm.runInNewContext(source,{exports,window,require:(name:string)=>name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='lucide-react'?{Bell:'Bell'}:{reminderStatus:()=>new Promise(resolve=>reads.push(resolve)),setDailyReminder:()=>new Promise(resolve=>changes.push(resolve)),dismissReminderOffer:async()=>{}}});
+ const exports:Record<string,(props:object)=>unknown>={},jsx=(type:unknown,props:Record<string,unknown>):unknown=>typeof type==='function'&&type.name==='Toggle'?type(props):({type,props});
+ vm.runInNewContext(source,{exports,window,require:(name:string)=>name==='../ui/GameUI'?testGameUi(jsx):name==='react'?hooks:name==='react/jsx-runtime'?{jsx,jsxs:jsx}:name==='lucide-react'?{Bell:'Bell'}:{reminderStatus:()=>new Promise(resolve=>reads.push(resolve)),setDailyReminder:()=>new Promise(resolve=>changes.push(resolve)),dismissReminderOffer:async()=>{}}});
  const paint=()=>{if(dirty){dirty=false;cursor=0;tree=exports['DailyReminder']!({});}while(effects.length)effects.shift()!();};paint();
  return {reads,changes,window,get writes(){return writes;},async flush(){for(let i=0;i<5;i++)await Promise.resolve();paint();},button(){const found=nodes(tree).find(n=>n.props['role']==='switch');assert.ok(found);return found;},click(){const fn=nodes(tree).find(n=>n.props['role']==='switch')?.props['onClick'];assert.equal(typeof fn,'function');(fn as ()=>void)();},close(){for(const s of slots)s.cleanup?.();}};
 }

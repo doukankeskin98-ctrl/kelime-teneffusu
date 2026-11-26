@@ -2,12 +2,6 @@
 .journey-albums-link{margin:12px 0}
 .journey-albums .section-title{margin-top:10px}
 .journey-albums .discovery-albums{max-width:100%}
-.arena-round-preference{display:flex;align-items:center;gap:14px;width:100%;min-height:64px;padding:8px 4px;margin:0 0 10px;text-align:left;color:#fff7df;background:transparent;border:0;border-radius:12px}
-.arena-round-preference>span{flex:1}.arena-round-preference b{display:block;font-size:17px;line-height:23px}.arena-round-preference small{display:block;color:#e3ebdc;font-size:13px;line-height:19px;margin-top:3px}
-.arena-round-preference>.switch{flex:0 0 46px;position:relative;width:46px;height:28px;background:#43626a;border-radius:18px}
-.arena-round-preference>.switch::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff8e9;transition:transform .18s ease-out}
-.arena-round-preference>.switch.on{background:#d3bd78}.arena-round-preference>.switch.on::after{transform:translateX(18px)}
-.arena-round-preference:focus-visible{outline:2px solid #ffe3a4;outline-offset:3px}
 .room-round-policy{color:#e5eddc;font-size:14px;text-align:center}
 /* Header and target title each have one job. Letter hit cells are unchanged. */
 .scenic-play.quiet-play .play-heading{justify-content:space-between;min-height:46px;gap:12px;margin-bottom:4px;padding-block:0!important}
@@ -55,8 +49,6 @@
 .scenic-play .active-clue{height:56px;padding:6px 3px}
 .scenic-play .active-clue>strong{font-size:15px;line-height:21px;font-weight:600}
 .scenic-play .letter-grid span,.game-app .scenic-play .letter-grid span{font-weight:800;color:#102f29}
-.scenic-play .game-home-action{margin-top:16px;min-height:50px}
-.game-tools-modal .game-home-action{margin-top:16px;min-height:50px}
 .game-app .scenic-play .play-heading>.game-settings-trigger,.main-content .scenic-play .play-heading>.game-settings-trigger{display:inline-flex;align-items:center;justify-content:center;flex:0 0 46px;min-width:46px;width:46px;height:46px;padding:9px;color:#fff6dc;background:#356259;border:1px solid #b8cfaf;border-radius:50%;box-shadow:none}
 .scenic-play .game-settings-trigger>svg{width:26px;height:26px;stroke-width:2.25}
 .scenic-play .play-controls .turn-board{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:auto;min-width:96px;height:44px;padding:8px 14px;background:#fff6dc;color:#244e43;border:1px solid #dfd6b7;border-radius:24px;font-size:14px;font-weight:750;box-shadow:none}
@@ -78,8 +70,6 @@
 .ordinary-outcome .result-album-progress{padding-top:8px!important}
 .ordinary-outcome .result-star{animation-duration:.42s}
 @media(max-width:380px){.scenic-play .target-rack .word-tag,.game-app .scenic-play .target-rack .word-tag{font-size:16px!important}.scenic-play .clue-slot>button>.clue-word{font-size:15px}.scenic-play .target-topic h1{font-size:17px}}
-@media(prefers-reduced-motion:reduce){.arena-round-preference>.switch::after{transition:none}}
-html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:none}
 
 .quiet-play .play-hud>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .quiet-play .play-hud:not(:has(.first-play-guide)):not(:has(.is-guidance)):not(:has(.has-notice)):not(:has(.story-hud,.bonus-dashboard)){min-height:0;height:0;margin:0;padding:0}
@@ -106,12 +96,6 @@ html[data-reduce-motion=true] .arena-round-preference>.switch::after{transition:
 /* Stable, in-flow feedback: never competes with the chapter topic or targets. */
 .scenic-play .play-notice{position:relative;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:0 0 36px;height:36px;min-height:36px;margin:0;padding:0 4px;color:#fff9e9;font-size:12px;line-height:16px;text-align:center}
 .play-notice>span:not(:empty):not(.sr-only){background:#163e38;padding:2px 8px;border-radius:6px;max-width:100%}
-.game-tools-modal .play-primary-settings{margin:4px 0 16px}
-.play-primary-settings .play-comfort-settings{border:0;margin:0;padding:0}
-.play-settings-details{border-block:1px solid #d8e4d540;margin:12px 0 18px;padding:0 0 10px}
-.play-settings-details summary{min-height:48px;display:list-item;align-content:center;cursor:pointer;color:#fff6de;font-size:15px;font-weight:650;padding:12px 6px;box-sizing:border-box}
-.play-settings-details .play-comfort-settings{border:0;margin:0;padding:0}
-.game-tools-modal .play-settings-details .play-tools-sheet{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px}
 .short-games-menu button{background:#fff9e9;color:#213e35;box-shadow:none;min-height:84px}
 .short-games-menu small{color:#50665a;line-height:1.5}
 .arena-wait-alternative{width:100%;max-width:440px;margin:8px auto 16px;padding-top:12px;border-top:1px solid #d8e4d540}

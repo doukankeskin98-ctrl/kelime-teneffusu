@@ -70,6 +70,17 @@ jobs:
       - run: pnpm mobile:build
       - name: First journey, control positions and normal-close persistence
         run: node scripts/visual/integrity/run-gate.mjs ${{ matrix.width }}
+      - name: Verify shared settings and Arena entry
+        env:
+          VIEWS: ${{ matrix.width == 320 && '320' || '393-uygulama,430-safari' }}
+          URL: http://127.0.0.1:5385/
+          OUT: outputs/integrity/settings-arena
+        run: |
+          node --experimental-transform-types scripts/visual/menu-fixture-server.mjs dist-mobile 5385 &
+          fixture_pid=$!
+          trap 'kill "$fixture_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 "$URL" --output /dev/null
+          pnpm menu:settings-arena
       - name: Every menu and agreed terminology
         run: |
           node scripts/visual/readability.mjs ${{ matrix.width }}
