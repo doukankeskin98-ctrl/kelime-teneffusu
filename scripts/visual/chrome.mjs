@@ -7,7 +7,9 @@ import path from 'node:path';
 
 const CANDIDATES = [
   process.env.CHROME_PATH,
+  process.env.KT_CHROME,
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  '/opt/google/chrome/chrome',
   '/usr/bin/google-chrome',
   '/usr/bin/chromium',
 ].filter(Boolean);
@@ -18,12 +20,15 @@ export async function launch({port = 0} = {}) {
   const chrome = CANDIDATES.find(candidate => existsSync(candidate));
   if (!chrome) throw new Error('Chrome bulunamadı. CHROME_PATH ile yolunu ver.');
   const profile = mkdtempSync(path.join(tmpdir(), 'kt-visual-'));
-  // CI runners can buffer Chrome's startup diagnostic. A private pipe connects
-  // directly to the browser we spawned and needs no discoverable TCP listener.
-  const pipe = process.platform === 'linux' || process.env.KT_CHROME_PIPE === '1';
-  const args = ['--headless=new', ...(pipe?['--remote-debugging-pipe']:[]), '--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${port}`,
+  // Match the working integrity runner on hosted Linux. Chrome advertises its
+  // own loopback socket even when a distribution launcher does not pass CDP fds.
+  const hostedLinux = process.platform === 'linux' && process.env.GITHUB_ACTIONS === 'true';
+  const pipe = !hostedLinux && port === 0 && process.env.KT_CHROME_PIPE === '1';
+  const transport = pipe ? ['--remote-debugging-pipe'] : ['--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${port}`];
+  const args = ['--headless=new', ...transport,
     `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-extensions',
-    '--disable-background-networking', '--disable-component-update', '--hide-scrollbars', '--mute-audio', ...(process.platform==='linux'?['--disable-dev-shm-usage']:[]), 'about:blank'];
+    '--disable-background-networking', '--disable-component-update', '--hide-scrollbars', '--mute-audio',
+    ...(process.platform==='linux'?['--disable-dev-shm-usage']:[]), ...(hostedLinux?['--no-sandbox']:[]), 'about:blank'];
   const child = spawn(chrome, args, {stdio:pipe?['ignore','ignore','pipe','pipe','pipe']:['ignore','ignore','pipe']});
   let startupLog='', socket;
   try {
@@ -46,7 +51,7 @@ export async function launch({port = 0} = {}) {
       child.stderr.on('data',chunk=>{startupLog=(startupLog+chunk).slice(-4000);});
       await new Promise((resolve,reject)=>{
         const timer=setTimeout(()=>finish(new Error('Chrome pipe did not answer')),15000);
-        const exited=()=>finish(new Error('Chrome exited during startup'));
+        const exited=(code,signal)=>finish(new Error('Chrome exited during startup: '+(signal??code)));
         function finish(error){
           clearTimeout(timer);child.off('exit',exited);child.off('error',finish);
           input.off('error',finish);socket.onmessage=undefined;
@@ -90,7 +95,11 @@ export async function launch({port = 0} = {}) {
       await new Promise((resolve,reject)=>{socket.onopen=resolve;socket.onerror=reject;});
     }
   } catch(error) {
-    if(child.exitCode===null && child.signalCode===null)child.kill();
+    if(child.pid && child.exitCode===null && child.signalCode===null){
+      const exited=new Promise(resolve=>child.once('exit',resolve));
+      child.kill('SIGKILL');
+      await exited;
+    }
     rmSync(profile,{recursive:true,force:true,maxRetries:3,retryDelay:100});
     throw new Error('Chrome başlatılamadı: '+error.message+' '+startupLog.slice(-1400));
   }

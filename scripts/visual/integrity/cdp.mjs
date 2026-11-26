@@ -23,7 +23,7 @@ export async function launch({port=9333,profile,reuse=false}={}){
  // the test to another running Chrome instance.
  const ownEndpoint=await new Promise((resolve,reject)=>{
   let log='';
-  const finish=(value,error)=>{clearTimeout(timer);p.stderr.off('data',onData);p.off('exit',onExit);error?reject(error):resolve(value);};
+  const finish=(value,error)=>{clearTimeout(timer);p.stderr.off('data',onData);p.off('exit',onExit);if(error)reject(error);else resolve(value);};
   const onExit=()=>finish(null,new Error('Test Chrome exited before publishing its endpoint'));
   const onData=chunk=>{log=(log+chunk).slice(-4096);const found=log.match(/DevTools listening on (ws:\/\/127\.0\.0\.1:\d+\/devtools\/browser\/[a-z\d-]+)/i);if(found)finish(found[1]);};
   const timer=setTimeout(()=>finish(null,new Error('Chrome did not publish its endpoint')),15000);
