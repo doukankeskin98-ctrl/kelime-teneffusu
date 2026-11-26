@@ -2,11 +2,10 @@
 :root{--motion-turn:280ms;--game-ease:cubic-bezier(.2,.75,.25,1)}
 .board-ink .active-selection{opacity:0;pointer-events:none}
 .board-ink .active-selection[data-active=true]{opacity:1}
-.viewport-play .selection-preview{display:flex;min-width:0;align-items:center;justify-content:center;gap:8px;min-height:26px;padding:3px 9px;background:#123b48cd;color:white;border-radius:10px;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
-.viewport-play .selection-preview.selecting{background:#ffe49b;color:#244544}
-.viewport-play .selection-loupe{margin-left:auto;display:grid;place-items:center;width:44px;height:44px;color:#244c3e;background:white;border-radius:50%;font:700 32px/1 var(--sans)}
-.viewport-play .selection-preview [hidden]{display:none}
-.quiet-play:not(.is-zoomed) .board-panel>.selection-preview{display:none}
+.viewport-play .selection-preview{position:absolute;inset:0;display:flex;min-width:0;align-items:center;justify-content:center;gap:8px;min-height:26px;padding:3px 9px;background:#123b48cd;color:white;border-radius:10px;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
+.selection-bubble .selection-loupe{display:grid;place-items:center;width:26px;height:26px;background:white;color:#244c3e;border-radius:50%;font:700 20px/1 var(--sans)}
+.selection-bubble [hidden]{display:none}
+.quiet-play:not(.is-zoomed) .selection-preview{display:none}
 .word-flight-letters,.word-flight-glyph{position:absolute;left:0;top:0;pointer-events:none}
 .word-flight-letters{z-index:15;width:0;height:0}
 .word-flight-glyph{font:800 1em/1 var(--sans);will-change:transform,opacity}

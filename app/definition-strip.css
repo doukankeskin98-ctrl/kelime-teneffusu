@@ -1,6 +1,6 @@
 .definition-strip{--tile-w:26px;--tile-h:30px;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:4px;align-content:stretch;width:100%;height:var(--frame-list,80px);padding:6px 6px 8px;background:white;color:#191630;border-radius:0 0 18px 18px;box-sizing:border-box;touch-action:pan-y}
 .definition-question,.definition-answer{display:grid;align-items:center;min-width:0;min-height:0}
-.definition-question{grid-template-columns:36px minmax(0,1fr) 36px}
+.definition-question{grid-template-columns:36px minmax(0,1fr) 36px;overflow-x:clip}
 .definition-question button,.definition-list{display:grid;place-items:center;padding:0;border:0;height:40px;width:36px;cursor:pointer}
 .definition-question button:disabled{opacity:.36;cursor:default}
 .definition-question svg,.definition-list svg{width:20px;height:20px}

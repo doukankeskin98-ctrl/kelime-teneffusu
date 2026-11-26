@@ -38,7 +38,8 @@ jobs:
       - run: pnpm exec cap copy ios
       - run: pnpm mobile:check
       - run: pnpm build
-      - run: node scripts/verify-worker.mjs
+      - name: Check the Worker and swipe through a scored Arena word
+        run: node scripts/verify-worker.mjs --arena-swipe
       - uses: actions/upload-artifact@v4
         with:
           name: studio-checked-build-inputs

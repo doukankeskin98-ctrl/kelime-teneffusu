@@ -6,6 +6,8 @@ import {DISCOVERIES_CHAPTERS} from '../lib/game/discoveries-content.ts';
 import {PROGRESS_REQUEST_MAX_BYTES} from '../lib/game/progress-limits.ts';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 import {readdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
@@ -24,7 +26,7 @@ const root=path.resolve('dist/server');
 async function files(directory){const result=[];for(const entry of await readdir(directory,{withFileTypes:true})){const full=path.join(directory,entry.name);if(entry.isDirectory())result.push(...await files(full));else if(entry.name.endsWith('.js'))result.push(full);}return result;}
 const modules=(await files(root)).sort((a,b)=>Number(b===path.join(root,'index.js'))-Number(a===path.join(root,'index.js'))).map(file=>({type:'ESModule',path:file}));
 const setupToken='e'.repeat(64),setupHash=createHash('sha256').update('kelime-admin-setup-v1:'+setupToken).digest('hex');
-const mf=new Miniflare({modules,modulesRoot:root,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],bindings:{ADMIN_SETUP_HASH:setupHash,ADMIN_SETUP_EXPIRES_AT:String(Date.now()+86400000)},d1Databases:{DB:'integration'},assets:{directory:path.resolve('dist/client'),binding:'ASSETS',routerConfig:{has_user_worker:true,invoke_user_worker_ahead_of_assets:true}},log:new Log(LogLevel.ERROR)});
+const mf=new Miniflare({modules,modulesRoot:root,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],bindings:{ADMIN_SETUP_HASH:setupHash,ADMIN_SETUP_EXPIRES_AT:String(Date.now()+86400000)},d1Databases:{DB:'integration'},assets:{directory:path.resolve('dist/client'),binding:'ASSETS',routerConfig:{has_user_worker:true,invoke_user_worker_ahead_of_assets:false}},log:new Log(LogLevel.ERROR)});
 let checks=0;
 const check=(condition,label)=>{assert(condition,label);checks++;};
 const origin='https://game.test';
@@ -362,4 +364,12 @@ try{
  // Deliberate isolated database failure verifies that the production route records a sanitized fault.
  await db.prepare('DROP TABLE ratings').run();await request('/api/game',{cookie:bCookie,expected:503});const fault=(await json('/api/admin?action=faults',owner)).rows[0];check(fault?.area==='game'&&fault.count===1&&fault.reviewed_count===0,'unexpected route failures create operational counters');check(!JSON.stringify(fault).includes(b.profile.id)&&!JSON.stringify(fault).includes('ratings'),'fault counters contain no identity or raw database error');await json('/api/admin',{...owner,method:'POST',body:{action:'reviewFault',day:fault.day,area:fault.area,code:fault.code}});check((await json('/api/admin?action=faults',owner)).rows[0].reviewed_count===1,'fault review is persisted');
  console.log(`${checks} production Worker HTTP checks passed with two legacy players, eight private-group and sixteen concurrent public-group sessions.`);
+ if(process.argv.includes('--arena-swipe')){
+  const endpoint=new URL(await mf.ready);
+  endpoint.hostname='127.0.0.1';
+  const {stdout}=await promisify(execFile)(process.execPath,['scripts/visual/arena-swipe.mjs'],{
+   env:{...process.env,URL:endpoint.origin}
+  });
+  process.stdout.write(stdout);
+ }
 }finally{await mf.dispose();}

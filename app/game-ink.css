@@ -16,7 +16,8 @@
 @keyframes praise-spark{0%{opacity:0;transform:translateY(4px) scale(.5) rotate(45deg)}30%{opacity:1}100%{opacity:0;transform:translateY(-16px) scale(.3) rotate(90deg)}}
 .play-praise[hidden]{display:none}
 .selection-bubble{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:100%;width:max-content;z-index:0;padding:3px 12px;background:var(--feedback-paper);color:#fff;border-radius:14px;text-align:center;font:800 20px/27px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
-.scenic-play.has-selection .selection-bubble{display:block}
+.scenic-play.has-selection .selection-bubble{display:flex;align-items:center;gap:8px}
+.selection-bubble [data-selection-count]{font:600 13px var(--sans)}
 .play-praise:not([hidden])+.selection-bubble{visibility:hidden}
 .bonus-landing{grid-column:2;grid-row:2;width:36px;height:32px;display:grid;place-items:center;align-self:center;color:var(--berrak-ui-dark);background:var(--berrak-wash);border-radius:12px;flex:none}
 .bonus-landing>svg{width:21px;height:21px}.bonus-landing[data-word-arriving]>svg{visibility:hidden}
