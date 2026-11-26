@@ -1,0 +1,381 @@
+[
+ {
+  "ad": "Ana ekran",
+  "yol": []
+ },
+ {
+  "ad": "Oyuncu profilini aç",
+  "yol": [
+   "^Oyuncu profilini aç$"
+  ]
+ },
+ {
+  "ad": "Oyuncu profilini aç › Profil",
+  "yol": [
+   "^Oyuncu profilini aç$",
+   "^Profil$"
+  ]
+ },
+ {
+  "ad": "Oyuncu profilini aç › Yolculuk",
+  "yol": [
+   "^Oyuncu profilini aç$",
+   "^Yolculuk$"
+  ]
+ },
+ {
+  "ad": "Oyuncu profilini aç › Başarımlar",
+  "yol": [
+   "^Oyuncu profilini aç$",
+   "^Başarımlar$"
+  ]
+ },
+ {
+  "ad": "Oyuncu profilini aç › Arena · Kelime yarışına katıl",
+  "yol": [
+   "^Oyuncu profilini aç$",
+   "^ArenaKelime yarışına k"
+  ],
+  "surface": "arena"
+ },
+ {
+  "ad": "Oyuncu profilini aç › Profil oluştur",
+  "yol": [
+   "^Oyuncu profilini aç$",
+   "^Profil oluştur$"
+  ]
+ },
+ {
+  "ad": "Oyuncu profilini aç › Ayarlar",
+  "yol": [
+   "^Oyuncu profilini aç$",
+   "^Ayarlar$"
+  ],
+  "surface": "settings",
+  "context": "home"
+ },
+ {
+  "ad": "Başarı bilgisi",
+  "yol": [
+   "yıldız\\. Başarı bilgisi$"
+  ]
+ },
+ {
+  "ad": "Ayarları aç",
+  "yol": [
+   "^Ayarları aç$"
+  ],
+  "surface": "settings",
+  "context": "home"
+ },
+ {
+  "ad": "Ayarları aç › Ses · Harf, kelime ve bölüm sesleri",
+  "yol": [
+   "^Ayarları aç$",
+   "^Ses(?:$|Harf, kelime ve böl)"
+  ],
+  "surface": "settings",
+  "context": "home"
+ },
+ {
+  "ad": "Ayarları aç › Ses düzeyi",
+  "yol": [
+   "^Ayarları aç$",
+   "^Ses düzeyi(?:$|\\s*%?\\d)"
+  ],
+  "surface": "settings",
+  "context": "home",
+  "expanded": "Ses düzeyi"
+ },
+ {
+  "ad": "Ayarları aç › Erişilebilirlik · Hareket, kontrast ve sol",
+  "yol": [
+   "^Ayarları aç$",
+   "^Erişilebilirlik(?:$|Hareket)"
+  ],
+  "surface": "settings",
+  "context": "home",
+  "expanded": "Erişilebilirlik"
+ },
+ {
+  "ad": "Ayarları aç › Tahta ve çizgi renkleri · Tahtanın görünüm",
+  "yol": [
+   "^Ayarları aç$",
+   "^Tahta ve çizgi renkleri"
+  ],
+  "surface": "settings",
+  "context": "home",
+  "expanded": "Tahta ve çizgi renkleri"
+ },
+ {
+  "ad": "Ayarları aç › Nasıl oynanır?",
+  "yol": [
+   "^Ayarları aç$",
+   "^Nasıl oynanır\\?$"
+  ]
+ },
+ {
+  "ad": "Ayarları aç › Destek",
+  "yol": [
+   "^Ayarları aç$",
+   "^Destek$"
+  ]
+ },
+ {
+  "ad": "Ayarları aç › Gizlilik ve hesap",
+  "yol": [
+   "^Ayarları aç$",
+   "^Gizlilik ve (?:hesap|veriler)"
+  ]
+ },
+ {
+  "ad": "Ayarları aç › Gizlilik bilgileri",
+  "yol": [
+   "^Ayarları aç$",
+   "^Gizlilik(?: bilgileri)?$"
+  ]
+ },
+ {
+  "ad": "Yolculuğum: bölümler ve albümler",
+  "yol": [
+   "^Yolculuğum: bölümler v"
+  ]
+ },
+ {
+  "ad": "Yolculuğum: bölümler ve albümler › Dünya 19: Kıyı Patikası · Tamamlandı",
+  "yol": [
+   "^Yolculuğum: bölümler v",
+   "^Dünya 19: Kıyı Patikas"
+  ]
+ },
+ {
+  "ad": "Yolculuğum: bölümler ve albümler › Dünya 20: Fenerde Akşam · 3/6 bölüm",
+  "yol": [
+   "^Yolculuğum: bölümler v",
+   "^Dünya 20: Fenerde Akşa"
+  ]
+ },
+ {
+  "ad": "Yolculuğum: bölümler ve albümler › Dünya 21: Bahçede İlkbahar · 0/6 bölüm",
+  "yol": [
+   "^Yolculuğum: bölümler v",
+   "^Dünya 21: Bahçede İlkb"
+  ]
+ },
+ {
+  "ad": "Yolculuğum: bölümler ve albümler › 52 dünyayı gör",
+  "yol": [
+   "^Yolculuğum: bölümler v",
+   "^52 dünyayı gör$"
+  ]
+ },
+ {
+  "ad": "Günlük bulmaca",
+  "yol": [
+   "^Günlük bulmaca$"
+  ]
+ },
+ {
+  "ad": "Günlük bulmaca › Başla",
+  "yol": [
+   "^Günlük bulmaca$",
+   "^Başla$"
+  ]
+ },
+ {
+  "ad": "Günlük bulmaca › Yeniden dene",
+  "yol": [
+   "^Günlük bulmaca$",
+   "^Yeniden dene$"
+  ]
+ },
+ {
+  "ad": "Albümlerim",
+  "yol": [
+   "^Albümlerim$"
+  ]
+ },
+ {
+  "ad": "Albümlerim › Albüm tamam · TAMAMLANDIYıldız İskelesi al",
+  "yol": [
+   "^Albümlerim$",
+   "^Albüm tamamTAMAMLANDIY"
+  ]
+ },
+ {
+  "ad": "Albümlerim › 456ALBÜMFenerde Akşam albümü · Altı bölümd",
+  "yol": [
+   "^Albümlerim$",
+   "^456ALBÜMFenerde Akşam "
+  ]
+ },
+ {
+  "ad": "Albümlerim › 123456ALBÜMBahçede İlkbahar albümü · Altı ",
+  "yol": [
+   "^Albümlerim$",
+   "^123456ALBÜMBahçede İlk"
+  ]
+ },
+ {
+  "ad": "Albümlerim › Bölümleri aç",
+  "yol": [
+   "^Albümlerim$",
+   "^Bölümleri aç$"
+  ]
+ },
+ {
+  "ad": "Albümlerim › Önceki damgaları yükle",
+  "yol": [
+   "^Albümlerim$",
+   "^Önceki damgaları yükle$"
+  ]
+ },
+ {
+  "ad": "Arena",
+  "yol": [
+   "^Arena$"
+  ],
+  "surface": "arena"
+ },
+ {
+  "ad": "Arena › Araya bilmece ekle · Kelimeyi gör ve çiz.",
+  "yol": [
+   "^Arena$",
+   "^Araya bilmece ekle"
+  ],
+  "surface": "arena"
+ },
+ {
+  "ad": "Arena › Arkadaşlarınla oyna · Oda kur ya da kodla ",
+  "yol": [
+   "^Arena$",
+   "^Arkadaşlarınla oynaOda"
+  ]
+ },
+ {
+  "ad": "Arena › Dereceli düello · Bire bir yarış",
+  "yol": [
+   "^Arena$",
+   "^Dereceli düelloBire bi"
+  ]
+ },
+ {
+  "ad": "Arena › Meydan okuma",
+  "yol": [
+   "^Arena$",
+   "^Meydan okuma$"
+  ]
+ },
+ {
+  "ad": "Arena › Sıralama",
+  "yol": [
+   "^Arena$",
+   "^Sıralama$"
+  ]
+ },
+ {
+  "ad": "Arena › Kurallar",
+  "yol": [
+   "^Arena$",
+   "^Kurallar$"
+  ]
+ },
+ {
+  "ad": "Oyunlar",
+  "yol": [
+   "^Oyunlar$"
+  ]
+ },
+ {
+  "ad": "Oyunlar › BUGÜNGünlük bulmaca · Herkese aynı tahta",
+  "yol": [
+   "^Oyunlar$",
+   "^BUGÜNGünlük bulmacaHer"
+  ]
+ },
+ {
+  "ad": "Oyunlar › Hızlı tur60 saniyede en çok",
+  "yol": [
+   "^Oyunlar$",
+   "^Hızlı tur60 saniyede e"
+  ]
+ },
+ {
+  "ad": "Oyunlar › Hikâyeler · Beş kısa hikâye",
+  "yol": [
+   "^Oyunlar$",
+   "^HikâyelerBeş kısa hikâ"
+  ]
+ },
+ {
+  "ad": "Oyunlar › Gizli tema · Ortak konuyu bul",
+  "yol": [
+   "^Oyunlar$",
+   "^Gizli temaOrtak konuyu"
+  ]
+ },
+ {
+  "ad": "Oyunlar › İpucu avı · Tanımdan kelimeye",
+  "yol": [
+   "^Oyunlar$",
+   "^İpucu avıTanımdan keli"
+  ]
+ },
+ {
+  "ad": "Oyunlar › Serbest oyun · Konu ve zorluk seç",
+  "yol": [
+   "^Oyunlar$",
+   "^Serbest oyunKonu ve zo"
+  ]
+ },
+ {
+  "ad": "Oyunlar › Ek bölümler · Tarih ve konuya göre bütün e",
+  "yol": [
+   "^Oyunlar$",
+   "^Ek bölümlerTarih ve ko"
+  ]
+ },
+ {
+  "ad": "Oyunlar › Alıştırma · Çizmeyi baştan dene",
+  "yol": [
+   "^Oyunlar$",
+   "^AlıştırmaÇizmeyi başta"
+  ]
+ },
+ {
+  "ad": "Oyunlar › Bonus turları",
+  "yol": [
+   "^Oyunlar$",
+   "^Bonus turları$"
+  ]
+ },
+ {
+  "ad": "Bölüm 118",
+  "yol": [
+   "^Bölüm \\d+ ·"
+  ]
+ },
+ {
+  "ad": "Bölüm 118 › Ayarlar",
+  "yol": [
+   "^Bölüm \\d+ ·",
+   "^Ayarlar$"
+  ],
+  "surface": "settings",
+  "context": "solo"
+ },
+ {
+  "ad": "Bölüm 118 › İpucu · 3 kaldı",
+  "yol": [
+   "^Bölüm \\d+ ·",
+   "^İpucu · 3 kaldı$"
+  ]
+ },
+ {
+  "ad": "Bölüm 118 › Tahtayı döndür",
+  "yol": [
+   "^Bölüm \\d+ ·",
+   "^Tahtayı döndür$"
+  ]
+ }
+]
